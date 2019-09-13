@@ -48,6 +48,9 @@ def get_eeg_dataset(number_individuals=16, path_eeg='/home/david/eeg_informed_fm
 #											FREQUENCY UTILS
 #			
 ##########################################################################################################################
+frequency_bands = {'delta': [0.5,4], 'theta': [4,8], 'alpha': [8,13], 'beta': [13,30], 'gamma': [30, 100]}
+
+
 def compute_fft(channel, fs=128):
 	N = int(len(channel)/2)
 
@@ -87,6 +90,29 @@ def stft(eeg, channel=0, window_size=2, fs=250, start_time=None, stop_time=None)
 		seconds += window_size
 
 	return f[1:], np.transpose(np.array(Z)), t
+
+def mutate_stft_to_bands(Zxx, frequencies, timesteps):
+	#frequency first dimension, time is second dimension
+	Z_band_mutated = []
+
+	for t in range(len(timesteps)):
+
+		intensities = []
+
+		for i in range(len(frequency_bands.keys())):
+			intensities += [0]
+
+		bands = dict(zip(frequency_bands.keys(), intensities))
+
+		for f in range(len(frequencies)):
+			for band in bands.keys():
+				if(frequencies[f] <= frequency_bands[band][1]):
+					bands[band] += Zxx[f][t]
+					break
+
+		Z_band_mutated += [list(bands.values()).copy()]
+
+	return np.transpose(np.array(Z_band_mutated))
 
 ##########################################################################################################################
 #
