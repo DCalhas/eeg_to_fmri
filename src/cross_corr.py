@@ -24,7 +24,6 @@ def get_correlation_voxel(eeg, fmri_masked_instance, voxel=0, scaled=False, TR=2
 
 	TR = 1/TR
 	voxel_resampled = fmri_utils.get_resampled_bold(voxel)
-	plt.plot(voxel_resampled[3:])
 
 	for channel in range(len(eeg.ch_names)):
 		channel_correlations += [0]
@@ -37,9 +36,9 @@ def get_correlation_voxel(eeg, fmri_masked_instance, voxel=0, scaled=False, TR=2
 
 		for band in range(len(eeg_utils.frequency_bands)):
 			if(scaled):
-				correlation_coeff = correlate(Zxx_scaled[band][start_cutoff:], voxel_resampled[start_cutoff:], mode='full')
+				correlation_coeff = correlate(Zxx_scaled[band][start_cutoff:len(voxel_resampled[:3])], voxel_resampled[start_cutoff:], mode='full')
 			else:
-				correlation_coeff = correlate(Zxx[band][start_cutoff:], voxel_resampled[start_cutoff:], mode='full')
+				correlation_coeff = correlate(Zxx[band][start_cutoff:len(voxel_resampled[:3])], voxel_resampled[start_cutoff:], mode='full')
 
 			band_correlations[band] += np.max(correlation_coeff)
 
