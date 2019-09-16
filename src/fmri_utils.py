@@ -6,6 +6,8 @@ import os
 from os import listdir
 from os.path import isfile, join, isdir
 
+from scipy.signal import resample
+
 
 ##########################################################################################################################
 #
@@ -27,6 +29,13 @@ def get_fmri_instance(individual=0, path_fmri='/home/david/eeg_informed_fmri/dat
 	return apply_mask(complete_path, mask_img)
 
 
+def get_individuals_ids(path_fmri='/home/david/eeg_informed_fmri/datasets/01/fMRI/'):
+
+	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
+
+	return individuals
+
+
 ##########################################################################################################################
 #
 #											FMRI UTILS
@@ -36,3 +45,7 @@ def get_fmri_instance(individual=0, path_fmri='/home/david/eeg_informed_fmri/dat
 # timepoints from two voxels
 def get_voxel(masked_fmri, voxel=0):
 	return masked_fmri[:masked_fmri.shape[0], voxel]
+
+
+def get_resampled_bold(voxel, new_TR=2, TR=2.160):
+	return resample(voxel, int((len(voxel)*(1/new_TR))/TR))
