@@ -24,7 +24,7 @@ def get_correlation_voxel(eeg, fmri_masked_instance, voxel=0, scaled=False, TR=2
 
 	TR = 1/TR
 	voxel_resampled = fmri_utils.get_resampled_bold(voxel)
-
+	
 	for channel in range(len(eeg.ch_names)):
 		channel_correlations += [0]
 
@@ -36,9 +36,9 @@ def get_correlation_voxel(eeg, fmri_masked_instance, voxel=0, scaled=False, TR=2
 
 		for band in range(len(eeg_utils.frequency_bands)):
 			if(scaled):
-				correlation_coeff = correlate(Zxx_scaled[band][start_cutoff:len(voxel_resampled[:3])], voxel_resampled[start_cutoff:], mode='full')
+				correlation_coeff = correlate(Zxx_scaled[band][start_cutoff:len(voxel_resampled[start_cutoff:])], voxel_resampled[start_cutoff:], mode='full')
 			else:
-				correlation_coeff = correlate(Zxx[band][start_cutoff:len(voxel_resampled[:3])], voxel_resampled[start_cutoff:], mode='full')
+				correlation_coeff = correlate(Zxx[band][start_cutoff:len(voxel_resampled[start_cutoff:])], voxel_resampled[start_cutoff:], mode='full')
 
 			band_correlations[band] += np.max(correlation_coeff)
 
@@ -51,12 +51,11 @@ if __name__ == "__main__":
 
 	individuals = fmri_utils.get_individuals_ids()
 
-	for individual in range(16):
+	for individual in range(len(individuals)):
 		
 		#get first individual instances
 		fmri_masked_instance = fmri_utils.get_fmri_instance(individual)
 		eeg = eeg_utils.get_eeg_instance(individual)
-
 
 		voxel_ids = []
 		voxel_corr_coef = []
@@ -69,7 +68,6 @@ if __name__ == "__main__":
 		#perform correlation
 		for voxel_id in voxel_ids:
 			channels_corr, bands_corr = get_correlation_voxel(eeg, fmri_masked_instance, voxel=voxel_id, scaled=False)
-
 			rank_corr[voxel_id] += sum(channels_corr)
 
 			if(voxel_id % 500 == 0):
