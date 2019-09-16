@@ -13,6 +13,9 @@ from sklearn.preprocessing import normalize
 
 import json
 
+import time
+
+
 
 def get_correlation_voxel(eeg, fmri_masked_instance, voxel=0, scaled=False, TR=2.160, start_cutoff=3, window_size=2):
 
@@ -51,6 +54,8 @@ if __name__ == "__main__":
 
 	individuals = fmri_utils.get_individuals_ids()
 
+	start = time.time()
+
 	for individual in range(len(individuals)):
 		
 		#get first individual instances
@@ -71,7 +76,7 @@ if __name__ == "__main__":
 			rank_corr[voxel_id] += sum(channels_corr)
 
 			if(voxel_id % 500 == 0):
-				print("Now on iteration ", voxel_id)
+				print("Now on iteration ", voxel_id, "(ongoing ", time.time()-start, " seconds")
 
 		#save the rank_corr to json
 		with open('jsons/' + individuals[individual] + '_rank_correlations.json', 'w') as fp:
