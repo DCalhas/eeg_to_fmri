@@ -67,8 +67,10 @@ if __name__ == "__main__":
 
 		#perform correlation
 		for voxel_id in voxel_ids:
+			print("CHECKING")
 			channels_corr, bands_corr = get_correlation_voxel(eeg, fmri_masked_instance, voxel=voxel_id, scaled=False)
 			rank_corr[voxel_id] += sum(channels_corr)
+			print("DONE")
 
 			if(voxel_id % 500 == 0):
 				print("Now on iteration ", voxel_id)
