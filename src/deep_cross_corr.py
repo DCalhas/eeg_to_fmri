@@ -129,7 +129,7 @@ def eeg_network(input_shape, kernel_size, output_dim=20, activation_function='se
 		activation=activation_function, strides=(2,2,1),
 		input_shape=input_shape, kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(Reshape((16, 20, 1)))
+	model.add(Reshape((-1, 20, 1)))
 	#model.add(BatchNormalization())
 	#model.add(Conv3D(1, kernel_size=(16, 1, kernel_size[2]),
 	#activation=activation_function, strides=(2,1,1),
