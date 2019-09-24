@@ -23,8 +23,6 @@ from keras.optimizers import Adam
 from keras.losses import mae
 
 import tensorflow.compat.v1 as tf
-tf.enable_eager_execution()
-
 
 import keras.backend as K
 
@@ -173,8 +171,6 @@ def bold_network(input_shape, kernel_size, output_dim=20, activation_function='s
 	return model
 
 def contrastive_loss(y_true, y_pred):
-	tf.print(y_true, output_stream=sys.stdout)
-	tf.print(y_pred, output_stream=sys.stdout)
 	square_pred = K.square(y_pred)
 	margin_square = K.square(K.maximum(1.0 - y_pred, 0))
 	return K.mean(y_true * square_pred + (1 - y_true) * margin_square)
@@ -194,8 +190,7 @@ def cross_correlation(x, y):
 
 def correlation(vects):
 	#how should the normalization be done??
-	x = vects[0]
-	y = vects[1]
+	x, y = vects
 	x = K.l2_normalize(x, axis=1)
 	y = K.l2_normalize(y, axis=1)
 
@@ -207,9 +202,7 @@ def correlation(vects):
 	return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
 
 def cos_dist_output_shape(shapes):
-	print(shapes)
 	shape1, shape2 = shapes
-	print(shape1, shape2)
 	return (shape1[0], 1)
 
 
@@ -226,7 +219,6 @@ if __name__ == "__main__":
 	#reading data and spliting data into train and test by individuals
 	X_train, y_train = get_data(list(range(14)), masker=mask)
 	X_test, y_test = get_data(list(range(14, 16)), masker=mask)
-	print(X_train.shape, y_train.shape)
 
 	X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2], X_train.shape[3], 1)
 	X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], X_test.shape[2], X_test.shape[3], 1)
@@ -234,7 +226,7 @@ if __name__ == "__main__":
 	eeg_input_shape = (X_train.shape[1], X_train.shape[2], X_train.shape[3], 1)
 
 	kernel_size = (X_train.shape[1], X_train.shape[2], 1)
-	print(kernel_size)
+
 	#eeg network
 	eeg_network = eeg_network(eeg_input_shape, kernel_size, output_dim=output_dim,
 		activation_function=activation_function, regularizer=regularizer)
@@ -247,7 +239,6 @@ if __name__ == "__main__":
 	bold_input_shape = (y_train.shape[1], y_train.shape[2], 1)
 
 	kernel_size = (y_train.shape[1], 1)
-	print(kernel_size)
 
 	bold_network = bold_network(bold_input_shape, kernel_size, output_dim=output_dim, 
 		activation_function=activation_function, regularizer=regularizer)
@@ -259,35 +250,25 @@ if __name__ == "__main__":
 	processed_eeg = eeg_network(input_eeg)
 	processed_bold = bold_network(input_bold)
 
-	print(input_eeg)
-	print(processed_eeg)
-	print(input_bold)
-	print(processed_bold)
-	print(cos_dist_output_shape)
-	print([processed_eeg, processed_bold])
 	correlation = Lambda(correlation, 
 		output_shape=cos_dist_output_shape)([processed_eeg, processed_bold])
 
 	multi_modal_model = Model([input_eeg, input_bold], correlation)
-	print(multi_modal_model.summary())
 
 	multi_modal_model.compile(loss=contrastive_loss, optimizer=Adam(lr=0.001))
-	eeg_network.compile(loss=cross_correlation, optimizer=Adam(lr=0.0001))
-
 
 	X_train_eeg, X_train_bold, tr_y = create_eeg_bold_pairs(X_train, y_train)
 	X_test_eeg, X_test_bold, te_y = create_eeg_bold_pairs(X_test, y_test)
 
-
-	print(X_train_eeg.shape)
+	print(X_train_eeg.shape, X_train_bold.shape, tr_y.shape)
 
 	#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-	cfg = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
-	cfg.gpu_options.allow_growth = True
-	session = tf.Session(config=cfg)
-	with session:
-		session.run(tf.global_variables_initializer())
-		history = multi_modal_model.fit([X_train_eeg, X_train_bold], 
-			tr_y, epochs=n_epochs, 
-			batch_size=n_partitions*100)#, validation_data=([X_test_eeg, X_test_bold], te_y))
+	#cfg = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
+	#cfg.gpu_options.allow_growth = True
+	#session = tf.Session(config=cfg)
+	#with session:
+	#session.run(tf.global_variables_initializer())
+	history = multi_modal_model.fit([X_train_eeg, X_train_bold], 
+		tr_y)#, epochs=n_epochs, 
+		#batch_size=n_partitions*100)#, validation_data=([X_test_eeg, X_test_bold], te_y))
 
