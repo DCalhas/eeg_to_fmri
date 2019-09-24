@@ -279,7 +279,7 @@ if __name__ == "__main__":
 	print(X_train_eeg.shape)
 
 	#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-	cfg = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True, gpu_options=gpu_options)
+	cfg = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
 	cfg.gpu_options.allow_growth = True
 	session = tf.Session(config=cfg)
 	with session:
