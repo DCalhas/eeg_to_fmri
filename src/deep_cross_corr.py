@@ -22,6 +22,8 @@ from keras.layers import Conv2D, Conv3D, Reshape, Flatten, BatchNormalization, L
 from keras.optimizers import Adam
 from keras.losses import mae
 
+import tensorflow as tf
+
 import keras.backend as K
 
 n_partitions = 16
@@ -262,6 +264,12 @@ if __name__ == "__main__":
 
 
 	print(X_train_eeg.shape)
-	history = multi_modal_model.fit([X_train_eeg, X_train_bold], 
-		tr_y, epochs=n_epochs, 
-		batch_size=n_partitions*100, validation_data=([X_test_eeg, X_test_bold], te_y))
+
+	cfg = tf.ConfigProto(allow_soft_placement=True )
+	cfg.gpu_options.allow_growth = True
+	session = tf.Session(config=cfg)
+	with session:
+		session.run(tf.global_variables_initializer())
+		history = multi_modal_model.fit([X_train_eeg, X_train_bold], 
+			tr_y, epochs=n_epochs, 
+			batch_size=n_partitions*100, validation_data=([X_test_eeg, X_test_bold], te_y))
