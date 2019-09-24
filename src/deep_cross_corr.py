@@ -194,6 +194,10 @@ def correlation(vects):
 	x = K.l2_normalize(x, axis=1)
 	y = K.l2_normalize(y, axis=1)
 
+	#flatten because we are dealing with 16x20 matrices
+	x = K.batch_flatten(x)
+	y = K.batch_flatten(y)
+
 	a = K.batch_dot(x, y, axes=1)
 
 	b = K.batch_dot(x, x, axes=1)
