@@ -26,6 +26,8 @@ import tensorflow.compat.v1 as tf
 
 import keras.backend as K
 
+import sys
+
 n_partitions = 16
 number_channels = 64
 number_individuals = 16
@@ -169,8 +171,8 @@ def bold_network(input_shape, kernel_size, output_dim=20, activation_function='s
 	return model
 
 def contrastive_loss(y_true, y_pred):
-	tf.print(y_true)
-	tf.print(y_pred)
+	tf.print(y_true, output_stream=sys.stdout)
+	tf.print(y_pred, output_stream=sys.stdout)
 	square_pred = K.square(y_pred)
 	margin_square = K.square(K.maximum(1.0 - y_pred, 0))
 	return K.mean(y_true * square_pred + (1 - y_true) * margin_square)
@@ -185,6 +187,10 @@ def cross_correlation(x, y):
 
 	b = K.batch_dot(x, x, axes=1)
 	c = K.batch_dot(y, y, axes=1)
+	tf.print(a, output_stream=sys.stdout)
+	tf.print(b, output_stream=sys.stdout)
+	tf.print(c, output_stream=sys.stdout)
+
 
 	return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
 
