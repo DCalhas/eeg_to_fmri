@@ -210,7 +210,9 @@ def correlation(vects):
 	return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
 
 def cos_dist_output_shape(shapes):
+	print(shapes)
 	shape1, shape2 = shapes
+	print(shape1, shape2)
 	return (shape1[0], 1)
 
 
@@ -230,7 +232,7 @@ if __name__ == "__main__":
 	print(X_train.shape, y_train.shape)
 
 	X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2], X_train.shape[3], 1)
-	X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], X_test.shape[2], X_test.shape[3], 1)
+	X_test = X_test.reshape(X_test.shape[0], X_test.shape[X_test1], X_test.shape[2], X_test.shape[3], 1)
 
 	eeg_input_shape = (X_train.shape[1], X_train.shape[2], X_train.shape[3], 1)
 
