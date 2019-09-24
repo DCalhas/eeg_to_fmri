@@ -155,6 +155,7 @@ def bold_network(input_shape, kernel_size, output_dim=20, activation_function='s
 		activation=activation_function, strides=(12,1),
 		kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
+	model.add(Reshape((16, 20, 1)))
 	#model.add(BatchNormalization())
 	#model.add(Conv2D(1, kernel_size=(16, kernel_size[1]),
 	#activation=activation_function, strides=(1,1),
