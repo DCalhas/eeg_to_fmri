@@ -274,5 +274,5 @@ if __name__ == "__main__":
 	#session.run(tf.global_variables_initializer())
 	history = multi_modal_model.fit([X_train_eeg, X_train_bold], 
 		tr_y, epochs=n_epochs, 
-		batch_size=n_partitions*100, validation_data=([X_test_eeg, X_test_bold], te_y))
+		batch_size=n_partitions*100)#, validation_data=([X_test_eeg, X_test_bold], te_y))
 
