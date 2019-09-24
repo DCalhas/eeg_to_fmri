@@ -189,10 +189,6 @@ def cross_correlation(x, y):
 
 	b = K.batch_dot(x, x, axes=1)
 	c = K.batch_dot(y, y, axes=1)
-	tf.print(a, output_stream=sys.stdout)
-	tf.print(b, output_stream=sys.stdout)
-	tf.print(c, output_stream=sys.stdout)
-
 
 	return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
 
@@ -267,7 +263,7 @@ if __name__ == "__main__":
 	print(input_bold)
 	print(processed_bold)
 	print(cos_dist_output_shape)
-	correlation = Lambda(correlation, 
+	correlation = Lambda(cross_correlation, 
 		output_shape=cos_dist_output_shape)([processed_eeg, processed_bold])
 
 	multi_modal_model = Model([input_eeg, input_bold], correlation)
