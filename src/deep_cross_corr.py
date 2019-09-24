@@ -194,7 +194,8 @@ def cross_correlation(x, y):
 
 def correlation(vects):
 	#how should the normalization be done??
-	x, y = vects
+	x = vects[0]
+	y = vects[1]
 	x = K.l2_normalize(x, axis=1)
 	y = K.l2_normalize(y, axis=1)
 
@@ -263,6 +264,7 @@ if __name__ == "__main__":
 	print(input_bold)
 	print(processed_bold)
 	print(cos_dist_output_shape)
+	print([processed_eeg, processed_bold])
 	correlation = Lambda(cross_correlation, 
 		output_shape=cos_dist_output_shape)([processed_eeg, processed_bold])
 
