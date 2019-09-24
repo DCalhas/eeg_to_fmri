@@ -18,7 +18,7 @@ import keras
 from keras.initializers import Zeros
 from keras import regularizers
 from keras.models import Sequential, Model
-from keras.layers import Conv2D, Conv3D, Flatten, BatchNormalization, LSTM, TimeDistributed, Dense, Lambda, Input, MaxPooling2D, MaxPooling3D 
+from keras.layers import Conv2D, Conv3D, Reshape, Flatten, BatchNormalization, LSTM, TimeDistributed, Dense, Lambda, Input, MaxPooling2D, MaxPooling3D 
 from keras.optimizers import Adam
 from keras.losses import mae
 
@@ -127,16 +127,17 @@ def eeg_network(input_shape, kernel_size, output_dim=20, activation_function='se
 		activation=activation_function, strides=(2,2,1),
 		input_shape=input_shape, kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(BatchNormalization())
-	model.add(Conv3D(1, kernel_size=(16, 1, kernel_size[2]),
-		activation=activation_function, strides=(2,1,1),
-		input_shape=input_shape, kernel_regularizer=regularizer, 
-		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(BatchNormalization())
+	model.add(Reshape((16, 20, 1)))
+	#model.add(BatchNormalization())
+	#model.add(Conv3D(1, kernel_size=(16, 1, kernel_size[2]),
+	#activation=activation_function, strides=(2,1,1),
+	#input_shape=input_shape, kernel_regularizer=regularizer, 
+	#bias_regularizer=regularizer, activity_regularizer=regularizer))
+	#model.add(BatchNormalization())
 
-	model.add(TimeDistributed(Flatten()))
+	#model.add(TimeDistributed(Flatten()))
 
-	model.add(LSTM(output_dim))
+	#model.add(LSTM(output_dim))
 
 	return model
 
@@ -152,15 +153,15 @@ def bold_network(input_shape, kernel_size, output_dim=20, activation_function='s
 		activation=activation_function, strides=(12,1),
 		kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(BatchNormalization())
-	model.add(Conv2D(1, kernel_size=(16, kernel_size[1]),
-		activation=activation_function, strides=(1,1),
-		kernel_regularizer=regularizer, 
-		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(BatchNormalization())
-	model.add(TimeDistributed(Flatten()))
+	#model.add(BatchNormalization())
+	#model.add(Conv2D(1, kernel_size=(16, kernel_size[1]),
+	#activation=activation_function, strides=(1,1),
+	# kernel_regularizer=regularizer, 
+	#bias_regularizer=regularizer, activity_regularizer=regularizer))
+	#model.add(BatchNormalization())
+	#model.add(TimeDistributed(Flatten()))
 
-	model.add(LSTM(output_dim, input_shape=input_shape))
+	#model.add(LSTM(output_dim, input_shape=input_shape))
 
 	return model
 
