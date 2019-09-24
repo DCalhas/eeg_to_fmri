@@ -267,12 +267,12 @@ if __name__ == "__main__":
 	print(X_train_eeg.shape, X_train_bold.shape, tr_y.shape)
 
 	#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-	cfg = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
-	cfg.gpu_options.allow_growth = True
-	session = tf.Session(config=cfg)
-	with session:
-		session.run(tf.global_variables_initializer())
-		history = multi_modal_model.fit([X_train_eeg, X_train_bold], 
-			tr_y, epochs=n_epochs, 
-			batch_size=n_partitions*100)#, validation_data=([X_test_eeg, X_test_bold], te_y))
+	#cfg = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
+	#cfg.gpu_options.allow_growth = True
+	#session = tf.Session(config=cfg)
+	#with session:
+	#	session.run(tf.global_variables_initializer())
+	history = multi_modal_model.fit([X_train_eeg, X_train_bold], 
+		tr_y, epochs=n_epochs, 
+		batch_size=n_partitions*100)#, validation_data=([X_test_eeg, X_test_bold], te_y))
 
