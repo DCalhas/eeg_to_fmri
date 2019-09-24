@@ -169,6 +169,8 @@ def bold_network(input_shape, kernel_size, output_dim=20, activation_function='s
 	return model
 
 def contrastive_loss(y_true, y_pred):
+	tf.print(y_true)
+	tf.print(y_pred)
 	square_pred = K.square(y_pred)
 	margin_square = K.square(K.maximum(1.0 - y_pred, 0))
 	return K.mean(y_true * square_pred + (1 - y_true) * margin_square)
