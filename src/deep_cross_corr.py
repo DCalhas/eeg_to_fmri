@@ -22,7 +22,7 @@ from keras.layers import Conv2D, Conv3D, Reshape, Flatten, BatchNormalization, L
 from keras.optimizers import Adam
 from keras.losses import mae
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 import keras.backend as K
 
@@ -93,7 +93,7 @@ def create_eeg_bold_pairs(eeg, bold):
 	#different timesteps of the same individual
 
 	#redefine this variable
-	instances_per_individual = 10
+	instances_per_individual = 16
 
 
 	#building pairs
@@ -265,7 +265,8 @@ if __name__ == "__main__":
 
 	print(X_train_eeg.shape)
 
-	cfg = tf.ConfigProto(allow_soft_placement=True )
+	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+	cfg = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True, gpu_options=gpu_options)
 	cfg.gpu_options.allow_growth = True
 	session = tf.Session(config=cfg)
 	with session:
