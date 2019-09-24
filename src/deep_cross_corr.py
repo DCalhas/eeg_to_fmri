@@ -271,6 +271,7 @@ if __name__ == "__main__":
 		output_shape=cos_dist_output_shape)([processed_eeg, processed_bold])
 
 	multi_modal_model = Model([input_eeg, input_bold], correlation)
+	print(multi_modal_model.summary())
 
 	multi_modal_model.compile(loss=contrastive_loss, optimizer=Adam(lr=0.001))
 	eeg_network.compile(loss=cross_correlation, optimizer=Adam(lr=0.0001))
