@@ -265,7 +265,7 @@ if __name__ == "__main__":
 	print(processed_bold)
 	print(cos_dist_output_shape)
 	print([processed_eeg, processed_bold])
-	correlation = Lambda(cross_correlation, 
+	correlation = Lambda(correlation, 
 		output_shape=cos_dist_output_shape)([processed_eeg, processed_bold])
 
 	multi_modal_model = Model([input_eeg, input_bold], correlation)
