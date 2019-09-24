@@ -262,7 +262,11 @@ if __name__ == "__main__":
 	processed_eeg = eeg_network(input_eeg)
 	processed_bold = bold_network(input_bold)
 
-
+	print(input_eeg)
+	print(processed_eeg)
+	print(input_bold)
+	print(processed_bold)
+	print(cos_dist_output_shape)
 	correlation = Lambda(correlation, 
 		output_shape=cos_dist_output_shape)([processed_eeg, processed_bold])
 
