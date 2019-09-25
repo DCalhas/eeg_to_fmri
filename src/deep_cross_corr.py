@@ -176,6 +176,8 @@ def cross_correlation(x, y):
 	x = K.batch_flatten(x)
 	y = K.batch_flatten(y)
 
+	x = K.cast(x, 'float64')
+
 	a = K.batch_dot(x, y, axes=1)
 
 	b = K.batch_dot(x, x, axes=1)
@@ -192,6 +194,8 @@ def correlation(vects):
 	#flatten because we are dealing with 16x20 matrices
 	x = K.batch_flatten(x)
 	y = K.batch_flatten(y)
+
+	x = K.cast(x, 'float64')
 
 	a = K.batch_dot(x, y, axes=1)
 
