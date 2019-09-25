@@ -277,9 +277,10 @@ if __name__ == "__main__":
 		tr_y, epochs=n_epochs, 
 		batch_size=n_partitions*100)#, validation_data=([X_test_eeg, X_test_bold], te_y))
 
-	model_json = multi_modal_model.to_json()
-	with open("multi_model/demo_0.json", "w") as json_file:
+	#we want to save the eeg_network weights to extract the activations and move on to the decoding to fMRI
+	model_json = eeg_network.to_json()
+	with open("multi_model/eeg_demo_0.json", "w") as json_file:
 	    json_file.write(model_json)
 	# serialize weights to HDF5
-	multi_modal_model.save_weights("demo_0.h5")
+	eeg_network.save_weights("multi_model/eeg_demo_0.h5")
 
