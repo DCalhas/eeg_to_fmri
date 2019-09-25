@@ -200,6 +200,22 @@ def correlation(vects):
 
 	return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
 
+def correlation_decoder_loss(x, y):
+	x = K.l2_normalize(x, axis=1)
+	y = K.l2_normalize(y, axis=1)
+
+	x = K.batch_flatten(x)
+	y = K.batch_flatten(y)
+
+	x = K.cast(x, 'float32')
+
+	a = K.batch_dot(x, y, axes=1)
+
+	b = K.batch_dot(x, x, axes=1)
+	c = K.batch_dot(y, y, axes=1)
+
+	return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
+
 def cos_dist_output_shape(shapes):
 	shape1, shape2 = shapes
 	return (shape1[0], 1)
