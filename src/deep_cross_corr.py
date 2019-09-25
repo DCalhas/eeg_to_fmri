@@ -124,25 +124,24 @@ def eeg_network(input_shape, kernel_size, output_dim=20, activation_function='se
 
 
 	model.add(Conv3D(1, kernel_size=(2, 2, kernel_size[2]),
-		activation=activation_function, strides=(2,2,1),
+		activation=activation_function, strides=(1,2,1),
 		input_shape=input_shape, kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
 	model.add(BatchNormalization())
+
 	model.add(Conv3D(1, kernel_size=(2, 2, kernel_size[2]),
-		activation=activation_function, strides=(2,2,1),
-		input_shape=input_shape, kernel_regularizer=regularizer, 
+		activation=activation_function, strides=(1,2,1),
+		kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(Reshape((16, 20, 1)))
-	#model.add(BatchNormalization())
-	#model.add(Conv3D(1, kernel_size=(16, 1, kernel_size[2]),
-	#activation=activation_function, strides=(2,1,1),
-	#input_shape=input_shape, kernel_regularizer=regularizer, 
-	#bias_regularizer=regularizer, activity_regularizer=regularizer))
-	#model.add(BatchNormalization())
+	model.add(BatchNormalization())
 
-	#model.add(TimeDistributed(Flatten()))
+	model.add(Conv3D(1, kernel_size=(2, 1, kernel_size[2]),
+		activation=activation_function, strides=(1,1,1),
+		kernel_regularizer=regularizer, 
+		bias_regularizer=regularizer, activity_regularizer=regularizer))
+	model.add(BatchNormalization())
 
-	#model.add(LSTM(output_dim))
+	model.add(Reshape((61, 20, 1)))
 
 	return model
 
@@ -154,20 +153,12 @@ def bold_network(input_shape, kernel_size, output_dim=20, activation_function='s
 		input_shape=input_shape, kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
 	model.add(BatchNormalization())
+
 	model.add(Conv2D(1, kernel_size=(100, kernel_size[1]),
-		activation=activation_function, strides=(12,1),
+		activation=activation_function, strides=(3,1),
 		kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(Reshape((16, 20, 1)))
-	#model.add(BatchNormalization())
-	#model.add(Conv2D(1, kernel_size=(16, kernel_size[1]),
-	#activation=activation_function, strides=(1,1),
-	# kernel_regularizer=regularizer, 
-	#bias_regularizer=regularizer, activity_regularizer=regularizer))
-	#model.add(BatchNormalization())
-	#model.add(TimeDistributed(Flatten()))
-
-	#model.add(LSTM(output_dim, input_shape=input_shape))
+	model.add(BatchNormalization())
 
 	return model
 
