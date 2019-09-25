@@ -173,6 +173,9 @@ def cross_correlation(x, y):
 	x = K.l2_normalize(x, axis=1)
 	y = K.l2_normalize(y, axis=1)
 
+	x = K.batch_flatten(x)
+	y = K.batch_flatten(y)
+
 	a = K.batch_dot(x, y, axes=1)
 
 	b = K.batch_dot(x, x, axes=1)
