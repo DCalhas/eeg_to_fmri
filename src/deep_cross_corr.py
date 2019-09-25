@@ -21,6 +21,7 @@ from keras.models import Sequential, Model
 from keras.layers import Conv2D, Conv3D, Reshape, Flatten, BatchNormalization, LSTM, TimeDistributed, Dense, Lambda, Input, MaxPooling2D, MaxPooling3D 
 from keras.optimizers import Adam
 from keras.losses import mae
+from keras.models import model_from_json
 
 import tensorflow.compat.v1 as tf
 
@@ -275,4 +276,10 @@ if __name__ == "__main__":
 	history = multi_modal_model.fit([X_train_eeg, X_train_bold], 
 		tr_y, epochs=n_epochs, 
 		batch_size=n_partitions*100)#, validation_data=([X_test_eeg, X_test_bold], te_y))
+
+	model_json = model.to_json()
+	with open("multi_model/demo_0.json", "w") as json_file:
+	    json_file.write(model_json)
+	# serialize weights to HDF5
+	model.save_weights("demo_0.h5")
 
