@@ -109,7 +109,7 @@ def create_eeg_bold_pairs(eeg, bold):
 	return x_eeg, x_bold, y
 
 
-def eeg_network(input_shape, kernel_size, output_dim=20, activation_function='selu', regularizer=regularizers.l1(0.001)):
+def eeg_network(input_shape, kernel_size, output_dim=20, activation_function='selu', regularizer=tf.keras.regularizers.l1(0.001)):
 	model = tf.keras.Sequential()
 
 
@@ -135,7 +135,7 @@ def eeg_network(input_shape, kernel_size, output_dim=20, activation_function='se
 
 	return model
 
-def bold_network(input_shape, kernel_size, output_dim=20, activation_function='selu', regularizer=regularizers.l1(0.001)):
+def bold_network(input_shape, kernel_size, output_dim=20, activation_function='selu', regularizer=tf.keras.regularizers.l1(0.001)):
 	model = tf.keras.Sequential()
 
 	model.add(tf.keras.layers.Conv2D(1, kernel_size=(100, kernel_size[1]),
@@ -215,7 +215,7 @@ n_partitions = 16
 output_dim = 20
 activation_function = 'selu'
 reg_l=0
-regularizer = regularizers.l1(reg_l)
+regularizer = tf.keras.regularizers.l1(reg_l)
 
 if __name__ == "__main__":
 
