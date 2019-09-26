@@ -13,19 +13,9 @@ from sklearn.preprocessing import normalize
 
 from scipy.signal import resample
 
-import keras
-
-from keras.initializers import Zeros
-from keras import regularizers
-from keras.models import Sequential, Model
-from keras.layers import Conv2D, Conv3D, Reshape, Flatten, BatchNormalization, LSTM, TimeDistributed, Dense, Lambda, Input, MaxPooling2D, MaxPooling3D 
-from keras.optimizers import Adam
-from keras.losses import mae
-from keras.models import model_from_json
-
 import tensorflow.compat.v1 as tf
 
-import keras.backend as K
+import tensorflow.keras.backend as K
 
 import sys
 
@@ -120,45 +110,45 @@ def create_eeg_bold_pairs(eeg, bold):
 
 
 def eeg_network(input_shape, kernel_size, output_dim=20, activation_function='selu', regularizer=regularizers.l1(0.001)):
-	model = Sequential()
+	model = tf.keras.Sequential()
 
 
-	model.add(Conv3D(1, kernel_size=(2, 2, kernel_size[2]),
+	model.add(tf.keras.layers.Conv3D(1, kernel_size=(2, 2, kernel_size[2]),
 		activation=activation_function, strides=(1,2,1),
 		input_shape=input_shape, kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(BatchNormalization())
+	model.add(tf.keras.layers.BatchNormalization())
 
-	model.add(Conv3D(1, kernel_size=(2, 2, kernel_size[2]),
+	model.add(tf.keras.layers.Conv3D(1, kernel_size=(2, 2, kernel_size[2]),
 		activation=activation_function, strides=(1,2,1),
 		kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(BatchNormalization())
+	model.add(tf.keras.layers.BatchNormalization())
 
-	model.add(Conv3D(1, kernel_size=(2, 1, kernel_size[2]),
+	model.add(tf.keras.layers.Conv3D(1, kernel_size=(2, 1, kernel_size[2]),
 		activation=activation_function, strides=(1,1,1),
 		kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(BatchNormalization())
+	model.add(tf.keras.layers.BatchNormalization())
 
-	model.add(Reshape((61, 20, 1)))
+	model.add(tf.keras.layers.Reshape((61, 20, 1)))
 
 	return model
 
 def bold_network(input_shape, kernel_size, output_dim=20, activation_function='selu', regularizer=regularizers.l1(0.001)):
-	model = Sequential()
+	model = tf.keras.Sequential()
 
-	model.add(Conv2D(1, kernel_size=(100, kernel_size[1]),
+	model.add(tf.keras.layers.Conv2D(1, kernel_size=(100, kernel_size[1]),
 		activation=activation_function, strides=(50,1),
 		input_shape=input_shape, kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(BatchNormalization())
+	model.add(tf.keras.layers.BatchNormalization())
 
-	model.add(Conv2D(1, kernel_size=(100, kernel_size[1]),
+	model.add(tf.keras.layers.Conv2D(1, kernel_size=(100, kernel_size[1]),
 		activation=activation_function, strides=(3,1),
 		kernel_regularizer=regularizer, 
 		bias_regularizer=regularizer, activity_regularizer=regularizer))
-	model.add(BatchNormalization())
+	model.add(tf.keras.layers.BatchNormalization())
 
 	return model
 
@@ -259,18 +249,18 @@ if __name__ == "__main__":
 		activation_function=activation_function, regularizer=regularizer)
 	print(bold_network.summary())
 
-	input_eeg = Input(shape=eeg_input_shape)
-	input_bold = Input(shape=bold_input_shape)
+	input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
+	input_bold = tf.keras.layers.Input(shape=bold_input_shape)
 
 	processed_eeg = eeg_network(input_eeg)
 	processed_bold = bold_network(input_bold)
 
-	correlation = Lambda(correlation, 
+	correlation = tf.keras.layers.Lambda(correlation, 
 		output_shape=cos_dist_output_shape)([processed_eeg, processed_bold])
 
-	multi_modal_model = Model([input_eeg, input_bold], correlation)
+	multi_modal_model = tf.keras.Model([input_eeg, input_bold], correlation)
 
-	multi_modal_model.compile(loss=contrastive_loss, optimizer=Adam(lr=0.001))
+	multi_modal_model.compile(loss=contrastive_loss, optimizer=tf.keras.optimizers.Adam(lr=0.001))
 
 	X_train_eeg, X_train_bold, tr_y = create_eeg_bold_pairs(X_train, y_train)
 	X_test_eeg, X_test_bold, te_y = create_eeg_bold_pairs(X_test, y_test)
