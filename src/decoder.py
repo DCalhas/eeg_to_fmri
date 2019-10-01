@@ -201,7 +201,7 @@ bold_network = deep_cross_corr.bold_network(bold_input_shape, kernel_size)
 
 
 shared_eeg_train = eeg_network(tf.zeros((1, eeg_input_shape[0], eeg_input_shape[1], eeg_input_shape[2], eeg_input_shape[3])))
-input_shape = (None, shared_eeg_train[1], shared_eeg_train[2], 1)
+input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
 decoder_model = decoding_network(input_shape)
 
 multi_modal_model = multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
