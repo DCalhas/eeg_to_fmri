@@ -155,7 +155,7 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, mu
     global_step = tf.Variable(0)
 
 
-    for epoch in range(num_epochs):
+    for epoch in range(epochs):
         
         losses = custom_training_loss()
 
