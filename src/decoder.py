@@ -191,6 +191,19 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, mu
         
         print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss))
 
+eeg_input_shape = (64, 5, 20, 1)
+kernel_size = (eeg_train.shape[1], eeg_train.shape[2], 1)
+eeg_network = deep_cross_corr.eeg_network(eeg_input_shape, kernel_size)
+
+bold_input_shape = (14164, 20, 1)
+kernel_size = (bold_train.shape[1], 1)
+bold_network = deep_cross_corr.bold_network(bold_input_shape, kernel_size)
+
+shared_eeg_train = eeg_network.predict(eeg_train)
+input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
+decoder_model = decoding_network(input_shape)
+
+multi_modal_model = multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
 
 if __name__ == "__main__":
     #############################################################################################################
