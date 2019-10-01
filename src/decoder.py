@@ -261,4 +261,4 @@ if __name__ == "__main__":
         decoder_loss = losses.get_batch_decoder_loss_avg()
         encoder_loss = losses.get_batch_encoder_loss_avg()
         
-        print("Encoder Loss: ", encoder_loss, " || Decoder Loss: ", decoder_loss)
+        print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss))
