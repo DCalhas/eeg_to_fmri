@@ -36,18 +36,38 @@ import tensorflow.keras.backend as K
 import sys
 
 
+def load_data(train_instances, test_instances):
 
-mask = fmri_utils.get_population_mask()
+    mask = fmri_utils.get_population_mask()
 
-#Load Data
-eeg_train, bold_train = deep_cross_corr.get_data(list(range(14)), masker=mask)
-eeg_test, bold_test = deep_cross_corr.get_data(list(range(14, 16)), masker=mask)
+    #Load Data
+    eeg_train, bold_train = deep_cross_corr.get_data(train_instances, masker=mask)
+    eeg_test, bold_test = deep_cross_corr.get_data(test_instances, masker=mask)
 
-eeg_train = eeg_train.reshape(eeg_train.shape[0], eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
-eeg_test = eeg_test.reshape(eeg_test.shape[0], eeg_test.shape[1], eeg_test.shape[2], eeg_test.shape[3], 1)
+    eeg_train = eeg_train.reshape(eeg_train.shape[0], eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
+    eeg_test = eeg_test.reshape(eeg_test.shape[0], eeg_test.shape[1], eeg_test.shape[2], eeg_test.shape[3], 1)
 
-bold_train = bold_train.reshape(bold_train.shape[0], bold_train.shape[1], bold_train.shape[2], 1)
-bold_test = bold_test.reshape(bold_test.shape[0], bold_test.shape[1], bold_test.shape[2], 1)
+    bold_train = bold_train.reshape(bold_train.shape[0], bold_train.shape[1], bold_train.shape[2], 1)
+    bold_test = bold_test.reshape(bold_test.shape[0], bold_test.shape[1], bold_test.shape[2], 1)
+
+    return eeg_train, bold_train, eeg_test, bold_test
+
+def decoding_network(input_shape):
+    decoder_model = tf.keras.Sequential([
+        tf.keras.layers.Conv2DTranspose(1, kernel_size=(100, 1),
+                              activation='selu', strides=(3,1), input_shape=input_shape[1:]),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Conv2DTranspose(1, kernel_size=(100, 1), 
+                              activation='selu', strides=(50,1)),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ZeroPadding2D(padding=(57,0))
+    ], name="bold_synthesizer")
+
+    decoder_model.build(input_shape)
+
+    return decoder_model
+
+eeg_train, bold_train, eeg_test, bold_test = load_data(list(range(14)), list(range(14, 16)))
 
 #############################################################################################################
 #
@@ -86,17 +106,7 @@ shared_eeg_train = eeg_network.predict(eeg_train)
 #Decoder Network
 input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
 
-decoder_model = tf.keras.Sequential([
-    tf.keras.layers.Conv2DTranspose(1, kernel_size=(100, 1),
-                          activation='selu', strides=(3,1), input_shape=input_shape[1:]),
-    tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.Conv2DTranspose(1, kernel_size=(100, 1), 
-                          activation='selu', strides=(50,1)),
-    tf.keras.layers.BatchNormalization(),
-    tf.keras.layers.ZeroPadding2D(padding=(57,0))
-], name="bold_synthesizer")
-
-decoder_model.build(input_shape)
+decoder_model = decoder_network(input_shape)
 print(decoder_model.summary())
 
 
