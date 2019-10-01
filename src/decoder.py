@@ -147,6 +147,49 @@ class custom_training_loss:
         return self.encoder_loss/self.batch
 
 
+def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, epochs=10, optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), batch_size=128):
+    # keep results for plotting
+    train_loss_results = []
+    train_accuracy_results = []
+
+    global_step = tf.Variable(0)
+
+
+    for epoch in range(num_epochs):
+        
+        losses = custom_training_loss()
+
+        for batch_init in range(0, len(X_train_eeg), batch_size):
+            batch_start = batch_init
+            if(batch_start + batch_size >= len(X_train_eeg)):
+                batch_stop = len(X_train_eeg)
+            else:
+                batch_stop = batch_start + batch_size
+            
+            shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
+            
+            # Optimize the synthesizer model
+            decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
+            optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), 
+                                      global_step)
+
+            
+            #now train the compression by correlation model
+            encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
+                                                             [X_train_eeg[batch_start:batch_stop], 
+                                                                                 X_train_bold[batch_start:batch_stop]], 
+                                                             tr_y[batch_start:batch_stop], decoder_loss)
+            optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), 
+                                      global_step)
+            # Track progress
+            losses.update_batch_decoder_loss_avg(decoder_loss)
+            losses.update_batch_encoder_loss_avg(encoder_loss)
+
+        # end epoch
+        decoder_loss = losses.get_batch_decoder_loss_avg()
+        encoder_loss = losses.get_batch_encoder_loss_avg()
+        
+        print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss))
 
 
 if __name__ == "__main__":
@@ -216,49 +259,4 @@ if __name__ == "__main__":
     X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
     tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
 
-    # keep results for plotting
-    train_loss_results = []
-    train_accuracy_results = []
-
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-
-    global_step = tf.Variable(0)
-
-    num_epochs = 10
-
-    for epoch in range(num_epochs):
-        
-        losses = custom_training_loss()
-        # Training loop - using batches of 32
-        batch_size = 128
-        for batch_init in range(0, len(X_train_eeg), batch_size):
-            batch_start = batch_init
-            if(batch_start + batch_size >= len(X_train_eeg)):
-                batch_stop = len(X_train_eeg)
-            else:
-                batch_stop = batch_start + batch_size
-            
-            shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
-            
-            # Optimize the synthesizer model
-            decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
-            optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), 
-                                      global_step)
-
-            
-            #now train the compression by correlation model
-            encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
-                                                             [X_train_eeg[batch_start:batch_stop], 
-                                                                                 X_train_bold[batch_start:batch_stop]], 
-                                                             tr_y[batch_start:batch_stop], decoder_loss)
-            optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), 
-                                      global_step)
-            # Track progress
-            losses.update_batch_decoder_loss_avg(decoder_loss)
-            losses.update_batch_encoder_loss_avg(encoder_loss)
-
-        # end epoch
-        decoder_loss = losses.get_batch_decoder_loss_avg()
-        encoder_loss = losses.get_batch_encoder_loss_avg()
-        
-        print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss))
+    run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model)
