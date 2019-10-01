@@ -36,6 +36,12 @@ import tensorflow.keras.backend as K
 import sys
 
 
+#############################################################################################################
+#
+#                                           LOAD DATA FUNCTION                                       
+#
+#############################################################################################################
+
 def load_data(train_instances, test_instances):
 
     mask = fmri_utils.get_population_mask()
@@ -52,6 +58,13 @@ def load_data(train_instances, test_instances):
 
     return eeg_train, bold_train, eeg_test, bold_test
 
+#############################################################################################################
+#
+#                                           NETWORK ARCHITECTURE FUNCTIONS                                       
+#
+#############################################################################################################
+
+
 def decoding_network(input_shape):
     decoder_model = tf.keras.Sequential([
         tf.keras.layers.Conv2DTranspose(1, kernel_size=(100, 1),
@@ -67,79 +80,26 @@ def decoding_network(input_shape):
 
     return decoder_model
 
-eeg_train, bold_train, eeg_test, bold_test = load_data(list(range(14)), list(range(14, 16)))
+def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network):
+    input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
+    input_bold = tf.keras.layers.Input(shape=bold_input_shape)
+
+    # because we re-use the same instance `base_network`,
+    # the weights of the network
+    # will be shared across the two branches
+    processed_eeg = eeg_network(input_eeg)
+    processed_bold = bold_network(input_bold)
+
+    correlation = tf.keras.layers.Lambda(deep_cross_corr.correlation, 
+                         output_shape=deep_cross_corr.cos_dist_output_shape, name="correlation_layer")([processed_eeg, processed_bold])
+
+    return tf.keras.Model([input_eeg, input_bold], correlation)
 
 #############################################################################################################
 #
-#                                       EEG NETWORK BRANCH
+#                                           TRAINING FUNCTIONS                                       
 #
 #############################################################################################################
-
-#EEG network branch
-eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
-kernel_size = (eeg_train.shape[1], eeg_train.shape[2], 1)
-eeg_network = deep_cross_corr.eeg_network(eeg_input_shape, kernel_size)
-print(eeg_network.summary())
-
-#############################################################################################################
-#
-#                                       BOLD NETWORK BRANCH
-#
-#############################################################################################################
-
-#BOLD network branch
-bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
-kernel_size = (bold_train.shape[1], 1)
-bold_network = deep_cross_corr.bold_network(bold_input_shape, kernel_size)
-print(bold_network.summary())
-
-
-#############################################################################################################
-#
-#                                       DECODER NETWORK
-#
-#############################################################################################################
-
-shared_eeg_train = eeg_network.predict(eeg_train)
-
-
-#Decoder Network
-input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
-
-decoder_model = decoding_network(input_shape)
-print(decoder_model.summary())
-
-
-#############################################################################################################
-#
-#                                       MULTI MODAL NETWORK
-#
-#############################################################################################################
-
-
-input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
-input_bold = tf.keras.layers.Input(shape=bold_input_shape)
-
-# because we re-use the same instance `base_network`,
-# the weights of the network
-# will be shared across the two branches
-processed_eeg = eeg_network(input_eeg)
-processed_bold = bold_network(input_bold)
-
-correlation = tf.keras.layers.Lambda(deep_cross_corr.correlation, 
-                     output_shape=deep_cross_corr.cos_dist_output_shape, name="correlation_layer")([processed_eeg, processed_bold])
-
-multi_modal_model = tf.keras.Model([input_eeg, input_bold], correlation)
-
-
-X_train_eeg, X_train_bold, tr_y = deep_cross_corr.create_eeg_bold_pairs(eeg_train, bold_train)
-X_test_eeg, X_test_bold, te_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
-
-#convert to tensors, for the networks to accept it as input
-X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
-X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
-tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
-
 
 def loss_decoder(model, inputs, targets):
     reconstruction_loss = deep_cross_corr.cross_correlation(outputs, targets)
@@ -187,52 +147,118 @@ class custom_training_loss:
         return self.encoder_loss/self.batch
 
 
-# In[18]:
 
 
-# keep results for plotting
-train_loss_results = []
-train_accuracy_results = []
+if __name__ == "__main__":
+    #############################################################################################################
+    #
+    #                                       LOAD DATA
+    #
+    #############################################################################################################
 
-optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+    eeg_train, bold_train, eeg_test, bold_test = load_data(list(range(14)), list(range(14, 16)))
 
-global_step = tf.Variable(0)
+    #############################################################################################################
+    #
+    #                                       EEG NETWORK BRANCH
+    #
+    #############################################################################################################
 
-num_epochs = 10
+    #EEG network branch
+    eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
+    kernel_size = (eeg_train.shape[1], eeg_train.shape[2], 1)
+    eeg_network = deep_cross_corr.eeg_network(eeg_input_shape, kernel_size)
+    print(eeg_network.summary())
 
-for epoch in range(num_epochs):
-    
-    losses = custom_training_loss()
-    # Training loop - using batches of 32
-    batch_size = 128
-    for batch_init in range(0, len(X_train_eeg), batch_size):
-        batch_start = batch_init
-        if(batch_start + batch_size >= len(X_train_eeg)):
-            batch_stop = len(X_train_eeg)
-        else:
-            batch_stop = batch_start + batch_size
+    #############################################################################################################
+    #
+    #                                       BOLD NETWORK BRANCH
+    #
+    #############################################################################################################
+
+    #BOLD network branch
+    bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
+    kernel_size = (bold_train.shape[1], 1)
+    bold_network = deep_cross_corr.bold_network(bold_input_shape, kernel_size)
+    print(bold_network.summary())
+
+
+    #############################################################################################################
+    #
+    #                                       DECODER NETWORK
+    #
+    #############################################################################################################
+
+    shared_eeg_train = eeg_network.predict(eeg_train)
+
+
+    #Decoder Network
+    input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
+
+    decoder_model = decoding_network(input_shape)
+    print(decoder_model.summary())
+
+
+    #############################################################################################################
+    #
+    #                                       MULTI MODAL NETWORK
+    #
+    #############################################################################################################
+
+    multi_modal_model = multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
+
+
+    X_train_eeg, X_train_bold, tr_y = deep_cross_corr.create_eeg_bold_pairs(eeg_train, bold_train)
+    X_test_eeg, X_test_bold, te_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
+
+    #convert to tensors, for the networks to accept it as input
+    X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
+    X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
+    tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
+
+    # keep results for plotting
+    train_loss_results = []
+    train_accuracy_results = []
+
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+
+    global_step = tf.Variable(0)
+
+    num_epochs = 10
+
+    for epoch in range(num_epochs):
         
-        shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
-        
-        # Optimize the synthesizer model
-        decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
-        optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), 
-                                  global_step)
+        losses = custom_training_loss()
+        # Training loop - using batches of 32
+        batch_size = 128
+        for batch_init in range(0, len(X_train_eeg), batch_size):
+            batch_start = batch_init
+            if(batch_start + batch_size >= len(X_train_eeg)):
+                batch_stop = len(X_train_eeg)
+            else:
+                batch_stop = batch_start + batch_size
+            
+            shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
+            
+            # Optimize the synthesizer model
+            decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
+            optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), 
+                                      global_step)
 
-        
-        #now train the compression by correlation model
-        encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
-                                                         [X_train_eeg[batch_start:batch_stop], 
-                                                                             X_train_bold[batch_start:batch_stop]], 
-                                                         tr_y[batch_start:batch_stop], decoder_loss)
-        optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), 
-                                  global_step)
-        # Track progress
-        losses.update_batch_decoder_loss_avg(decoder_loss)
-        losses.update_batch_encoder_loss_avg(encoder_loss)
+            
+            #now train the compression by correlation model
+            encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
+                                                             [X_train_eeg[batch_start:batch_stop], 
+                                                                                 X_train_bold[batch_start:batch_stop]], 
+                                                             tr_y[batch_start:batch_stop], decoder_loss)
+            optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), 
+                                      global_step)
+            # Track progress
+            losses.update_batch_decoder_loss_avg(decoder_loss)
+            losses.update_batch_encoder_loss_avg(encoder_loss)
 
-    # end epoch
-    decoder_loss = losses.get_batch_decoder_loss_avg()
-    encoder_loss = losses.get_batch_encoder_loss_avg()
-    
-    print("Encoder Loss: ", encoder_loss, " || Decoder Loss: ", decoder_loss)
+        # end epoch
+        decoder_loss = losses.get_batch_decoder_loss_avg()
+        encoder_loss = losses.get_batch_encoder_loss_avg()
+        
+        print("Encoder Loss: ", encoder_loss, " || Decoder Loss: ", decoder_loss)
