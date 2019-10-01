@@ -106,7 +106,7 @@ shared_eeg_train = eeg_network.predict(eeg_train)
 #Decoder Network
 input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
 
-decoder_model = decoder_network(input_shape)
+decoder_model = decoding_network(input_shape)
 print(decoder_model.summary())
 
 
