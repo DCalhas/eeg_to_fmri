@@ -5,7 +5,7 @@ import deep_cross_corr
 
 from sklearn.model_selection import train_test_split
 
-import tensorflow.v1.compat as tf
+import tensorflow.compat.v1 as tf
 
 def main():
 
