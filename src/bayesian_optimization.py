@@ -55,7 +55,7 @@ def main():
 		model_name = 'siamese_net_lr_' + str(current_learning_rate)
 
 
-		#####################################################################################################3
+		######################################################################################################
 		#
 		#										DEFINING ARCHITECTURES
 		#
@@ -64,26 +64,25 @@ def main():
 		eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
 		kernel_size = (eeg_train.shape[1], eeg_train.shape[2], 1)
 		eeg_network = deep_cross_corr.eeg_network(eeg_input_shape, kernel_size)
-		print(eeg_network.summary())
 
 		#BOLD network branch
 		bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
 		kernel_size = (bold_train.shape[1], 1)
 		bold_network = deep_cross_corr.bold_network(bold_input_shape, kernel_size)
-		print(bold_network.summary())
 
 		#Decoder network branch
 		shared_eeg_train = eeg_network.predict(eeg_train)
-
 		input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
-
 		decoder_model = decoder.decoding_network(input_shape)
-		print(decoder_model.summary())
 
 		#Joining EEG and BOLD branches
 		multi_modal_model = decoder.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
 
-		#need to load the models and give it as parameters to the run_training function
+		######################################################################################################
+		#
+		#										RUN TRAINING SESSION
+		#
+		######################################################################################################
 		print("Starting training")
 		tf.keras.backend.clear_session()
 		decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
