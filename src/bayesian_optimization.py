@@ -40,6 +40,8 @@ def main():
 	X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
 	tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
 
+	global current_model_number
+
 	current_model_number = 0
 
 	def bayesian_optimization_function(x):
