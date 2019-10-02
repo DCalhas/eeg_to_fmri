@@ -97,7 +97,7 @@ def main():
 
 		print("Model: " + model_name +
 		' | Validation Loss: ' + str(validation_loss))
-		K.clear_session()
+		tf.keras.backend.clear_session()
 		return validation_loss
 
 	optimizer = GPyOpt.methods.BayesianOptimization(
