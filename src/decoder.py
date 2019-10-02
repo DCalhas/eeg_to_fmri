@@ -203,6 +203,9 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
             "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
 
+    shared_eeg_val = eeg_network(X_val_eeg)
+    return loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
+
 eeg_input_shape = (64, 5, 20, 1)
 kernel_size = (eeg_input_shape[1], eeg_input_shape[2], 1)
 eeg_network = deep_cross_corr.eeg_network(eeg_input_shape, kernel_size)
