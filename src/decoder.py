@@ -101,7 +101,7 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
 #
 #############################################################################################################
 
-def loss_decoder(model, inputs, targets):
+def loss_decoder(outputs, targets):
     reconstruction_loss = deep_cross_corr.cross_correlation(outputs, targets)
     return K.mean(reconstruction_loss)
 
@@ -147,10 +147,17 @@ class custom_training_loss:
         return self.encoder_loss/self.batch
 
 
-def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, epochs=10, optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), batch_size=128):
+def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
+    decoder_model, multi_modal_model, epochs=10, 
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), batch_size=128,
+    X_val_eeg=None, X_val_bold=None, tv_y=None):
     # keep results for plotting
-    train_loss_results = []
-    train_accuracy_results = []
+
+    validation = False
+    if(len(X_val_eeg) and len(X_val_bold) and len(tv_y)):
+        validation_loss_results = []
+        validation_accuracy_results = []
+        validation = True
 
     global_step = tf.Variable(0)
 
@@ -188,8 +195,13 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, mu
         # end epoch
         decoder_loss = losses.get_batch_decoder_loss_avg()
         encoder_loss = losses.get_batch_encoder_loss_avg()
+
+        #get validation analyses
+        shared_eeg_val = eeg_network(X_val_eeg)
+        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
         
-        print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss))
+        print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
+            "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
 
 eeg_input_shape = (64, 5, 20, 1)
 kernel_size = (eeg_input_shape[1], eeg_input_shape[2], 1)
