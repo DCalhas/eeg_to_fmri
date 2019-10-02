@@ -55,9 +55,11 @@ def main():
 
 		global current_model_number
 		current_model_number += 1
-	
+
+		#need to load the models and give it as parameters to the run_training function
+		print("Starting training")
 		tf.keras.backend.clear_session()
-		run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
+		decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
 			epochs=10, optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
 			batch_size=128)
 
@@ -65,7 +67,7 @@ def main():
 			evaluation_accuracy = 0
 		else:
 			# Load the weights with best validation accuracy
-			siamese_network.model.load_weights('models/' + model_name + '.h5')
+			decoder.model.load_weights('models/' + model_name + '.h5')
 		print("Model: " + model_name +
 		' | Accuracy: ' + str(evaluation_accuracy))
 		K.clear_session()
@@ -74,6 +76,7 @@ def main():
 	optimizer = GPyOpt.methods.BayesianOptimization(
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
+	print("Started Optimization Process")
 	optimizer.run_optimization(max_iter=100)
 
 	print("optimized parameters: {0}".format(optimizer.x_opt))
