@@ -7,6 +7,8 @@ from sklearn.model_selection import train_test_split
 
 import tensorflow.compat.v1 as tf
 
+import numpy as np
+
 def main():
 
 	hyperparameters = [{'name': 'learning_rate', 'type': 'continuous',
