@@ -155,8 +155,6 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
 
     validation = False
     if(len(X_val_eeg) and len(X_val_bold) and len(tv_y)):
-        validation_loss_results = []
-        validation_accuracy_results = []
         validation = True
 
     global_step = tf.Variable(0)
@@ -204,7 +202,7 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
 
     shared_eeg_val = eeg_network(X_val_eeg)
-    return loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
+    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
 
 eeg_input_shape = (64, 5, 20, 1)
 kernel_size = (eeg_input_shape[1], eeg_input_shape[2], 1)
