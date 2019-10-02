@@ -88,22 +88,17 @@ def main():
 		######################################################################################################
 		print("Starting training")
 		tf.keras.backend.clear_session()
-		decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
+		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
 			epochs=10, optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
 			batch_size=128,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
 			tv_y=tv_y)
 
-		if validation_accuracy == 0:
-			evaluation_accuracy = 0
-		else:
-			# Load the weights with best validation accuracy
-			decoder.model.load_weights('models/' + model_name + '.h5')
 		print("Model: " + model_name +
-		' | Accuracy: ' + str(evaluation_accuracy))
+		' | Validation Loss: ' + str(validation_loss))
 		K.clear_session()
-		return 1 - evaluation_accuracy
+		return validation_loss
 
 	optimizer = GPyOpt.methods.BayesianOptimization(
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
