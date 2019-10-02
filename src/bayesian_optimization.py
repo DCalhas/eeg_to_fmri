@@ -33,12 +33,15 @@ def main():
 	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
 		
 	X_train_eeg, X_train_bold, tr_y = deep_cross_corr.create_eeg_bold_pairs(eeg_train, bold_train)
-	X_test_eeg, X_test_bold, te_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
+	X_val_eeg, X_val_bold, tv_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
 
 	#convert to tensors, for the networks to accept it as input
 	X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
 	X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
 	tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
+	X_val_eeg = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
+	X_val_bold = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
+	tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
 
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
@@ -87,7 +90,10 @@ def main():
 		tf.keras.backend.clear_session()
 		decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
 			epochs=10, optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
-			batch_size=128)
+			batch_size=128,
+			X_val_eeg=X_val_eeg,
+			X_val_bold=X_val_bold,
+			tv_y=tv_y)
 
 		if validation_accuracy == 0:
 			evaluation_accuracy = 0
