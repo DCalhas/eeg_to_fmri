@@ -23,10 +23,14 @@ def main():
 	'domain': (0.0, 1.0)}]
 
 	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(14)), list(range(14, 16)))
-		
+	
+	print("Finished Loading Data")
+
 	X_train_eeg, X_train_bold, tr_y = deep_cross_corr.create_eeg_bold_pairs(eeg_train, bold_train)
 	X_val_eeg, X_val_bold, tv_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
 
+	print("Pairs Created")
+	
 	#convert to tensors, for the networks to accept it as input
 	X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
 	X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
@@ -91,7 +95,7 @@ def main():
 			tv_y=tv_y)
 
 		print("Model: " + model_name +
-		' Train Intances: ' + len(X_train_bold) + ' | Validation Instances: ' + len(X_val_bold) +  ' | Validation Loss: ' + str(validation_loss))
+		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
 		tf.keras.backend.clear_session()
 		return validation_loss
 
