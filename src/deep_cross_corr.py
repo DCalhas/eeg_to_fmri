@@ -116,19 +116,19 @@ def eeg_network(input_shape, kernel_size, output_dim=20, activation_function='se
 	model.add(tf.keras.layers.Conv3D(1, kernel_size=(2, 2, kernel_size[2]),
 		activation=activation_function, strides=(1,2,1),
 		input_shape=input_shape, kernel_regularizer=regularizer, 
-		bias_regularizer=regularizer, activity_regularizer=regularizer))
+		bias_regularizer=regularizer))
 	model.add(tf.keras.layers.BatchNormalization())
 
 	model.add(tf.keras.layers.Conv3D(1, kernel_size=(2, 2, kernel_size[2]),
 		activation=activation_function, strides=(1,2,1),
 		kernel_regularizer=regularizer, 
-		bias_regularizer=regularizer, activity_regularizer=regularizer))
+		bias_regularizer=regularizer))
 	model.add(tf.keras.layers.BatchNormalization())
 
 	model.add(tf.keras.layers.Conv3D(1, kernel_size=(2, 1, kernel_size[2]),
 		activation=activation_function, strides=(1,1,1),
 		kernel_regularizer=regularizer, 
-		bias_regularizer=regularizer, activity_regularizer=regularizer))
+		bias_regularizer=regularizer))
 	model.add(tf.keras.layers.BatchNormalization())
 
 	model.add(tf.keras.layers.Reshape((61, 20, 1)))
@@ -141,13 +141,13 @@ def bold_network(input_shape, kernel_size, output_dim=20, activation_function='s
 	model.add(tf.keras.layers.Conv2D(1, kernel_size=(100, kernel_size[1]),
 		activation=activation_function, strides=(50,1),
 		input_shape=input_shape, kernel_regularizer=regularizer, 
-		bias_regularizer=regularizer, activity_regularizer=regularizer))
+		bias_regularizer=regularizer))
 	model.add(tf.keras.layers.BatchNormalization())
 
 	model.add(tf.keras.layers.Conv2D(1, kernel_size=(100, kernel_size[1]),
 		activation=activation_function, strides=(3,1),
 		kernel_regularizer=regularizer, 
-		bias_regularizer=regularizer, activity_regularizer=regularizer))
+		bias_regularizer=regularizer))
 	model.add(tf.keras.layers.BatchNormalization())
 
 	return model

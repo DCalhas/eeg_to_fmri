@@ -13,19 +13,11 @@ def main():
 
 	hyperparameters = [{'name': 'learning_rate', 'type': 'continuous',
 	'domain': (10e-6, 10e-3)},
-	{'name': 'l1_penalization_eeg_1', 'type': 'continuous',
+	{'name': 'l1_penalization_eeg', 'type': 'continuous',
 	'domain': (10e-4, 10e-1)},
-	{'name': 'l1_penalization_eeg_2', 'type': 'continuous',
+	{'name': 'l1_penalization_bold', 'type': 'continuous',
 	'domain': (10e-4, 10e-1)},
-	{'name': 'l1_penalization_eeg_3', 'type': 'continuous',
-	'domain': (10e-4, 10e-1)},
-	{'name': 'l1_penalization_bold_1', 'type': 'continuous',
-	'domain': (10e-4, 10e-1)},
-	{'name': 'l1_penalization_bold_2', 'type': 'continuous',
-	'domain': (10e-4, 10e-1)},
-	{'name': 'l1_penalization_decoder_1', 'type': 'continuous',
-	'domain': (10e-4, 10e-1)},
-	{'name': 'l1_penalization_decoder_2', 'type': 'continuous',
+	{'name': 'l1_penalization_decoder', 'type': 'continuous',
 	'domain': (10e-4, 10e-1)},
 	{'name': 'loss_coefficient', 'type': 'continuous',
 	'domain': (0.0, 1.0)}]
@@ -45,13 +37,9 @@ def main():
 
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
-		current_l1_penalization_eeg_1 = float(x[:, 1])
-		current_l1_penalization_eeg_2 = float(x[:, 2])
-		current_l1_penalization_eeg_3 = float(x[:, 3])
-		current_l1_penalization_bold_1 = float(x[:, 4])
-		current_l1_penalization_bold_2 = float(x[:, 5])
-		current_l1_penalization_decoder_1 = float(x[:, 6])
-		current_l1_penalization_decoder_2 = float(x[:, 7])
+		current_l1_penalization_eeg = float(x[:, 1])
+		current_l1_penalization_bold = float(x[:, 4])
+		current_l1_penalization_decoder = float(x[:, 6])
 		current_loss_coefficient = float(x[:, 8])
 
 
@@ -66,17 +54,17 @@ def main():
 		#EEG network branch
 		eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
 		kernel_size = (eeg_train.shape[1], eeg_train.shape[2], 1)
-		eeg_network = deep_cross_corr.eeg_network(eeg_input_shape, kernel_size)
+		eeg_network = deep_cross_corr.eeg_network(eeg_input_shape, kernel_size, regularizer=tf.keras.regularizers.l1(current_l1_penalization_eeg))
 
 		#BOLD network branch
 		bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
 		kernel_size = (bold_train.shape[1], 1)
-		bold_network = deep_cross_corr.bold_network(bold_input_shape, kernel_size)
+		bold_network = deep_cross_corr.bold_network(bold_input_shape, kernel_size, regularizer=tf.keras.regularizers.l1(current_l1_penalization_bold))
 
 		#Decoder network branch
 		shared_eeg_train = eeg_network.predict(eeg_train)
 		input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
-		decoder_model = decoder.decoding_network(input_shape)
+		decoder_model = decoder.decoding_network(input_shape, regularizer=tf.keras.regularizers.l1(current_l1_penalization_decoder))
 
 		#Joining EEG and BOLD branches
 		multi_modal_model = decoder.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
@@ -89,7 +77,8 @@ def main():
 		print("Starting training")
 		tf.keras.backend.clear_session()
 		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
-			epochs=10, optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+			epochs=10, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
+			linear_combination=current_loss_coefficient,
 			batch_size=128,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,

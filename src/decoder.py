@@ -65,13 +65,17 @@ def load_data(train_instances, test_instances):
 #############################################################################################################
 
 
-def decoding_network(input_shape):
+def decoding_network(input_shape, regularizer=tf.keras.regularizers.l1(0.001)):
     decoder_model = tf.keras.Sequential([
         tf.keras.layers.Conv2DTranspose(1, kernel_size=(100, 1),
-                              activation='selu', strides=(3,1), input_shape=input_shape[1:]),
+            activation='selu', strides=(3,1), input_shape=input_shape[1:],
+            kernel_regularizer=regularizer, 
+            bias_regularizer=regularizer),
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.Conv2DTranspose(1, kernel_size=(100, 1), 
-                              activation='selu', strides=(50,1)),
+            activation='selu', strides=(50,1),
+            kernel_regularizer=regularizer, 
+            bias_regularizer=regularizer),
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.ZeroPadding2D(padding=(57,0))
     ], name="bold_synthesizer")
@@ -114,16 +118,16 @@ def grad_decoder(model, inputs, targets):
         #loss
         reconstruction_loss = deep_cross_corr.cross_correlation(outputs, targets)
         reconstruction_loss = K.mean(reconstruction_loss)
-        return -reconstruction_loss,  tape.gradient(-reconstruction_loss, model.trainable_weights)
+        return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
 
-def grad_multi_encoder(model, inputs, targets, reconstruction_loss):
+def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combination):
     with tf.GradientTape() as tape:    
         tape.watch(inputs)
         outputs = model(inputs)
         
         #loss
-        encoder_loss = abs(deep_cross_corr.contrastive_loss(outputs, targets)) + abs(reconstruction_loss)
-        return -encoder_loss,  tape.gradient(-encoder_loss, 
+        encoder_loss = linear_combination*abs(deep_cross_corr.contrastive_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
+        return encoder_loss,  tape.gradient(encoder_loss, 
                                             model.trainable_weights)
 
 class custom_training_loss:
@@ -149,7 +153,9 @@ class custom_training_loss:
 
 def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
     decoder_model, multi_modal_model, epochs=10, 
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), batch_size=128,
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    linear_combination=0.5, 
+    batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None):
     # keep results for plotting
 
@@ -183,7 +189,7 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
                                                              [X_train_eeg[batch_start:batch_stop], 
                                                                                  X_train_bold[batch_start:batch_stop]], 
-                                                             tr_y[batch_start:batch_stop], decoder_loss)
+                                                             tr_y[batch_start:batch_stop], decoder_loss, linear_combination)
             optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), 
                                       global_step)
             # Track progress
