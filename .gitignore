@@ -2,3 +2,6 @@ datasets
 src/gan_demos
 src/notebooks/.ipynb_checkpoints/
 src/__pycache__/
+no_nas_params.txt
+out_corr.txt
+process.txt
