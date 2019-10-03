@@ -36,7 +36,7 @@ def main():
 	tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
 
 	normalization = tf.keras.layers.BatchNormalization(axis=-1, input_shape=(None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]))
-	normalization = tf.keras.Model((None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]), normalization)
+	#normalization = tf.keras.Model((None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]), normalization)
 
 	X_train_bold = normalization(X_train_bold)
 	X_val_bold = normalization(X_val_bold)
