@@ -83,7 +83,7 @@ def main():
 		print("Starting training")
 		tf.keras.backend.clear_session()
 		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
-			epochs=10, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
+			epochs=100, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 			linear_combination=current_loss_coefficient,
 			batch_size=128,
 			X_val_eeg=X_val_eeg,
