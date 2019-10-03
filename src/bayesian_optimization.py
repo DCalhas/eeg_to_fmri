@@ -38,9 +38,9 @@ def main():
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
 		current_l1_penalization_eeg = float(x[:, 1])
-		current_l1_penalization_bold = float(x[:, 4])
-		current_l1_penalization_decoder = float(x[:, 6])
-		current_loss_coefficient = float(x[:, 8])
+		current_l1_penalization_bold = float(x[:, 2])
+		current_l1_penalization_decoder = float(x[:, 3])
+		current_loss_coefficient = float(x[:, 4])
 
 
 		model_name = 'siamese_net_lr_' + str(current_learning_rate)
