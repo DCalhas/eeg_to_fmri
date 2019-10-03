@@ -22,7 +22,7 @@ def main():
 	{'name': 'loss_coefficient', 'type': 'continuous',
 	'domain': (0.0, 1.0)}]
 
-	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
+	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(14)), list(range(14, 16)))
 		
 	X_train_eeg, X_train_bold, tr_y = deep_cross_corr.create_eeg_bold_pairs(eeg_train, bold_train)
 	X_val_eeg, X_val_bold, tv_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
@@ -91,7 +91,7 @@ def main():
 			tv_y=tv_y)
 
 		print("Model: " + model_name +
-		' | Validation Loss: ' + str(validation_loss))
+		' Train Intances: ' + len(X_train_bold) + ' | Validation Instances: ' + len(X_val_bold) +  ' | Validation Loss: ' + str(validation_loss))
 		tf.keras.backend.clear_session()
 		return validation_loss
 
