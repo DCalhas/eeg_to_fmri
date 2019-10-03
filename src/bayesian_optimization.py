@@ -12,13 +12,13 @@ import numpy as np
 def main():
 
 	hyperparameters = [{'name': 'learning_rate', 'type': 'continuous',
-	'domain': (10e-6, 10e-3)},
+	'domain': (10e-6, 10e-2)},
 	{'name': 'l1_penalization_eeg', 'type': 'continuous',
-	'domain': (10e-4, 10e-1)},
+	'domain': (10e-5, 10e-1)},
 	{'name': 'l1_penalization_bold', 'type': 'continuous',
-	'domain': (10e-4, 10e-1)},
+	'domain': (10e-5, 10e-1)},
 	{'name': 'l1_penalization_decoder', 'type': 'continuous',
-	'domain': (10e-4, 10e-1)},
+	'domain': (10e-5, 10e-1)},
 	{'name': 'loss_coefficient', 'type': 'continuous',
 	'domain': (0.0, 1.0)}]
 
@@ -95,8 +95,8 @@ def main():
 	print("Started Optimization Process")
 	optimizer.run_optimization(max_iter=100)
 
-	print("optimized parameters: {0}".format(optimizer.x_opt))
-	print("optimized eval_accuracy: {0}".format(1 - optimizer.fx_opt))
+	print("Optimized Parameters: {0}".format(optimizer.x_opt))
+	print("Optimized Validation Decoder Loss: {0}".format(optimizer.fx_opt))
 
 
 if __name__ == "__main__":
