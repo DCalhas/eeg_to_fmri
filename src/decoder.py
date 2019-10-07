@@ -210,20 +210,20 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     shared_eeg_val = eeg_network(X_val_eeg)
     return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
 
-eeg_input_shape = (64, 5, 20, 1)
-kernel_size = (eeg_input_shape[1], eeg_input_shape[2], 1)
-eeg_network = deep_cross_corr.eeg_network(eeg_input_shape, kernel_size)
+#eeg_input_shape = (64, 5, 20, 1)
+#kernel_size = (eeg_input_shape[1], eeg_input_shape[2], 1)
+#eeg_network = deep_cross_corr.eeg_network(eeg_input_shape, kernel_size)
 
-bold_input_shape = (14164, 20, 1)
-kernel_size = (bold_input_shape[1], 1)
-bold_network = deep_cross_corr.bold_network(bold_input_shape, kernel_size)
+#bold_input_shape = (14164, 20, 1)
+#kernel_size = (bold_input_shape[1], 1)
+#bold_network = deep_cross_corr.bold_network(bold_input_shape, kernel_size)
 
 
-shared_eeg_train = eeg_network(tf.zeros((1, eeg_input_shape[0], eeg_input_shape[1], eeg_input_shape[2], eeg_input_shape[3])))
-input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
-decoder_model = decoding_network(input_shape)
+#shared_eeg_train = eeg_network(tf.zeros((1, eeg_input_shape[0], eeg_input_shape[1], eeg_input_shape[2], eeg_input_shape[3])))
+#input_shape = (None, shared_eeg_train.shape[1], shared_eeg_train.shape[2], 1)
+#decoder_model = decoding_network(input_shape)
 
-multi_modal_model = multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
+#multi_modal_model = multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
 
 if __name__ == "__main__":
     #############################################################################################################
