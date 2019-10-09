@@ -8,6 +8,8 @@ from tensorflow.python.keras.utils import conv_utils
 import gen_dims_utils
 
 import bayesian_optimization
+
+
 layers = [tf.keras.layers.Dense, tf.keras.layers.Conv2D, tf.keras.layers.Conv2DTranspose, 
 								tf.keras.layers.Conv3D, tf.keras.layers.Conv3DTranspose]
 
@@ -24,38 +26,70 @@ class Multi_Modal_Model:
 		return np.amax(np.array([self.eeg_encoder.get_depth(), self.bold_encoder.get_depth(), self.decoder.get_depth()]))
 
 	def build_eeg(self, input_shape, output_shape):
-		print("BUIDLING", output_shape)
+		print("BUIDLING EEG ENCODER", output_shape)
 
 		return self.eeg_encoder.build_net(input_shape, output_shape, verbose=True)
 
+	def build_bold(self, input_shape, output_shape):
+		print("BUIDLING BOLD ENCODER", output_shape)
+
+		return self.bold_encoder.build_net(input_shape, output_shape, verbose=True)
+
+	def build_decoder(self, input_shape, output_shape):
+		print("BUIDLING DECODER", output_shape)
+
+		return self.decoder.build_net(input_shape, output_shape, verbose=True)
+
+	#######################################################################################################################
+	#
+	#							OUTPUT DIMENSION OF NEW LAYERS ARE SUBJECT TO OPTIMIZATION HERE
+	#
+	#######################################################################################################################
 	def BO(self):
 		print(self.eeg_encoder.get_layers())
 		print(self.bold_encoder.get_layers())
 		print(self.decoder.get_layers())
 
 
-		#DEFINE NEW SHAPE DOMAIN
 		domain = []
 
 		dilation_factor = 3
-		if(self.eeg_encoder.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
-			for i in range(int(64*5), int(64*5)*dilation_factor, 10):
-				domain += [i]
+
+		print(self.eeg_encoder, self.bold_encoder)
+
+		#DEFINE NEW SHAPE DOMAIN - FIRST LEVEL DOMAIN
+		if(self.get_level() == 1):
+			if(self.eeg_encoder.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
+				for i in range(int(64*5), int(64*5)*dilation_factor, 10):
+					domain += [i]
+			else:
+				for i in range(10, int(64*5), 10):
+					domain += [i]
+
+			output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',
+			'domain': tuple(domain)}
+
+		#DEFINE NEW SHAPE DOMAIN - SECOND LEVEL DOMAIN - DOMAIN FOR ENCODERS AND DECODER SEPARATE
 		else:
-			for i in range(10, int(64*5), 10):
-				domain += [i]
-		
-		output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',
-		'domain': tuple(domain)}
+			print("BUILD DOMAINS FOR EACH BRANCH OF THE NETWORK")
 
-		print(domain)
+			eeg_domain = self.eeg_encoder.get_hidden_domain()
+			bold_domain = self.bold_encoder.get_hidden_domain()
+			decoder_domain = self.decoder.get_hidden_domain()
 
-		bayesian_optimization.NAS_BO(self, output_shape_domain)
+		new_output_shape, loss = bayesian_optimization.NAS_BO(self, [output_shape_domain])
 
-		new_output_shape = (40, 5, 20, 1)
+		new_output_shape = (int(new_output_shape), 20, 1)
+
+		print(self.eeg_encoder, self.bold_encoder)
 		self.eeg_encoder.add_output_shape(new_output_shape)
+		print(self.eeg_encoder.get_output_shapes())
+		self.bold_encoder.add_output_shape(new_output_shape)
+		print(self.bold_encoder.get_output_shapes())
+		#self.decoder.add_output_shape(new_output_shape)
+
 		print("RUNNING BO")
-		return 0.0
+		return loss
 
 
 class Neural_Architecture:
@@ -71,6 +105,9 @@ class Neural_Architecture:
 	def add_output_shape(self, output_shape):
 		self.output_shapes += [output_shape]
 
+	def get_output_shapes(self):
+		return self.output_shapes
+
 	def get_layers(self):
 		return self.layers
 
@@ -79,13 +116,6 @@ class Neural_Architecture:
 
 	def get_depth(self):
 		return len(self.get_layers())
-
-	#gives dimensions to be optimized
-	def possible_dimensions_domains_bo(self):
-		dimensions = []
-
-
-		return dimensions
 
 	def possible_next_layers(self):
 		last_layer = self.get_last_layer()
@@ -111,23 +141,44 @@ class Neural_Architecture:
 	def remove_last_layer(self):
 		return []
 
+
+	#######################################################################################################################
+	#
+	#							GET DOMAIN TO BE EXPLORED BY BO FOR HIDDEN LAYER OUTPUT DIMENSION
+	#
+	#######################################################################################################################
+	def get_hidden_domain(self, dilation_factor=3):
+		domain = []
+
+		print(self.output_shapes)
+		print(self.get_layers())
+
+		if(self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
+			for i in range(int(64*5), int(64*5)*dilation_factor, 10):
+				domain += [i]
+		else:
+			for i in range(10, int(64*5), 10):
+				domain += [i]
+
+		return {'name': 'eeg_shape_domain', 'type': 'discrete', 
+								'domain': tuple(domain)}
+
 	#build sequential model with the layers
-	def build_net(self, input_shape, output_shape, verbose=False):
+	def build_net(self, input_shape, hidden_output_shape, verbose=False):
 		model = tf.keras.Sequential()
 
-		print(input_shape, output_shape)
+		model.add(self.get_layers()[0](input_shape, hidden_output_shape))
 
-		for layer in range(len(self.get_layers()[:-1])):
-			print(self.get_layers()[layer])
-			model.add(self.get_layers()[layer](input_shape, self.output_shapes[layer]))
-			input_shape = self.output_shapes[layer]
+		hidden_input_shape = hidden_output_shape
 
-		if(type(self.get_layers()[0](input_shape, output_shape)) is tuple):
-			first, second = self.get_layers()[0](input_shape, output_shape)
-			model.add(first)
-			model.add(second)
-		else:
-			model.add(self.get_layers()[0](input_shape, output_shape))
+		for layer in range(len(self.get_layers()[1:])):
+			model.add(self.get_layers()[layer](hidden_input_shape, self.output_shapes[layer]))
+			hidden_input_shape = self.output_shapes[layer]
+
+		#we know we want to go to 2D space, so if the EEG branch is still with 3D, reshape is needed
+		if(len(hidden_input_shape) == 3 and len(input_shape) == 4):
+			model.add(tf.keras.layers.Reshape(hidden_input_shape))
+
 
 		model.build(input_shape=input_shape)
 
@@ -179,6 +230,8 @@ class Iterative_Naive_NAS:
 		else:
 			possible = gen_dims_utils.get_possible_kernel_size_deconv(input_shape[0], output_shape[0])
 
+			pos = list(range(len(possible)))
+			
 			generated_kernel_stride = possible[np.random.choice(pos)]
 
 			return {'kernel': (generated_kernel_stride[0],),
@@ -276,6 +329,8 @@ class Iterative_Naive_NAS:
 	#
 	#													Iterative Neural Architecture Search
 	#
+	#									Types of layers are added and subjected to Bayesian Optimization
+	#
 	######################################################################################################################################
 
 
@@ -305,7 +360,7 @@ class Iterative_Naive_NAS:
 				del decoder_queue[-1]
 
 
-				for layer in [core_layers[3], core_layers[4]]:
+				for layer in [core_layers[4]]:#[core_layers[3], core_layers[4]]:
 					eeg_queue += [Neural_Architecture(layers=[layer])]
 
 				for layer in bold_layers:
@@ -343,7 +398,8 @@ class Iterative_Naive_NAS:
 				del eeg_queue[-1]
 
 				for layer in possible_layers:
-					new_architecture = Neural_Architecture(layers=[core_layers[layer]] + last_element_eeg.get_layers())
+					new_architecture = Neural_Architecture(layers=[core_layers[layer]] + last_element_eeg.get_layers(), 
+						output_shapes=last_element_eeg.get_output_shapes())
 
 				eeg_queue = eeg_queue + [new_architecture]
 
@@ -354,7 +410,8 @@ class Iterative_Naive_NAS:
 				del bold_queue[-1]
 
 				for layer in possible_layers:
-					new_architecture = Neural_Architecture(layers=[core_layers[layer]] + last_element_bold.get_layers())
+					new_architecture = Neural_Architecture(layers=[core_layers[layer]] + last_element_bold.get_layers(), 
+						output_shapes=last_element_bold.get_output_shapes())
 
 				bold_queue = bold_queue + [new_architecture]
 
@@ -365,7 +422,8 @@ class Iterative_Naive_NAS:
 				del decoder_queue[-1]
 
 				for layer in possible_layers:
-					new_architecture = Neural_Architecture(layers=[core_layers[layer]] + last_element_decoder.get_layers())
+					new_architecture = Neural_Architecture(layers=[core_layers[layer]] + last_element_decoder.get_layers(), 
+						output_shapes=last_element_decoder.get_output_shapes())
 
 				decoder_queue = decoder_queue + [new_architecture]
 
@@ -384,11 +442,11 @@ if __name__ == "__main__":
 
 	eeg_input_shape = (64, 5, 20, 1)
 	bold_input_shape = (14000, 20, 1)
-	#nas.search(eeg_input_shape, bold_input_shape)
+	nas.search(eeg_input_shape, bold_input_shape)
 	#print(nas.generate_layer_Conv3DTranspose((10, 10, 10, 1), (30, 30, 30, 1)))
 	#print(nas.generate_kernel_stride_Conv2D((10, 10, 1), (5, 5, 1)))
 
-	model = tf.keras.Sequential()
-	model.add(nas.build_layer_Conv3DTranspose((5, 5, 20, 1), (35, 20, 1)))
-	model.add(tf.keras.layers.Reshape((35, 20, 1)))
-	print(model.summary())
+	#model = tf.keras.Sequential()
+	#model.add(nas.build_layer_Conv3DTranspose((5, 5, 20, 1), (35, 35, 20, 1)))
+	#model.add(tf.keras.layers.Reshape((35, 20, 1)))
+	#print(model.summary())

@@ -9,14 +9,18 @@ def get_possible_kernel_size_conv(input_shape, output_shape):
 	for stride in range(1, input_shape):
 		for kernel in range(1, input_shape):
 
-			new_dim = conv_utils.conv_output_length(input_shape, 
-				kernel, 
-				padding='valid', 
-				stride=stride)
+			#new_dim = conv_utils.conv_output_length(input_shape, 
+				#kernel, 
+				#padding='valid', 
+				#stride=stride)
 
 			#only accept dim = output desired and that are bigger than half the 
-			if(new_dim == output_shape and kernel >= stride):
+			if( ((input_shape - kernel + stride) // stride) == output_shape and 
+				kernel >= stride):
 				possible_combinations += [(kernel, stride)]
+				#fix this, it takes to much time trying it for all the points
+				#wrapper to return first valid kernel and stride combination
+				return possible_combinations
 
 	return possible_combinations
 
@@ -31,43 +35,28 @@ def get_possible_kernel_size_deconv(input_shape, output_shape):
 	#
 	##################################################################################################################
 	if(type(input_shape) is tuple):
-		for stride_0 in range(1, input_shape[0]):
-			for kernel_0 in range(1, input_shape[0]):
-				for stride_1 in range(1, input_shape[1]):
-					for kernel_1 in range(1, input_shape[1]):
-
-						new_dim_0 = conv_utils.deconv_output_length(input_shape[0], 
-							kernel_0, 
-							padding='valid', 
-							output_padding=None, 
-							stride=stride_0, 
-							dilation=1)
-
-						new_dim_1 = conv_utils.deconv_output_length(input_shape[1], 
-							kernel_1, 
-							padding='valid', 
-							output_padding=None, 
-							stride=stride_1, 
-							dilation=1)
-
+		for stride_0 in range(1, output_shape):
+			for kernel_0 in range(1, output_shape):
+				for stride_1 in range(1, output_shape):
+					for kernel_1 in range(1, output_shape):
 						#only accept dim = output desired and that are bigger than half the 
-						if(new_dim_0*new_dim_1 == output_shape and (kernel_0 >= stride_0 and kernel_1 >= stride_1)):
+						if((input_shape[0] * stride_0 + max(kernel_0 - stride_0, 0))*(input_shape[1] * stride_1 + max(kernel_1 - stride_1, 0)) == output_shape and 
+							(kernel_0 >= stride_0 and kernel_1 >= stride_1)):
 							possible_combinations += [((kernel_0, kernel_1), (stride_0, stride_1))]
+							#fix this, it takes to much time trying it for all the points
+							#wrapper to return first valid kernel and stride combination
+							return possible_combinations
 
 	else:
-		for stride in range(1, input_shape):
-			for kernel in range(1, input_shape):
-
-				new_dim = conv_utils.deconv_output_length(input_shape, 
-					kernel, 
-					padding='valid', 
-					output_padding=None, 
-					stride=stride, 
-					dilation=1)
+		for stride in range(1, output_shape):
+			for kernel in range(1, output_shape):
 
 				#only accept dim = output desired and that are bigger than half the 
-				if(new_dim == output_shape and kernel >= stride):
+				if(input_shape * stride + max(kernel - stride, 0) == output_shape and kernel >= stride):
 					possible_combinations += [(kernel, stride)]
+					#fix this, it takes to much time trying it for all the points
+					#wrapper to return first valid kernel and stride combination
+					return possible_combinations
 
 	return possible_combinations
 

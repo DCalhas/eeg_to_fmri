@@ -41,7 +41,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
 
-	hyperparameters += [output_shape_domain]
+	hyperparameters += output_shape_domain
 
 
 	
@@ -90,14 +90,17 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 		#BOLD network branch
 		bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
-		bold_network = multi_modal_instance.build_bold(current_shape)
+		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_shape)
 
 		#Decoder network branch
 		shared_eeg_train = eeg_network.predict(eeg_train)
 
+		decoder_network = multi_modal_instance.build_decoder(current_shape, bold_input_shape)
+
 		#Joining EEG and BOLD branches
 		multi_modal_model = decoder.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
 
+		#define the decoder_network/synthesizer_net
 
 		return 0.5
 
@@ -129,6 +132,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 	print("Optimized Parameters: {0}".format(optimizer.x_opt))
 	print("Optimized Validation Decoder Loss: {0}".format(optimizer.fx_opt))
+
+	return optimizer.x_opt[-1], optimizer.fx_opt
 
 
 
