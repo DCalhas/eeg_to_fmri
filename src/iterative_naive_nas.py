@@ -33,7 +33,24 @@ class Multi_Modal_Model:
 		print(self.bold_encoder.get_layers())
 		print(self.decoder.get_layers())
 
-		bayesian_optimization.NAS_BO(self)
+
+		#DEFINE NEW SHAPE DOMAIN
+		domain = []
+
+		dilation_factor = 3
+		if(self.eeg_encoder.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
+			for i in range(int(64*5), int(64*5)*dilation_factor, 10):
+				domain += [i]
+		else:
+			for i in range(10, int(64*5), 10):
+				domain += [i]
+		
+		output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',
+		'domain': tuple(domain)}
+
+		print(domain)
+
+		bayesian_optimization.NAS_BO(self, output_shape_domain)
 
 		new_output_shape = (40, 5, 20, 1)
 		self.eeg_encoder.add_output_shape(new_output_shape)
@@ -72,15 +89,22 @@ class Neural_Architecture:
 
 	def possible_next_layers(self):
 		last_layer = self.get_last_layer()
+		#0-Dense
+		#1-Conv2D
+		#2-Conv2DTranspose
+		#3-Conv3D
+		#4-Conv3DTranspose
+
 
 		if(last_layer.__name__ == "build_layer_Conv3D"):
-			return [0, 1, 3]
+			return [1, 3]
+		elif(last_layer.__name__ == "build_layer_Conv3DTranspose"):
+			return [4]
 		elif(last_layer.__name__ == "build_layer_Conv2DTranspose"):
-			return [0, 2]
+			return [2]
 		elif(last_layer.__name__ == "build_layer_Conv2D"):
-			return [0, 1]
+			return [1]
 		else:
-			#Dense case
 			return [0]
 
 	#remove last layer
@@ -91,12 +115,12 @@ class Neural_Architecture:
 	def build_net(self, input_shape, output_shape, verbose=False):
 		model = tf.keras.Sequential()
 
+		print(input_shape, output_shape)
+
 		for layer in range(len(self.get_layers()[:-1])):
 			print(self.get_layers()[layer])
 			model.add(self.get_layers()[layer](input_shape, self.output_shapes[layer]))
 			input_shape = self.output_shapes[layer]
-
-		print(self.get_layers()[0])
 
 		if(type(self.get_layers()[0](input_shape, output_shape)) is tuple):
 			first, second = self.get_layers()[0](input_shape, output_shape)
@@ -142,13 +166,23 @@ class Iterative_Naive_NAS:
 
 
 	def generate_kernel_stride_Conv1DTranspose(self, input_shape, output_shape):
-		possible = gen_dims_utils.get_possible_kernel_size_deconv(input_shape[0], output_shape[0])
+		if(len(output_shape) + 1 == len(input_shape)):
+			possible = gen_dims_utils.get_possible_kernel_size_deconv((input_shape[0], input_shape[1]), output_shape[0])
 
-		pos = list(range(len(possible)))
-		generated_kernel_stride = possible[np.random.choice(pos)]
+			pos = list(range(len(possible)))
+			
+			generated_kernel_stride = possible[np.random.choice(pos)]
 
-		return {'kernel': (generated_kernel_stride[0],),
-				'stride': (generated_kernel_stride[1],)}
+			return {'kernel': generated_kernel_stride[0],
+					'stride': generated_kernel_stride[1]}
+
+		else:
+			possible = gen_dims_utils.get_possible_kernel_size_deconv(input_shape[0], output_shape[0])
+
+			generated_kernel_stride = possible[np.random.choice(pos)]
+
+			return {'kernel': (generated_kernel_stride[0],),
+					'stride': (generated_kernel_stride[1],)}
 
 
 	def generate_kernel_stride_Conv2D(self, input_shape, output_shape):
@@ -158,6 +192,9 @@ class Iterative_Naive_NAS:
 
 
 	def generate_kernel_stride_Conv2DTranspose(self, input_shape, output_shape):
+		if(len(output_shape) + 1 == len(input_shape)):
+			return self.generate_kernel_stride_Conv1DTranspose(input_shape, output_shape)
+
 		generated = self.generate_kernel_stride_Conv1DTranspose((input_shape[0],1), (output_shape[0], 1))
 
 		return gen_dims_utils.add_generated_dim(generated, input_shape[1], output_shape[1], gen_dims_utils.get_possible_kernel_size_deconv)
@@ -170,6 +207,12 @@ class Iterative_Naive_NAS:
 
 
 	def generate_kernel_stride_Conv3DTranspose(self, input_shape, output_shape):
+		if(len(output_shape) + 1 == len(input_shape)):
+
+			generated = self.generate_kernel_stride_Conv2DTranspose((input_shape[0], input_shape[1], 1), (output_shape[0], 1))
+			
+			return gen_dims_utils.add_generated_dim(generated, input_shape[2], output_shape[1], gen_dims_utils.get_possible_kernel_size_deconv)
+
 		generated = self.generate_kernel_stride_Conv2DTranspose((input_shape[0], input_shape[1], 1), (output_shape[0], output_shape[1], 1))
 		
 		return gen_dims_utils.add_generated_dim(generated, input_shape[2], output_shape[2], gen_dims_utils.get_possible_kernel_size_deconv)
@@ -246,11 +289,11 @@ class Iterative_Naive_NAS:
 
 		#for eeg but called core for global interpretation
 		core_layers = [self.build_layer_Dense, self.build_layer_Conv2D, self.build_layer_Conv2DTranspose, 
-						self.build_layer_Conv3D]
+						self.build_layer_Conv3D, self.build_layer_Conv3DTranspose]
 
-		bold_layers = [self.build_layer_Dense, self.build_layer_Conv2D]
+		bold_layers = [self.build_layer_Conv2D]
 
-		decoder_layers = [self.build_layer_Dense, self.build_layer_Conv2DTranspose]
+		decoder_layers = [self.build_layer_Conv2DTranspose]
 
 		while(len(eeg_queue) and len(bold_queue) and len(decoder_queue) and self.improved):
 
@@ -262,7 +305,7 @@ class Iterative_Naive_NAS:
 				del decoder_queue[-1]
 
 
-				for layer in [core_layers[0]]:
+				for layer in [core_layers[3], core_layers[4]]:
 					eeg_queue += [Neural_Architecture(layers=[layer])]
 
 				for layer in bold_layers:
@@ -341,10 +384,11 @@ if __name__ == "__main__":
 
 	eeg_input_shape = (64, 5, 20, 1)
 	bold_input_shape = (14000, 20, 1)
-	nas.search(eeg_input_shape, bold_input_shape)
+	#nas.search(eeg_input_shape, bold_input_shape)
 	#print(nas.generate_layer_Conv3DTranspose((10, 10, 10, 1), (30, 30, 30, 1)))
 	#print(nas.generate_kernel_stride_Conv2D((10, 10, 1), (5, 5, 1)))
 
-	#model = tf.keras.Sequential()
-	#model.add(nas.build_layer_Conv3DTranspose((5, 5, 10, 1), (10, 10, 10, 1)))
-	#print(model.summary())
+	model = tf.keras.Sequential()
+	model.add(nas.build_layer_Conv3DTranspose((5, 5, 20, 1), (35, 20, 1)))
+	model.add(tf.keras.layers.Reshape((35, 20, 1)))
+	print(model.summary())

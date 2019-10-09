@@ -20,19 +20,9 @@ import iterative_naive_nas as nas
 ################################################################################################################################
 
 
-def NAS_BO(multi_modal_instance):
+def NAS_BO(multi_modal_instance, output_shape_domain):
 
 	print("Optimizing at level ", multi_modal_instance.get_level())
-	
-	#DEFINE NEW SHAPE DOMAIN
-	output_shape = (20, 1)
-
-	domain = []
-	for i in range(100, 10000, 100):
-		domain += [i]
-
-	output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',
-	'domain': tuple(domain)}
 
 	hyperparameters = [{'name': 'learning_rate', 'type': 'continuous',
 	'domain': (10e-6, 10e-2)},
@@ -43,13 +33,17 @@ def NAS_BO(multi_modal_instance):
 	{'name': 'l1_penalization_decoder', 'type': 'continuous',
 	'domain': (10e-5, 10e-1)},
 	{'name': 'loss_coefficient', 'type': 'continuous',
-	'domain': (0.0, 1.0)},
-	output_shape_domain]
+	'domain': (0.0, 1.0)}]
 
 
 	#add element for new layer output
+	output_shape = (20, 1)
 
 	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
+
+	hyperparameters += [output_shape_domain]
+
+
 	
 	print("Finished Loading Data")
 
