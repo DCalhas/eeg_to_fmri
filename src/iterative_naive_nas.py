@@ -31,6 +31,7 @@ class Multi_Modal_Model:
 
 	def save_eeg(self, eeg_network):
 		print(eeg_network)
+		print("SAVING")
 		self.previous_eeg_network = eeg_network
 		real_output_shape = self.previous_eeg_network.layers[0].output_shape
 		self.eeg_encoder.add_real_output_shape((real_output_shape[1], 
@@ -40,6 +41,7 @@ class Multi_Modal_Model:
 
 	def save_bold(self, bold_network):
 		print(bold_network)
+		print("SAVING")
 		self.previous_bold_network = bold_network
 		real_output_shape = self.previous_bold_network.layers[0].output_shape
 		self.bold_encoder.add_real_output_shape((real_output_shape[1], 
@@ -48,8 +50,10 @@ class Multi_Modal_Model:
 
 	def save_decoder(self, decoder_network):
 		print(decoder_network)
+		print("SAVING DECODER\n\n\n")
 		self.previous_decoder_network = decoder_network
 		real_output_shape = self.previous_decoder_network.layers[0].output_shape
+		print(real_output_shape)
 		self.decoder.add_real_output_shape((real_output_shape[1], 
 												real_output_shape[2], 
 												real_output_shape[3]))
@@ -195,7 +199,7 @@ class Neural_Architecture:
 
 		#dilation factor in order to recontruct midlayer
 		if(self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
-			for i in range(self.get_output_shapes()[-1][0], self.get_output_shapes()[-1][0]*dilation_factor, 10):
+			for i in range(self.get_output_shapes()[-1][0], self.get_real_output_shapes()[0][0], 10):
 				domain += [i]
 		elif(self.get_layers()[0].__name__ == "build_layer_Conv2D"):
 			for i in range(self.get_output_shapes()[-1][0], 14164, 10):
@@ -216,8 +220,8 @@ class Neural_Architecture:
 	def build_net(self, input_shape, hidden_output_shape, previous_model=None, verbose=False):
 		model = tf.keras.Sequential()
 
+
 		if(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
-			print(self.get_real_output_shapes()[-1])
 			layer = self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])
 
 			if(not layer):
@@ -226,23 +230,48 @@ class Neural_Architecture:
 			model.add(layer)
 			hidden_input_shape = layer.output_shape
 			hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
-		else:
-			print(input_shape, hidden_output_shape)
-			model.add(self.get_layers()[0](input_shape, hidden_output_shape))
-			hidden_input_shape = hidden_output_shape
 
-		print("What to do now????")
-		print(hidden_input_shape, self.get_output_shapes(), self.get_real_output_shapes())
+		elif(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
+			#print(self.get_output_shapes())
+			if(len(self.get_layers()) == 2):
+				print("ADDED")
+				print(self.get_output_shapes()[0], input_shape)
+				layer = self.get_layers()[0](self.get_output_shapes()[0], input_shape)
+
+				if(not layer):
+					return None
+
+				model.add(layer)
+				hidden_input_shape = input_shape
+
+			elif(len(self.get_layers()) > 2):
+				print(input_shape, hidden_output_shape)
+				print(self.get_output_shapes(), self.get_real_output_shapes())
+				print("WTFFF")
+				print(self.get_output_shapes()[0], self.get_real_output_shapes()[-1])
+
+				layer = self.get_layers()[0](self.get_output_shapes()[0], self.get_real_output_shapes()[-1])
+
+				if(not layer):
+					return None
+
+				model.add(layer)
+				hidden_input_shape = input_shape
+			
+		else:
+			layer = self.get_layers()[0](input_shape, hidden_output_shape)
+
+			if(not layer):
+				return None
+
+			model.add(layer)
+			hidden_input_shape = hidden_output_shape
 
 		ros = -1
 
-		print(self.get_layers())
 		if(len(self.get_layers()) > 1):
-			print("DOING THE RIGHT SHIT")
 			for layer in self.get_layers()[1:]:
 				if(layer.__name__ == "build_layer_Conv3DTranspose"):
-					print(self.get_real_output_shapes()[ros])
-					print(ros)
 					layer = layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros])
 
 					ros -= 1
@@ -253,18 +282,64 @@ class Neural_Architecture:
 					model.add(layer)
 					hidden_input_shape = layer.output_shape
 					hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
-				else:
-					print(self.get_output_shapes()[ros])
-					print(hidden_input_shape)
-					print(layer)
-					model.add(layer(hidden_input_shape, self.get_output_shapes()[ros]))
+				elif(layer.__name__ == "build_layer_Conv2DTranspose"):
+					print()
+					print("INPUT OUTPUT\n\n\n\n\n")
+					print(self.get_real_output_shapes())
+					print(abs(ros), len(self.get_real_output_shapes()))
+
+
+
+					if(abs(ros) == len(self.get_real_output_shapes())-1 and len(self.get_real_output_shapes()) >= 2):
+						print("ADDED TWO")
+						print(self.get_real_output_shapes()[ros], hidden_input_shape)
+						print(hidden_input_shape, hidden_output_shape)
+
+						layer_aux = layer(self.get_real_output_shapes()[ros], hidden_input_shape)
+						print(layer_aux)
+						if(not layer_aux):
+							return None
+						model.add(layer_aux)
+
+						layer_aux = layer(hidden_input_shape, hidden_output_shape)
+						print(layer_aux)
+						if(not layer_aux):
+							return None
+						model.add(layer_aux)
+						#stop model building
+						break
+
+					elif(len(self.get_real_output_shapes()) >= 2):
+						print("ADDED ONE")
+						print(self.get_real_output_shapes()[ros], self.get_real_output_shapes()[ros-1])
+						layer = layer(self.get_real_output_shapes()[ros], self.get_real_output_shapes()[ros-1])
+						hidden_input_shape = self.get_real_output_shapes()[ros-1]
+					else:
+						print("ADDED ONE next case")
+						print(hidden_input_shape, self.get_real_output_shapes()[ros])
+						layer = layer(hidden_input_shape, self.get_real_output_shapes()[ros])
+
+						hidden_input_shape = self.get_real_output_shapes()[ros]
+
+
+					if(not layer):
+						return None
+					
+					model.add(layer)
+
+					hidden_input_shape = self.get_real_output_shapes()[ros]
 					ros -= 1
-					hidden_input_shape = hidden_output_shape
+				else:
+					layer = layer(hidden_input_shape, self.get_output_shapes()[ros])
+
+					if(not layer):
+						return None
+
+					model.add(layer)
+					hidden_input_shape = self.get_output_shapes()[ros]
+					ros -= 1
 
 			hidden_input_shape = self.get_output_shapes()[ros+1]
-			#print(hidden_input_shape, self.get_output_shapes()[ros])
-			#layer = self.get_layers()[-1](hidden_input_shape, self.get_output_shapes()[ros])
-
 
 
 		if(len(hidden_input_shape) == 3 and len(input_shape) == 4):
@@ -544,7 +619,7 @@ class Iterative_Naive_NAS:
 				#synthesizer = Multi_Modal_Model(last_element_eeg, last_element_bold, last_element_decoder)
 				val_loss = synthesizer.BO()
 				self.tested_architectures[synthesizer] = val_loss
-				if(val_loss < self.best_loss):
+				if(val_loss <= self.best_loss):
 					self.best_loss = val_loss
 					self.best_depth +=1
 					self.improved=True

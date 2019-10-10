@@ -104,7 +104,10 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		decoder_network = multi_modal_instance.build_decoder(current_decoder_hidden_shape, bold_input_shape)
 
 		if(not (eeg_network and bold_network and decoder_network)):
-			return 1.0
+			print(eeg_network)
+			print(bold_network)
+			print(decoder_network)
+			return 1
 
 		#Joining EEG and BOLD branches
 		multi_modal_model = decoder.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
@@ -137,12 +140,37 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=100)
+	optimizer.run_optimization(max_iter=1)
+
+	#SAVE BEST MODELS
+	#EEG network branch
+	eeg_input_shape = (eeg_train[1], eeg_train[2], eeg_train[3], 1)
+	eeg_optimal_shape = (int(optimizer.x_opt[-3]),) + output_shape
+	print(eeg_optimal_shape)
+	eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, eeg_optimal_shape)
+	print("SAVINGGGGG\n\n\n\n\n\n", eeg_network)
+	multi_modal_instance.save_eeg(eeg_network)
+
+	#BOLD network branch
+	bold_input_shape = (bold_train[1], bold_train[2], 1)
+	bold_optimal_shape = (int(optimizer.x_opt[-2]),) + output_shape
+	print(bold_optimal_shape)
+	bold_network = multi_modal_instance.build_bold(bold_input_shape, bold_optimal_shape)
+	print("SAVINGGGGG\n\n\n\n\n\n", bold_network)
+	multi_modal_instance.save_bold(bold_network)
+
+	#Decoder network branch
+	decoder_optimal_shape = (int(optimizer.x_opt[-1]),) + output_shape
+	print(decoder_optimal_shape)
+	decoder_network = multi_modal_instance.build_decoder(decoder_optimal_shape, bold_input_shape)
+	print("SAVINGGGGG\n\n\n\n\n\n", decoder_network)
+	multi_modal_instance.save_decoder(decoder_network)
+
 
 	print("Optimized Parameters: {0}".format(optimizer.x_opt))
 	print("Optimized Validation Decoder Loss: {0}".format(optimizer.fx_opt))
 
-	return optimizer.x_opt[-1], optimizer.fx_opt
+	return optimizer.x_opt[-3], optimizer.x_opt[-2], optimizer.x_opt[-1], optimizer.fx_opt
 
 
 
@@ -275,7 +303,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=100)
+	optimizer.run_optimization(max_iter=1)
 
 	#SAVE BEST MODELS
 	#EEG network branch
