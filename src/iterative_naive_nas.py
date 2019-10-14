@@ -30,8 +30,6 @@ class Multi_Modal_Model:
 		return np.amax(np.array([self.eeg_encoder.get_depth(), self.bold_encoder.get_depth(), self.decoder.get_depth()]))
 
 	def save_eeg(self, eeg_network):
-		print(eeg_network)
-		print("SAVING")
 		self.previous_eeg_network = eeg_network
 		real_output_shape = self.previous_eeg_network.layers[0].output_shape
 		self.eeg_encoder.add_real_output_shape((real_output_shape[1], 
@@ -40,8 +38,6 @@ class Multi_Modal_Model:
 												real_output_shape[4]))
 
 	def save_bold(self, bold_network):
-		print(bold_network)
-		print("SAVING")
 		self.previous_bold_network = bold_network
 		real_output_shape = self.previous_bold_network.layers[0].output_shape
 		self.bold_encoder.add_real_output_shape((real_output_shape[1], 
@@ -49,30 +45,21 @@ class Multi_Modal_Model:
 												real_output_shape[3]))
 
 	def save_decoder(self, decoder_network):
-		print(decoder_network)
-		print("SAVING DECODER\n\n\n")
 		self.previous_decoder_network = decoder_network
 		real_output_shape = self.previous_decoder_network.layers[0].output_shape
-		print(real_output_shape)
 		self.decoder.add_real_output_shape((real_output_shape[1], 
 												real_output_shape[2], 
 												real_output_shape[3]))
 
 	def build_eeg(self, input_shape, output_shape):
-		print("BUIDLING EEG ENCODER", output_shape)
-		print(self.previous_eeg_network)
 
 		return self.eeg_encoder.build_net(input_shape, output_shape, previous_model=self.previous_eeg_network, verbose=True)
 
 	def build_bold(self, input_shape, output_shape):
-		print("BUIDLING BOLD ENCODER", output_shape)
-		print(self.previous_bold_network)
 
 		return self.bold_encoder.build_net(input_shape, output_shape, previous_model=self.previous_bold_network, verbose=True)
 
 	def build_decoder(self, input_shape, output_shape):
-		print("BUIDLING DECODER", output_shape)
-		print(self.previous_decoder_network)
 
 		return self.decoder.build_net(input_shape, output_shape, previous_model=self.previous_decoder_network, verbose=True)
 
@@ -82,10 +69,6 @@ class Multi_Modal_Model:
 	#
 	#######################################################################################################################
 	def BO(self):
-		print(self.eeg_encoder.get_layers())
-		print(self.bold_encoder.get_layers())
-		print(self.decoder.get_layers())
-
 
 		domain = []
 
@@ -119,6 +102,10 @@ class Multi_Modal_Model:
 
 			eeg_new_hidden_shape, bold_new_hidden_shape, decoder_new_hidden_shape, loss = bayesian_optimization.hidden_layer_NAS_BO(self, 
 																								eeg_domain, bold_domain, decoder_domain)
+
+			#optimization finishes if domains are empty
+			if(not (eeg_new_hidden_shape and bold_new_hidden_shape and decoder_new_hidden_shape)):
+				return math.inf
 
 			eeg_new_hidden_shape = (int(eeg_new_hidden_shape), 20, 1)
 			bold_new_hidden_shape = (int(bold_new_hidden_shape), 20, 1)
@@ -220,133 +207,115 @@ class Neural_Architecture:
 	def build_net(self, input_shape, hidden_output_shape, previous_model=None, verbose=False):
 		model = tf.keras.Sequential()
 
+		try:
 
-		if(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
-			layer = self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])
-
-			if(not layer):
-				return None
-			
-			model.add(layer)
-			hidden_input_shape = layer.output_shape
-			hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
-
-		elif(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
-			#print(self.get_output_shapes())
-			if(len(self.get_layers()) == 2):
-				print("ADDED")
-				print(self.get_output_shapes()[0], input_shape)
-				layer = self.get_layers()[0](self.get_output_shapes()[0], input_shape)
+			if(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
+				layer = self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])
 
 				if(not layer):
 					return None
-
+				
 				model.add(layer)
-				hidden_input_shape = input_shape
+				hidden_input_shape = layer.output_shape
+				hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
 
-			elif(len(self.get_layers()) > 2):
-				print(input_shape, hidden_output_shape)
-				print(self.get_output_shapes(), self.get_real_output_shapes())
-				print("WTFFF")
-				print(self.get_output_shapes()[0], self.get_real_output_shapes()[-1])
-
-				layer = self.get_layers()[0](self.get_output_shapes()[0], self.get_real_output_shapes()[-1])
-
-				if(not layer):
-					return None
-
-				model.add(layer)
-				hidden_input_shape = input_shape
-			
-		else:
-			layer = self.get_layers()[0](input_shape, hidden_output_shape)
-
-			if(not layer):
-				return None
-
-			model.add(layer)
-			hidden_input_shape = hidden_output_shape
-
-		ros = -1
-
-		if(len(self.get_layers()) > 1):
-			for layer in self.get_layers()[1:]:
-				if(layer.__name__ == "build_layer_Conv3DTranspose"):
-					layer = layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros])
-
-					ros -= 1
+			elif(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
+				if(len(self.get_layers()) == 2):
+					layer = self.get_layers()[0](self.get_output_shapes()[0], input_shape)
 
 					if(not layer):
 						return None
-					
+
 					model.add(layer)
-					hidden_input_shape = layer.output_shape
-					hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
-				elif(layer.__name__ == "build_layer_Conv2DTranspose"):
-					print()
-					print("INPUT OUTPUT\n\n\n\n\n")
-					print(self.get_real_output_shapes())
-					print(abs(ros), len(self.get_real_output_shapes()))
+					hidden_input_shape = input_shape
 
+				elif(len(self.get_layers()) > 2):
+					layer = self.get_layers()[0](self.get_output_shapes()[0], self.get_real_output_shapes()[-1])
 
+					if(not layer):
+						return None
 
-					if(abs(ros) == len(self.get_real_output_shapes())-1 and len(self.get_real_output_shapes()) >= 2):
-						print("ADDED TWO")
-						print(self.get_real_output_shapes()[ros], hidden_input_shape)
-						print(hidden_input_shape, hidden_output_shape)
+					model.add(layer)
+					hidden_input_shape = input_shape
+				
+			else:
+				layer = self.get_layers()[0](input_shape, hidden_output_shape)
 
-						layer_aux = layer(self.get_real_output_shapes()[ros], hidden_input_shape)
-						print(layer_aux)
-						if(not layer_aux):
+				if(not layer):
+					return None
+
+				model.add(layer)
+				hidden_input_shape = hidden_output_shape
+
+			ros = -1
+
+			if(len(self.get_layers()) > 1):
+				for layer in self.get_layers()[1:]:
+					if(layer.__name__ == "build_layer_Conv3DTranspose"):
+						layer = layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros])
+
+						ros -= 1
+
+						if(not layer):
 							return None
-						model.add(layer_aux)
+						
+						model.add(layer)
+						hidden_input_shape = layer.output_shape
+						hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
+					elif(layer.__name__ == "build_layer_Conv2DTranspose"):
 
-						layer_aux = layer(hidden_input_shape, hidden_output_shape)
-						print(layer_aux)
-						if(not layer_aux):
+						if(abs(ros) == len(self.get_real_output_shapes())-1 and len(self.get_real_output_shapes()) >= 2):
+							layer_aux = layer(self.get_real_output_shapes()[ros], hidden_input_shape)
+
+							if(not layer_aux):
+								return None
+							model.add(layer_aux)
+
+							layer_aux = layer(hidden_input_shape, hidden_output_shape)
+							if(not layer_aux):
+								return None
+							model.add(layer_aux)
+							#stop model building
+							break
+
+						elif(len(self.get_real_output_shapes()) >= 2):
+							layer = layer(self.get_real_output_shapes()[ros], self.get_real_output_shapes()[ros-1])
+							hidden_input_shape = self.get_real_output_shapes()[ros-1]
+						else:
+							layer = layer(hidden_input_shape, self.get_real_output_shapes()[ros])
+
+							hidden_input_shape = self.get_real_output_shapes()[ros]
+
+
+						if(not layer):
 							return None
-						model.add(layer_aux)
-						#stop model building
-						break
-
-					elif(len(self.get_real_output_shapes()) >= 2):
-						print("ADDED ONE")
-						print(self.get_real_output_shapes()[ros], self.get_real_output_shapes()[ros-1])
-						layer = layer(self.get_real_output_shapes()[ros], self.get_real_output_shapes()[ros-1])
-						hidden_input_shape = self.get_real_output_shapes()[ros-1]
-					else:
-						print("ADDED ONE next case")
-						print(hidden_input_shape, self.get_real_output_shapes()[ros])
-						layer = layer(hidden_input_shape, self.get_real_output_shapes()[ros])
+						
+						model.add(layer)
 
 						hidden_input_shape = self.get_real_output_shapes()[ros]
+						ros -= 1
+					else:
+						layer = layer(hidden_input_shape, self.get_output_shapes()[ros])
+
+						if(not layer):
+							return None
+
+						model.add(layer)
+						hidden_input_shape = self.get_output_shapes()[ros]
+						ros -= 1
+
+				hidden_input_shape = self.get_output_shapes()[ros+1]
 
 
-					if(not layer):
-						return None
-					
-					model.add(layer)
+			if(len(hidden_input_shape) == 3 and len(input_shape) == 4):
+				model.add(tf.keras.layers.Reshape(hidden_input_shape))
 
-					hidden_input_shape = self.get_real_output_shapes()[ros]
-					ros -= 1
-				else:
-					layer = layer(hidden_input_shape, self.get_output_shapes()[ros])
+			model.build(input_shape=input_shape)
 
-					if(not layer):
-						return None
-
-					model.add(layer)
-					hidden_input_shape = self.get_output_shapes()[ros]
-					ros -= 1
-
-			hidden_input_shape = self.get_output_shapes()[ros+1]
-
-
-		if(len(hidden_input_shape) == 3 and len(input_shape) == 4):
-			model.add(tf.keras.layers.Reshape(hidden_input_shape))
-
-		model.build(input_shape=input_shape)
-
+		#fix this try and except, so it runs how it is supposed
+		except:
+			print("An exception occured - Not specified which one")
+			return None
 
 		if(verbose):
 			print(model.summary())
@@ -662,8 +631,6 @@ class Iterative_Naive_NAS:
 
 					
 			#call BO to optimize the output_shape for each layer at this level
-			print(self.improved)
-			print(len(eeg_queue) and len(bold_queue) and len(decoder_queue) and self.improved)
 
 		print("FINISHED NAS")
 

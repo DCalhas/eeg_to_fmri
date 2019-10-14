@@ -40,33 +40,36 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	#add element for new layer output
 	output_shape = (20, 1)
 
-	#eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
+
+
+	if(not (eeg_domain['domain'] and bold_domain['domain'] and decoder_domain['domain'])):
+		return None, None, None, None
+
+	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
 
 	hyperparameters += [eeg_domain, bold_domain, decoder_domain]
 	
 	print("Finished Loading Data")
 
-	#X_train_eeg, X_train_bold, tr_y = deep_cross_corr.create_eeg_bold_pairs(eeg_train, bold_train)
-	#X_val_eeg, X_val_bold, tv_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
+	X_train_eeg, X_train_bold, tr_y = deep_cross_corr.create_eeg_bold_pairs(eeg_train, bold_train)
+	X_val_eeg, X_val_bold, tv_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
 
 	print("Pairs Created")
 	
 	#convert to tensors, for the networks to accept it as input
-	#X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
-	#X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
-	#tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
-	#X_val_eeg = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
-	#X_val_bold = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
-	#tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
+	X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
+	X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
+	tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
+	X_val_eeg = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
+	X_val_bold = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
+	tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
 
-	#normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]))
-	#normalization = tf.keras.Model((None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]), normalization)
+	normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]))
 
-	#X_train_bold = normalization(X_train_bold)
-	#X_val_bold = normalization(X_val_bold)
+	X_train_bold = normalization(X_train_bold)
+	X_val_bold = normalization(X_val_bold)
 
-	eeg_train = (None, 64, 5, 20, 1)
-	bold_train = (None, 14164, 20, 1)
+
 
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
@@ -90,12 +93,12 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		#EEG network branch
 		#FIX HOW TO PUT HIDDEN LAYER SHAPE TO BUILD NET
 		#EEG network branch
-		eeg_input_shape = (eeg_train[1], eeg_train[2], eeg_train[3], 1)
+		eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
 		current_eeg_hidden_shape = (current_eeg_hidden_shape,) + output_shape
 		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, current_eeg_hidden_shape)
 
 		#BOLD network branch
-		bold_input_shape = (bold_train[1], bold_train[2], 1)
+		bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
 		current_bold_hidden_shape = (current_bold_hidden_shape,) + output_shape
 		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_bold_hidden_shape)
 
@@ -104,17 +107,10 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		decoder_network = multi_modal_instance.build_decoder(current_decoder_hidden_shape, bold_input_shape)
 
 		if(not (eeg_network and bold_network and decoder_network)):
-			print(eeg_network)
-			print(bold_network)
-			print(decoder_network)
 			return 1
 
 		#Joining EEG and BOLD branches
 		multi_modal_model = decoder.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
-
-		#define the decoder_network/synthesizer_net
-
-		return 0.5
 
 		######################################################################################################
 		#
@@ -123,7 +119,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		######################################################################################################
 		print("Starting training")
 		tf.keras.backend.clear_session()
-		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
+		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 			epochs=100, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 			linear_combination=current_loss_coefficient,
 			batch_size=128,
@@ -146,26 +142,23 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	#EEG network branch
 	eeg_input_shape = (eeg_train[1], eeg_train[2], eeg_train[3], 1)
 	eeg_optimal_shape = (int(optimizer.x_opt[-3]),) + output_shape
-	print(eeg_optimal_shape)
 	eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, eeg_optimal_shape)
-	print("SAVINGGGGG\n\n\n\n\n\n", eeg_network)
-	multi_modal_instance.save_eeg(eeg_network)
-
+	
 	#BOLD network branch
 	bold_input_shape = (bold_train[1], bold_train[2], 1)
 	bold_optimal_shape = (int(optimizer.x_opt[-2]),) + output_shape
-	print(bold_optimal_shape)
 	bold_network = multi_modal_instance.build_bold(bold_input_shape, bold_optimal_shape)
-	print("SAVINGGGGG\n\n\n\n\n\n", bold_network)
-	multi_modal_instance.save_bold(bold_network)
 
 	#Decoder network branch
 	decoder_optimal_shape = (int(optimizer.x_opt[-1]),) + output_shape
-	print(decoder_optimal_shape)
 	decoder_network = multi_modal_instance.build_decoder(decoder_optimal_shape, bold_input_shape)
-	print("SAVINGGGGG\n\n\n\n\n\n", decoder_network)
-	multi_modal_instance.save_decoder(decoder_network)
 
+	if(not (eeg_network and bold_network and decoder_network)):
+		return None, None, None, None
+
+	multi_modal_instance.save_eeg(eeg_network)
+	multi_modal_instance.save_bold(bold_network)
+	multi_modal_instance.save_decoder(decoder_network)
 
 	print("Optimized Parameters: {0}".format(optimizer.x_opt))
 	print("Optimized Validation Decoder Loss: {0}".format(optimizer.fx_opt))
@@ -210,7 +203,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	#add element for new layer output
 	output_shape = (20, 1)
 
-	#eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
+	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
 
 	hyperparameters += output_shape_domain
 
@@ -218,27 +211,23 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	
 	print("Finished Loading Data")
 
-	#X_train_eeg, X_train_bold, tr_y = deep_cross_corr.create_eeg_bold_pairs(eeg_train, bold_train)
-	#X_val_eeg, X_val_bold, tv_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
+	X_train_eeg, X_train_bold, tr_y = deep_cross_corr.create_eeg_bold_pairs(eeg_train, bold_train)
+	X_val_eeg, X_val_bold, tv_y = deep_cross_corr.create_eeg_bold_pairs(eeg_test, bold_test)
 
 	print("Pairs Created")
 	
 	#convert to tensors, for the networks to accept it as input
-	#X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
-	#X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
-	#tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
-	#X_val_eeg = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
-	#X_val_bold = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
-	#tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
+	X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
+	X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
+	tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
+	X_val_eeg = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
+	X_val_bold = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
+	tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
 
-	#normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]))
-	#normalization = tf.keras.Model((None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]), normalization)
+	normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]))
 
-	#X_train_bold = normalization(X_train_bold)
-	#X_val_bold = normalization(X_val_bold)
-
-	eeg_train = (None, 64, 5, 20, 1)
-	bold_train = (None, 14164, 20, 1)
+	X_train_bold = normalization(X_train_bold)
+	X_val_bold = normalization(X_val_bold)
 
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
@@ -258,12 +247,12 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		#
 		######################################################################################################
 		#EEG network branch
-		eeg_input_shape = (eeg_train[1], eeg_train[2], eeg_train[3], 1)
+		eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
 		current_shape = (current_shape,) + output_shape
 		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, current_shape)
 
 		#BOLD network branch
-		bold_input_shape = (bold_train[1], bold_train[2], 1)
+		bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
 		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_shape)
 
 		#Decoder network branch
@@ -273,11 +262,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			return 1.0
 
 		#Joining EEG and BOLD branches
-		multi_modal_model = decoder.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
-
-		#define the decoder_network/synthesizer_net
-
-		return 0.5
+		multi_modal_network = decoder.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
 
 		######################################################################################################
 		#
@@ -286,7 +271,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		######################################################################################################
 		print("Starting training")
 		tf.keras.backend.clear_session()
-		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
+		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
 			epochs=100, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 			linear_combination=current_loss_coefficient,
 			batch_size=128,
@@ -366,7 +351,6 @@ def default_BO():
 	tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
 
 	normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]))
-	#normalization = tf.keras.Model((None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]), normalization)
 
 	X_train_bold = normalization(X_train_bold)
 	X_val_bold = normalization(X_val_bold)
