@@ -186,6 +186,8 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
 
             print("Updating decoder weights")
+            print(eeg_network)
+            print(decoder_model)
             print(decoder_model(shared_eeg))
             
             # Optimize the synthesizer model
