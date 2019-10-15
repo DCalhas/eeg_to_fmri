@@ -111,6 +111,7 @@ def loss_decoder(outputs, targets):
 
 
 def grad_decoder(model, inputs, targets):
+    print("HEY")
     print(model(inputs))  
     with tf.GradientTape() as tape:    
         tape.watch(inputs)
@@ -185,6 +186,7 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
 
             print("Updating decoder weights")
+            print(decoder_model(shared_eeg))
             
             # Optimize the synthesizer model
             decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
