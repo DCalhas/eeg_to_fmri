@@ -270,6 +270,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		#
 		######################################################################################################
 		print("Starting training")
+		shared_eeg = eeg_network(X_train_bold[0:16])
+		print(decoder_network(shared_eeg))
 		tf.keras.backend.clear_session()
 		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
 			epochs=100, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
