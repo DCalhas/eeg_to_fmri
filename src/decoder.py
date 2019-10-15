@@ -116,6 +116,7 @@ def grad_decoder(model, inputs, targets):
         print("Computing decoder outputs")
         print(model)
         print(inputs)
+        print(model.layers)
         print(model(inputs))
         outputs = model.predict(inputs)
         
