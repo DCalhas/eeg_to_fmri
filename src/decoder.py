@@ -111,15 +111,15 @@ def loss_decoder(outputs, targets):
 
 
 def grad_decoder(model, inputs, targets):
+    print(model(inputs))  
     with tf.GradientTape() as tape:    
-        #tape.watch(inputs)
+        tape.watch(inputs)
+
         outputs = model(inputs)
-        
-        #loss
-        print("Computing reconstruction loss")
+
         reconstruction_loss = deep_cross_corr.cross_correlation(outputs, targets)
         reconstruction_loss = K.mean(reconstruction_loss)
-        print("Computing gradient", reconstruction_loss)
+
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
 
 def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combination):
