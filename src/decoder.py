@@ -178,13 +178,15 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                 batch_stop = batch_start + batch_size
             
             shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
+
+            print("Updating decoder weights")
             
             # Optimize the synthesizer model
             decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
             optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), 
                                       global_step)
 
-            
+            print("Updating encoders weights")
             #now train the compression by correlation model
             encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
                                                              [X_train_eeg[batch_start:batch_stop], 
@@ -192,6 +194,8 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                              tr_y[batch_start:batch_stop], decoder_loss, linear_combination)
             optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), 
                                       global_step)
+
+            print("Finished updating")
             # Track progress
             losses.update_batch_decoder_loss_avg(decoder_loss)
             losses.update_batch_encoder_loss_avg(encoder_loss)
