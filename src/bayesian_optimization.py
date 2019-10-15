@@ -272,6 +272,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		print("Starting training")
 		shared_eeg = eeg_network(X_train_eeg[0:16])
 		print(eeg_network(tf.zeros(X_train_eeg.shape)).shape)
+		print(bold_network(tf.zeros(X_train_bold.shape)).shape)
 		decoder_network.build(shared_eeg.shape)
 		print(decoder_network(tf.zeros(shared_eeg.shape)).shape)
 		tf.keras.backend.clear_session()
