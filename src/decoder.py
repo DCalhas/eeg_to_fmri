@@ -114,7 +114,9 @@ def grad_decoder(model, inputs, targets):
     with tf.GradientTape() as tape:    
         tape.watch(inputs)
         print("Computing decoder outputs")
-        outputs = model(inputs)
+        print(model)
+        print(inputs)
+        outputs = model.predict(inputs)
         
         #loss
         print("Computing reconstruction loss")
