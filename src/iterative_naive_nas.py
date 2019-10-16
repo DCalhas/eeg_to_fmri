@@ -77,7 +77,7 @@ class Multi_Modal_Model:
 
 		#DEFINE NEW SHAPE DOMAIN - FIRST LEVEL DOMAIN
 		if(self.get_level() == 1):
-			for i in range(int(64*5)+100, 12000, 10):
+			for i in range(int(64*5)+100, 6000, 10):
 				domain += [i]
 
 			output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',

@@ -232,6 +232,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	X_train_bold = normalization(X_train_bold)
 	X_val_bold = normalization(X_val_bold)
 
+	print(X_train_bold.shape)
+
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
 		current_l1_penalization_eeg = float(x[:, 1])
