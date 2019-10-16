@@ -239,6 +239,7 @@ class Neural_Architecture:
 					hidden_input_shape = input_shape
 				
 			else:
+				print(input_shape, hidden_output_shape)
 				layer = self.get_layers()[0](input_shape, hidden_output_shape)
 
 				if(not layer):
