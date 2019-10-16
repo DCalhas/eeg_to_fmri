@@ -111,8 +111,6 @@ def loss_decoder(outputs, targets):
 
 
 def grad_decoder(model, inputs, targets):
-    print("HEY")
-    print(model(inputs))  
     with tf.GradientTape() as tape:    
         tape.watch(inputs)
 
@@ -120,19 +118,19 @@ def grad_decoder(model, inputs, targets):
 
         reconstruction_loss = deep_cross_corr.cross_correlation(outputs, targets)
         reconstruction_loss = K.mean(reconstruction_loss)
+        print("reconstruction loss ", reconstruction_loss)
 
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
 
 def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combination):
     with tf.GradientTape() as tape:    
         tape.watch(inputs)
-        print("Computing encoder outputs")
+
         outputs = model(inputs)
         
         #loss
         print("Computing encoder loss", reconstruction_loss)
         encoder_loss = linear_combination*abs(deep_cross_corr.contrastive_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
-        print("Computing gradients")
         return encoder_loss,  tape.gradient(encoder_loss, 
                                             model.trainable_weights)
 
@@ -184,18 +182,12 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                 batch_stop = batch_start + batch_size
             
             shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
-
-            print("Updating decoder weights")
-            print(eeg_network)
-            print(decoder_model)
-            print(decoder_model(shared_eeg))
             
             # Optimize the synthesizer model
             decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
             optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), 
                                       global_step)
 
-            print("Updating encoders weights")
             #now train the compression by correlation model
             encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
                                                              [X_train_eeg[batch_start:batch_stop], 
@@ -204,7 +196,6 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), 
                                       global_step)
 
-            print("Finished updating")
             # Track progress
             losses.update_batch_decoder_loss_avg(decoder_loss)
             losses.update_batch_encoder_loss_avg(encoder_loss)

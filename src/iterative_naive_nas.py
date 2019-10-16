@@ -325,7 +325,7 @@ class Neural_Architecture:
 			print(layer)
 			aux_model.add(layer)
 			aux_model.build(input_shape=(10000, 20, 1))
-			print(aux_model(tf.zeros((16, ) + input_shape)).shape)
+			print(aux_model(tf.zeros((16, 10000, 20, 1))).shape)
 			print(model.input_shape)
 			print(input_shape)
 			print(model.predict(tf.zeros((16, ) + input_shape)).shape)
