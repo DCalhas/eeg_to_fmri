@@ -94,12 +94,12 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		#EEG network branch
 		#FIX HOW TO PUT HIDDEN LAYER SHAPE TO BUILD NET
 		#EEG network branch
-		eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
+		eeg_input_shape = (X_train_eeg.shape[1], X_train_eeg.shape[2], X_train_eeg.shape[3], 1)
 		current_eeg_hidden_shape = (current_eeg_hidden_shape,) + output_shape
 		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, current_eeg_hidden_shape)
 
 		#BOLD network branch
-		bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
+		bold_input_shape = (X_train_bold.shape[1], X_train_bold.shape[2], 1)
 		current_bold_hidden_shape = (current_bold_hidden_shape,) + output_shape
 		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_bold_hidden_shape)
 
@@ -233,7 +233,6 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	X_train_bold = normalization(X_train_bold)
 	X_val_bold = normalization(X_val_bold)
 
-	print(X_train_bold)
 
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
@@ -253,12 +252,12 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		#
 		######################################################################################################
 		#EEG network branch
-		eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
+		eeg_input_shape = (X_train_eeg.shape[1], X_train_eeg.shape[2], X_train_eeg.shape[3], 1)
 		current_shape = (current_shape,) + output_shape
 		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, current_shape)
 
 		#BOLD network branch
-		bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
+		bold_input_shape = (X_train_bold.shape[1], X_train_bold.shape[2], 1)
 		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_shape)
 
 		#Decoder network branch
