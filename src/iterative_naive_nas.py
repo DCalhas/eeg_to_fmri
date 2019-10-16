@@ -321,7 +321,7 @@ class Neural_Architecture:
 			print("HEYYYYY", input_shape)
 			print(model.input_shape)
 			print(input_shape)
-			print(model(tf.zeros((16, ) + input_shape)).shape)
+			print(model.predict(tf.zeros((16, ) + input_shape)).shape)
 			print("DID IT???")
 
 		if(verbose):
