@@ -324,8 +324,10 @@ class Neural_Architecture:
 			aux_model.add(layer)
 			aux_model.build(input_shape=(10000, 20, 1))
 
-			input = tf.keras.utils.Sequence(tf.zeros((16, 10000, 20, 1)))
-			print(aux_model.predict_generator(input, steps=16, use_multiprocessing=True).shape)
+			#input = tf.keras.utils.Sequence(tf.zeros((16, 10000, 20, 1)))
+			input = tf.zeros((16, 10000, 20, 1))
+			print("PREDICTING")
+			print(aux_model.predict_on_batch(input).shape)
 			print(model.input_shape)
 			print(input_shape)
 			print(model.predict_generator(tf.zeros((16, ) + input_shape), steps=16).shape)
