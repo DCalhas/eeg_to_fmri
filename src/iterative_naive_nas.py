@@ -312,15 +312,17 @@ class Neural_Architecture:
 
 			model.build(input_shape=input_shape)
 
-			if(hidden_output_shape == (14164, 20, 1)):
-				print("HEYYYYY", input_shape)
-				model(tf.zeros(input_shape))
-				print("DID IT???")
-
 		#fix this try and except, so it runs how it is supposed
 		except:
 			print("An exception occured - Not specified which one")
 			return None
+
+		if(hidden_output_shape == (14164, 20, 1)):
+			print("HEYYYYY", input_shape)
+			print(model.input_shape)
+			print(input_shape)
+			model(tf.zeros(input_shape))
+			print("DID IT???")
 
 		if(verbose):
 			print(model.summary())
