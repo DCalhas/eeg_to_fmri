@@ -186,6 +186,7 @@ class Neural_Architecture:
 
 		#dilation factor in order to recontruct midlayer
 		if(self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
+			print(self.get_real_output_shapes())
 			for i in range(self.get_output_shapes()[-1][0], self.get_real_output_shapes()[0][0], 10):
 				domain += [i]
 		elif(self.get_layers()[0].__name__ == "build_layer_Conv2D"):
@@ -316,22 +317,6 @@ class Neural_Architecture:
 		except:
 			print("An exception occured - Not specified which one")
 			return None
-
-		if(hidden_output_shape == (14164, 20, 1)):
-			print("HEYYYYY", input_shape)
-			aux_model = tf.keras.Sequential()
-			layer = self.get_layers()[0]((10000, 20, 1), (14164, 20, 1))
-			aux_model.add(layer)
-			aux_model.build(input_shape=(10000, 20, 1))
-
-			#input = tf.keras.utils.Sequence(tf.zeros((16, 10000, 20, 1)))
-			input = tf.zeros((16, 10000, 20, 1))
-			print("PREDICTING")
-			print(aux_model.predict_on_batch(input).shape)
-			print(model.input_shape)
-			print(input_shape)
-			print(model.predict_on_batch(tf.zeros((16, ) + input_shape)).shape)
-			print("DID IT???")
 
 		if(verbose):
 			print(model.summary())
