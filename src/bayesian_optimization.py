@@ -72,8 +72,6 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	X_train_bold = normalization(X_train_bold)
 	X_val_bold = normalization(X_val_bold)
 
-	print(X_train_bold.shape)
-
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
 		current_l1_penalization_eeg = float(x[:, 1])
@@ -235,6 +233,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	X_train_bold = normalization(X_train_bold)
 	X_val_bold = normalization(X_val_bold)
 
+	print(X_train_bold)
+
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
 		current_l1_penalization_eeg = float(x[:, 1])
@@ -262,6 +262,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_shape)
 
 		#Decoder network branch
+		print(current_shape, bold_input_shape)
 		decoder_network = multi_modal_instance.build_decoder(current_shape, bold_input_shape)
 
 		if(not (eeg_network and bold_network and decoder_network)):
