@@ -187,6 +187,7 @@ class Neural_Architecture:
 		#dilation factor in order to recontruct midlayer
 		if(self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
 			print(self.get_real_output_shapes())
+			print("\n\n\n\n\n\n")
 			for i in range(self.get_output_shapes()[-1][0], self.get_real_output_shapes()[0][0], 10):
 				domain += [i]
 		elif(self.get_layers()[0].__name__ == "build_layer_Conv2D"):
