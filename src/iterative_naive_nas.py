@@ -320,15 +320,15 @@ class Neural_Architecture:
 		if(hidden_output_shape == (14164, 20, 1)):
 			print("HEYYYYY", input_shape)
 			aux_model = tf.keras.Sequential()
-			print(self.get_layers()[0])
 			layer = self.get_layers()[0]((10000, 20, 1), (14164, 20, 1))
-			print(layer)
 			aux_model.add(layer)
 			aux_model.build(input_shape=(10000, 20, 1))
-			print(aux_model.predict_generator(tf.zeros((16, 10000, 20, 1)), batch_size=16).shape)
+
+			input = tf.keras.utils.Sequence(tf.zeros((16, 10000, 20, 1)))
+			print(aux_model.predict_generator(input, steps=16, use_multiprocessing=True).shape)
 			print(model.input_shape)
 			print(input_shape)
-			print(model.predict_generator(tf.zeros((16, ) + input_shape), batch_size=16).shape)
+			print(model.predict_generator(tf.zeros((16, ) + input_shape), steps=16).shape)
 			print("DID IT???")
 
 		if(verbose):
