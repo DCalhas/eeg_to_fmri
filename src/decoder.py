@@ -116,7 +116,7 @@ def grad_decoder(model, inputs, targets):
 
         print("Started on batch ")
         t = time.time()
-        outputs = model.predict_on_batch(inputs)
+        outputs = model(inputs)
         print("Finished took ", time.time()-t, " seconds")
 
         reconstruction_loss = deep_cross_corr.cross_correlation(outputs, targets)
