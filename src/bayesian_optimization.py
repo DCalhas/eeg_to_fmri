@@ -72,7 +72,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	X_train_bold = normalization(X_train_bold)
 	X_val_bold = normalization(X_val_bold)
 
-
+	print(X_train_bold.shape)
 
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
