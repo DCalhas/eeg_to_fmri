@@ -330,7 +330,7 @@ class Neural_Architecture:
 			print(aux_model.predict_on_batch(input).shape)
 			print(model.input_shape)
 			print(input_shape)
-			print(model.predict_generator(tf.zeros((16, ) + input_shape), steps=16).shape)
+			print(model.predict_on_batch(tf.zeros((16, ) + input_shape)).shape)
 			print("DID IT???")
 
 		if(verbose):
