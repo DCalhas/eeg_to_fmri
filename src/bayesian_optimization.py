@@ -65,7 +65,10 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
 
 	normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]))
+	pooling = tf.keras.layers.MaxPooling2D((2,1))
 
+	X_train_bold = pooling(X_train_bold)
+	X_val_bold = pooling(X_val_bold)
 	X_train_bold = normalization(X_train_bold)
 	X_val_bold = normalization(X_val_bold)
 
@@ -232,8 +235,6 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	X_train_bold = normalization(X_train_bold)
 	X_val_bold = normalization(X_val_bold)
 
-	print(X_train_bold.shape)
-
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
 		current_l1_penalization_eeg = float(x[:, 1])
@@ -311,6 +312,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 	print("Optimized Parameters: {0}".format(optimizer.x_opt))
 	print("Optimized Validation Decoder Loss: {0}".format(optimizer.fx_opt))
+	print("\n\n\n\n\n\n\n\n\n\n")
 
 	return optimizer.x_opt[-1], optimizer.fx_opt
 
