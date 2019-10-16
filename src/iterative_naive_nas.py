@@ -319,6 +319,12 @@ class Neural_Architecture:
 
 		if(hidden_output_shape == (14164, 20, 1)):
 			print("HEYYYYY", input_shape)
+			aux_model = tf.keras.Sequential()
+			layer = build_layer_Conv2DTranspose((620, 20, 1), (14164, 20, 1))
+			print(layer)
+			aux_model.add(layer)
+			aux_model.build(input_shape=(620, 20, 1))
+			print(aux_model(tf.zeros((16, ) + input_shape)).shape)
 			print(model.input_shape)
 			print(input_shape)
 			print(model.predict(tf.zeros((16, ) + input_shape)).shape)
