@@ -239,7 +239,6 @@ class Neural_Architecture:
 					hidden_input_shape = input_shape
 				
 			else:
-				print(input_shape, hidden_output_shape)
 				layer = self.get_layers()[0](input_shape, hidden_output_shape)
 
 				if(not layer):
@@ -312,6 +311,11 @@ class Neural_Architecture:
 				model.add(tf.keras.layers.Reshape(hidden_input_shape))
 
 			model.build(input_shape=input_shape)
+
+			if(hidden_output_shape == (14164, 20, 1)):
+				print("HEYYYYY")
+				model(tf.zeros((16, 14164, 20, 1)))
+				print("DID IT???")
 
 		#fix this try and except, so it runs how it is supposed
 		except:
