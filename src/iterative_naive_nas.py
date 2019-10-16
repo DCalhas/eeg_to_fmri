@@ -314,7 +314,7 @@ class Neural_Architecture:
 
 			if(hidden_output_shape == (14164, 20, 1)):
 				print("HEYYYYY", input_shape)
-				model(tf.zeros((16, 14164, 20, 1)))
+				model(tf.zeros(input_shape))
 				print("DID IT???")
 
 		#fix this try and except, so it runs how it is supposed
