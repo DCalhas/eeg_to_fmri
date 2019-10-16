@@ -313,7 +313,7 @@ class Neural_Architecture:
 			model.build(input_shape=input_shape)
 
 			if(hidden_output_shape == (14164, 20, 1)):
-				print("HEYYYYY")
+				print("HEYYYYY", input_shape)
 				model(tf.zeros((16, 14164, 20, 1)))
 				print("DID IT???")
 
