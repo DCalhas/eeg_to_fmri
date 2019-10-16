@@ -325,10 +325,10 @@ class Neural_Architecture:
 			print(layer)
 			aux_model.add(layer)
 			aux_model.build(input_shape=(10000, 20, 1))
-			print(aux_model.predict_generator(tf.zeros((16, 10000, 20, 1))).shape)
+			print(aux_model.predict_generator(tf.zeros((16, 10000, 20, 1)), steps=16).shape)
 			print(model.input_shape)
 			print(input_shape)
-			print(model.predict_generator(tf.zeros((16, ) + input_shape)).shape)
+			print(model.predict_generator(tf.zeros((16, ) + input_shape), steps=16).shape)
 			print("DID IT???")
 
 		if(verbose):
