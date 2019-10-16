@@ -109,12 +109,15 @@ def loss_decoder(outputs, targets):
     reconstruction_loss = deep_cross_corr.cross_correlation(outputs, targets)
     return K.mean(reconstruction_loss)
 
-
+import time
 def grad_decoder(model, inputs, targets):
     with tf.GradientTape() as tape:    
         tape.watch(inputs)
 
-        outputs = model(inputs)
+        print("Started on batch ")
+        t = time.time()
+        outputs = model.predict_on_batch(inputs)
+        print("Finished took ", time.time()-t, " seconds")
 
         reconstruction_loss = deep_cross_corr.cross_correlation(outputs, targets)
         reconstruction_loss = K.mean(reconstruction_loss)
