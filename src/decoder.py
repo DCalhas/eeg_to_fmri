@@ -117,8 +117,6 @@ def grad_decoder(model, inputs, targets):
 
         reconstruction_loss = deep_cross_corr.cross_correlation(outputs, targets)
         reconstruction_loss = K.mean(reconstruction_loss)
-        print("reconstruction loss ", reconstruction_loss)
-        sys.stdout.flush()
 
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
 
@@ -128,9 +126,6 @@ def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combi
 
         outputs = model(inputs)
         
-        #loss
-        print("Computing encoder loss", reconstruction_loss)
-        sys.stdout.flush()
         encoder_loss = linear_combination*abs(deep_cross_corr.contrastive_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
         return encoder_loss,  tape.gradient(encoder_loss, 
                                             model.trainable_weights)
@@ -211,6 +206,7 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         
         print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
             "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
+        sys.stdout.flush()
 
     shared_eeg_val = eeg_network(X_val_eeg)
     return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
