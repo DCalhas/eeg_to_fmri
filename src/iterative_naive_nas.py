@@ -635,8 +635,8 @@ class Iterative_Naive_NAS:
 
 		bold_layers = [self.build_layer_Conv2D]
 
-		decoder_layers = [self.build_layer_Conv2DTranspose]
-		#decoder_layers = [self.build_layer_UpSampling2D]
+		#decoder_layers = [self.build_layer_Conv2DTranspose]
+		decoder_layers = [self.build_layer_UpSampling2D]
 
 		synthesizer = Multi_Modal_Model(None, None, None, None, None, None)
 
