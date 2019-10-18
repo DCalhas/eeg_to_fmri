@@ -333,7 +333,8 @@ class Neural_Architecture:
 
 		#fix this try and except, so it runs how it is supposed
 		except:
-			print("An exception occured - Not specified which one - layer type: ", self.get_layers()[0].__name__)
+			print("An exception occured - Not specified which one - layer type: ", self.get_layers()[0].__name__, " with input - output",
+					input_shape, "-", hidden_output_shape)
 			return None
 
 		if(verbose):
