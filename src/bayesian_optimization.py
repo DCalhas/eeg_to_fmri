@@ -234,7 +234,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	#add element for new layer output
 	output_shape = (20, 1)
 
-	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(14)), list(range(14, 16)))
+	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(10)), list(range(14, 16)))
 
 	hyperparameters += output_shape_domain
 
