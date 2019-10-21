@@ -63,7 +63,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	sess = tf.Session(config=config)
 
 	with sess:
-	
+		tf.keras.backend.clear_session()
 		#convert to tensors, for the networks to accept it as input
 		X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
 		X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
@@ -79,6 +79,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		X_val_bold = pooling(X_val_bold)
 		X_train_bold = normalization(X_train_bold)
 		X_val_bold = normalization(X_val_bold)
+		tf.keras.backend.clear_session()
 
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
@@ -137,18 +138,9 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 			#
 			######################################################################################################
 			print("Starting training")
-			tf.keras.backend.clear_session()
-
-		gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-		config = tf.ConfigProto(allow_soft_placement=True,
-								gpu_options=gpu_options)
-		config.gpu_options.allow_growth=True
-
-		sess = tf.Session(config=config)
-
-		with sess:
 
 			tf.keras.backend.clear_session()
+
 			validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 				epochs=100, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 				linear_combination=current_loss_coefficient,
@@ -156,6 +148,8 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 				X_val_eeg=X_val_eeg,
 				X_val_bold=X_val_bold,
 				tv_y=tv_y)
+
+			sess.close()
 			tf.keras.backend.clear_session()
 
 		print("Model: " + model_name +
@@ -256,6 +250,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	sess = tf.Session(config=config)
 
 	with sess:
+
+		tf.keras.backend.clear_session()
 	
 		#convert to tensors, for the networks to accept it as input
 		X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
@@ -272,6 +268,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		X_val_bold = pooling(X_val_bold)
 		X_train_bold = normalization(X_train_bold)
 		X_val_bold = normalization(X_val_bold)
+
+		tf.keras.backend.clear_session()
 
 
 	def bayesian_optimization_function(x):
