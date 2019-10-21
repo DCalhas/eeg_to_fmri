@@ -160,7 +160,7 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     # keep results for plotting
 
     validation = False
-    if(X_val_eeg and X_val_bold and tv_y):
+    if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):
         validation = True
 
     global_step = tf.Variable(0)
