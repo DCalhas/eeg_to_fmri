@@ -217,32 +217,14 @@ class Neural_Architecture:
 			if(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
 				_layers += self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])
 
-				if(not layer):
+				if(not _layers):
 					return None
 
-				hidden_input_shape = layer.output_shape
+				hidden_input_shape = hidden_output_shape
 				hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
 
 			elif(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
 				if(len(self.get_layers()) == 2):
-					_layers += self.get_layers()[0](self.get_output_shapes()[0], input_shape)
-
-					if(not layer):
-						return None
-
-					hidden_input_shape = input_shape
-
-				elif(len(self.get_layers()) > 2):
-					_layers += self.get_layers()[0](self.get_output_shapes()[0], self.get_real_output_shapes()[-1])
-
-					if(not layer):
-						return None
-
-					hidden_input_shape = input_shape
-
-			elif(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_UpSampling2D"):
-				if(len(self.get_layers()) == 2):
-					#returns list of layers
 					_layers += self.get_layers()[0](self.get_output_shapes()[0], input_shape)
 
 					if(not _layers):
@@ -261,7 +243,7 @@ class Neural_Architecture:
 			else:
 				_layers += self.get_layers()[0](input_shape, hidden_output_shape)
 
-				if(not layer):
+				if(not _layers):
 					return None
 
 				hidden_input_shape = hidden_output_shape
@@ -275,10 +257,10 @@ class Neural_Architecture:
 
 						ros -= 1
 
-						if(not layer):
+						if(not _layers):
 							return None
 						
-						hidden_input_shape = layer.output_shape
+						hidden_input_shape = self.get_output_shapes()[ros]
 						hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
 
 					elif(layer.__name__ == "build_layer_Conv2DTranspose" or layer.__name__ == "build_layer_UpSampling2D"):
@@ -286,12 +268,12 @@ class Neural_Architecture:
 						if(abs(ros) == len(self.get_real_output_shapes())-1 and len(self.get_real_output_shapes()) >= 2):
 							_layers += layer(self.get_real_output_shapes()[ros], hidden_input_shape)
 
-							if(not layer_aux):
+							if(not _layers):
 								return None
 
 							_layers += layer(hidden_input_shape, hidden_output_shape)
 
-							if(not layer_aux):
+							if(not _layers):
 								return None
 
 							#stop model building
@@ -315,7 +297,7 @@ class Neural_Architecture:
 					else:
 						_layers += layer(hidden_input_shape, self.get_output_shapes()[ros])
 
-						if(not layer):
+						if(not _layers):
 							return None
 
 						hidden_input_shape = self.get_output_shapes()[ros]
@@ -522,42 +504,7 @@ class Iterative_Naive_NAS:
 	#returns a list of layers
 	def build_layer_UpSampling2D(self, input_shape, output_shape):
 		#augment dimension with Dense layer
-		upsampling_layers = []
-
-		#MODEL Reshape Dense Reshape
-		#model  = tf.keras.Sequential()
-
-		#dilation_factor = (output_shape[0]*output_shape[1]) // (input_shape[0]*input_shape[1])
-
-		#model.add(tf.keras.layers.Reshape((input_shape[0]*input_shape[1],)))
-
-		#model.add(layers[0](input_shape[0]*input_shape[1] * dilation_factor))
-
-		#model.add(tf.keras.layers.Reshape(output_shape))
-
-
-		#model.build(input_shape=(None, ) + input_shape)
-
-		#print(model.summary())
-
-		#MODEL Reshape Dense Reshape UpSample Conv
-		#reshape to only one dimension
-		#Dense to augment features
-		#Reshape to have a 2D voxel time and each one has a feature map
-		#UpSample to a two times bigger 2D voxel time 
-		#Downsample with a Convolution 2D from a feature map to only one feature
-		#_________________________
-		#Layer (type)                 Output Shape              Param #
-		#=================================================================
-		#dense_1 (Dense)              (None, 3200)              323200
-		#_________________________________________________________________
-		#reshape_1 (Reshape)          (None, 5, 5, 128)         0
-		#_________________________________________________________________
-		#up_sampling2d_1 (UpSampling2 (None, 10, 10, 128)       0
-		#_________________________________________________________________
-		#conv2d_1 (Conv2D)            (None, 10, 10, 1)         1153
-		#======================
-		
+		upsampling_layers = []		
 
 		dilation_factor = (output_shape[0]*output_shape[1]) // (input_shape[0]*input_shape[1])
 
