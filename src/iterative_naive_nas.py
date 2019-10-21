@@ -78,7 +78,7 @@ class Multi_Modal_Model:
 
 		#DEFINE NEW SHAPE DOMAIN - FIRST LEVEL DOMAIN
 		if(self.get_level() == 1):
-			for i in range(int(64*5)+100, 7082, 500):
+			for i in range(int(64*5)+100, 1000, 500):
 				domain += [i]
 
 			output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',
@@ -158,7 +158,7 @@ class Neural_Architecture:
 		#1-Conv2D
 		#2-Conv2DTranspose
 		#3-Conv3D
-		#4-Conv3DTranspose
+		#4-Conv3DTranspose14164
 
 
 		if(last_layer.__name__ == "build_layer_Conv3D"):
