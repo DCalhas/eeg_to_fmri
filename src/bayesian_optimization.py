@@ -63,7 +63,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	sess = tf.Session(config=config)
 
 	with sess:
-		tf.keras.backend.clear_session()
+		
 		#convert to tensors, for the networks to accept it as input
 		X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
 		X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
@@ -79,7 +79,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		X_val_bold = pooling(X_val_bold)
 		X_train_bold = normalization(X_train_bold)
 		X_val_bold = normalization(X_val_bold)
-		tf.keras.backend.clear_session()
+		
 
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
@@ -112,7 +112,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		sess = tf.Session(config=config)
 
 		with sess:
-			tf.keras.backend.clear_session()
+			
 			eeg_input_shape = (X_train_eeg.shape[1], X_train_eeg.shape[2], X_train_eeg.shape[3], 1)
 			current_eeg_hidden_shape = (current_eeg_hidden_shape,) + output_shape
 			eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, current_eeg_hidden_shape)
@@ -139,7 +139,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 			######################################################################################################
 			print("Starting training")
 
-			tf.keras.backend.clear_session()
+			
 
 			validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 				epochs=100, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
@@ -150,11 +150,11 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 				tv_y=tv_y)
 
 			sess.close()
-			tf.keras.backend.clear_session()
+			
 
 		print("Model: " + model_name +
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
-		tf.keras.backend.clear_session()
+		
 		return validation_loss
 
 	optimizer = GPyOpt.methods.BayesianOptimization(
@@ -251,7 +251,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 	with sess:
 
-		tf.keras.backend.clear_session()
+		
 	
 		#convert to tensors, for the networks to accept it as input
 		X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
@@ -269,7 +269,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		X_train_bold = normalization(X_train_bold)
 		X_val_bold = normalization(X_val_bold)
 
-		tf.keras.backend.clear_session()
+		
 
 
 	def bayesian_optimization_function(x):
@@ -324,7 +324,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			######################################################################################################
 			print("Starting training")
 
-			tf.keras.backend.clear_session()
+			
 			
 			validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
 				epochs=20, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
@@ -335,11 +335,11 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 				tv_y=tv_y)
 
 			sess.close()
-			tf.keras.backend.clear_session()
+			
 
 		print("Model: " + model_name +
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
-		tf.keras.backend.clear_session()
+		
 		return validation_loss
 
 	optimizer = GPyOpt.methods.BayesianOptimization(
@@ -454,7 +454,7 @@ def default_BO():
 		#
 		######################################################################################################
 		print("Starting training")
-		tf.keras.backend.clear_session()
+		
 		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_model, multi_modal_model, 
 			epochs=100, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 			linear_combination=current_loss_coefficient,
@@ -465,7 +465,7 @@ def default_BO():
 
 		print("Model: " + model_name +
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
-		tf.keras.backend.clear_session()
+		
 		return validation_loss
 
 	optimizer = GPyOpt.methods.BayesianOptimization(
