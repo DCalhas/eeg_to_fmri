@@ -326,17 +326,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			######################################################################################################
 			print("Starting training")
 
-
-		gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-		config = tf.ConfigProto(allow_soft_placement=True,
-								gpu_options=gpu_options)
-		config.gpu_options.allow_growth=True
-
-		sess = tf.Session(config=config)
-
-		with sess:
-
 			tf.keras.backend.clear_session()
+			
 			validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
 				epochs=20, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 				linear_combination=current_loss_coefficient,
@@ -344,6 +335,9 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 				X_val_eeg=X_val_eeg,
 				X_val_bold=X_val_bold,
 				tv_y=tv_y)
+
+			sess.close()
+			tf.keras.backend.clear_session()
 
 		print("Model: " + model_name +
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
