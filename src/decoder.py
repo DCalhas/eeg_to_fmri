@@ -169,11 +169,11 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     for epoch in range(epochs):
         
         losses = custom_training_loss()
-        print(tf.size(X_train_eeg).eval())
-        for batch_init in range(0, tf.size(X_train_eeg), batch_size):
+        
+        for batch_init in range(0, tf.size(X_train_eeg).eval(), batch_size):
             batch_start = batch_init
-            if(batch_start + batch_size >= tf.size(X_train_eeg)):
-                batch_stop = tf.size(X_train_eeg)
+            if(batch_start + batch_size >= tf.size(X_train_eeg).eval()):
+                batch_stop = tf.size(X_train_eeg).eval()
             else:
                 batch_stop = batch_start + batch_size
             
