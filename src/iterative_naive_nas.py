@@ -15,9 +15,9 @@ os.environ['TF_CUDNN_USE_AUTOTUNE']='0'
 os.environ['TF_CUDNN_DETERMINISTIC']='1'
 
 
-layers = [tf.keras.layers.Dense, tf.keras.layers.Conv2D, tf.keras.layers.Conv2DTranspose, 
-								tf.keras.layers.Conv3D, tf.keras.layers.Conv3DTranspose, 
-								tf.keras.layers.UpSampling2D, tf.keras.layers.UpSampling3D]
+layers = [tf.layers.Dense, tf.layers.Conv2D, tf.layers.Conv2DTranspose, 
+								tf.layers.Conv3D, tf.layers.Conv3DTranspose, 
+								tf.layers.UpSampling2D, tf.layers.UpSampling3D]
 
 
 
@@ -314,7 +314,7 @@ class Neural_Architecture:
 				model.add(l)
 
 			if(len(hidden_input_shape) == 3 and len(input_shape) == 4):
-				model.add(tf.keras.layers.Reshape(hidden_input_shape))
+				model.add(tf.layers.Reshape(hidden_input_shape))
 
 			model.build(input_shape=input_shape)
 
@@ -480,7 +480,7 @@ class Iterative_Naive_NAS:
 		for dim in output_shape:
 			shape *= dim
 
-		return [layers[0](shape, input_shape=input_shape), tf.keras.layers.Reshape(output_shape)]
+		return [layers[0](shape, input_shape=input_shape), tf.layers.Reshape(output_shape)]
 
 
 	def build_layer_Conv2D(self, input_shape, output_shape):
@@ -517,13 +517,13 @@ class Iterative_Naive_NAS:
 
 		dilation_factor_y = (output_shape[1]) // (input_shape[1])
 
-		upsampling_layers += [tf.keras.layers.Reshape((input_shape[0]*input_shape[1],), input_shape=input_shape)]
+		upsampling_layers += [tf.layers.Reshape((input_shape[0]*input_shape[1],), input_shape=input_shape)]
 
 		upsampling_layers += [layers[0](input_shape[0]*input_shape[1] * dilation_factor)]
 
-		upsampling_layers += [tf.keras.layers.Reshape( (input_shape[0], input_shape[1], dilation_factor) )]
+		upsampling_layers += [tf.layers.Reshape( (input_shape[0], input_shape[1], dilation_factor) )]
 
-		upsampling_layers += [tf.keras.layers.UpSampling2D( (dilation_factor_x, dilation_factor_y) )]
+		upsampling_layers += [tf.layers.UpSampling2D( (dilation_factor_x, dilation_factor_y) )]
 		
 		#we need to perform padding to match the output shape desired
 		#for now Zero_padding
@@ -532,11 +532,11 @@ class Iterative_Naive_NAS:
 		diff_y = output_shape[1] - input_shape[1] * dilation_factor_y
 
 		if(diff_x != 0 or diff_y != 0):
-			upsampling_layers += [tf.keras.layers.ZeroPadding2D(padding=((0, diff_x), (0, diff_y)))]
+			upsampling_layers += [tf.layers.ZeroPadding2D(padding=((0, diff_x), (0, diff_y)))]
 
 
 
-		upsampling_layers += [tf.keras.layers.Conv2D(1, (3,3), padding='same')]
+		upsampling_layers += [tf.layers.Conv2D(1, (3,3), padding='same')]
 
 		return upsampling_layers
 
