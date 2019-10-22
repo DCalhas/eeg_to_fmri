@@ -11,8 +11,8 @@ import bayesian_optimization
 
 import os
 
-os.environ['TF_CUDNN_USE_AUTOTUNE']=0
-os.environ['TF_CUDNN_DETERMINISTIC']=1
+os.environ['TF_CUDNN_USE_AUTOTUNE']='0'
+os.environ['TF_CUDNN_DETERMINISTIC']='1'
 
 
 layers = [tf.keras.layers.Dense, tf.keras.layers.Conv2D, tf.keras.layers.Conv2DTranspose, 
