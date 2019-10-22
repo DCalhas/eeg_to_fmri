@@ -179,9 +179,9 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             
             shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
             
-            # Optimize the synthesizer model
+            # Optimize the synthesizer mode
             decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
-            with tf.name_scope("MyOp") as scope:
+            with tf.name_scope("gradient_decoder") as scope:
                 optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
             #now train the compression by correlation model
@@ -189,7 +189,7 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                              [X_train_eeg[batch_start:batch_stop], 
                                                                                  X_train_bold[batch_start:batch_stop]], 
                                                              tr_y[batch_start:batch_stop], decoder_loss, linear_combination)
-            with tf.name_scope("MyOp") as scope:
+            with tf.name_scope("gradient_encoders") as scope:
                 optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
 
             # Track progress
