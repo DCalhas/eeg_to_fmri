@@ -60,6 +60,8 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 							gpu_options=gpu_options)
 	config.gpu_options.allow_growth=True
 
+	tf.reset_default_graph()
+
 	sess = tf.Session(config=config)
 
 	with sess:
@@ -103,15 +105,6 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		#EEG network branch
 		#FIX HOW TO PUT HIDDEN LAYER SHAPE TO BUILD NET
 		#EEG network branch
-
-		gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-		config = tf.ConfigProto(allow_soft_placement=True,
-								gpu_options=gpu_options)
-		config.gpu_options.allow_growth=True
-
-		tf.reset_default_graph()
-
-		sess = tf.Session(config=config)
 
 		with sess:
 			
@@ -249,6 +242,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 							gpu_options=gpu_options)
 	config.gpu_options.allow_growth=True
 
+	tf.reset_default_graph()
+
 	sess = tf.Session(config=config)
 
 	with sess:
@@ -293,15 +288,6 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		######################################################################################################
 		#EEG network branch
 
-		gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-		config = tf.ConfigProto(allow_soft_placement=True,
-								gpu_options=gpu_options)
-		config.gpu_options.allow_growth=True
-
-		tf.reset_default_graph()
-		
-		sess = tf.Session(config=config)
-
 		with sess:
 
 			eeg_input_shape = (X_train_eeg.shape[1], X_train_eeg.shape[2], X_train_eeg.shape[3], 1)
@@ -337,8 +323,6 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 				X_val_eeg=X_val_eeg,
 				X_val_bold=X_val_bold,
 				tv_y=tv_y)
-
-			sess.close()
 			
 
 		print("Model: " + model_name +
@@ -351,6 +335,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 	print("Started Optimization Process")
 	optimizer.run_optimization(max_iter=1)
+
+	sess.close()
 
 	#SAVE BEST MODELS
 	#EEG network branch
