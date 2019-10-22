@@ -208,7 +208,6 @@ class Neural_Architecture:
 	#
 	#######################################################################################################################
 	def build_net(self, input_shape, hidden_output_shape, previous_model=None, verbose=False):
-		tf.reset_default_graph()
 		model = tf.keras.Sequential()
 
 		try:

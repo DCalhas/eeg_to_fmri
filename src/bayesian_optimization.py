@@ -109,6 +109,8 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 								gpu_options=gpu_options)
 		config.gpu_options.allow_growth=True
 
+		tf.reset_default_graph()
+
 		sess = tf.Session(config=config)
 
 		with sess:
@@ -296,6 +298,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 								gpu_options=gpu_options)
 		config.gpu_options.allow_growth=True
 
+		tf.reset_default_graph()
+		
 		sess = tf.Session(config=config)
 
 		with sess:
