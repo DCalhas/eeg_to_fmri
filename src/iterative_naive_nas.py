@@ -17,7 +17,7 @@ os.environ['TF_CUDNN_DETERMINISTIC']='1'
 
 layers = [tf.layers.Dense, tf.layers.Conv2D, tf.layers.Conv2DTranspose, 
 								tf.layers.Conv3D, tf.layers.Conv3DTranspose, 
-								tf.layers.UpSampling2D, tf.layers.UpSampling3D]
+								tf.keras.layers.UpSampling2D, tf.keras.layers.UpSampling3D]
 
 
 
