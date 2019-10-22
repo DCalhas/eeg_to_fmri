@@ -189,8 +189,8 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                              [X_train_eeg[batch_start:batch_stop], 
                                                                                  X_train_bold[batch_start:batch_stop]], 
                                                              tr_y[batch_start:batch_stop], decoder_loss, linear_combination)
-            optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), 
-                                      global_step)
+            #optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), 
+            #                         global_step)
 
             # Track progress
             losses.update_batch_decoder_loss_avg(decoder_loss)
