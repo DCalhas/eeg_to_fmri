@@ -37,14 +37,14 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 
 
 	#add element for new layer output
-	output_shape = (20, 1)
+	output_shape = (int(20), 1)
 
 
 
 	if(not (eeg_domain['domain'] and bold_domain['domain'] and decoder_domain['domain'])):
 		return None, None, None, None
 
-	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(10)), list(range(10, 16)))
+	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
 
 	hyperparameters += [eeg_domain, bold_domain, decoder_domain]
 	
@@ -218,9 +218,9 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 
 	#add element for new layer output
-	output_shape = (20, 1)
+	output_shape = (int(20), 1)
 
-	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(10)), list(range(10, 16)))
+	eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)))
 
 	hyperparameters += output_shape_domain
 
