@@ -79,12 +79,12 @@ class conv_sat:
 
 	def add_solution(self):
 		if(self.is_tuple):
-			kernel_1 = self.conv_solver.model()[self.kernel_1]
-			kernel_2 = self.conv_solver.model()[self.kernel_2]
-			stride_1 = self.conv_solver.model()[self.stride_1]
-			stride_2 = self.conv_solver.model()[self.stride_2]
+			kernel_1 = self.conv_solver.model()[self.kernel_1].as_long()
+			kernel_2 = self.conv_solver.model()[self.kernel_2].as_long()
+			stride_1 = self.conv_solver.model()[self.stride_1].as_long()
+			stride_2 = self.conv_solver.model()[self.stride_2].as_long()
 
-			self.possible_combinations += [((int(kernel_1), int(kernel_2)), (int(stride_1), int(stride_2)))]
+			self.possible_combinations += [((kernel_1, kernel_2), (stride_1, stride_2))]
 			
 			self.conv_solver.add(z3.Or(self.kernel_2 != kernel_2, 
 				z3.Or(self.kernel_2 != kernel_2,
@@ -93,10 +93,10 @@ class conv_sat:
 
 
 		else:
-			kernel_1 = self.conv_solver.model()[self.kernel_1]
-			stride_1 = self.conv_solver.model()[self.stride_1]
+			kernel_1 = self.conv_solver.model()[self.kernel_1].as_long()
+			stride_1 = self.conv_solver.model()[self.stride_1].as_long()
 
-			self.possible_combinations += [(int(kernel_1), int(stride_1))]
+			self.possible_combinations += [(kernel_1, stride_1)]
 			
 			self.conv_solver.add(z3.Or(self.kernel_1 != kernel_1, self.stride_1 != stride_1))
 

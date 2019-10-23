@@ -5,14 +5,9 @@ import numpy as np
 import conv_sat
 
 def get_possible_kernel_size_conv(input_shape, output_shape):
-	print("CONV")
-	print(input_shape, output_shape)
 	return conv_sat.conv_sat(input_shape, output_shape).solve()
 
 def get_possible_kernel_size_deconv(input_shape, output_shape, next_input_shape=None):
-	print("DECONV")
-	print(input_shape, output_shape)
-	
 	return conv_sat.conv_sat(input_shape, output_shape, next_input_shape=next_input_shape).solve()
 	
 
