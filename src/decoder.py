@@ -166,10 +166,17 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                             gpu_options=gpu_options)
     config.gpu_options.allow_growth=True    
 
-    
+
     sess = tf.Session(config=config)
 
     with sess:
+
+        X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
+        X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
+        tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
+        X_val_eeg = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
+        X_val_bold = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
+        tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
 
         validation = False
         if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):

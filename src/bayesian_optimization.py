@@ -285,20 +285,18 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			#convert to tensors, for the networks to accept it as input
 			X_train_eeg_tensor = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
 			X_train_bold_tensor = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
-			tr_y_tensor = tf.convert_to_tensor(tr_y, dtype=np.float32)
 			X_val_eeg_tensor = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
 			X_val_bold_tensor = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
-			tv_y_tensor = tf.convert_to_tensor(tv_y, dtype=np.float32)
 
-			
+
 
 			normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold_tensor.shape[1], X_train_bold_tensor.shape[2], X_train_bold_tensor.shape[3]))
 			pooling = tf.keras.layers.MaxPooling2D((2,1))
 
-			X_train_bold_tensor = pooling(X_train_bold_tensor)
-			X_val_bold_tensor = pooling(X_val_bold_tensor)
-			X_train_bold_tensor = normalization(X_train_bold_tensor)
-			X_val_bold_tensor = normalization(X_val_bold_tensor)
+			X_train_bold_tensor = tf.eval(pooling(X_train_bold_tensor))
+			X_val_bold_tensor = tf.eval(pooling(X_val_bold_tensor))
+			X_train_bold_tensor = tf.eval(normalization(X_train_bold_tensor))
+			X_val_bold_tensor = tf.eval(normalization(X_val_bold_tensor))
 
 			######################################################################################################
 			#
