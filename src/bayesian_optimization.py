@@ -12,6 +12,8 @@ import numpy as np
 import iterative_naive_nas as nas
 
 
+tf.enable_eager_execution()
+
 
 ################################################################################################################################
 #
@@ -104,7 +106,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		#Joining EEG and BOLD branches
 		multi_modal_model = decoder.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
 
-		
+
 		tf.reset_default_graph()
 
 		sess = tf.Session(config=config)
