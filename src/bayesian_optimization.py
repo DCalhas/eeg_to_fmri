@@ -282,20 +282,24 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		sess = tf.Session(config=config)
 
 		with sess:
-			#convert to tensors, for the networks to accept it as input
-			#pretty uglly wrapper around stressing time
-			X_train_eeg_tensor = tf.convert_to_tensor(X_train_eeg, dtype=np.float32).eval()
-			X_train_bold_tensor = tf.convert_to_tensor(X_train_bold, dtype=np.float32).eval()
-			X_val_eeg_tensor = tf.convert_to_tensor(X_val_eeg, dtype=np.float32).eval()
-			X_val_bold_tensor = tf.convert_to_tensor(X_val_bold, dtype=np.float32).eval()
+			#CREATE TF DATA OBJECT TO EXECUTE EAGERLY
+			data = tf.data.Dataset(X_train_eeg)
+
+			print(data)
+
+			exit()
+			X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32).eval()
+			X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32).eval()
+			X_val_eeg = tf.convert_to_tensor(X_val_eeg, dtype=np.float32).eval()
+			X_val_bold = tf.convert_to_tensor(X_val_bold, dtype=np.float32).eval()
 
 			norm = tf.keras.Sequential()
-			norm.add(tf.keras.layers.BatchNormalization(axis=2, input_shape=(X_train_bold_tensor.shape[1], X_train_bold_tensor.shape[2], X_train_bold_tensor.shape[3])))
+			norm.add(tf.keras.layers.BatchNormalization(axis=2, input_shape=(X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3])))
 			norm.add(tf.keras.layers.MaxPooling2D((2,1)))
-			norm.build(input_shape=(X_train_bold_tensor.shape[1], X_train_bold_tensor.shape[2], X_train_bold_tensor.shape[3]))
+			norm.build(input_shape=(X_train_bold.shape[1], X_train_bold.shape[2], X_train_bold.shape[3]))
 
-			X_train_bold_tensor = norm.predict(X_train_bold_tensor)
-			X_val_bold_tensor = norm.predict(X_val_bold_tensor)
+			X_train_bold = norm.predict(X_train_bold)
+			X_val_bold = norm.predict(X_val_bold)
 
 			######################################################################################################
 			#
@@ -306,12 +310,12 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 			
 			
-			validation_loss = decoder.run_training(X_train_eeg_tensor, X_train_bold_tensor, tr_y, eeg_network, decoder_network, multi_modal_network, 
+			validation_loss = decoder.run_training(X_train_eeg, X_train_bolB, tr_y, eeg_network, decoder_network, multi_modal_network, 
 				epochs=20, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 				linear_combination=current_loss_coefficient,
 				batch_size=128,
-				X_val_eeg=X_val_eeg_tensor,
-				X_val_bold=X_val_bold_tensor,
+				X_val_eeg=X_val_eeg,
+				X_val_bold=X_val_bold,
 				tv_y=tv_y, session=sess)
 				
 
