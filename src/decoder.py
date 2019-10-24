@@ -159,7 +159,7 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
     # keep results for plotting
 
-    with session:
+    with session.as_default():
 
         validation = False
         if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):
