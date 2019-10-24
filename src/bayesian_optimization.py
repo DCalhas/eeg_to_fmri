@@ -293,10 +293,10 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold_tensor.shape[1], X_train_bold_tensor.shape[2], X_train_bold_tensor.shape[3]))
 			pooling = tf.keras.layers.MaxPooling2D((2,1))
 
-			X_train_bold_tensor = tf.eval(pooling(X_train_bold_tensor))
-			X_val_bold_tensor = tf.eval(pooling(X_val_bold_tensor))
-			X_train_bold_tensor = tf.eval(normalization(X_train_bold_tensor))
-			X_val_bold_tensor = tf.eval(normalization(X_val_bold_tensor))
+			X_train_bold_tensor = pooling(X_train_bold_tensor).eval()
+			X_val_bold_tensor = pooling(X_val_bold_tensor).eval()
+			X_train_bold_tensor = normalization(X_train_bold_tensor).eval()
+			X_val_bold_tensor = normalization(X_val_bold_tensor).eval()
 
 			######################################################################################################
 			#
