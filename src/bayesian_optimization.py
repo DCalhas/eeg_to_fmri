@@ -201,7 +201,8 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 #
 ################################################################################################################################
 
-
+def debug(X):
+	print(X[0:16].shape)
 def NAS_BO(multi_modal_instance, output_shape_domain):
 
 	print("Optimizing at level ", multi_modal_instance.get_level())
@@ -291,6 +292,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			tv_y_tensor = tf.convert_to_tensor(tv_y, dtype=np.float32)
 
 			print(X_train_eeg_tensor[0:16].shape)
+
+			debug(X_train_eeg_tensor)
 
 			normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold_tensor.shape[1], X_train_bold_tensor.shape[2], X_train_bold_tensor.shape[3]))
 			pooling = tf.keras.layers.MaxPooling2D((2,1))
