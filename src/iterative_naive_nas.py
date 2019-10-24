@@ -215,112 +215,112 @@ class Neural_Architecture:
 	def build_net(self, input_shape, hidden_output_shape, previous_model=None, verbose=False):
 		model = tf.keras.Sequential()
 
-		try:
+		#try:
 
-			_layers = []
+		_layers = []
 
-			if(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
-				_layers += self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])
+		if(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
+			_layers += self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])
 
-				if(not _layers):
-					return None
+			if(not _layers):
+				return None
 
-				hidden_input_shape = hidden_output_shape
-				hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
+			hidden_input_shape = hidden_output_shape
+			hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
 
-			elif(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
-				if(len(self.get_layers()) == 2):
-					_layers += self.get_layers()[0](self.get_output_shapes()[0], input_shape)
-
-					if(not _layers):
-						return None
-
-					hidden_input_shape = input_shape
-
-				elif(len(self.get_layers()) > 2):
-					_layers += self.get_layers()[0](self.get_output_shapes()[0], self.get_real_output_shapes()[-1])
-
-					if(not _layers):
-						return None
-
-					hidden_input_shape = input_shape
-
-			else:
-				_layers += self.get_layers()[0](input_shape, hidden_output_shape)
+		elif(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
+			if(len(self.get_layers()) == 2):
+				_layers += self.get_layers()[0](self.get_output_shapes()[0], input_shape)
 
 				if(not _layers):
 					return None
 
-				hidden_input_shape = hidden_output_shape
+				hidden_input_shape = input_shape
 
-			ros = -1
+			elif(len(self.get_layers()) > 2):
+				_layers += self.get_layers()[0](self.get_output_shapes()[0], self.get_real_output_shapes()[-1])
 
-			if(len(self.get_layers()) > 1):
-				for layer in self.get_layers()[1:]:
-					if(layer.__name__ == "build_layer_Conv3DTranspose"):
-						_layers += layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros])
+				if(not _layers):
+					return None
 
-						ros -= 1
+				hidden_input_shape = input_shape
+
+		else:
+			_layers += self.get_layers()[0](input_shape, hidden_output_shape)
+
+			if(not _layers):
+				return None
+
+			hidden_input_shape = hidden_output_shape
+
+		ros = -1
+
+		if(len(self.get_layers()) > 1):
+			for layer in self.get_layers()[1:]:
+				if(layer.__name__ == "build_layer_Conv3DTranspose"):
+					_layers += layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros])
+
+					ros -= 1
+
+					if(not _layers):
+						return None
+					
+					hidden_input_shape = self.get_output_shapes()[ros]
+					hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
+
+				elif(layer.__name__ == "build_layer_Conv2DTranspose" or layer.__name__ == "build_layer_UpSampling2D"):
+
+					if(abs(ros) == len(self.get_real_output_shapes())-1 and len(self.get_real_output_shapes()) >= 2):
+						_layers += layer(self.get_real_output_shapes()[ros], hidden_input_shape)
 
 						if(not _layers):
 							return None
-						
-						hidden_input_shape = self.get_output_shapes()[ros]
-						hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
 
-					elif(layer.__name__ == "build_layer_Conv2DTranspose" or layer.__name__ == "build_layer_UpSampling2D"):
+						_layers += layer(hidden_input_shape, hidden_output_shape)
 
-						if(abs(ros) == len(self.get_real_output_shapes())-1 and len(self.get_real_output_shapes()) >= 2):
-							_layers += layer(self.get_real_output_shapes()[ros], hidden_input_shape)
-
-							if(not _layers):
-								return None
-
-							_layers += layer(hidden_input_shape, hidden_output_shape)
-
-							if(not _layers):
-								return None
-
-							#stop model building
-							break
-
-						elif(len(self.get_real_output_shapes()) >= 2):
-							_layers += layer(self.get_real_output_shapes()[ros], self.get_real_output_shapes()[ros-1])
-							hidden_input_shape = self.get_real_output_shapes()[ros-1]
-						else:
-							_layers += layer(hidden_input_shape, self.get_real_output_shapes()[ros])
-
-							hidden_input_shape = self.get_real_output_shapes()[ros]
-
-
-						if(not layer):
+						if(not _layers):
 							return None
+
+						#stop model building
+						break
+
+					elif(len(self.get_real_output_shapes()) >= 2):
+						_layers += layer(self.get_real_output_shapes()[ros], self.get_real_output_shapes()[ros-1])
+						hidden_input_shape = self.get_real_output_shapes()[ros-1]
+					else:
+						_layers += layer(hidden_input_shape, self.get_real_output_shapes()[ros])
 
 						hidden_input_shape = self.get_real_output_shapes()[ros]
-						ros -= 1
 
-					else:
-						_layers += layer(hidden_input_shape, self.get_output_shapes()[ros])
 
-						if(not _layers):
-							return None
+					if(not layer):
+						return None
 
-						hidden_input_shape = self.get_output_shapes()[ros]
-						ros -= 1
+					hidden_input_shape = self.get_real_output_shapes()[ros]
+					ros -= 1
 
-				hidden_input_shape = self.get_output_shapes()[ros+1]
+				else:
+					_layers += layer(hidden_input_shape, self.get_output_shapes()[ros])
 
-			for l in _layers:
-				model.add(l)
+					if(not _layers):
+						return None
 
-			if(len(hidden_input_shape) == 3 and len(input_shape) == 4):
-				model.add(tf.layers.Reshape(hidden_input_shape))
+					hidden_input_shape = self.get_output_shapes()[ros]
+					ros -= 1
 
-			model.build(input_shape=input_shape)
+			hidden_input_shape = self.get_output_shapes()[ros+1]
+
+		for l in _layers:
+			model.add(l)
+
+		if(len(hidden_input_shape) == 3 and len(input_shape) == 4):
+			model.add(tf.layers.Reshape(hidden_input_shape))
+
+		model.build(input_shape=input_shape)
 
 		#fix this try and except, so it runs how it is supposed
-		except:
-			print("An exception occured - Not specified which one - layer type: ", self.get_layers()[0].__name__)
+		#except:
+		#	print("An exception occured - Not specified which one - layer type: ", self.get_layers()[0].__name__)
 			return None
 
 		if(verbose):
