@@ -159,57 +159,69 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     X_val_eeg=None, X_val_bold=None, tv_y=None):
     # keep results for plotting
 
-    validation = False
-    if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):
-        validation = True
 
-    global_step = tf.Variable(0)
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+
+    config = tf.ConfigProto(allow_soft_placement=True,
+                            gpu_options=gpu_options)
+    config.gpu_options.allow_growth=True    
+
+    
+    sess = tf.Session(config=config)
+
+    with sess:
+
+        validation = False
+        if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):
+            validation = True
+
+        global_step = tf.Variable(0)
 
 
-    for epoch in range(epochs):
-        
-        losses = custom_training_loss()
-        
-        for batch_init in range(0, tf.size(X_train_eeg).eval(), batch_size):
-            batch_start = batch_init
-            if(batch_start + batch_size >= tf.size(X_train_eeg).eval()):
-                batch_stop = tf.size(X_train_eeg).eval()
-            else:
-                batch_stop = batch_start + batch_size
+        for epoch in range(epochs):
             
-            shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
+            losses = custom_training_loss()
             
-            # Optimize the synthesizer mode
-            decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
-            with tf.name_scope("gradient_decoder") as scope:
-                optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
+            for batch_init in range(0, tf.size(X_train_eeg).eval(), batch_size):
+                batch_start = batch_init
+                if(batch_start + batch_size >= tf.size(X_train_eeg).eval()):
+                    batch_stop = tf.size(X_train_eeg).eval()
+                else:
+                    batch_stop = batch_start + batch_size
+                
+                shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
+                
+                # Optimize the synthesizer mode
+                decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
+                with tf.name_scope("gradient_decoder") as scope:
+                    optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
-            #now train the compression by correlation model
-            encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
-                                                             [X_train_eeg[batch_start:batch_stop], 
-                                                                                 X_train_bold[batch_start:batch_stop]], 
-                                                             tr_y[batch_start:batch_stop], decoder_loss, linear_combination)
-            with tf.name_scope("gradient_encoders") as scope:
-                optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
+                #now train the compression by correlation model
+                encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
+                                                                 [X_train_eeg[batch_start:batch_stop], 
+                                                                                     X_train_bold[batch_start:batch_stop]], 
+                                                                 tr_y[batch_start:batch_stop], decoder_loss, linear_combination)
+                with tf.name_scope("gradient_encoders") as scope:
+                    optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
 
-            # Track progress
-            losses.update_batch_decoder_loss_avg(decoder_loss)
-            losses.update_batch_encoder_loss_avg(encoder_loss)
+                # Track progress
+                losses.update_batch_decoder_loss_avg(decoder_loss)
+                losses.update_batch_encoder_loss_avg(encoder_loss)
 
-        # end epoch
-        decoder_loss = losses.get_batch_decoder_loss_avg()
-        encoder_loss = losses.get_batch_encoder_loss_avg()
+            # end epoch
+            decoder_loss = losses.get_batch_decoder_loss_avg()
+            encoder_loss = losses.get_batch_encoder_loss_avg()
 
-        #get validation analyses
+            #get validation analyses
+            shared_eeg_val = eeg_network(X_val_eeg)
+            val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
+            
+            print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
+                "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
+            sys.stdout.flush()
+
         shared_eeg_val = eeg_network(X_val_eeg)
-        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
-        
-        print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
-            "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
-        sys.stdout.flush()
-
-    shared_eeg_val = eeg_network(X_val_eeg)
-    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+        return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
 
 #eeg_input_shape = (64, 5, 20, 1)
 #kernel_size = (eeg_input_shape[1], eeg_input_shape[2], 1)
