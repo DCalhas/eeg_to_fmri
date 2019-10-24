@@ -312,7 +312,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 				batch_size=128,
 				X_val_eeg=X_val_eeg_tensor,
 				X_val_bold=X_val_bold_tensor,
-				tv_y=tv_y)
+				tv_y=tv_y, session=sess)
 				
 
 		print("Model: " + model_name +

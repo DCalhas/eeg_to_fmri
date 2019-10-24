@@ -156,27 +156,10 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     linear_combination=0.5, 
     batch_size=128,
-    X_val_eeg=None, X_val_bold=None, tv_y=None):
+    X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
     # keep results for plotting
 
-
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-
-    config = tf.ConfigProto(allow_soft_placement=True,
-                            gpu_options=gpu_options)
-    config.gpu_options.allow_growth=True    
-
-
-    sess = tf.Session(config=config)
-
-    with sess:
-
-        X_train_eeg = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
-        X_train_bold = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
-        tr_y = tf.convert_to_tensor(tr_y, dtype=np.float32)
-        X_val_eeg = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
-        X_val_bold = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
-        tv_y = tf.convert_to_tensor(tv_y, dtype=np.float32)
+    with session:
 
         validation = False
         if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):
