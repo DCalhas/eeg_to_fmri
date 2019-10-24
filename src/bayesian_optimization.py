@@ -283,24 +283,19 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 		with sess:
 			#convert to tensors, for the networks to accept it as input
-			X_train_eeg_tensor = tf.convert_to_tensor(X_train_eeg, dtype=np.float32)
-			X_train_bold_tensor = tf.convert_to_tensor(X_train_bold, dtype=np.float32)
-			X_val_eeg_tensor = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
-			X_val_bold_tensor = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
+			#pretty uglly wrapper around stressing time
+			X_train_eeg_tensor = tf.convert_to_tensor(X_train_eeg, dtype=np.float32).eval()
+			X_train_bold_tensor = tf.convert_to_tensor(X_train_bold, dtype=np.float32).eval()
+			X_val_eeg_tensor = tf.convert_to_tensor(X_val_eeg, dtype=np.float32).eval()
+			X_val_bold_tensor = tf.convert_to_tensor(X_val_bold, dtype=np.float32).eval()
 
-			print(X_train_bold_tensor.shape)
 			norm = tf.keras.Sequential()
 			norm.add(tf.keras.layers.BatchNormalization(axis=2, input_shape=(X_train_bold_tensor.shape[1], X_train_bold_tensor.shape[2], X_train_bold_tensor.shape[3])))
 			norm.add(tf.keras.layers.MaxPooling2D((2,1)))
 			norm.build(input_shape=(X_train_bold_tensor.shape[1], X_train_bold_tensor.shape[2], X_train_bold_tensor.shape[3]))
 
-			X_train_bold_tensor = norm.predict(X_train_bold_tensor.eval())
-			X_val_bold_tensor = norm.predict(X_val_bold_tensor.eval())
-
-
-
-			print(X_train_bold_tensor)
-			exit()
+			X_train_bold_tensor = norm.predict(X_train_bold_tensor)
+			X_val_bold_tensor = norm.predict(X_val_bold_tensor)
 
 			######################################################################################################
 			#
