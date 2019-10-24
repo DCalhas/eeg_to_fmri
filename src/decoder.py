@@ -29,6 +29,8 @@ from scipy.signal import resample
 
 import tensorflow.compat.v1 as tf
 
+tf.enable_eager_execution()
+
 import tensorflow.keras.backend as K
 
 import sys

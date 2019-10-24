@@ -11,6 +11,7 @@ import numpy as np
 
 import iterative_naive_nas as nas
 
+tf.enable_eager_execution()
 
 
 ################################################################################################################################
@@ -288,6 +289,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			X_val_eeg_tensor = tf.convert_to_tensor(X_val_eeg, dtype=np.float32)
 			X_val_bold_tensor = tf.convert_to_tensor(X_val_bold, dtype=np.float32)
 			tv_y_tensor = tf.convert_to_tensor(tv_y, dtype=np.float32)
+
+			print(X_train_eeg_tensor[0:16].shape)
 
 			normalization = tf.keras.layers.BatchNormalization(axis=2, input_shape=(None, X_train_bold_tensor.shape[1], X_train_bold_tensor.shape[2], X_train_bold_tensor.shape[3]))
 			pooling = tf.keras.layers.MaxPooling2D((2,1))
