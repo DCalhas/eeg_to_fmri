@@ -306,13 +306,13 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 			
 			
-			validation_loss = decoder.run_training(X_train_eeg_tensor, X_train_bold_tensor, tr_y_tensor, eeg_network, decoder_network, multi_modal_network, 
+			validation_loss = decoder.run_training(X_train_eeg_tensor, X_train_bold_tensor, tr_y, eeg_network, decoder_network, multi_modal_network, 
 				epochs=20, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 				linear_combination=current_loss_coefficient,
 				batch_size=128,
 				X_val_eeg=X_val_eeg_tensor,
 				X_val_bold=X_val_bold_tensor,
-				tv_y=tv_y_tensor)
+				tv_y=tv_y)
 				
 
 		print("Model: " + model_name +
