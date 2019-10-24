@@ -295,8 +295,13 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 			X_train_bold_tensor = pooling(X_train_bold_tensor)
 			X_val_bold_tensor = pooling(X_val_bold_tensor)
-			X_train_bold_tensor = normalization(X_train_bold_tensor).eval()
-			X_val_bold_tensor = normalization(X_val_bold_tensor).eval()
+			X_train_bold_tensor = normalization(X_train_bold_tensor)
+			X_val_bold_tensor = normalization(X_val_bold_tensor)
+
+
+
+			print(X_train_bold_tensor)
+			exit()
 
 			######################################################################################################
 			#
