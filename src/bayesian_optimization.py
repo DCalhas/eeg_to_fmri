@@ -300,7 +300,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 
 
-			print(X_train_bold_tensor)
+			print(X_train_bold_tensor.shape)
 			exit()
 
 			######################################################################################################
