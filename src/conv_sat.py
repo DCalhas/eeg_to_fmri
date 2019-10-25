@@ -27,7 +27,7 @@ class conv_sat:
 
 			self.out_1 = z3.Int('out_1')
 			self.out_2 = z3.Int('out_2')
-
+			
 			self.input_shape_1 = int(input_shape[0])
 			self.input_shape_2 = int(input_shape[1])
 

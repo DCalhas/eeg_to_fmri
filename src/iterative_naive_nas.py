@@ -20,7 +20,6 @@ layers = [tf.keras.layers.Dense, tf.keras.layers.Conv2D, tf.keras.layers.Conv2DT
 								tf.keras.layers.UpSampling2D, tf.keras.layers.UpSampling3D]
 
 
-
 class Multi_Modal_Model:
 
 	def __init__(self, eeg_encoder, bold_encoder, decoder, previous_eeg_network, previous_bold_network, previous_decoder_network):
@@ -58,7 +57,6 @@ class Multi_Modal_Model:
 												real_output_shape[3]))
 
 	def build_eeg(self, input_shape, output_shape):
-
 		return self.eeg_encoder.build_net(input_shape, output_shape, previous_model=self.previous_eeg_network, verbose=True)
 
 	def build_bold(self, input_shape, output_shape):
@@ -83,7 +81,7 @@ class Multi_Modal_Model:
 
 		#DEFINE NEW SHAPE DOMAIN - FIRST LEVEL DOMAIN
 		if(self.get_level() == 1):
-			for i in range(int(64*5)+100, 1000, 500):
+			for i in range(int(64*5)+100, bayesian_optimization.n_voxels, 50):
 				domain += [i]
 
 			output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',
@@ -100,8 +98,6 @@ class Multi_Modal_Model:
 
 		#DEFINE NEW SHAPE DOMAIN - SECOND LEVEL DOMAIN - DOMAIN FOR ENCODERS AND DECODER SEPARATE
 		else:
-			print("BUILD DOMAINS FOR EACH BRANCH OF THE NETWORK")
-
 			eeg_domain = self.eeg_encoder.get_hidden_domain()
 			bold_domain = self.bold_encoder.get_hidden_domain()
 			decoder_domain = self.decoder.get_hidden_domain()
@@ -121,7 +117,6 @@ class Multi_Modal_Model:
 			self.bold_encoder.add_output_shape(bold_new_hidden_shape)
 			self.decoder.add_output_shape(decoder_new_hidden_shape)
 
-		print("RUNNING BO")
 		return loss
 
 
@@ -193,14 +188,13 @@ class Neural_Architecture:
 		#dilation factor in order to recontruct midlayer
 		if(self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
 			print(self.get_real_output_shapes())
-			print("\n\n\n\n\n\n")
 			for i in range(self.get_output_shapes()[-1][0], self.get_real_output_shapes()[0][0], 10):
 				domain += [i]
 		elif(self.get_layers()[0].__name__ == "build_layer_Conv2D"):
-			for i in range(self.get_output_shapes()[-1][0], 14164, 10):
+			for i in range(self.get_output_shapes()[-1][0], bayesian_optimization.n_voxels, 10):
 				domain += [i]
 		else:
-			for i in range(int(64*5), self.get_output_shapes()[-1][0], 10):
+			for i in range(int(64*5)+1, self.get_output_shapes()[-1][0], 10):
 				domain += [i]
 
 		return {'name': 'eeg_shape_domain', 'type': 'discrete', 
@@ -220,13 +214,16 @@ class Neural_Architecture:
 		_layers = []
 
 		if(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
-			_layers += self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])
-
-			if(not _layers):
+			if(not self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])):
 				return None
 
-			hidden_input_shape = hidden_output_shape
-			hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
+			_layers += self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])
+
+			aux_model=tf.keras.Sequential()
+			aux_model.add(_layers[0])
+			aux_model.build(input_shape=input_shape)
+			hidden_input_shape = aux_model.layers[0].output_shape[1:]
+
 
 		elif(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
 			if(len(self.get_layers()) == 2):
@@ -258,15 +255,14 @@ class Neural_Architecture:
 		if(len(self.get_layers()) > 1):
 			for layer in self.get_layers()[1:]:
 				if(layer.__name__ == "build_layer_Conv3DTranspose"):
+					print(hidden_input_shape, self.get_output_shapes()[ros])
 					_layers += layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros])
-
-					ros -= 1
 
 					if(not _layers):
 						return None
 					
 					hidden_input_shape = self.get_output_shapes()[ros]
-					hidden_input_shape = (hidden_input_shape[1], hidden_input_shape[2], hidden_input_shape[3], hidden_input_shape[4])
+					ros -= 1
 
 				elif(layer.__name__ == "build_layer_Conv2DTranspose" or layer.__name__ == "build_layer_UpSampling2D"):
 

@@ -42,13 +42,13 @@ import sys
 #
 #############################################################################################################
 
-def load_data(train_instances, test_instances):
+def load_data(train_instances, test_instances, n_voxels=None):
 
     mask = fmri_utils.get_population_mask()
 
     #Load Data
-    eeg_train, bold_train = deep_cross_corr.get_data(train_instances, masker=mask)
-    eeg_test, bold_test = deep_cross_corr.get_data(test_instances, masker=mask)
+    eeg_train, bold_train = deep_cross_corr.get_data(train_instances, masker=mask, n_voxels=n_voxels)
+    eeg_test, bold_test = deep_cross_corr.get_data(test_instances, masker=mask, n_voxels=n_voxels)
 
     eeg_train = eeg_train.reshape(eeg_train.shape[0], eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
     eeg_test = eeg_test.reshape(eeg_test.shape[0], eeg_test.shape[1], eeg_test.shape[2], eeg_test.shape[3], 1)
@@ -121,8 +121,8 @@ def grad_decoder(model, inputs, targets):
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
 
 def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combination):
-    with tf.GradientTape() as tape:    
-        tape.watch(inputs)
+    with tf.GradientTape(watch_accessed_variables=False) as tape:
+        tape.watch(model.variables)
 
         outputs = model(inputs)
         
@@ -170,10 +170,10 @@ def run_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         
         losses = custom_training_loss()
         
-        for batch_init in range(0, tf.size(X_train_eeg).eval(), batch_size):
+        for batch_init in range(0, len(X_train_eeg), batch_size):
             batch_start = batch_init
-            if(batch_start + batch_size >= tf.size(X_train_eeg).eval()):
-                batch_stop = tf.size(X_train_eeg).eval()
+            if(batch_start + batch_size >= len(X_train_eeg)):
+                batch_stop = len(X_train_eeg)
             else:
                 batch_stop = batch_start + batch_size
             

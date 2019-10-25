@@ -28,7 +28,7 @@ n_epochs = 20
 #16 - corresponds to a 20 second length signal with 10 time points
 #32 - corresponds to a 10 second length signal with 5 time points
 #individuals is a list of indexes until the maximum number of individuals
-def get_data(individuals, masker=None, start_cutoff=3, n_partitions=16):
+def get_data(individuals, masker=None, start_cutoff=3, n_partitions=16, n_voxels=None):
     TR = 1/2.160
     
     X = []
@@ -52,11 +52,14 @@ def get_data(individuals, masker=None, start_cutoff=3, n_partitions=16):
         
         fmri_resampled = []
         #build resampled BOLD signal
-        for voxel in range(fmri_masked_instance.shape[1]):
+        if(n_voxels == None):
+        	n_voxels = fmri_masked_instance.shape[1]
+
+        for voxel in range(n_voxels):
             voxel = fmri_utils.get_voxel(fmri_masked_instance, voxel=voxel)
             voxel_resampled = resample(voxel, int((len(voxel)*(1/2))/TR))
             fmri_resampled += [voxel_resampled]
-        
+
         fmri_resampled = np.array(fmri_resampled)
         #print(fmri_resampled.shape)
         #fmri_resampled = fmri_resampled.reshape(fmri_resampled.shape[1], fmri_resampled.shape[0])
