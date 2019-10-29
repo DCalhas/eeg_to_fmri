@@ -254,14 +254,12 @@ class Neural_Architecture:
 		if(len(self.get_layers()) > 1):
 			for layer in self.get_layers()[1:]:
 				if(layer.__name__ == "build_layer_Conv3DTranspose"):
-					#add case of last layer
-					print(hidden_input_shape, self.get_output_shapes()[ros])
-					print(self.get_output_shapes(), self.get_real_output_shapes())
 					_layers += layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros])
 
 					if(not _layers):
 						return None
 					
+					#real output shape has the channel and band resolution
 					hidden_input_shape = self.get_real_output_shapes()[ros]
 					ros -= 1
 

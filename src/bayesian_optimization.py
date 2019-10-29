@@ -255,8 +255,6 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		current_shape = (current_shape,) + output_shape
 		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, current_shape)
 
-		print(eeg_network.summary())
-
 		#BOLD network branch
 		bold_input_shape = (X_train_bold.shape[1], X_train_bold.shape[2], 1)
 		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_shape)
