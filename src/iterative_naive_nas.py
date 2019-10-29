@@ -114,13 +114,8 @@ class Multi_Modal_Model:
 			decoder_new_hidden_shape = (int(decoder_new_hidden_shape), int(20), 1)
 
 			self.eeg_encoder.add_output_shape(eeg_new_hidden_shape)
-			print(self.bold_encoder.get_output_shapes())
 			self.bold_encoder.add_output_shape(bold_new_hidden_shape)
-			print(self.bold_encoder.get_output_shapes())
-			print(self.decoder.get_output_shapes())
 			self.decoder.add_output_shape(decoder_new_hidden_shape)
-			print(self.decoder.get_output_shapes())
-			print("\n\n\n\n\n\n\n\n\n")
 
 		return loss
 
