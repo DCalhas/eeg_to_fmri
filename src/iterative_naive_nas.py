@@ -262,7 +262,7 @@ class Neural_Architecture:
 					if(not _layers):
 						return None
 					
-					hidden_input_shape = self.get_output_shapes()[ros]
+					hidden_input_shape = self.get_real_output_shapes()[ros]
 					ros -= 1
 
 				elif(layer.__name__ == "build_layer_Conv2DTranspose" or layer.__name__ == "build_layer_UpSampling2D"):
