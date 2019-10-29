@@ -179,6 +179,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 
 	print("Optimized Parameters: {0}".format(optimizer.x_opt))
 	print("Optimized Validation Decoder Loss: {0}".format(optimizer.fx_opt))
+	print("\n\n\n\n\n\n\n\n\n\n")
 
 	return optimizer.x_opt[-3], optimizer.x_opt[-2], optimizer.x_opt[-1], optimizer.fx_opt
 
