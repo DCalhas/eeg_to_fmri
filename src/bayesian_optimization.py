@@ -90,7 +90,8 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		#
 		#										DEFINING ARCHITECTURES
 		#
-		######################################################################################################
+		########################################    return super(Sequential, self).call(inputs, training=training, mask=mask)
+##############################################################
 		#EEG network branch
 		#FIX HOW TO PUT HIDDEN LAYER SHAPE TO BUILD NET
 		#EEG network branch
@@ -133,6 +134,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		######################################################################################################
 		print("Starting training")		
 		
+		#exception can appear
 		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 			epochs=20, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 			linear_combination=current_loss_coefficient,
@@ -252,6 +254,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		current_shape = (current_shape,) + output_shape
 		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, current_shape)
 
+		print(eeg_network.summary())
+
 		#BOLD network branch
 		bold_input_shape = (X_train_bold.shape[1], X_train_bold.shape[2], 1)
 		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_shape)
@@ -280,8 +284,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		######################################################################################################
 		print("Starting training")
 
-		
-		
+		#this try should be checked
 		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
 			epochs=20, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 			linear_combination=current_loss_coefficient,

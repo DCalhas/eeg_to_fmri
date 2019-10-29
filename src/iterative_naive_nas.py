@@ -81,7 +81,7 @@ class Multi_Modal_Model:
 
 		#DEFINE NEW SHAPE DOMAIN - FIRST LEVEL DOMAIN
 		if(self.get_level() == 1):
-			for i in range(int(64*5)+100, bayesian_optimization.n_voxels, 50):
+			for i in range(int(64*5), bayesian_optimization.n_voxels, 50):
 				domain += [i]
 
 			output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',
@@ -114,8 +114,13 @@ class Multi_Modal_Model:
 			decoder_new_hidden_shape = (int(decoder_new_hidden_shape), int(20), 1)
 
 			self.eeg_encoder.add_output_shape(eeg_new_hidden_shape)
+			print(self.bold_encoder.get_output_shapes())
 			self.bold_encoder.add_output_shape(bold_new_hidden_shape)
+			print(self.bold_encoder.get_output_shapes())
+			print(self.decoder.get_output_shapes())
 			self.decoder.add_output_shape(decoder_new_hidden_shape)
+			print(self.decoder.get_output_shapes())
+			print("\n\n\n\n\n\n\n\n\n")
 
 		return loss
 
@@ -187,14 +192,13 @@ class Neural_Architecture:
 
 		#dilation factor in order to recontruct midlayer
 		if(self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
-			print(self.get_real_output_shapes())
 			for i in range(self.get_output_shapes()[-1][0], self.get_real_output_shapes()[0][0], 10):
 				domain += [i]
 		elif(self.get_layers()[0].__name__ == "build_layer_Conv2D"):
 			for i in range(self.get_output_shapes()[-1][0], bayesian_optimization.n_voxels, 10):
 				domain += [i]
 		else:
-			for i in range(int(64*5)+1, self.get_output_shapes()[-1][0], 10):
+			for i in range(int(64*5), self.get_output_shapes()[-1][0], 10):
 				domain += [i]
 
 		return {'name': 'eeg_shape_domain', 'type': 'discrete', 
@@ -255,7 +259,6 @@ class Neural_Architecture:
 		if(len(self.get_layers()) > 1):
 			for layer in self.get_layers()[1:]:
 				if(layer.__name__ == "build_layer_Conv3DTranspose"):
-					print(hidden_input_shape, self.get_output_shapes()[ros])
 					_layers += layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros])
 
 					if(not _layers):
@@ -586,6 +589,7 @@ class Iterative_Naive_NAS:
 		#ecoder_layers = [self.build_layer_UpSampling2D]
 
 		synthesizer = Multi_Modal_Model(None, None, None, None, None, None)
+		best_synthesizer = Multi_Modal_Model(None, None, None, None, None, None)
 
 		while(len(eeg_queue) and len(bold_queue) and len(decoder_queue) and self.improved):
 
@@ -627,6 +631,7 @@ class Iterative_Naive_NAS:
 				val_loss = synthesizer.BO()
 				self.tested_architectures[synthesizer] = val_loss
 				if(val_loss <= self.best_loss):
+					best_synthesizer = Multi_Modal_Model(synthesizer.eeg_encoder, synthesizer.bold_encoder, synthesizer.decoder, None, None, None)
 					self.best_loss = val_loss
 					self.best_depth +=1
 					self.improved=True
@@ -671,6 +676,7 @@ class Iterative_Naive_NAS:
 			#call BO to optimize the output_shape for each layer at this level
 
 		print("FINISHED NAS")
+		print("best_loss, best_depth", self.best_loss, self.best_depth)
 
 		return []
 
