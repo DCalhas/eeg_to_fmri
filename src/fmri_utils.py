@@ -82,6 +82,28 @@ def get_individuals_ids(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMR
 	return individuals
 
 
+def get_individuals_paths(path_fmri='/home/david/eeg_informed_fmri/datasets/01/fMRI/'):
+
+	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
+
+	target_affine = image.load_img(path_fmri + individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').affine
+	target_shape = image.load_img(path_fmri + individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').shape
+	target_shape = (target_shape[0], target_shape[1], target_shape[2])
+
+	for i in range(len(individuals)):
+		individual = individuals[i]
+
+		fmri_file = '/3_nw_mepi_rest_with_cross.nii.gz'
+
+		individual_path = path_fmri + individual + fmri_file
+
+		fmri_image = image.resample_img(image.load_img(individual_path), target_affine=target_affine, target_shape=target_shape)
+
+		individuals[i] = fmri_image
+
+	return individuals
+
+
 ##########################################################################################################################
 #
 #											FMRI UTILS

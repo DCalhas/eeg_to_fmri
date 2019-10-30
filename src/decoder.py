@@ -42,13 +42,17 @@ import sys
 #
 #############################################################################################################
 
-def load_data(train_instances, test_instances, n_voxels=None):
+def load_data(train_instances, test_instances, n_voxels=None, roi=None, roi_ica_components=None):
 
     mask = fmri_utils.get_population_mask()
 
     #Load Data
-    eeg_train, bold_train = deep_cross_corr.get_data(train_instances, masker=mask, n_voxels=n_voxels)
-    eeg_test, bold_test = deep_cross_corr.get_data(test_instances, masker=mask, n_voxels=n_voxels)
+    eeg_train, bold_train = deep_cross_corr.get_data(train_instances, masker=mask, 
+                                                    n_voxels=n_voxels, roi=roi, 
+                                                    roi_ica_components=roi_ica_components)
+    eeg_test, bold_test = deep_cross_corr.get_data(test_instances, masker=mask, 
+                                                    n_voxels=n_voxels, roi=roi, 
+                                                    roi_ica_components=roi_ica_components)
 
     eeg_train = eeg_train.reshape(eeg_train.shape[0], eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
     eeg_test = eeg_test.reshape(eeg_test.shape[0], eeg_test.shape[1], eeg_test.shape[2], eeg_test.shape[3], 1)
