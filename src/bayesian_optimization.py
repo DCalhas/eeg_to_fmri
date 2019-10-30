@@ -23,7 +23,7 @@ tf.enable_eager_execution(config=config)
 n_voxels = 500
 
 #eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)), n_voxels=n_voxels)
-eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(10)), list(range(10, 12)), roi=0, roi_ica_components=30)
+eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(10)), list(range(10, 12)), roi=1, roi_ica_components=30)
 n_voxels = bold_train.shape[1]
 
 print("Finished Loading Data")
@@ -138,7 +138,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		
 		#exception can appear
 		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
-			epochs=20, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
+			epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 			linear_combination=current_loss_coefficient,
 			batch_size=128,
 			X_val_eeg=X_val_eeg,
@@ -155,7 +155,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=1)
+	optimizer.run_optimization(max_iter=100)
 
 	#SAVE BEST MODELS
 	#EEG network branch
@@ -280,7 +280,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 		#this try should be checked
 		validation_loss = decoder.run_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
-			epochs=20, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
+			epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 			linear_combination=current_loss_coefficient,
 			batch_size=128,
 			X_val_eeg=X_val_eeg,
@@ -297,7 +297,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=1)
+	optimizer.run_optimization(max_iter=100)
 
 	#SAVE BEST MODELS
 	#EEG network branch
