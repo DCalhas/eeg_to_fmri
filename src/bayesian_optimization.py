@@ -11,7 +11,13 @@ import numpy as np
 
 import iterative_naive_nas as nas
 
-tf.enable_eager_execution()
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+config = tf.ConfigProto(allow_soft_placement=True,
+						gpu_options=gpu_options)
+config.gpu_options.allow_growth=True
+
+
+tf.enable_eager_execution(config=config)
 
 
 n_voxels = 500
@@ -67,11 +73,6 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		return None, None, None, None
 
 	hyperparameters += [eeg_domain, bold_domain, decoder_domain]
-
-	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-	config = tf.ConfigProto(allow_soft_placement=True,
-							gpu_options=gpu_options)
-	config.gpu_options.allow_growth=True
 		
 
 	def bayesian_optimization_function(x):
@@ -223,13 +224,6 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	output_shape = (int(20), 1)
 
 	hyperparameters += output_shape_domain
-
-	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-
-	config = tf.ConfigProto(allow_soft_placement=True,
-							gpu_options=gpu_options)
-	config.gpu_options.allow_growth=True		
-
 
 	def bayesian_optimization_function(x):
 		current_learning_rate = float(x[:, 0])
