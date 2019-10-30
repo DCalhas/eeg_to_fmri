@@ -29,7 +29,13 @@ from scipy.signal import resample
 
 import tensorflow.compat.v1 as tf
 
-tf.enable_eager_execution()
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+config = tf.ConfigProto(allow_soft_placement=True,
+                        gpu_options=gpu_options)
+config.gpu_options.allow_growth=True
+
+
+tf.enable_eager_execution(config=config)
 
 import tensorflow.keras.backend as K
 
