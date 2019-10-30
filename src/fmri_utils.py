@@ -20,7 +20,7 @@ from scipy.signal import resample
 #											READING UTILS
 #			
 ##########################################################################################################################
-def get_fmri_instance(individual=0, path_fmri='/home/david/eeg_informed_fmri/datasets/01/fMRI/'):
+def get_fmri_instance(individual=0, path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
 
 	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
@@ -35,7 +35,7 @@ def get_fmri_instance(individual=0, path_fmri='/home/david/eeg_informed_fmri/dat
 	return apply_mask(complete_path, mask_img)
 
 
-def get_fmri_instance_img(individual=0, path_fmri='/home/david/eeg_informed_fmri/datasets/01/fMRI/'):
+def get_fmri_instance_img(individual=0, path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
 
 	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
@@ -47,7 +47,7 @@ def get_fmri_instance_img(individual=0, path_fmri='/home/david/eeg_informed_fmri
 
 	return image.load_img(complete_path)
 
-def get_population_mask(path_fmri='/home/david/eeg_informed_fmri/datasets/01/fMRI/'):
+def get_population_mask(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
 
     individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
@@ -74,7 +74,7 @@ def get_population_mask(path_fmri='/home/david/eeg_informed_fmri/datasets/01/fMR
 
 
 
-def get_individuals_ids(path_fmri='/home/david/eeg_informed_fmri/datasets/01/fMRI/'):
+def get_individuals_ids(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
 
 	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
