@@ -1,10 +1,12 @@
 import matplotlib.pyplot as plt
-from nilearn.masking import apply_mask, compute_epi_mask
-from nilearn.image import smooth_img, index_img, iter_img, clean_img, math_img, mean_img
+
 from nilearn import plotting
 from nilearn import image
+from nilearn import _utils
 from nilearn.input_data import NiftiMasker
-
+from nilearn.decomposition import CanICA
+from nilearn.masking import apply_mask, compute_epi_mask, compute_multi_epi_mask, _apply_mask_fmri
+from nilearn.image import smooth_img, index_img, iter_img, clean_img, math_img, mean_img, new_img_like
 
 import numpy as np
 
@@ -67,10 +69,9 @@ def get_population_mask(path_fmri='/home/david/eeg_informed_fmri/datasets/01/fMR
             
             individuals_images += [fmri_image]
 
-
     concatenated_imgs = image.concat_imgs(individuals_images)
 
-    return NiftiMasker(mask_strategy='epi', standardize=True).fit(concatenated_imgs)
+    return NiftiMasker(compute_multi_epi_mask(individuals_images), standardize=True).fit(concatenated_imgs)
 
 
 
@@ -103,3 +104,60 @@ def get_masked_epi(fmri_instance, masker=None):
 
 def get_inverse_masked_epi(fmri_masked, masker):
 	return masker.inverse_transform(fmri_masked)
+
+
+##########################################################################################################################
+#
+#											EXTRACTION OF ROI TIME SERIES
+#			
+##########################################################################################################################
+###### Canonical ICA
+
+#when its a population of n individuals
+#imgs=[complete_path_ind_1, complete_path_ind_2, ..., complete_path_ind_n]
+def _apply_mask(imgs, mask_img):
+	mask_img = _utils.check_niimg_3d(mask_img)
+
+	mask_img = _utils.check_niimg_3d(mask_img)
+	mask = mask_img.get_data()
+	mask = _utils.as_ndarray(mask, dtype=bool)
+
+	mask_img = new_img_like(mask_img, mask, mask_img.affine)
+
+	return _apply_mask_fmri(imgs, mask_img, dtype='f', smoothing_fwhm=None, ensure_finite=True)
+
+
+class roi_time_series:
+	def __init__(self, canica=None):
+		self.canica = None
+
+	def _set_ICA(self, imgs, n_components=20, verbose=0):
+		self.canica = CanICA(n_components=n_components, smoothing_fwhm=6.,
+							memory="nilearn_cache", memory_level=2,
+							threshold=3., verbose=verbose, random_state=0)
+		self._fit_ICA(imgs)
+
+	def _fit_ICA(self, imgs):
+		self.canica.fit(imgs)
+
+	def get_ROI_time_series(self, imgs, component=0, n_components=20, verbose=False):
+
+		#smooth image
+		fmri_original = image.load_img(imgs)
+		fmri_img = image.smooth_img(fmri_original, fwhm=6)
+
+		#perform ICA and get components
+		if(self.canica == None):
+			if(verbose):
+				print("New ICA computation")
+			self._set_ICA(fmri_img, n_components=n_components)
+
+		components_img = self.canica.components_img_
+
+		#build masker
+		roi_masker = NiftiMasker(mask_img=image.index_img(components_img, component),
+								standardize=True,
+								memory="nilearn_cache",
+								smoothing_fwhm=8)
+
+		return _apply_mask(imgs, roi_masker.mask_img) 
