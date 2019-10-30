@@ -16,7 +16,9 @@ tf.enable_eager_execution()
 
 n_voxels = 500
 
-eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(10)), list(range(10, 16)), n_voxels=n_voxels)
+#eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)), n_voxels=n_voxels)
+eeg_train, bold_train, eeg_test, bold_test = decoder.load_data(list(range(1)), list(range(1, 2)), roi=0, roi_ica_components=30)
+n_voxels = bold_train.shape[1]
 
 print("Finished Loading Data")
 
@@ -90,8 +92,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		#
 		#										DEFINING ARCHITECTURES
 		#
-		########################################    return super(Sequential, self).call(inputs, training=training, mask=mask)
-##############################################################
+		######################################################################################################
 		#EEG network branch
 		#FIX HOW TO PUT HIDDEN LAYER SHAPE TO BUILD NET
 		#EEG network branch

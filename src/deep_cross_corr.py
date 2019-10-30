@@ -28,57 +28,68 @@ n_epochs = 20
 #16 - corresponds to a 20 second length signal with 10 time points
 #32 - corresponds to a 10 second length signal with 5 time points
 #individuals is a list of indexes until the maximum number of individuals
-def get_data(individuals, masker=None, start_cutoff=3, n_partitions=16, n_voxels=None):
-    TR = 1/2.160
-    
-    X = []
-    y = []
+def get_data(individuals, masker=None, start_cutoff=3, n_partitions=16, n_voxels=None, roi=None, roi_ica_components=None):
+	TR = 1/2.160
 
-    for individual in individuals:
-        eeg = eeg_utils.get_eeg_instance(individual)
-        x_instance = []
-        #eeg        
-        for channel in range(len(eeg.ch_names)):   
-            f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=2) 
-            Zxx_mutated = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
+	X = []
+	y = []
 
-            x_instance += [Zxx_mutated]
 
-        x_instance = np.array(x_instance)
+	#setting ICA
+	if(roi != None and roi_ica_components != None):
+		individuals_imgs = fmri_utils.get_individuals_paths()
+		roi_extraction = fmri_utils.roi_time_series()
+		roi_extraction._set_ICA(individuals_imgs, n_components=roi_ica_components)
 
-        #fmri
-        fmri_instance = fmri_utils.get_fmri_instance_img(individual)
-        fmri_masked_instance, _ = fmri_utils.get_masked_epi(fmri_instance, masker)
-        
-        fmri_resampled = []
-        #build resampled BOLD signal
-        if(n_voxels == None):
-        	n_voxels = fmri_masked_instance.shape[1]
+	for individual in individuals:
+		eeg = eeg_utils.get_eeg_instance(individual)
+		x_instance = []
+		#eeg        
+		for channel in range(len(eeg.ch_names)):   
+			f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=2) 
+			Zxx_mutated = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
 
-        for voxel in range(n_voxels):
-            voxel = fmri_utils.get_voxel(fmri_masked_instance, voxel=voxel)
-            voxel_resampled = resample(voxel, int((len(voxel)*(1/2))/TR))
-            fmri_resampled += [voxel_resampled]
+			x_instance += [Zxx_mutated]
 
-        fmri_resampled = np.array(fmri_resampled)
-        #print(fmri_resampled.shape)
-        #fmri_resampled = fmri_resampled.reshape(fmri_resampled.shape[1], fmri_resampled.shape[0])
-        #print(fmri_resampled.shape)
-        for partition in range(n_partitions):
-            start_eeg = start_cutoff + int(321/n_partitions)*partition
-            end_eeg = start_cutoff + int(321/n_partitions)*partition + int(321/n_partitions)
-            
-            start_bold = start_eeg
-            end_bold = end_eeg #+ 2
-            
-            X += [x_instance[:,:,start_eeg:end_eeg]]
-            
-            y += list(fmri_resampled[:,start_bold:end_bold].reshape(1, fmri_resampled[:,start_bold:end_bold].shape[0], fmri_resampled[:,start_bold:end_bold].shape[1]))
-        print(np.array(y).shape)
-    X = np.array(X)
-    y = np.array(y)
-    
-    return X, y
+		x_instance = np.array(x_instance)
+
+		#fmri
+		if(roi != None and roi_ica_components != None):
+			fmri_masked_instance = roi_extraction.get_ROI_time_series(individuals_imgs[individual], component=roi)
+		else:
+			fmri_instance = fmri_utils.get_fmri_instance_img(individual)
+			fmri_masked_instance, _ = fmri_utils.get_masked_epi(fmri_instance, masker)
+
+		fmri_resampled = []
+		#build resampled BOLD signal
+		if(n_voxels == None):
+			n_voxels = fmri_masked_instance.shape[1]
+
+		for voxel in range(n_voxels):
+			voxel = fmri_utils.get_voxel(fmri_masked_instance, voxel=voxel)
+			voxel_resampled = resample(voxel, int((len(voxel)*(1/2))/TR))
+			fmri_resampled += [voxel_resampled]
+
+		fmri_resampled = np.array(fmri_resampled)
+		#print(fmri_resampled.shape)
+		#fmri_resampled = fmri_resampled.reshape(fmri_resampled.shape[1], fmri_resampled.shape[0])
+		#print(fmri_resampled.shape)
+		for partition in range(n_partitions):
+			start_eeg = start_cutoff + int(321/n_partitions)*partition
+			end_eeg = start_cutoff + int(321/n_partitions)*partition + int(321/n_partitions)
+
+			start_bold = start_eeg
+			end_bold = end_eeg #+ 2
+
+			X += [x_instance[:,:,start_eeg:end_eeg]]
+
+			y += list(fmri_resampled[:,start_bold:end_bold].reshape(1, fmri_resampled[:,start_bold:end_bold].shape[0], fmri_resampled[:,start_bold:end_bold].shape[1]))
+		print(np.array(y).shape)
+
+	X = np.array(X)
+	y = np.array(y)
+
+	return X, y
 
 def create_eeg_bold_pairs(eeg, bold):
 	x_eeg = []
