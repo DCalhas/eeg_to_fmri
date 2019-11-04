@@ -63,6 +63,8 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	{'name': 'l1_penalization_decoder', 'type': 'continuous',
 	'domain': (10e-5, 10e-1)},
 	{'name': 'loss_coefficient', 'type': 'continuous',
+	'domain': (0.0, 1.0)},
+	{'name': 'dropout', 'type': 'continuous',
 	'domain': (0.0, 1.0)}]
 
 
@@ -81,9 +83,10 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		current_l1_penalization_bold = float(x[:, 2])
 		current_l1_penalization_decoder = float(x[:, 3])
 		current_loss_coefficient = float(x[:, 4])
-		current_eeg_hidden_shape = int(x[:, 5])
-		current_bold_hidden_shape = int(x[:, 6])
-		current_decoder_hidden_shape = int(x[:, 7])
+		current_dropout = float(x[:, 5])
+		current_eeg_hidden_shape = int(x[:, 6])
+		current_bold_hidden_shape = int(x[:, 7])
+		current_decoder_hidden_shape = int(x[:, 8])
 
 
 		model_name = 'siamese_net_lr_' + str(current_learning_rate)
@@ -103,16 +106,25 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 
 		eeg_input_shape = (X_train_eeg.shape[1], X_train_eeg.shape[2], X_train_eeg.shape[3], 1)
 		current_eeg_hidden_shape = (current_eeg_hidden_shape,) + output_shape
-		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, current_eeg_hidden_shape)
+		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, 
+													current_eeg_hidden_shape,
+													regularization=current_l1_penalization_eeg,
+													dropout=current_dropout)
 
 		#BOLD network branch
 		bold_input_shape = (X_train_bold.shape[1], X_train_bold.shape[2], 1)
 		current_bold_hidden_shape = (current_bold_hidden_shape,) + output_shape
-		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_bold_hidden_shape)
+		bold_network = multi_modal_instance.build_bold(bold_input_shape, 
+													current_bold_hidden_shape,
+													regularization=current_l1_penalization_bold,
+													dropout=current_dropout)
 
 		current_decoder_hidden_shape = (current_decoder_hidden_shape,) + output_shape
 		#THE ERROR IS HERE; PUT current_decoder_hidden_shape as the second argument, and the first argument is the compressed size
-		decoder_network = multi_modal_instance.build_decoder(current_decoder_hidden_shape, bold_input_shape)
+		decoder_network = multi_modal_instance.build_decoder(current_decoder_hidden_shape, 
+															bold_input_shape,
+															regularization=current_l1_penalization_decoder,
+															dropout=current_dropout)
 
 		if(not (eeg_network and bold_network and decoder_network)):
 			return 1
@@ -217,6 +229,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	{'name': 'l1_penalization_decoder', 'type': 'continuous',
 	'domain': (10e-5, 10e-1)},
 	{'name': 'loss_coefficient', 'type': 'continuous',
+	'domain': (0.0, 1.0)},
+	{'name': 'dropout', 'type': 'continuous',
 	'domain': (0.0, 1.0)}]
 
 
@@ -231,7 +245,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		current_l1_penalization_bold = float(x[:, 2])
 		current_l1_penalization_decoder = float(x[:, 3])
 		current_loss_coefficient = float(x[:, 4])
-		current_shape = int(x[:, 5])
+		current_dropout = float(x[:, 5])
+		current_shape = int(x[:, 6])
 
 
 		model_name = 'siamese_net_lr_' + str(current_learning_rate)
@@ -248,14 +263,23 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	
 		eeg_input_shape = (X_train_eeg.shape[1], X_train_eeg.shape[2], X_train_eeg.shape[3], 1)
 		current_shape = (current_shape,) + output_shape
-		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, current_shape)
+		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, 
+													current_shape,
+													regularization=current_l1_penalization_eeg,
+													dropout=current_dropout)
 
 		#BOLD network branch
 		bold_input_shape = (X_train_bold.shape[1], X_train_bold.shape[2], 1)
-		bold_network = multi_modal_instance.build_bold(bold_input_shape, current_shape)
+		bold_network = multi_modal_instance.build_bold(bold_input_shape, 
+													current_shape,
+													regularization=current_l1_penalization_bold,
+													dropout=current_dropout)
 
 		#Decoder network branch
-		decoder_network = multi_modal_instance.build_decoder(current_shape, bold_input_shape)
+		decoder_network = multi_modal_instance.build_decoder(current_shape, 
+															bold_input_shape,
+															regularization=current_l1_penalization_decoder,
+															dropout=current_dropout)
 
 		if(not (eeg_network and bold_network and decoder_network)):
 			return 1.0

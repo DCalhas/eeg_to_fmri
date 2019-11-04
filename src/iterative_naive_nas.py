@@ -19,6 +19,8 @@ layers = [tf.keras.layers.Dense, tf.keras.layers.Conv2D, tf.keras.layers.Conv2DT
 								tf.keras.layers.Conv3D, tf.keras.layers.Conv3DTranspose, 
 								tf.keras.layers.UpSampling2D, tf.keras.layers.UpSampling3D]
 
+l1_reg = tf.keras.regularizers.l1
+l2_reg = tf.keras.regularizers.l2
 
 class Multi_Modal_Model:
 
@@ -56,16 +58,28 @@ class Multi_Modal_Model:
 												real_output_shape[2], 
 												real_output_shape[3]))
 
-	def build_eeg(self, input_shape, output_shape):
-		return self.eeg_encoder.build_net(input_shape, output_shape, previous_model=self.previous_eeg_network, verbose=True)
+	def build_eeg(self, input_shape, output_shape, regularization=0.0, dropout=0.0):
+		return self.eeg_encoder.build_net(input_shape, output_shape, 
+										previous_model=self.previous_eeg_network,
+										regularization=regularization,
+										dropout=dropout,
+										verbose=True)
 
-	def build_bold(self, input_shape, output_shape):
+	def build_bold(self, input_shape, output_shape, regularization=0.0, dropout=0.0):
 
-		return self.bold_encoder.build_net(input_shape, output_shape, previous_model=self.previous_bold_network, verbose=True)
+		return self.bold_encoder.build_net(input_shape, output_shape, 
+										previous_model=self.previous_bold_network,
+										regularization=regularization,
+										dropout=dropout,
+										verbose=True)
 
-	def build_decoder(self, input_shape, output_shape):
+	def build_decoder(self, input_shape, output_shape, regularization=0.0, dropout=0.0):
 
-		return self.decoder.build_net(input_shape, output_shape, previous_model=self.previous_decoder_network, verbose=True)
+		return self.decoder.build_net(input_shape, output_shape, 
+									previous_model=self.previous_decoder_network,
+									regularization=regularization,
+									dropout=dropout,
+									verbose=True)
 
 	#######################################################################################################################
 	#
@@ -205,7 +219,7 @@ class Neural_Architecture:
 	#											BUILDING TENSORFLOW INSTANCE NETWORK
 	#
 	#######################################################################################################################
-	def build_net(self, input_shape, hidden_output_shape, previous_model=None, verbose=False):
+	def build_net(self, input_shape, hidden_output_shape, previous_model=None, regularization=0.0, dropout=0.0, verbose=False):
 		model = tf.keras.Sequential()
 
 		#try:
@@ -213,10 +227,14 @@ class Neural_Architecture:
 		_layers = []
 
 		if(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
-			if(not self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])):
+			if(not self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1], 
+																		regularization=regularization)):
 				return None
 
-			_layers += self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1])
+			_layers += self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1],
+																			regularization=regularization)
+			if(dropout):
+				_layers += [tf.keras.layers.Dropout(dropout)]
 
 			aux_model=tf.keras.Sequential()
 			aux_model.add(_layers[0])
@@ -226,26 +244,36 @@ class Neural_Architecture:
 
 		elif(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
 			if(len(self.get_layers()) == 2):
-				_layers += self.get_layers()[0](self.get_output_shapes()[0], input_shape)
+				_layers += self.get_layers()[0](self.get_output_shapes()[0], input_shape, regularization=regularization)
 
 				if(not _layers):
 					return None
+
+				if(dropout):
+					_layers += [tf.keras.layers.Dropout(dropout)]
 
 				hidden_input_shape = input_shape
 
 			elif(len(self.get_layers()) > 2):
-				_layers += self.get_layers()[0](self.get_output_shapes()[0], self.get_real_output_shapes()[-1])
+				_layers += self.get_layers()[0](self.get_output_shapes()[0], self.get_real_output_shapes()[-1], 
+																			regularization=regularization)
 
 				if(not _layers):
 					return None
 
+				if(dropout):
+					_layers += [tf.keras.layers.Dropout(dropout)]
+
 				hidden_input_shape = input_shape
 
 		else:
-			_layers += self.get_layers()[0](input_shape, hidden_output_shape)
+			_layers += self.get_layers()[0](input_shape, hidden_output_shape, regularization=regularization)
 
 			if(not _layers):
 				return None
+
+			if(dropout):
+				_layers += [tf.keras.layers.Dropout(dropout)]
 
 			hidden_input_shape = hidden_output_shape
 
@@ -254,10 +282,14 @@ class Neural_Architecture:
 		if(len(self.get_layers()) > 1):
 			for layer in self.get_layers()[1:]:
 				if(layer.__name__ == "build_layer_Conv3DTranspose"):
-					_layers += layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros])
+					_layers += layer(hidden_input_shape, self.get_output_shapes()[ros], next_input_shape=self.get_real_output_shapes()[ros],
+																						regularization=regularization)
 
 					if(not _layers):
 						return None
+
+					if(dropout):
+						_layers += [tf.keras.layers.Dropout(dropout)]
 					
 					#real output shape has the channel and band resolution
 					hidden_input_shape = self.get_real_output_shapes()[ros]
@@ -266,12 +298,15 @@ class Neural_Architecture:
 				elif(layer.__name__ == "build_layer_Conv2DTranspose" or layer.__name__ == "build_layer_UpSampling2D"):
 
 					if(abs(ros) == len(self.get_real_output_shapes())-1 and len(self.get_real_output_shapes()) >= 2):
-						_layers += layer(self.get_real_output_shapes()[ros], hidden_input_shape)
+						_layers += layer(self.get_real_output_shapes()[ros], hidden_input_shape, regularization=regularization)
 
 						if(not _layers):
 							return None
 
-						_layers += layer(hidden_input_shape, hidden_output_shape)
+						if(dropout):
+							_layers += [tf.keras.layers.Dropout(dropout)]
+
+						_layers += layer(hidden_input_shape, hidden_output_shape, regularization=regularization)
 
 						if(not _layers):
 							return None
@@ -280,10 +315,19 @@ class Neural_Architecture:
 						break
 
 					elif(len(self.get_real_output_shapes()) >= 2):
-						_layers += layer(self.get_real_output_shapes()[ros], self.get_real_output_shapes()[ros-1])
+						_layers += layer(self.get_real_output_shapes()[ros], self.get_real_output_shapes()[ros-1],
+																			regularization=regularization)
+
+						if(dropout):
+							_layers += [tf.keras.layers.Dropout(dropout)]
+
 						hidden_input_shape = self.get_real_output_shapes()[ros-1]
 					else:
-						_layers += layer(hidden_input_shape, self.get_real_output_shapes()[ros])
+						_layers += layer(hidden_input_shape, self.get_real_output_shapes()[ros], 
+															regularization=regularization)
+
+						if(dropout):
+							_layers += [tf.keras.layers.Dropout(dropout)]
 
 						hidden_input_shape = self.get_real_output_shapes()[ros]
 
@@ -295,18 +339,24 @@ class Neural_Architecture:
 					ros -= 1
 
 				else:
-					_layers += layer(hidden_input_shape, self.get_output_shapes()[ros])
+					_layers += layer(hidden_input_shape, self.get_output_shapes()[ros],
+														regularization=regularization)
 
 					if(not _layers):
 						return None
+
+					if(dropout):
+						_layers += [tf.keras.layers.Dropout(dropout)]
 
 					hidden_input_shape = self.get_output_shapes()[ros]
 					ros -= 1
 
 			hidden_input_shape = self.get_output_shapes()[ros+1]
 
-		for l in _layers:
-			model.add(l)
+		for l in range(len(_layers)):
+			if(l-1 == len(_layers) and dropout):
+				continue
+			model.add(_layers[l])
 
 		if(len(hidden_input_shape) == 3 and len(input_shape) == 4):
 			model.add(tf.keras.layers.Reshape(hidden_input_shape))
@@ -466,7 +516,7 @@ class Iterative_Naive_NAS:
 	######################################################################################################################################
 
 	#Dense layer is simple to generate
-	def build_layer_Dense(self, input_shape, output_shape):
+	def build_layer_Dense(self, input_shape, output_shape, regularization=0.0):
 		if(type(output_shape) is not int and type(output_shape) is not tuple):
 			return None
 
@@ -474,19 +524,23 @@ class Iterative_Naive_NAS:
 		for dim in output_shape:
 			shape *= dim
 
-		return [layers[0](shape, input_shape=input_shape), tf.keras.layers.Reshape(output_shape)]
+		return [layers[0](shape, input_shape=input_shape, kernel_regularizer=l2_reg(regularization), bias_regularizer=l2_reg(regularization)), 
+				tf.keras.layers.Reshape(output_shape)]
 
-
-	def build_layer_Conv2D(self, input_shape, output_shape):
+	def build_layer_Conv2D(self, input_shape, output_shape, regularization=0.0):
 		generated = self.generate_kernel_stride_Conv2D(input_shape, output_shape)
 
 		if(not generated):
 			return None
 
-		return [layers[1](1, kernel_size=generated['kernel'], strides=generated['stride'], input_shape=input_shape)]
+		return [layers[1](1, kernel_size=generated['kernel'], 
+							strides=generated['stride'], 
+							input_shape=input_shape, 
+							kernel_regularizer=l1_reg(regularization), 
+							bias_regularizer=l1_reg(regularization))]
 
 
-	def build_layer_Conv2DTranspose(self, input_shape, output_shape):
+	def build_layer_Conv2DTranspose(self, input_shape, output_shape, regularization=0.0):
 		generated = self.generate_kernel_stride_Conv2DTranspose(input_shape, output_shape)
 
 		if(not generated):
@@ -497,11 +551,13 @@ class Iterative_Naive_NAS:
 									padding='valid', 
 									output_padding=None,
 									dilation_rate=(1, 1),
-									input_shape=input_shape)]
+									input_shape=input_shape, 
+									kernel_regularizer=l1_reg(regularization), 
+									bias_regularizer=l1_reg(regularization))]
 
 
 	#returns a list of layers
-	def build_layer_UpSampling2D(self, input_shape, output_shape):
+	def build_layer_UpSampling2D(self, input_shape, output_shape, regularization=0.0):
 		#augment dimension with Dense layer
 		upsampling_layers = []		
 
@@ -535,16 +591,20 @@ class Iterative_Naive_NAS:
 		return upsampling_layers
 
 
-	def build_layer_Conv3D(self, input_shape, output_shape):
+	def build_layer_Conv3D(self, input_shape, output_shape, regularization=0.0):
 		generated = self.generate_kernel_stride_Conv3D(input_shape, output_shape)
 
 		if(not generated):
 			return None
 
-		return [layers[3](1, kernel_size=generated['kernel'], strides=generated['stride'], input_shape=input_shape)]
+		return [layers[3](1, kernel_size=generated['kernel'], 
+							strides=generated['stride'], 
+							input_shape=input_shape, 
+							kernel_regularizer=l1_reg(regularization), 
+							bias_regularizer=l1_reg(regularization))]
 
 
-	def build_layer_Conv3DTranspose(self, input_shape, output_shape, next_input_shape=None):
+	def build_layer_Conv3DTranspose(self, input_shape, output_shape, next_input_shape=None, regularization=0.0):
 		generated = self.generate_kernel_stride_Conv3DTranspose(input_shape, output_shape, next_input_shape=next_input_shape)
 
 		if(not generated):
@@ -555,7 +615,9 @@ class Iterative_Naive_NAS:
 									padding='valid', 
 									output_padding=None,
 									dilation_rate=(1, 1, 1),
-									input_shape=input_shape)]
+									input_shape=input_shape, 
+									kernel_regularizer=l1_reg(regularization), 
+									bias_regularizer=l1_reg(regularization))]
 
 
 	######################################################################################################################################
