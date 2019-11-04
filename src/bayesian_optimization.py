@@ -65,7 +65,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	{'name': 'loss_coefficient', 'type': 'continuous',
 	'domain': (0.0, 1.0)},
 	{'name': 'dropout', 'type': 'continuous',
-	'domain': (0.0, 1.0)}]
+	'domain': (0.0, 0.9999)}]
 
 
 	#add element for new layer output
@@ -231,7 +231,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	{'name': 'loss_coefficient', 'type': 'continuous',
 	'domain': (0.0, 1.0)},
 	{'name': 'dropout', 'type': 'continuous',
-	'domain': (0.0, 1.0)}]
+	'domain': (0.0, 0.9999)}]
 
 
 	#add element for new layer output
