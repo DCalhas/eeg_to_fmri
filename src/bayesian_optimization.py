@@ -23,7 +23,7 @@ tf.enable_eager_execution(config=config)
 
 n_voxels = 500
 
-eeg_train, bold_train, eeg_test, bold_test = data_utils.load_data(list(range(1)), list(range(1, 2)), roi=1, roi_ica_components=30)
+eeg_train, bold_train, eeg_test, bold_test = data_utils.load_data(list(range(10)), list(range(10, 12)), roi=1, roi_ica_components=30)
 n_voxels = bold_train.shape[1]
 
 print("Finished Loading Data")
