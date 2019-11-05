@@ -14,7 +14,7 @@ from os.path import isfile, join, isdir
 #											READING UTILS
 #			
 ##########################################################################################################################
-def get_eeg_instance(individual, path_eeg='/home/david/eeg_informed_fmri/datasets/01/EEG/', preprocessed=True):
+def get_eeg_instance(individual, path_eeg='/home/davidcalhas/eeg_to_fmri/datasets/01/EEG/', preprocessed=True):
 
 	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
 
@@ -34,11 +34,11 @@ def get_eeg_instance(individual, path_eeg='/home/david/eeg_informed_fmri/dataset
 
 	return mne.io.read_raw_brainvision(complete_path, preload=True)
 
-def get_eeg_dataset(number_individuals=16, path_eeg='/home/david/eeg_informed_fmri/datasets/01/EEG/', preprocessed=True):
+def get_eeg_dataset(number_individuals=16, path_eeg='/home/davidcalhas/eeg_to_fmri/datasets/01/EEG/', preprocessed=True):
 	individuals = []
 
 	for i in range(number_individuals):
-		individuals += [get_individual(i, path_eeg='/home/david/eeg_informed_fmri/datasets/01/EEG/', preprocessed=True)]
+		individuals += [get_individual(i, path_eeg='/home/davidcalhas/eeg_to_fmri/datasets/01/EEG/', preprocessed=True)]
 
 	return individuals
 

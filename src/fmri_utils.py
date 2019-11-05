@@ -82,7 +82,7 @@ def get_individuals_ids(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMR
 	return individuals
 
 
-def get_individuals_paths(path_fmri='/home/david/eeg_informed_fmri/datasets/01/fMRI/'):
+def get_individuals_paths(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
 
 	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
