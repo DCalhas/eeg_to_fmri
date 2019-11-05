@@ -354,7 +354,7 @@ class Neural_Architecture:
 			hidden_input_shape = self.get_output_shapes()[ros+1]
 
 		for l in range(len(_layers)):
-			if(l-1 == len(_layers) and dropout):
+			if(l == len(_layers)-1 and dropout):
 				continue
 			model.add(_layers[l])
 
