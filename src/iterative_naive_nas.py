@@ -5,7 +5,7 @@ import math
 import tensorflow.compat.v1 as tf
 from tensorflow.python.keras.utils import conv_utils
 
-import gen_dims_utils
+from utils import gen_dims_utils
 
 import bayesian_optimization
 
