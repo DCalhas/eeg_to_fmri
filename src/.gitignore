@@ -1,1 +1,3 @@
 nilearn_cache/
+utils/__pycache__/*
+*__pycache__*
