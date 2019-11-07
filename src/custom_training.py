@@ -61,10 +61,11 @@ def loss_decoder(outputs, targets):
     return K.mean(reconstruction_loss)
 
 def grad_decoder(model, inputs, targets):
+    tensor_inputs = tf.convert_to_tensor(inputs)
     with tf.GradientTape() as tape:    
-        tape.watch(inputs)
+        tape.watch(tensor_inputs)
 
-        outputs = model(inputs)
+        outputs = model(tensor_inputs)
 
         reconstruction_loss = losses_utils.cross_correlation(outputs, targets)
         reconstruction_loss = K.mean(reconstruction_loss)
@@ -72,10 +73,14 @@ def grad_decoder(model, inputs, targets):
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
 
 def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combination):
-    with tf.GradientTape(watch_accessed_variables=False) as tape:
-        tape.watch(model.variables)
+    eeg = tf.convert_to_tensor(inputs[0])
+    bold = tf.convert_to_tensor(inputs[1])
+    with tf.GradientTape() as tape:
+        #tape.watch(model.variables)
+        tape.watch(eeg)
+        tape.watch(bold)
 
-        outputs = model(inputs)
+        outputs = model([eeg, bold])
         
         encoder_loss = linear_combination*abs(losses_utils.contrastive_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
         return encoder_loss,  tape.gradient(encoder_loss, 
@@ -85,7 +90,7 @@ def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combi
 
 def grad_decoder_adversarial(discriminator, synthesizer, z, eeg, loss=losses_utils.loss_minmax_generator):
     with tf.GradientTape(watch_accessed_variables=False) as tape:
-        tape.watch(synthesizer.variables)
+        tape.watch(z)
 
         synthesized = synthesizer(z)
 
@@ -99,10 +104,11 @@ def grad_decoder_adversarial(discriminator, synthesizer, z, eeg, loss=losses_uti
 
 def grad_multi_encoder_adversarial(discriminator, synthesizer, z, eeg, bold, y_pairs, loss=losses_utils.loss_minmax_discriminator):
     with tf.GradientTape(watch_accessed_variables=False) as tape:
-        tape.watch(discriminator.variables)
-
         synthesized = synthesizer(z)
 
+        tape.watch(eeg)
+        tape.watch(bold)
+        tape.watch(synthesized)
         #pair synthesized with eeg
         real_labels = discriminator([eeg, bold])
         gen_labels = discriminator([eeg, synthesized])
@@ -208,8 +214,100 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
 
 
+
 """
-interval_optimization_training
+ranked_synthesis_training
+
+trains a encoder and decoder
+it gives the encoder a contrastive loss, learn most correlated instances
+it gives the decoder a reconstruction losses
+"""
+def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
+    decoder_model, multi_modal_model, epochs=10, 
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    linear_combination=1.0, top_k=5, eeg_train=None, bold_train=None, eeg_val=None, bold_val=None, bold_network=None,
+    batch_size=128,
+    X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
+    # keep results for plotting
+
+    validation = False
+    if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):
+        validation = True
+
+    global_step = tf.Variable(0)
+    encoder_loss, _ = grad_multi_encoder(multi_modal_model, 
+                             [X_train_eeg, X_train_bold], 
+                             tr_y, 0, linear_combination)
+
+    print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss))
+
+    #train encoder first
+    for epoch in range(epochs):
+        
+        losses = custom_training_loss()
+        
+        for batch_init in range(0, len(X_train_eeg), batch_size):
+            batch_start = batch_init
+            if(batch_start + batch_size >= len(X_train_eeg)):
+                batch_stop = len(X_train_eeg)
+            else:
+                batch_stop = batch_start + batch_size
+
+            #now train the compression by correlation model
+            encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
+                                                             [X_train_eeg[batch_start:batch_stop], 
+                                                                                 X_train_bold[batch_start:batch_stop]], 
+                                                             tr_y[batch_start:batch_stop], 0, linear_combination) #decoder loss 0
+            with tf.name_scope("gradient_encoders") as scope:
+                optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
+
+            # Track progress
+            losses.update_batch_encoder_loss_avg(encoder_loss)
+
+        # end epoch
+        encoder_loss = losses.get_batch_encoder_loss_avg()
+
+        print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss))
+        sys.stdout.flush()
+
+    ranked_bold_train = losses_utils.get_ranked_bold(eeg_train, bold_train, corr_model=multi_modal_model, bold_network=bold_network, top_k=top_k)
+    ranked_bold_val = losses_utils.get_ranked_bold(eeg_val, bold_train, corr_model=multi_modal_model, bold_network=bold_network, top_k=top_k)
+
+    for epoch in range(epochs):
+        
+        losses = custom_training_loss()
+        
+        for batch_init in range(0, len(ranked_bold_train), batch_size):
+            batch_start = batch_init
+            if(batch_start + batch_size >= len(ranked_bold_train)):
+                batch_stop = len(ranked_bold_train)
+            else:
+                batch_stop = batch_start + batch_size
+            
+            # Optimize the synthesizer mode
+            decoder_loss, decoder_grads = grad_decoder(decoder_model, 
+                                                        ranked_bold_train[batch_start:batch_stop], 
+                                                        bold_train[batch_start:batch_stop])
+            with tf.name_scope("gradient_decoder") as scope:
+                optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
+
+            # Track progress
+            losses.update_batch_decoder_loss_avg(decoder_loss)
+
+        # end epoch
+        decoder_loss = losses.get_batch_decoder_loss_avg()
+
+        #get validation analyses
+        val_loss = loss_decoder(decoder_model(ranked_bold_val), bold_val)
+        
+        print("Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
+            "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
+        sys.stdout.flush()
+
+    return tf.keras.backend.eval(loss_decoder(decoder_model(ranked_bold_val), bold_val))
+
+"""
+alternate_training
 
 trains a encoder and decoder separately for n intervals
 e.g if n=10 epochs, encoder is trained for 10 epochs then decoder is trained for 10 epochs, and so on
