@@ -629,7 +629,7 @@ class Iterative_Naive_NAS:
 	######################################################################################################################################
 
 
-	def search(self, eeg_input_shape, bold_input_shape):
+	def search(self):
 
 		#queue of Neural_Architecture instances || None is initial state
 		eeg_queue = [None]
@@ -735,6 +735,9 @@ class Iterative_Naive_NAS:
 
 		print("FINISHED NAS")
 		print("best_loss, best_depth", self.best_loss, self.best_depth)
+		print(best_synthesizer.eeg_encoder.get_real_output_shapes(),best_synthesizer.eeg_encoder.get_output_shapes())
+		print(best_synthesizer.bold_encoder.get_real_output_shapes(),best_synthesizer.bold_encoder.get_output_shapes())
+		print(best_synthesizer.decoder.get_real_output_shapes(),best_synthesizer.decoder.get_output_shapes())
 
 		return []
 
@@ -742,11 +745,4 @@ class Iterative_Naive_NAS:
 if __name__ == "__main__":
 	nas = Iterative_Naive_NAS()
 
-	eeg_input_shape = (64, 5, int(20), 1)
-	bold_input_shape = (14000, int(20), 1)
-	nas.search(eeg_input_shape, bold_input_shape)
-	#print(nas.generate_layer_Conv3DTranspose((10, 10, 10, 1), (30, 30, 30, 1)))
-	#print(nas.generate_kernel_stride_Conv2D((10, 10, 1), (5, 5, 1)))
-
-	
-	#nas.build_layer_UpSampling2D((5, int(20), 1), (23, int(20), 1))
+	nas.search()
