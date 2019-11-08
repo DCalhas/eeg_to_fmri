@@ -7,3 +7,5 @@ out_corr.txt
 process.txt
 notebooks/nilearn_cache/
 src/notebooks/nilearn_cache/
+src/utils/__pycache__/
+utils/__pycache__/
