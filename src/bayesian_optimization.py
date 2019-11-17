@@ -160,6 +160,12 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
 			tv_y=tv_y)
+		#validation_loss = custom_training.adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
+		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+		#	batch_size=64, linear_combination=current_loss_coefficient,
+		#	X_val_eeg=X_val_eeg,
+		#	X_val_bold=X_val_bold,
+		#	tv_y=tv_y)
 		#	eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val, bold_network=bold_network)
 		#validation_loss = custom_training.ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
@@ -321,12 +327,18 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		#	X_val_bold=X_val_bold,
 		#	tv_y=tv_y,
 		#	eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val, bold_network=bold_network)
-		validation_loss = custom_training.linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
+		validation_loss = custom_training.adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
 			epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			batch_size=64, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
-			tv_y=tv_y)		
+			tv_y=tv_y)
+		#validation_loss = custom_training.linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_network, 
+		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+		#	batch_size=64, linear_combination=current_loss_coefficient,
+		#	X_val_eeg=X_val_eeg,
+		#	X_val_bold=X_val_bold,
+		#	tv_y=tv_y)		
 
 		print("Model: " + model_name +
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))

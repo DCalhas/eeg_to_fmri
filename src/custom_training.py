@@ -90,6 +90,7 @@ def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combi
 
 def grad_decoder_adversarial(discriminator, synthesizer, z, eeg, loss=losses_utils.loss_minmax_generator):
     with tf.GradientTape(watch_accessed_variables=False) as tape:
+        tape.watch(synthesizer.variables)
         tape.watch(z)
 
         synthesized = synthesizer(z)
@@ -106,9 +107,15 @@ def grad_multi_encoder_adversarial(discriminator, synthesizer, z, eeg, bold, y_p
     with tf.GradientTape(watch_accessed_variables=False) as tape:
         synthesized = synthesizer(z)
 
+        tape.watch(discriminator.variables)
+
+        eeg = tf.convert_to_tensor(eeg)
+        bold = tf.convert_to_tensor(bold)
+
         tape.watch(eeg)
         tape.watch(bold)
         tape.watch(synthesized)
+
         #pair synthesized with eeg
         real_labels = discriminator([eeg, bold])
         gen_labels = discriminator([eeg, synthesized])
