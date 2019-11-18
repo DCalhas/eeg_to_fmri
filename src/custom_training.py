@@ -35,19 +35,23 @@ import sys
 #
 #############################################################################################################
 
-def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network):
+def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None):
     input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
     input_bold = tf.keras.layers.Input(shape=bold_input_shape)
 
     # because we re-use the same instance `base_network`,
     # the weights of the network
     # will be shared across the two branches
+
     processed_eeg = eeg_network(input_eeg)
     processed_bold = bold_network(input_bold)
 
+    if(dcca):
+        dcca = tf.keras.layers.Concatenate(axis=1)([processed_eeg, processed_bold])
+        return tf.keras.Model([input_eeg, input_bold], dcca)
+
     correlation = tf.keras.layers.Lambda(losses_utils.correlation, 
                          output_shape=losses_utils.cos_dist_output_shape, name="correlation_layer")([processed_eeg, processed_bold])
-
     return tf.keras.Model([input_eeg, input_bold], correlation)
 
 #############################################################################################################
@@ -72,7 +76,7 @@ def grad_decoder(model, inputs, targets):
 
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
 
-def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combination):
+def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combination, dcca=False, dcca_output=None):
     eeg = tf.convert_to_tensor(inputs[0])
     bold = tf.convert_to_tensor(inputs[1])
     with tf.GradientTape() as tape:
@@ -82,7 +86,11 @@ def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combi
 
         outputs = model([eeg, bold])
         
-        encoder_loss = linear_combination*abs(losses_utils.contrastive_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
+        if(dcca):
+            dcca_loss = losses_utils.cca_loss(dcca_output, False)
+            encoder_loss = linear_combination*abs(dcca_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
+        else:
+            encoder_loss = linear_combination*abs(losses_utils.contrastive_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
         return encoder_loss,  tape.gradient(encoder_loss, 
                                             model.trainable_weights)
 
@@ -219,6 +227,78 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
 
     shared_eeg_val = eeg_network(X_val_eeg)
     return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+
+
+
+"""
+dcca_training
+
+trains a encoder and decoder
+it gives the decoder a reconstruction loss (cosine loss)
+it gives the encoder a linear combination loss of the reconstruction loss and the dcca loss
+"""
+def dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
+    decoder_model, multi_modal_model, epochs=10, 
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    linear_combination=0.5, dcca_output=None,
+    batch_size=128,
+    X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
+    # keep results for plotting
+
+    validation = False
+    if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):
+        validation = True
+
+    global_step = tf.Variable(0)
+
+
+    for epoch in range(epochs):
+        
+        losses = custom_training_loss()
+        
+        for batch_init in range(0, len(X_train_eeg), batch_size):
+            batch_start = batch_init
+            if(batch_start + batch_size >= len(X_train_eeg)):
+                batch_stop = len(X_train_eeg)
+            else:
+                batch_stop = batch_start + batch_size
+            
+            shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
+            
+            # Optimize the synthesizer mode
+            decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
+            with tf.name_scope("gradient_decoder") as scope:
+                optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
+
+            #now train the compression by correlation model
+            encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
+                                                             [X_train_eeg[batch_start:batch_stop], 
+                                                                                 X_train_bold[batch_start:batch_stop]], 
+                                                             tr_y[batch_start:batch_stop], decoder_loss, linear_combination, 
+                                                             dcca=True, dcca_output=dcca_output)
+            with tf.name_scope("gradient_encoders") as scope:
+                optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
+
+            # Track progress
+            losses.update_batch_decoder_loss_avg(decoder_loss)
+            losses.update_batch_encoder_loss_avg(encoder_loss)
+
+        # end epoch
+        decoder_loss = losses.get_batch_decoder_loss_avg()
+        encoder_loss = losses.get_batch_encoder_loss_avg()
+
+        #get validation analyses
+        shared_eeg_val = eeg_network(X_val_eeg)
+        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
+        
+        print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
+            "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
+        sys.stdout.flush()
+
+    shared_eeg_val = eeg_network(X_val_eeg)
+    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+
+
 
 
 
@@ -473,7 +553,6 @@ def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         validation = True
 
     global_step = tf.Variable(0)
-
 
     start_epochs = list(range(0, epochs, interval_epochs)) + [epochs]
 
