@@ -23,7 +23,7 @@ tf.enable_eager_execution(config=config)
 
 n_voxels = 500
 
-eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(10)), list(range(10, 12)), roi=1, roi_ica_components=30)
+eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(10)), list(range(10, 12)), roi=1, roi_ica_components=20)
 n_voxels = bold_train.shape[1]
 
 print("Finished Loading Data")
@@ -60,7 +60,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	print("Optimizing at level ", multi_modal_instance.get_level())
 
 	hyperparameters = [{'name': 'learning_rate', 'type': 'continuous',
-	'domain': (10e-6, 10e-2)},
+	'domain': (10e-15, 10e-1)},
 	{'name': 'l1_penalization_eeg', 'type': 'continuous',
 	'domain': (10e-5, 10e-1)},
 	{'name': 'l1_penalization_bold', 'type': 'continuous',
@@ -69,8 +69,10 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	'domain': (10e-5, 10e-1)},
 	{'name': 'loss_coefficient', 'type': 'continuous',
 	'domain': (0.0, 1.0)},
-	{'name': 'dropout', 'type': 'continuous',
-	'domain': (0.0, 0.5)}]
+	{'name': 'batch_size', 'type': 'discrete',
+	'domain': (2, 4, 8, 16, 32, 64, 128)}]
+	#{'name': 'dcca_output', 'type': 'discrete',
+	#'domain': (10, 20, 30, 40, 50)},
 
 
 	#add element for new layer output
@@ -88,10 +90,15 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		current_l1_penalization_bold = float(x[:, 2])
 		current_l1_penalization_decoder = float(x[:, 3])
 		current_loss_coefficient = float(x[:, 4])
-		current_dropout = float(x[:, 5])
+		current_batch_size = int(x[:, 5])
+		#current_dcca_output = int(x[:, 5])
 		current_eeg_hidden_shape = int(x[:, 6])
 		current_bold_hidden_shape = int(x[:, 7])
 		current_decoder_hidden_shape = int(x[:, 8])
+
+		current_dropout = 0.5
+
+		dcca=False
 
 
 		model_name = 'siamese_net_lr_' + str(current_learning_rate)
@@ -135,7 +142,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 			return 1
 
 		#Joining EEG and BOLD branches
-		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
+		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=dcca)
 
 		#normalization of the BOLD signal, please change this
 		#norm = tf.keras.Sequential()
@@ -156,23 +163,30 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		#exception can appear
 		validation_loss = custom_training.linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 			epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-			batch_size=64, linear_combination=current_loss_coefficient,
+			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
 			tv_y=tv_y)
 		#validation_loss = custom_training.adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-		#	batch_size=64, linear_combination=current_loss_coefficient,
+		#	batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 		#	X_val_eeg=X_val_eeg,
 		#	X_val_bold=X_val_bold,
 		#	tv_y=tv_y)
 		#	eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val, bold_network=bold_network)
 		#validation_loss = custom_training.ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-		#	batch_size=16,
+		#	batch_size=current_batch_size,
 		#	X_val_eeg=X_val_eeg,
 		#	X_val_bold=X_val_bold,
 		#	tv_y=tv_y)
+		#validation_loss = custom_training.dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
+		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+		#	batch_size=current_batch_size, linear_combination=current_loss_coefficient, dcca_output=current_dcca_output,
+		#	X_val_eeg=X_val_eeg,
+		#	X_val_bold=X_val_bold,
+		#	tv_y=tv_y)
+
 			
 
 		print("Model: " + model_name +
@@ -190,16 +204,22 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	#EEG network branch
 	eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
 	eeg_optimal_shape = (int(optimizer.x_opt[-3]),) + output_shape
-	eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, eeg_optimal_shape)
+	eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, eeg_optimal_shape, 
+		regularization=float(optimizer.x_opt[1]), 
+		dropout=float(optimizer.x_opt[5]))
 	
 	#BOLD network branch
 	bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
 	bold_optimal_shape = (int(optimizer.x_opt[-2]),) + output_shape
-	bold_network = multi_modal_instance.build_bold(bold_input_shape, bold_optimal_shape)
+	bold_network = multi_modal_instance.build_bold(bold_input_shape, bold_optimal_shape, 
+		regularization=float(optimizer.x_opt[2]), 
+		dropout=float(optimizer.x_opt[5]))
 
 	#Decoder network branch
 	decoder_optimal_shape = (int(optimizer.x_opt[-1]),) + output_shape
-	decoder_network = multi_modal_instance.build_decoder(decoder_optimal_shape, bold_input_shape)
+	decoder_network = multi_modal_instance.build_decoder(decoder_optimal_shape, bold_input_shape, 
+		regularization=float(optimizer.x_opt[3]), 
+		dropout=float(optimizer.x_opt[5]))
 
 	if(not (eeg_network and bold_network and decoder_network)):
 		return None, None, None, None
@@ -238,7 +258,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	print("Optimizing at level ", multi_modal_instance.get_level())
 
 	hyperparameters = [{'name': 'learning_rate', 'type': 'continuous',
-	'domain': (10e-6, 10e-2)},
+	'domain': (10e-15, 10e-1)},
 	{'name': 'l1_penalization_eeg', 'type': 'continuous',
 	'domain': (10e-5, 10e-1)},
 	{'name': 'l1_penalization_bold', 'type': 'continuous',
@@ -247,8 +267,10 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	'domain': (10e-5, 10e-1)},
 	{'name': 'loss_coefficient', 'type': 'continuous',
 	'domain': (0.0, 1.0)},
-	{'name': 'dropout', 'type': 'continuous',
-	'domain': (0.0, 0.5)}]
+	{'name': 'batch_size', 'type': 'discrete',
+	'domain': (2, 4, 8, 16, 32, 64, 128)}]
+	#{'name': 'dcca_output', 'type': 'discrete',
+	#'domain': (10, 20, 30, 40, 50)},
 
 
 	#add element for new layer output
@@ -262,8 +284,13 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		current_l1_penalization_bold = float(x[:, 2])
 		current_l1_penalization_decoder = float(x[:, 3])
 		current_loss_coefficient = float(x[:, 4])
-		current_dropout = float(x[:, 5])
+		#current_dcca_output = int(x[:, 5])
+		current_batch_size = int(x[:, 5])
 		current_shape = int(x[:, 6])
+
+		current_dropout = 0.5
+
+		dcca=False
 
 
 		model_name = 'siamese_net_lr_' + str(current_learning_rate)
@@ -302,7 +329,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			return 1.0
 
 		#Joining EEG and BOLD branches
-		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network)
+		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=dcca)
 
 		#normalization of the BOLD signal, please change this
 		#norm = tf.keras.Sequential()
@@ -322,23 +349,29 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		#this try should be checked
 		#validation_loss = custom_training.ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-		#	batch_size=16,
+		#	batch_size=current_batch_size,
 		#	X_val_eeg=X_val_eeg,
 		#	X_val_bold=X_val_bold,
 		#	tv_y=tv_y,
 		#	eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val, bold_network=bold_network)
 		#validation_loss = custom_training.adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-		#	batch_size=64, linear_combination=current_loss_coefficient,
+		#	batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 		#	X_val_eeg=X_val_eeg,
 		#	X_val_bold=X_val_bold,
 		#	tv_y=tv_y)
 		validation_loss = custom_training.linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 			epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-			batch_size=64, linear_combination=current_loss_coefficient,
+			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
-			tv_y=tv_y)		
+			tv_y=tv_y)
+		#validation_loss = custom_training.dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
+		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+		#	batch_size=current_batch_size, linear_combination=current_loss_coefficient, dcca_output=current_dcca_output,
+		#	X_val_eeg=X_val_eeg,
+		#	X_val_bold=X_val_bold,
+		#	tv_y=tv_y)
 
 		print("Model: " + model_name +
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
@@ -351,18 +384,25 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	print("Started Optimization Process")
 	optimizer.run_optimization(max_iter=100)
 
+
 	#SAVE BEST MODELS
 	#EEG network branch
 	eeg_input_shape = (eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
 	optimal_shape = (int(optimizer.x_opt[-1]),) + output_shape
-	multi_modal_instance.save_eeg(multi_modal_instance.build_eeg(eeg_input_shape, optimal_shape))
+	multi_modal_instance.save_eeg(multi_modal_instance.build_eeg(eeg_input_shape, optimal_shape,
+																regularization=float(optimizer.x_opt[1]), 
+																dropout=float(optimizer.x_opt[5])))
 
 	#BOLD network branch
 	bold_input_shape = (bold_train.shape[1], bold_train.shape[2], 1)
-	multi_modal_instance.save_bold(multi_modal_instance.build_bold(bold_input_shape, optimal_shape))
+	multi_modal_instance.save_bold(multi_modal_instance.build_bold(bold_input_shape, optimal_shape,
+																regularization=float(optimizer.x_opt[2]), 
+																dropout=float(optimizer.x_opt[5])))
 
 	#Decoder network branch
-	multi_modal_instance.save_decoder(multi_modal_instance.build_decoder(optimal_shape, bold_input_shape))
+	multi_modal_instance.save_decoder(multi_modal_instance.build_decoder(optimal_shape, bold_input_shape,
+																regularization=float(optimizer.x_opt[3]), 
+																dropout=float(optimizer.x_opt[5])))
 
 	print("Optimized Parameters: {0}".format(optimizer.x_opt))
 	print("Optimized Validation Decoder Loss: {0}".format(optimizer.fx_opt))
