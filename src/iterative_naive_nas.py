@@ -116,9 +116,11 @@ class Multi_Modal_Model:
 			bold_domain = self.bold_encoder.get_hidden_domain()
 			decoder_domain = self.decoder.get_hidden_domain()
 
-			eeg_new_hidden_shape, bold_new_hidden_shape, decoder_new_hidden_shape, loss = bayesian_optimization.hidden_layer_NAS_BO(self, 
-																								eeg_domain, bold_domain, decoder_domain)
-
+			try:
+				eeg_new_hidden_shape, bold_new_hidden_shape, decoder_new_hidden_shape, loss = bayesian_optimization.hidden_layer_NAS_BO(self, 
+																									eeg_domain, bold_domain, decoder_domain)
+			except:
+				return math.inf
 			#optimization finishes if domains are empty
 			if(not (eeg_new_hidden_shape and bold_new_hidden_shape and decoder_new_hidden_shape)):
 				return math.inf
