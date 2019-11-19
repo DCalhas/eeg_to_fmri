@@ -38,6 +38,11 @@ class Multi_Modal_Model:
 
 	def save_eeg(self, eeg_network):
 		self.previous_eeg_network = eeg_network
+
+		eeg_json = eeg_network.to_json()
+		with open("../optimized_nets/eeg/eeg_" + str(self.get_level()) + ".json", "w") as json_file:
+			json_file.write(eeg_json)
+
 		real_output_shape = self.previous_eeg_network.layers[0].output_shape
 		self.eeg_encoder.add_real_output_shape((real_output_shape[1], 
 												real_output_shape[2], 
@@ -46,6 +51,11 @@ class Multi_Modal_Model:
 
 	def save_bold(self, bold_network):
 		self.previous_bold_network = bold_network
+
+		bold_json = bold_network.to_json()
+		with open("../optimized_nets/bold/bold_" + str(self.get_level()) + ".json", "w") as json_file:
+			json_file.write(bold_json)
+
 		real_output_shape = self.previous_bold_network.layers[0].output_shape
 		self.bold_encoder.add_real_output_shape((real_output_shape[1], 
 												real_output_shape[2], 
@@ -53,6 +63,11 @@ class Multi_Modal_Model:
 
 	def save_decoder(self, decoder_network):
 		self.previous_decoder_network = decoder_network
+
+		decoder_json = decoder_network.to_json()
+		with open("../optimized_nets/decoder/decoder_" + str(self.get_level()) + ".json", "w") as json_file:
+			json_file.write(decoder_json)
+
 		real_output_shape = self.previous_decoder_network.layers[0].output_shape
 		self.decoder.add_real_output_shape((real_output_shape[1], 
 												real_output_shape[2], 
@@ -518,7 +533,7 @@ class Iterative_Naive_NAS:
 	######################################################################################################################################
 
 	#Dense layer is simple to generate
-	def build_layer_Dense(self, input_shape, output_shape, regularization=0.0):
+	def build_layer_Dense(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
 		if(type(output_shape) is not int and type(output_shape) is not tuple):
 			return None
 
@@ -526,10 +541,12 @@ class Iterative_Naive_NAS:
 		for dim in output_shape:
 			shape *= dim
 
-		return [layers[0](shape, input_shape=input_shape, kernel_regularizer=l2_reg(regularization), bias_regularizer=l2_reg(regularization)), 
+		return [layers[0](shape, input_shape=input_shape, kernel_regularizer=l2_reg(regularization), 
+				bias_regularizer=l2_reg(regularization), kernel_initializer=initializer,
+                bias_initializer=initializer), 
 				tf.keras.layers.Reshape(output_shape)]
 
-	def build_layer_Conv2D(self, input_shape, output_shape, regularization=0.0):
+	def build_layer_Conv2D(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
 		generated = self.generate_kernel_stride_Conv2D(input_shape, output_shape)
 
 		if(not generated):
@@ -540,9 +557,11 @@ class Iterative_Naive_NAS:
 							input_shape=input_shape, 
 							kernel_regularizer=l1_reg(regularization), 
 							bias_regularizer=l1_reg(regularization))]
+							#kernel_initializer=initializer,
+                			#bias_initializer=initializer)]
 
 
-	def build_layer_Conv2DTranspose(self, input_shape, output_shape, regularization=0.0):
+	def build_layer_Conv2DTranspose(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
 		generated = self.generate_kernel_stride_Conv2DTranspose(input_shape, output_shape)
 
 		if(not generated):
@@ -556,10 +575,12 @@ class Iterative_Naive_NAS:
 									input_shape=input_shape, 
 									kernel_regularizer=l1_reg(regularization), 
 									bias_regularizer=l1_reg(regularization))]
+									#kernel_initializer=initializer,
+                					#bias_initializer=initializer)]
 
 
 	#returns a list of layers
-	def build_layer_UpSampling2D(self, input_shape, output_shape, regularization=0.0):
+	def build_layer_UpSampling2D(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
 		#augment dimension with Dense layer
 		upsampling_layers = []		
 
@@ -593,7 +614,7 @@ class Iterative_Naive_NAS:
 		return upsampling_layers
 
 
-	def build_layer_Conv3D(self, input_shape, output_shape, regularization=0.0):
+	def build_layer_Conv3D(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
 		generated = self.generate_kernel_stride_Conv3D(input_shape, output_shape)
 
 		if(not generated):
@@ -603,10 +624,12 @@ class Iterative_Naive_NAS:
 							strides=generated['stride'], 
 							input_shape=input_shape, 
 							kernel_regularizer=l1_reg(regularization), 
-							bias_regularizer=l1_reg(regularization))]
+							bias_regularizer=l1_reg(regularization),
+							kernel_initializer=initializer,
+                			bias_initializer=initializer)]
 
 
-	def build_layer_Conv3DTranspose(self, input_shape, output_shape, next_input_shape=None, regularization=0.0):
+	def build_layer_Conv3DTranspose(self, input_shape, output_shape, next_input_shape=None, regularization=0.0, initializer='zeros'):
 		generated = self.generate_kernel_stride_Conv3DTranspose(input_shape, output_shape, next_input_shape=next_input_shape)
 
 		if(not generated):
@@ -620,6 +643,8 @@ class Iterative_Naive_NAS:
 									input_shape=input_shape, 
 									kernel_regularizer=l1_reg(regularization), 
 									bias_regularizer=l1_reg(regularization))]
+									#kernel_initializer=initializer,
+                					#bias_initializer=initializer)]
 
 
 	######################################################################################################################################
