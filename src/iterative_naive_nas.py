@@ -533,7 +533,7 @@ class Iterative_Naive_NAS:
 	######################################################################################################################################
 
 	#Dense layer is simple to generate
-	def build_layer_Dense(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
+	def build_layer_Dense(self, input_shape, output_shape, regularization=0.0, initializer=tf.keras.initializers.Constant(value=0.5)):
 		if(type(output_shape) is not int and type(output_shape) is not tuple):
 			return None
 
@@ -546,7 +546,7 @@ class Iterative_Naive_NAS:
                 bias_initializer=initializer), 
 				tf.keras.layers.Reshape(output_shape)]
 
-	def build_layer_Conv2D(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
+	def build_layer_Conv2D(self, input_shape, output_shape, regularization=0.0, initializer=tf.keras.initializers.Constant(value=0.5)):
 		generated = self.generate_kernel_stride_Conv2D(input_shape, output_shape)
 
 		if(not generated):
@@ -556,12 +556,12 @@ class Iterative_Naive_NAS:
 							strides=generated['stride'], 
 							input_shape=input_shape, 
 							kernel_regularizer=l1_reg(regularization), 
-							bias_regularizer=l1_reg(regularization))]
-							#kernel_initializer=initializer,
-                			#bias_initializer=initializer)]
+							bias_regularizer=l1_reg(regularization),
+							kernel_initializer=initializer,
+                			bias_initializer=initializer)]
 
 
-	def build_layer_Conv2DTranspose(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
+	def build_layer_Conv2DTranspose(self, input_shape, output_shape, regularization=0.0, initializer=tf.keras.initializers.Constant(value=0.5)):
 		generated = self.generate_kernel_stride_Conv2DTranspose(input_shape, output_shape)
 
 		if(not generated):
@@ -574,13 +574,13 @@ class Iterative_Naive_NAS:
 									dilation_rate=(1, 1),
 									input_shape=input_shape, 
 									kernel_regularizer=l1_reg(regularization), 
-									bias_regularizer=l1_reg(regularization))]
-									#kernel_initializer=initializer,
-                					#bias_initializer=initializer)]
+									bias_regularizer=l1_reg(regularization),
+									kernel_initializer=initializer,
+                					bias_initializer=initializer)]
 
 
 	#returns a list of layers
-	def build_layer_UpSampling2D(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
+	def build_layer_UpSampling2D(self, input_shape, output_shape, regularization=0.0, initializer=tf.keras.initializers.Constant(value=0.5)):
 		#augment dimension with Dense layer
 		upsampling_layers = []		
 
@@ -614,7 +614,7 @@ class Iterative_Naive_NAS:
 		return upsampling_layers
 
 
-	def build_layer_Conv3D(self, input_shape, output_shape, regularization=0.0, initializer='zeros'):
+	def build_layer_Conv3D(self, input_shape, output_shape, regularization=0.0, initializer=tf.keras.initializers.Constant(value=0.5)):
 		generated = self.generate_kernel_stride_Conv3D(input_shape, output_shape)
 
 		if(not generated):
@@ -629,7 +629,7 @@ class Iterative_Naive_NAS:
                 			bias_initializer=initializer)]
 
 
-	def build_layer_Conv3DTranspose(self, input_shape, output_shape, next_input_shape=None, regularization=0.0, initializer='zeros'):
+	def build_layer_Conv3DTranspose(self, input_shape, output_shape, next_input_shape=None, regularization=0.0, initializer=tf.keras.initializers.Constant(value=0.5)):
 		generated = self.generate_kernel_stride_Conv3DTranspose(input_shape, output_shape, next_input_shape=next_input_shape)
 
 		if(not generated):
@@ -642,9 +642,9 @@ class Iterative_Naive_NAS:
 									dilation_rate=(1, 1, 1),
 									input_shape=input_shape, 
 									kernel_regularizer=l1_reg(regularization), 
-									bias_regularizer=l1_reg(regularization))]
-									#kernel_initializer=initializer,
-                					#bias_initializer=initializer)]
+									bias_regularizer=l1_reg(regularization),
+									kernel_initializer=initializer,
+                					bias_initializer=initializer)]
 
 
 	######################################################################################################################################
