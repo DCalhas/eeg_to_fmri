@@ -16,15 +16,10 @@ gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
 config = tf.ConfigProto(allow_soft_placement=True,
 						gpu_options=gpu_options)
 config.gpu_options.allow_growth=True
-
-
 tf.enable_eager_execution(config=config)
 
 
-n_voxels = 500
-
 eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(10)), list(range(10, 12)), roi=1, roi_ica_components=20)
-n_voxels = bold_train.shape[1]
 
 print("Finished Loading Data")
 
@@ -198,7 +193,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=100)
+	optimizer.run_optimization(max_iter=200)
 
 	#SAVE BEST MODELS
 	#EEG network branch
@@ -382,7 +377,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=100)
+	optimizer.run_optimization(max_iter=200)
 
 
 	#SAVE BEST MODELS
