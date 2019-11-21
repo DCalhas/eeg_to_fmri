@@ -55,7 +55,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	print("Optimizing at level ", multi_modal_instance.get_level())
 
 	hyperparameters = [{'name': 'learning_rate', 'type': 'continuous',
-	'domain': (10e-15, 10e-1)},
+	'domain': (10e-15, 10e-4)},
 	{'name': 'l1_penalization_eeg', 'type': 'continuous',
 	'domain': (10e-5, 10e-1)},
 	{'name': 'l1_penalization_bold', 'type': 'continuous',
@@ -253,7 +253,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	print("Optimizing at level ", multi_modal_instance.get_level())
 
 	hyperparameters = [{'name': 'learning_rate', 'type': 'continuous',
-	'domain': (10e-15, 10e-1)},
+	'domain': (10e-15, 10e-4)},
 	{'name': 'l1_penalization_eeg', 'type': 'continuous',
 	'domain': (10e-5, 10e-1)},
 	{'name': 'l1_penalization_bold', 'type': 'continuous',
