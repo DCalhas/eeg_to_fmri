@@ -19,7 +19,7 @@ config.gpu_options.allow_growth=True
 tf.enable_eager_execution(config=config)
 
 
-eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(1)), list(range(1, 2)), roi=1, roi_ica_components=20)
+eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(10)), list(range(10, 12)), roi=1, roi_ica_components=20)
 n_voxels = bold_train.shape[1]
 interval_length = bold_train.shape[2]
 
