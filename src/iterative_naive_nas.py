@@ -7,9 +7,13 @@ from tensorflow.python.keras.utils import conv_utils
 
 from utils import gen_dims_utils
 
+import sys
+
 import bayesian_optimization
 
 import os
+
+
 
 os.environ['TF_CUDNN_USE_AUTOTUNE']='0'
 os.environ['TF_CUDNN_DETERMINISTIC']='1'
@@ -39,8 +43,13 @@ class Multi_Modal_Model:
 	def save_eeg(self, eeg_network):
 		self.previous_eeg_network = eeg_network
 
+		if(len(sys.argv) > 1):
+			file_name="../optimized_nets/eeg/eeg_" + sys.argv[1] + ".json"
+		else:
+			file_name="../optimized_nets/eeg/eeg_" + str(self.get_level()) + ".json"
+
 		eeg_json = eeg_network.to_json()
-		with open("../optimized_nets/eeg/eeg_" + str(self.get_level()) + ".json", "w") as json_file:
+		with open(file_name, "w") as json_file:
 			json_file.write(eeg_json)
 
 		real_output_shape = self.previous_eeg_network.layers[0].output_shape
@@ -52,8 +61,13 @@ class Multi_Modal_Model:
 	def save_bold(self, bold_network):
 		self.previous_bold_network = bold_network
 
+		if(len(sys.argv) > 1):
+			file_name="../optimized_nets/bold/bold_" + sys.argv[1] + ".json"
+		else:
+			file_name="../optimized_nets/bold/bold_" + str(self.get_level()) + ".json"
+
 		bold_json = bold_network.to_json()
-		with open("../optimized_nets/bold/bold_" + str(self.get_level()) + ".json", "w") as json_file:
+		with open(file_name, "w") as json_file:
 			json_file.write(bold_json)
 
 		real_output_shape = self.previous_bold_network.layers[0].output_shape
@@ -64,8 +78,13 @@ class Multi_Modal_Model:
 	def save_decoder(self, decoder_network):
 		self.previous_decoder_network = decoder_network
 
+		if(len(sys.argv) > 1):
+			file_name="../optimized_nets/decoder/decoder_" + sys.argv[1] + ".json"
+		else:
+			file_name="../optimized_nets/decoder/decoder_" + str(self.get_level()) + ".json"
+
 		decoder_json = decoder_network.to_json()
-		with open("../optimized_nets/decoder/decoder_" + str(self.get_level()) + ".json", "w") as json_file:
+		with open(file_name, "w") as json_file:
 			json_file.write(decoder_json)
 
 		real_output_shape = self.previous_decoder_network.layers[0].output_shape
@@ -118,7 +137,7 @@ class Multi_Modal_Model:
 
 			new_output_shape, loss = bayesian_optimization.NAS_BO(self, [output_shape_domain])
 
-			new_output_shape = (int(new_output_shape), int(20), 1)
+			new_output_shape = (int(new_output_shape), int(bayesian_optimization.interval_length), 1)
 
 			self.eeg_encoder.add_output_shape(new_output_shape)
 			self.bold_encoder.add_output_shape(new_output_shape)
@@ -140,9 +159,9 @@ class Multi_Modal_Model:
 			if(not (eeg_new_hidden_shape and bold_new_hidden_shape and decoder_new_hidden_shape)):
 				return math.inf
 
-			eeg_new_hidden_shape = (int(eeg_new_hidden_shape), int(20), 1)
-			bold_new_hidden_shape = (int(bold_new_hidden_shape), int(20), 1)
-			decoder_new_hidden_shape = (int(decoder_new_hidden_shape), int(20), 1)
+			eeg_new_hidden_shape = (int(eeg_new_hidden_shape), int(bayesian_optimization.interval_length), 1)
+			bold_new_hidden_shape = (int(bold_new_hidden_shape), int(bayesian_optimization.interval_length), 1)
+			decoder_new_hidden_shape = (int(decoder_new_hidden_shape), int(bayesian_optimization.interval_length), 1)
 
 			self.eeg_encoder.add_output_shape(eeg_new_hidden_shape)
 			self.bold_encoder.add_output_shape(bold_new_hidden_shape)

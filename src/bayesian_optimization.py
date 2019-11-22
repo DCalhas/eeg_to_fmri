@@ -19,8 +19,9 @@ config.gpu_options.allow_growth=True
 tf.enable_eager_execution(config=config)
 
 
-eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(10)), list(range(10, 12)), roi=1, roi_ica_components=20)
+eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(1)), list(range(1, 2)), roi=1, roi_ica_components=20)
 n_voxels = bold_train.shape[1]
+interval_length = bold_train.shape[2]
 
 print("Finished Loading Data")
 
@@ -70,9 +71,11 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	#{'name': 'dcca_output', 'type': 'discrete',
 	#'domain': (10, 20, 30, 40, 50)},
 
+	global interval_length
+
 
 	#add element for new layer output
-	output_shape = (int(20), 1)
+	output_shape = (int(interval_length), 1)
 
 	if(not (eeg_domain['domain'] and bold_domain['domain'] and decoder_domain['domain'])):
 		return None, None, None, None
@@ -268,9 +271,10 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	#{'name': 'dcca_output', 'type': 'discrete',
 	#'domain': (10, 20, 30, 40, 50)},
 
+	global interval_length
 
 	#add element for new layer output
-	output_shape = (int(20), 1)
+	output_shape = (int(interval_length), 1)
 
 	hyperparameters += output_shape_domain
 
