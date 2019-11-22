@@ -101,8 +101,8 @@ def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partition
 		#fmri_resampled = fmri_resampled.reshape(fmri_resampled.shape[1], fmri_resampled.shape[0])
 		#print(fmri_resampled.shape)
 		for partition in range(n_partitions):
-			start_eeg = start_cutoff + int((fmri_resampled.shape[1]-start_cutoff)/n_partitions)*partition
-			end_eeg = start_cutoff + int((fmri_resampled.shape[1]-start_cutoff)/n_partitions)*partition + int((fmri_resampled.shape[1]-start_cutoff)/n_partitions)
+			start_eeg = start_cutoff + int((fmri_resampled.shape[1]-start_cutoff-bold_shift)/n_partitions)*partition
+			end_eeg = start_cutoff + int((fmri_resampled.shape[1]-start_cutoff-bold_shift)/n_partitions)*partition + int((fmri_resampled.shape[1]-start_cutoff)/n_partitions)
 
 			start_bold = start_eeg
 			end_bold = end_eeg 
