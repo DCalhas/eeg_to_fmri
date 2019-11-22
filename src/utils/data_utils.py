@@ -104,8 +104,6 @@ def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partition
 			start_bold = start_eeg+bold_shift
 			end_bold = end_eeg+bold_shift
 
-			print(start_eeg, end_eeg, start_bold, end_bold)
-
 			X += [x_instance[:,:,start_eeg:end_eeg]]
 
 			y += list(fmri_resampled[:,start_bold:end_bold].reshape(1, fmri_resampled[:,start_bold:end_bold].shape[0], fmri_resampled[:,start_bold:end_bold].shape[1]))
