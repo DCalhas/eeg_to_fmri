@@ -25,16 +25,16 @@ n_epochs = 20
 #
 #############################################################################################################
 
-def load_data(train_instances, test_instances, n_voxels=None, roi=None, roi_ica_components=None):
+def load_data(train_instances, test_instances, n_voxels=None, bold_shift=3, roi=None, roi_ica_components=None):
 
 	mask = fmri_utils.get_population_mask()
 
 	#Load Data
 	eeg_train, bold_train = get_data(train_instances, masker=mask, 
-									n_voxels=n_voxels, roi=roi, 
+									n_voxels=n_voxels, bold_shift=bold_shift, roi=roi, 
 									roi_ica_components=roi_ica_components)
 	eeg_test, bold_test = get_data(test_instances, masker=mask, 
-									n_voxels=n_voxels, roi=roi, 
+									n_voxels=n_voxels, bold_shift=bold_shift, roi=roi, 
 									roi_ica_components=roi_ica_components)
 
 	if(train_instances):
