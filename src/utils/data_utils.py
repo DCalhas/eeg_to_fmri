@@ -101,12 +101,14 @@ def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partition
 			start_eeg = start_cutoff + int((fmri_resampled.shape[1]-start_cutoff-bold_shift)/n_partitions)*partition
 			end_eeg = start_cutoff + int((fmri_resampled.shape[1]-start_cutoff-bold_shift)/n_partitions)*partition + int((fmri_resampled.shape[1]-start_cutoff-bold_shift)/n_partitions)
 
-			start_bold = start_eeg
-			end_bold = end_eeg 
+			start_bold = start_eeg+bold_shift
+			end_bold = end_eeg+bold_shift
+
+			print(start_eeg, end_eeg, start_bold, end_bold)
 
 			X += [x_instance[:,:,start_eeg:end_eeg]]
 
-			y += list(fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].reshape(1, fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].shape[0], fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].shape[1]))
+			y += list(fmri_resampled[:,start_bold:end_bold].reshape(1, fmri_resampled[:,start_bold:end_bold].shape[0], fmri_resampled[:,start_bold:end_bold].shape[1]))
 		print(np.array(y).shape)
 
 	X = np.array(X)
