@@ -53,7 +53,7 @@ def load_data(train_instances, test_instances, n_voxels=None, roi=None, roi_ica_
 #16 - corresponds to a 20 second length signal with 10 time points
 #32 - corresponds to a 10 second length signal with 5 time points
 #individuals is a list of indexes until the maximum number of individuals
-def get_data(individuals, masker=None, start_cutoff=3, n_partitions=16, n_voxels=None, roi=None, roi_ica_components=None):
+def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partitions=16, n_voxels=None, roi=None, roi_ica_components=None):
 	TR = 1/2.160
 
 	X = []
@@ -69,8 +69,8 @@ def get_data(individuals, masker=None, start_cutoff=3, n_partitions=16, n_voxels
 	for individual in individuals:
 		eeg = eeg_utils.get_eeg_instance(individual)
 		x_instance = []
-		#eeg        
-		for channel in range(len(eeg.ch_names)):   
+		#eeg
+		for channel in range(len(eeg.ch_names)):
 			f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=2) 
 			Zxx_mutated = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
 
@@ -96,6 +96,7 @@ def get_data(individuals, masker=None, start_cutoff=3, n_partitions=16, n_voxels
 			fmri_resampled += [voxel_resampled]
 
 		fmri_resampled = np.array(fmri_resampled)
+		print(fmri_resampled.shape)
 		#print(fmri_resampled.shape)
 		#fmri_resampled = fmri_resampled.reshape(fmri_resampled.shape[1], fmri_resampled.shape[0])
 		#print(fmri_resampled.shape)
@@ -104,11 +105,13 @@ def get_data(individuals, masker=None, start_cutoff=3, n_partitions=16, n_voxels
 			end_eeg = start_cutoff + int(321/n_partitions)*partition + int(321/n_partitions)
 
 			start_bold = start_eeg
-			end_bold = end_eeg #+ 2
+			end_bold = end_eeg 
 
 			X += [x_instance[:,:,start_eeg:end_eeg]]
 
-			y += list(fmri_resampled[:,start_bold:end_bold].reshape(1, fmri_resampled[:,start_bold:end_bold].shape[0], fmri_resampled[:,start_bold:end_bold].shape[1]))
+			y += list(fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].reshape(1, 
+																fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].shape[0], 
+																fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].shape[1]))
 		print(np.array(y).shape)
 
 	X = np.array(X)
