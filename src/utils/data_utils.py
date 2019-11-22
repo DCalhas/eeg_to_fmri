@@ -96,20 +96,15 @@ def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partition
 			fmri_resampled += [voxel_resampled]
 
 		fmri_resampled = np.array(fmri_resampled)
-		#print(fmri_resampled.shape)
-		#print(fmri_resampled.shape)
-		#fmri_resampled = fmri_resampled.reshape(fmri_resampled.shape[1], fmri_resampled.shape[0])
-		#print(fmri_resampled.shape)
+
 		for partition in range(n_partitions):
 			start_eeg = start_cutoff + int((fmri_resampled.shape[1]-start_cutoff-bold_shift)/n_partitions)*partition
-			end_eeg = start_cutoff + int((fmri_resampled.shape[1]-start_cutoff-bold_shift)/n_partitions)*partition + int((fmri_resampled.shape[1]-start_cutoff)/n_partitions)
+			end_eeg = start_cutoff + int((fmri_resampled.shape[1]-start_cutoff-bold_shift)/n_partitions)*partition + int((fmri_resampled.shape[1]-start_cutoff-bold_shift)/n_partitions)
 
 			start_bold = start_eeg
 			end_bold = end_eeg 
 
 			X += [x_instance[:,:,start_eeg:end_eeg]]
-
-			print(fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].shape)
 
 			y += list(fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].reshape(1, fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].shape[0], fmri_resampled[:,start_bold+bold_shift:end_bold+bold_shift].shape[1]))
 		print(np.array(y).shape)
