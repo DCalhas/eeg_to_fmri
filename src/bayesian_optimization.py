@@ -163,7 +163,9 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		
 		#exception can appear
 		validation_loss = custom_training.linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
-			epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+			epochs=40, 
+			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
@@ -363,7 +365,9 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		#	X_val_bold=X_val_bold,
 		#	tv_y=tv_y)
 		validation_loss = custom_training.linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
-			epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+			epochs=40, 
+			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,

@@ -170,7 +170,8 @@ it gives the encoder a linear combination loss of the reconstruction loss and th
 """
 def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
     decoder_model, multi_modal_model, epochs=10, 
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     linear_combination=0.5, 
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
@@ -199,7 +200,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             # Optimize the synthesizer mode
             decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
             with tf.name_scope("gradient_decoder") as scope:
-                optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
+                decoder_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
             #now train the compression by correlation model
             encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
@@ -207,7 +208,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                                                  X_train_bold[batch_start:batch_stop]], 
                                                              tr_y[batch_start:batch_stop], decoder_loss, linear_combination)
             with tf.name_scope("gradient_encoders") as scope:
-                optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
+                encoder_optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
 
             # Track progress
             losses.update_batch_decoder_loss_avg(decoder_loss)
@@ -239,7 +240,8 @@ it gives the encoder a linear combination loss of the reconstruction loss and th
 """
 def dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
     decoder_model, multi_modal_model, epochs=10, 
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     linear_combination=0.5, dcca_output=None,
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
@@ -268,7 +270,7 @@ def dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             # Optimize the synthesizer mode
             decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
             with tf.name_scope("gradient_decoder") as scope:
-                optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
+                decoder_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
             #now train the compression by correlation model
             encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
@@ -277,7 +279,7 @@ def dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                              tr_y[batch_start:batch_stop], decoder_loss, linear_combination, 
                                                              dcca=True, dcca_output=dcca_output)
             with tf.name_scope("gradient_encoders") as scope:
-                optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
+                encoder_optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
 
             # Track progress
             losses.update_batch_decoder_loss_avg(decoder_loss)
@@ -311,7 +313,8 @@ it gives the decoder a reconstruction losses
 """
 def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
     decoder_model, multi_modal_model, epochs=10, 
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     linear_combination=1.0, top_k=5, eeg_train=None, bold_train=None, eeg_val=None, bold_val=None, bold_network=None,
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
@@ -346,7 +349,7 @@ def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                                                  X_train_bold[batch_start:batch_stop]], 
                                                              tr_y[batch_start:batch_stop], 0, linear_combination) #decoder loss 0
             with tf.name_scope("gradient_encoders") as scope:
-                optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
+                encoder_optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
 
             # Track progress
             losses.update_batch_encoder_loss_avg(encoder_loss)
@@ -376,7 +379,7 @@ def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                         ranked_bold_train[batch_start:batch_stop], 
                                                         bold_train[batch_start:batch_stop])
             with tf.name_scope("gradient_decoder") as scope:
-                optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
+                decoder_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
             # Track progress
             losses.update_batch_decoder_loss_avg(decoder_loss)
@@ -406,7 +409,8 @@ Linear Combination Loss:
 """
 def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
     decoder_model, multi_modal_model, epochs=10, interval_epochs=5,
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     linear_combination=1.0, 
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None, verbose=1):
@@ -459,7 +463,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                                                              X_train_bold[batch_start:batch_stop]], 
                                                                          tr_y[batch_start:batch_stop], decoder_loss, linear_combination)
                         with tf.name_scope("gradient_encoders") as scope:
-                            optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
+                            encoder_optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
 
                 # Track progress after optimization
                 losses.update_batch_encoder_loss_avg(encoder_loss)
@@ -490,7 +494,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                         # Optimize the synthesizer mode
                         decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
                         with tf.name_scope("gradient_decoder") as scope:
-                            optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
+                            decoder_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
                 
                 # Track progress after optimization
@@ -540,7 +544,8 @@ Adversarial Loss:
 """
 def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
     decoder_model, multi_modal_model, epochs=10, interval_epochs=5,
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    discriminator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
+    generator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     g_loss_function=losses_utils.loss_minmax_generator,
     d_loss_function=losses_utils.loss_minmax_discriminator,
     linear_combination=1.0, 
@@ -593,7 +598,7 @@ def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                                                 tr_y[batch_start:batch_stop],
                                                                                 loss=d_loss_function)
                         with tf.name_scope("gradient_encoders") as scope:
-                            optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
+                            discriminator_optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
 
                 # Track progress after optimization
                 losses.update_batch_encoder_loss_avg(encoder_loss)
@@ -628,7 +633,7 @@ def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                                             X_train_eeg[batch_start:batch_stop],
                                                                             loss=g_loss_function)
                         with tf.name_scope("gradient_decoder") as scope:
-                            optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
+                            generator_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
                 
                 # Track progress after optimization
