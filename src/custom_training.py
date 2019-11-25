@@ -529,7 +529,6 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
 
 
 
-
 """
 adversarial_training
 
@@ -543,6 +542,96 @@ Adversarial Loss:
     The Loss implemented for the Decoder discriminates true pairs of EEG and fMRI from EEG and synthesized fMRI
 """
 def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
+    decoder_model, multi_modal_model, epochs=10,
+    discriminator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
+    generator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    g_loss_function=losses_utils.loss_minmax_generator,
+    d_loss_function=losses_utils.loss_minmax_discriminator,
+    linear_combination=1.0, 
+    batch_size=128,
+    X_val_eeg=None, X_val_bold=None, tv_y=None, session=None, verbose=1):
+
+
+    validation = False
+    if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):
+        validation = True
+
+    global_step = tf.Variable(0)
+
+
+    for epoch in range(epochs):
+        
+        losses = custom_training_loss()
+        
+        for batch_init in range(0, len(X_train_eeg), batch_size):
+            batch_start = batch_init
+            if(batch_start + batch_size >= len(X_train_eeg)):
+                batch_stop = len(X_train_eeg)
+            else:
+                batch_stop = batch_start + batch_size
+            
+            shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
+            
+            # Optimize the synthesizer mode
+            decoder_loss, decoder_grads = grad_decoder_adversarial(multi_modal_model, decoder_model,
+                                                                    shared_eeg, 
+                                                                    X_train_eeg[batch_start:batch_stop],
+                                                                    loss=g_loss_function)
+            with tf.name_scope("gradient_decoder") as scope:
+                generator_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
+
+            #now train the compression by correlation model
+            encoder_loss, encoder_grads = grad_multi_encoder_adversarial(multi_modal_model, decoder_model, 
+                                                                        shared_eeg,
+                                                                        X_train_eeg[batch_start:batch_stop], 
+                                                                        X_train_bold[batch_start:batch_stop], 
+                                                                        tr_y[batch_start:batch_stop],
+                                                                        loss=d_loss_function)
+            with tf.name_scope("gradient_encoders") as scope:
+                discriminator_optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
+
+            # Track progress
+            losses.update_batch_decoder_loss_avg(decoder_loss)
+            losses.update_batch_encoder_loss_avg(encoder_loss)
+
+        # end epoch
+        decoder_loss = losses.get_batch_decoder_loss_avg()
+        encoder_loss = losses.get_batch_encoder_loss_avg()
+
+        #get validation analyses
+        #get validation analyses
+        shared_eeg_train = eeg_network(X_train_eeg)
+        shared_eeg_val = eeg_network(X_val_eeg)
+        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
+        train_reconstruction_loss = losses_utils.get_reconstruction_loss(decoder_model(shared_eeg_train), X_train_bold)
+        val_reconstruction_loss = losses_utils.get_reconstruction_loss(decoder_model(shared_eeg_val), X_val_bold)
+        
+        if(verbose):
+            print("GAN Encoder Loss: ", tf.keras.backend.eval(encoder_loss), 
+                " || GAN Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
+                " || GAN Validation Decoder Loss: ", tf.keras.backend.eval(val_loss),
+                " || Train Reconstruction Loss: ", tf.keras.backend.eval(train_reconstruction_loss),
+                " || Validation Reconstruction Loss: ", tf.keras.backend.eval(val_reconstruction_loss))
+            sys.stdout.flush()
+
+    shared_eeg_val = eeg_network(X_val_eeg)
+    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+
+
+
+"""
+adversarial_alternate_training
+
+trains a encoder and decoder separately for n intervals
+e.g if n=10 epochs, encoder is trained for 10 epochs then decoder is trained for 10 epochs, and so on
+
+Adversarial Loss:
+    The Encoder tries to minimize its loss
+    The Decoder tries to maximize the Decoder's loss
+
+    The Loss implemented for the Decoder discriminates true pairs of EEG and fMRI from EEG and synthesized fMRI
+"""
+def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
     decoder_model, multi_modal_model, epochs=10, interval_epochs=5,
     discriminator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
     generator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
