@@ -129,7 +129,7 @@ class Multi_Modal_Model:
 
 		#DEFINE NEW SHAPE DOMAIN - FIRST LEVEL DOMAIN
 		if(self.get_level() == 1):
-			for i in range(int(64*5), bayesian_optimization.n_voxels, 50):
+			for i in range(int(64*5), bayesian_optimization.n_voxels-50, 50):
 				domain += [i]
 
 			output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',
