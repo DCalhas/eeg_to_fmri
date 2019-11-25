@@ -57,6 +57,23 @@ def correlation(vects):
 
 	return 1 - tf.abs(a / (K.sqrt(b) * K.sqrt(c)))
 
+def correlation_angle(vects):
+    #how should the normalization be done??
+    x, y = vects
+    x = K.l2_normalize(x, axis=1)
+    y = K.l2_normalize(y, axis=1)
+
+    #flatten because we are dealing with 16x20 matrices
+    x = K.batch_flatten(x)
+    y = K.batch_flatten(y)
+
+    a = K.batch_dot(x, y, axes=1)
+
+    b = K.batch_dot(x, x, axes=1)
+    c = K.batch_dot(y, y, axes=1)
+
+    return tf.abs(a / (K.sqrt(b) * K.sqrt(c)))
+
 def correlation_decoder_loss(x, y):
 	x = K.l2_normalize(x, axis=1)
 	y = K.l2_normalize(y, axis=1)
