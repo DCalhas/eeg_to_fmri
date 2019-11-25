@@ -143,7 +143,8 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 			return 1
 
 		#Joining EEG and BOLD branches
-		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=dcca)
+		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, 
+																dcca=dcca, corr_distance=True)
 
 		#normalization of the BOLD signal, please change this
 		#norm = tf.keras.Sequential()
@@ -333,7 +334,8 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			return 1.0
 
 		#Joining EEG and BOLD branches
-		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=dcca)
+		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, 
+																dcca=dcca, corr_distance=True)
 
 		#normalization of the BOLD signal, please change this
 		#norm = tf.keras.Sequential()
