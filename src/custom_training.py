@@ -66,7 +66,7 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
 #############################################################################################################
 
 def loss_decoder(outputs, targets):
-    reconstruction_loss = losses_utils.cross_correlation(outputs, targets)
+    reconstruction_loss = losses_utils.correlation_anlge(outputs, targets)
     return K.mean(reconstruction_loss)
 
 def grad_decoder(model, inputs, targets):
@@ -76,7 +76,7 @@ def grad_decoder(model, inputs, targets):
 
         outputs = model(tensor_inputs)
 
-        reconstruction_loss = losses_utils.cross_correlation(outputs, targets)
+        reconstruction_loss = losses_utils.correlation_angle(outputs, targets)
         reconstruction_loss = K.mean(reconstruction_loss)
 
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
