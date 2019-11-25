@@ -76,7 +76,7 @@ def grad_decoder(model, inputs, targets):
 
         outputs = model(tensor_inputs)
 
-        reconstruction_loss = losses_utils.correlation_angle(outputs, targets)
+        reconstruction_loss = losses_utils.correlation_angle([outputs, targets])
         reconstruction_loss = K.mean(reconstruction_loss)
 
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
