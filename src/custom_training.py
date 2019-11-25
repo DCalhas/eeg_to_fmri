@@ -35,7 +35,7 @@ import sys
 #
 #############################################################################################################
 
-def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None):
+def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, corr_distance=False):
     input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
     input_bold = tf.keras.layers.Input(shape=bold_input_shape)
 
@@ -50,8 +50,13 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
         dcca = tf.keras.layers.Concatenate(axis=1)([processed_eeg, processed_bold])
         return tf.keras.Model([input_eeg, input_bold], dcca)
 
-    correlation = tf.keras.layers.Lambda(losses_utils.correlation, 
-                         output_shape=losses_utils.cos_dist_output_shape, name="correlation_layer")([processed_eeg, processed_bold])
+    if(corr_distance):
+        correlation = tf.keras.layers.Lambda(losses_utils.correlation, 
+                             output_shape=losses_utils.cos_dist_output_shape, name="correlation_layer")([processed_eeg, processed_bold])
+    else:
+        correlation = tf.keras.layers.Lambda(losses_utils.correlation_angle, 
+                             output_shape=losses_utils.cos_dist_output_shape, name="correlation_layer")([processed_eeg, processed_bold])
+
     return tf.keras.Model([input_eeg, input_bold], correlation)
 
 #############################################################################################################
