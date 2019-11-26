@@ -74,6 +74,16 @@ def correlation_angle(vects):
 
     return tf.abs(a / (K.sqrt(b) * K.sqrt(c)))
 
+
+def euclidean(vects):
+    #how should the normalization be done??
+    x, y = vects
+
+
+    return K.sqrt(K.sum(K.square(x - y), axis=-1))
+
+
+
 def correlation_decoder_loss(x, y):
 	x = K.l2_normalize(x, axis=1)
 	y = K.l2_normalize(y, axis=1)
@@ -149,6 +159,11 @@ def loss_wasserstein_discriminator(real_pred, real_true, gen_pred):
 
 def get_reconstruction_loss(outputs, targets):
     reconstruction_loss = correlation_angle([outputs, targets])
+    return K.mean(reconstruction_loss)
+
+
+def get_euclidean_reconstruction_loss(outputs, targets):
+    reconstruction_loss = euclidean([outputs, targets])
     return K.mean(reconstruction_loss)
 
 
