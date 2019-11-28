@@ -53,7 +53,7 @@ def load_data(train_instances, test_instances, n_voxels=None, bold_shift=3, n_pa
 #16 - corresponds to a 20 second length signal with 10 time points
 #32 - corresponds to a 10 second length signal with 5 time points
 #individuals is a list of indexes until the maximum number of individuals
-def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partitions=16, n_voxels=None, roi=None, roi_ica_components=None):
+def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partitions=16, n_voxels=None, f_resample=2, roi=None, roi_ica_components=None):
 	TR = 1/2.160
 
 	X = []
@@ -71,7 +71,7 @@ def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partition
 		x_instance = []
 		#eeg
 		for channel in range(len(eeg.ch_names)):
-			f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=2) 
+			f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample) 
 			Zxx_mutated = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
 
 			x_instance += [Zxx_mutated]
@@ -92,7 +92,7 @@ def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partition
 
 		for voxel in range(n_voxels):
 			voxel = fmri_utils.get_voxel(fmri_masked_instance, voxel=voxel)
-			voxel_resampled = resample(voxel, int((len(voxel)*(1/2))/TR))
+			voxel_resampled = resample(voxel, int((len(voxel)*(1/f_resample))/TR))
 			fmri_resampled += [voxel_resampled]
 
 		fmri_resampled = np.array(fmri_resampled)
