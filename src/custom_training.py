@@ -35,6 +35,15 @@ import sys
 #
 #############################################################################################################
 
+def auto_encoder_network(eeg_input_shape, eeg_network, decoder_network):
+    input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
+
+    processed_eeg = eeg_network(input_eeg)
+    synthesized_bold = decoder_network(processed_eeg)
+
+    return tf.keras.Model(input_eeg, synthesized_bold)
+
+
 def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, corr_distance=False):
     input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
     input_bold = tf.keras.layers.Input(shape=bold_input_shape)
@@ -413,7 +422,7 @@ Linear Combination Loss:
     it gives the encoder a linear combination loss of the reconstruction loss and the contrastive loss
 """
 def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
-    decoder_model, multi_modal_model, epochs=10, interval_epochs=5,
+    decoder_model, multi_modal_model, epochs=10, interval_epochs_encoder=5, interval_epochs_decoder=5,
     encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     linear_combination=1.0, 
@@ -428,7 +437,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     global_step = tf.Variable(0)
 
 
-    start_epochs = list(range(0, epochs, interval_epochs)) + [epochs]
+    start_epochs = list(range(0, epochs, interval_epochs_decoder)) + [epochs]
 
     optimizing_encoder = False
 
@@ -445,7 +454,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                 if(verbose==2):
                     print("optimize encoder\n")
 
-                for epoch in range(interval_epochs):
+                for epoch in range(interval_epochs_decoder):
 
                     if(verbose==2):
                         print("Epoch ", epoch + start_epochs[epoch_partition])
@@ -482,7 +491,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                 if(verbose==2):
                     print("optimize decoder\n")
 
-                for epoch in range(interval_epochs):
+                for epoch in range(interval_epochs_encoder):
 
                     if(verbose==2):
                         print("Epoch ", epoch + start_epochs[epoch_partition])
@@ -547,7 +556,7 @@ Adversarial Loss:
     The Loss implemented for the Decoder discriminates true pairs of EEG and fMRI from EEG and synthesized fMRI
 """
 def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
-    decoder_model, multi_modal_model, epochs=10,
+    decoder_model, multi_modal_model, epochs=10, 
     discriminator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
     generator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     g_loss_function=losses_utils.loss_minmax_generator,
@@ -637,7 +646,7 @@ Adversarial Loss:
     The Loss implemented for the Decoder discriminates true pairs of EEG and fMRI from EEG and synthesized fMRI
 """
 def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
-    decoder_model, multi_modal_model, epochs=10, interval_epochs=5,
+    decoder_model, multi_modal_model, epochs=10, interval_epochs_encoder=5, interval_epochs_decoder=5,
     discriminator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
     generator_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     g_loss_function=losses_utils.loss_minmax_generator,
@@ -653,7 +662,7 @@ def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
 
     global_step = tf.Variable(0)
 
-    start_epochs = list(range(0, epochs, interval_epochs)) + [epochs]
+    start_epochs = list(range(0, epochs, interval_epochs_encoder)) + [epochs]
 
     optimizing_encoder = False
 
@@ -670,7 +679,7 @@ def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                 if(verbose==2):
                     print("optimize encoder\n")
 
-                for epoch in range(interval_epochs):
+                for epoch in range(interval_epochs_encoder):
 
                     if(verbose==2):
                         print("Epoch ", epoch + start_epochs[epoch_partition])
@@ -706,7 +715,7 @@ def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                 if(verbose==2):
                     print("optimize decoder\n")
 
-                for epoch in range(interval_epochs):
+                for epoch in range(interval_epochs_decoder):
 
                     if(verbose==2):
                         print("Epoch ", epoch + start_epochs[epoch_partition])
@@ -764,3 +773,58 @@ def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
 
     shared_eeg_val = eeg_network(X_val_eeg)
     return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+
+
+"""
+autoencoder_training
+
+trains an autoencoder
+it gives the model a reconstruction loss (cosine loss)
+"""
+def autoencoder_training(X_train_eeg, X_train_bold, auto_encoder, 
+    epochs=10, 
+    auto_encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
+    batch_size=16,
+    X_val_eeg=None, X_val_bold=None, session=None):
+    # keep results for plotting
+
+    validation = False
+    if(X_val_eeg is not None and X_val_bold is not None and tv_y is not None):
+        validation = True
+
+    global_step = tf.Variable(0)
+
+
+    for epoch in range(epochs):
+        
+        losses = custom_training_loss()
+        
+        for batch_init in range(0, len(X_train_eeg), batch_size):
+            batch_start = batch_init
+            if(batch_start + batch_size >= len(X_train_eeg)):
+                batch_stop = len(X_train_eeg)
+            else:
+                batch_stop = batch_start + batch_size
+
+
+            # Optimize the synthesizer mode
+            auto_encoder_loss, auto_encoder_grads = grad_decoder(auto_encoder, 
+                                                            X_train_eeg[batch_start:batch_stop], 
+                                                            X_train_bold[batch_start:batch_stop])
+            with tf.name_scope("gradient_decoder") as scope:
+                auto_encoder_optimizer.apply_gradients(zip(auto_encoder_grads, auto_encoder.trainable_variables), name=scope)
+
+            # Track progress
+            losses.update_batch_decoder_loss_avg(auto_encoder_loss)
+
+        # end epoch
+        auto_encoder_loss = losses.get_batch_decoder_loss_avg()
+
+        #get validation analyses
+        val_loss = loss_decoder(auto_encoder(X_val_eeg), X_val_bold)
+        
+        print("Autoencoder Loss: ", tf.keras.backend.eval(auto_encoder_loss),
+            "|| Validation Autoencoder Loss: ", tf.keras.backend.eval(val_loss))
+        sys.stdout.flush()
+
+    return tf.keras.backend.eval(loss_decoder(auto_encoder(X_val_eeg), X_val_bold))
