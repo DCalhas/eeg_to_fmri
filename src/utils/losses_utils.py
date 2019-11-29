@@ -70,8 +70,8 @@ def correlation_angle(vects):
     #flatten because we are dealing with 16x20 matrices
     #x = K.batch_flatten(x)
     #y = K.batch_flatten(y)
-    x = tf.reshape(x, (x.shape[0]*x.shape[1], x.shape[2], x.shape[3]))
-    y = tf.reshape(y, (y.shape[0]*y.shape[1], y.shape[2], y.shape[3]))
+    x = tf.reshape(x, (tf.shape(x)[0]*tf.shape(x)[1], tf.shape(x)[2], tf.shape(x)[3]))
+    y = tf.reshape(y, (tf.shape(y)[0]*tf.shape(y)[1], tf.shape(y)[2], tf.shape(y)[3]))
 
     a = K.batch_dot(x, y, axes=1)
 
@@ -96,8 +96,8 @@ def correlation_decoder_loss(x, y):
 
     #x = K.batch_flatten(x)
     #y = K.batch_flatten(y)
-    x = tf.reshape(x, (x.shape[0]*x.shape[1], x.shape[2], x.shape[3]))
-    y = tf.reshape(y, (y.shape[0]*y.shape[1], y.shape[2], y.shape[3]))
+    x = tf.reshape(x, (tf.shape(x)[0]*tf.shape(x)[1], tf.shape(x)[2], tf.shape(x)[3]))
+    y = tf.reshape(y, (tf.shape(y)[0]*tf.shape(y)[1], tf.shape(y)[2], tf.shape(y)[3]))
 
     x = K.cast(x, 'float32')
 
