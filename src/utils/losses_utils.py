@@ -26,40 +26,40 @@ def contrastive_loss(y_true, y_pred):
 
 
 def cross_correlation(x, y):
-	#how should the normalization be done??
-	x = K.l2_normalize(x, axis=1)
-	y = K.l2_normalize(y, axis=1)
+    #how should the normalization be done??
+    x = K.l2_normalize(x, axis=1)
+    y = K.l2_normalize(y, axis=1)
 
-	#x = K.batch_flatten(x)
-	#y = K.batch_flatten(y)
+    #x = K.batch_flatten(x)
+    #y = K.batch_flatten(y)
     x = tf.keras.backend.reshape(x, (x.shape[0]*x.shape[1], x.shape[2], x.shape[3]))
     y = tf.keras.backend.reshape(y, (y.shape[0]*y.shape[1], y.shape[2], y.shape[3]))
 
-	a = K.batch_dot(x, y, axes=1)
+    a = K.batch_dot(x, y, axes=1)
 
-	b = K.batch_dot(x, x, axes=1)
-	c = K.batch_dot(y, y, axes=1)
+    b = K.batch_dot(x, x, axes=1)
+    c = K.batch_dot(y, y, axes=1)
 
-	return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
+    return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
 
 def correlation(vects):
-	#how should the normalization be done??
-	x, y = vects
-	x = K.l2_normalize(x, axis=1)
-	y = K.l2_normalize(y, axis=1)
+    #how should the normalization be done??
+    x, y = vects
+    x = K.l2_normalize(x, axis=1)
+    y = K.l2_normalize(y, axis=1)
 
-	#flatten because we are dealing with 16x20 matrices
-	#x = K.batch_flatten(x)
-	#y = K.batch_flatten(y)
+    #flatten because we are dealing with 16x20 matrices
+    #x = K.batch_flatten(x)
+    #y = K.batch_flatten(y)
     x = tf.keras.backend.reshape(x, (x.shape[0]*x.shape[1], x.shape[2], x.shape[3]))
     y = tf.keras.backend.reshape(y, (y.shape[0]*y.shape[1], y.shape[2], y.shape[3]))
 
-	a = K.batch_dot(x, y, axes=1)
+    a = K.batch_dot(x, y, axes=1)
 
-	b = K.batch_dot(x, x, axes=1)
-	c = K.batch_dot(y, y, axes=1)
+    b = K.batch_dot(x, x, axes=1)
+    c = K.batch_dot(y, y, axes=1)
 
-	return 1 - tf.abs(a / (K.sqrt(b) * K.sqrt(c)))
+    return 1 - tf.abs(a / (K.sqrt(b) * K.sqrt(c)))
 
 def correlation_angle(vects):
     #how should the normalization be done??
@@ -91,26 +91,26 @@ def euclidean(vects):
 
 
 def correlation_decoder_loss(x, y):
-	x = K.l2_normalize(x, axis=1)
-	y = K.l2_normalize(y, axis=1)
+    x = K.l2_normalize(x, axis=1)
+    y = K.l2_normalize(y, axis=1)
 
-	#x = K.batch_flatten(x)
-	#y = K.batch_flatten(y)
+    #x = K.batch_flatten(x)
+    #y = K.batch_flatten(y)
     x = tf.keras.backend.reshape(x, (x.shape[0]*x.shape[1], x.shape[2], x.shape[3]))
     y = tf.keras.backend.reshape(y, (y.shape[0]*y.shape[1], y.shape[2], y.shape[3]))
 
-	x = K.cast(x, 'float32')
+    x = K.cast(x, 'float32')
 
-	a = K.batch_dot(x, y, axes=1)
+    a = K.batch_dot(x, y, axes=1)
 
-	b = K.batch_dot(x, x, axes=1)
-	c = K.batch_dot(y, y, axes=1)
+    b = K.batch_dot(x, x, axes=1)
+    c = K.batch_dot(y, y, axes=1)
 
-	return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
+    return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
 
 def cos_dist_output_shape(shapes):
-	shape1, shape2 = shapes
-	return (shape1[0], 1)
+    shape1, shape2 = shapes
+    return (shape1[0], 1)
 
 
 
