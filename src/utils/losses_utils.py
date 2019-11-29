@@ -30,8 +30,10 @@ def cross_correlation(x, y):
 	x = K.l2_normalize(x, axis=1)
 	y = K.l2_normalize(y, axis=1)
 
-	x = K.batch_flatten(x)
-	y = K.batch_flatten(y)
+	#x = K.batch_flatten(x)
+	#y = K.batch_flatten(y)
+    x = tf.keras.backend.reshape(x, (x.shape[0]*x.shape[1], x.shape[2], x.shape[3]))
+    y = tf.keras.backend.reshape(y, (y.shape[0]*y.shape[1], y.shape[2], y.shape[3]))
 
 	a = K.batch_dot(x, y, axes=1)
 
@@ -47,8 +49,10 @@ def correlation(vects):
 	y = K.l2_normalize(y, axis=1)
 
 	#flatten because we are dealing with 16x20 matrices
-	x = K.batch_flatten(x)
-	y = K.batch_flatten(y)
+	#x = K.batch_flatten(x)
+	#y = K.batch_flatten(y)
+    x = tf.keras.backend.reshape(x, (x.shape[0]*x.shape[1], x.shape[2], x.shape[3]))
+    y = tf.keras.backend.reshape(y, (y.shape[0]*y.shape[1], y.shape[2], y.shape[3]))
 
 	a = K.batch_dot(x, y, axes=1)
 
@@ -64,8 +68,10 @@ def correlation_angle(vects):
     y = K.l2_normalize(y, axis=1)
 
     #flatten because we are dealing with 16x20 matrices
-    x = K.batch_flatten(x)
-    y = K.batch_flatten(y)
+    #x = K.batch_flatten(x)
+    #y = K.batch_flatten(y)
+    x = tf.keras.backend.reshape(x, (x.shape[0]*x.shape[1], x.shape[2], x.shape[3]))
+    y = tf.keras.backend.reshape(y, (y.shape[0]*y.shape[1], y.shape[2], y.shape[3]))
 
     a = K.batch_dot(x, y, axes=1)
 
@@ -88,8 +94,10 @@ def correlation_decoder_loss(x, y):
 	x = K.l2_normalize(x, axis=1)
 	y = K.l2_normalize(y, axis=1)
 
-	x = K.batch_flatten(x)
-	y = K.batch_flatten(y)
+	#x = K.batch_flatten(x)
+	#y = K.batch_flatten(y)
+    x = tf.keras.backend.reshape(x, (x.shape[0]*x.shape[1], x.shape[2], x.shape[3]))
+    y = tf.keras.backend.reshape(y, (y.shape[0]*y.shape[1], y.shape[2], y.shape[3]))
 
 	x = K.cast(x, 'float32')
 
