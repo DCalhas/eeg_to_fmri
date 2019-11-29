@@ -20,7 +20,7 @@ tf.enable_eager_execution(config=config)
 
 
 eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(10)), list(range(10, 12)),
-																n_partitions=30, bold_shift=3, f_resample=1.8,
+																n_partitions=25, bold_shift=3, f_resample=1.8,
 																roi=1, roi_ica_components=20)
 n_voxels = bold_train.shape[1]
 interval_length = bold_train.shape[2]
@@ -102,7 +102,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		dcca=False
 
 
-		model_name = 'siamese_net_lr_' + str(current_learning_rate)
+		model_name = 'bold_synthesis_net_lr_' + str(current_learning_rate)
 
 
 		######################################################################################################
@@ -298,7 +298,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		dcca=False
 
 
-		model_name = 'siamese_net_lr_' + str(current_learning_rate)
+		model_name = 'bold_synthesis_net_lr_' + str(current_learning_rate)
 
 
 		######################################################################################################
