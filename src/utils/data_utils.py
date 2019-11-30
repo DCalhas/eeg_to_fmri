@@ -9,6 +9,10 @@ from nilearn.masking import apply_mask, compute_epi_mask
 
 from sklearn.preprocessing import normalize
 
+from sklearn import preprocessing
+
+from sklearn.preprocessing import StandardScaler
+
 from scipy.signal import resample
 
 import sys
@@ -144,3 +148,31 @@ def create_eeg_bold_pairs(eeg, bold):
 	y = np.array(y)
 
 	return x_eeg, x_bold, y
+
+
+#############################################################################################################
+#
+#                                           STANDARDIZE DATA FUNCTION                                       
+#
+#############################################################################################################
+
+def standardize(eeg, bold, eeg_scaler=None, bold_scaler=None):
+    #shape = (n_samples, n_features)
+    eeg_reshaped = eeg.reshape((eeg.shape[0], eeg.shape[1]*eeg.shape[2]*eeg.shape[3]*eeg.shape[4]))
+    bold_reshaped = bold.reshape((bold.shape[0], bold.shape[1]*bold.shape[2]*bold.shape[3]))
+    
+    if(eeg_scaler == None):
+        eeg_scaler = StandardScaler()
+        eeg_scaler.fit(eeg_reshaped)
+        
+    if(bold_scaler == None):
+        bold_scaler = StandardScaler()
+        bold_scaler.fit(bold_reshaped)
+
+    eeg_reshaped = eeg_scaler.transform(eeg_reshaped)
+    bold_reshaped = bold_scaler.transform(bold_reshaped)
+
+    eeg_reshaped = eeg_reshaped.reshape((eeg.shape))
+    bold_reshaped = bold_reshaped.reshape((bold.shape))
+    
+    return eeg_reshaped, bold_reshaped, eeg_scaler, bold_scaler
