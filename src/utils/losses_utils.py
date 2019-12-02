@@ -164,7 +164,7 @@ def loss_wasserstein_discriminator(real_pred, real_true, gen_pred):
 
 def get_reconstruction_loss(outputs, targets):
     reconstruction_loss = correlation_angle([outputs, targets])
-    return K.mean(reconstruction_loss)
+    return K.mean(K.log(1-reconstruction_loss))
 
 
 def get_euclidean_reconstruction_loss(outputs, targets):
