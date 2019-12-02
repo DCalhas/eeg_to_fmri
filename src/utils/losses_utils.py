@@ -81,15 +81,6 @@ def correlation_angle(vects):
     return tf.abs(a / (K.sqrt(b) * K.sqrt(c)))
 
 
-def euclidean(vects):
-    #how should the normalization be done??
-    x, y = vects
-
-
-    return K.sqrt(K.sum(K.square(x - y), axis=-1))
-
-
-
 def correlation_decoder_loss(x, y):
     x = K.l2_normalize(x, axis=1)
     y = K.l2_normalize(y, axis=1)
@@ -107,6 +98,12 @@ def correlation_decoder_loss(x, y):
     c = K.batch_dot(y, y, axes=1)
 
     return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
+
+def euclidean(x, y):
+    x = tf.keras.backend.batch_flatten(x)
+    y = tf.keras.backend.batch_flatten(y)
+    
+    return tf.keras.backend.sqrt(tf.keras.backend.sum(tf.keras.backend.square(x - y), axis=-1))
 
 def cos_dist_output_shape(shapes):
     shape1, shape2 = shapes
@@ -171,9 +168,8 @@ def get_reconstruction_loss(outputs, targets):
 
 
 def get_euclidean_reconstruction_loss(outputs, targets):
-    reconstruction_loss = euclidean([outputs, targets])
+    reconstruction_loss = euclidean(outputs, targets)
     return K.mean(reconstruction_loss)
-
 
 
 ######################################################################################################################
