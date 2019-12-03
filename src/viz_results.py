@@ -66,7 +66,7 @@ def _plot_mean_std(reconstruction_loss, distance, tset="train", n_partitions=30,
 	else:
 		ax.set_ylabel("Distance")
 
-def _plot_mean_std_loss(synthesized_bold, bold, distance_function, distance_name, set_name, model_name, ax=None):
+def _plot_mean_std_loss(synthesized_bold, bold, distance_function, distance_name, set_name, model_name, n_partitions=30, ax=None):
 	reconstruction_loss = np.zeros((synthesized_bold.shape[0], 1))
 
 	for instance in range(len(reconstruction_loss)):
@@ -78,7 +78,7 @@ def _plot_mean_std_loss(synthesized_bold, bold, distance_function, distance_name
 
 		reconstruction_loss[instance] = distance_function(instance_synth, instance_bold).numpy()
 
-	_plot_mean_std(reconstruction_loss, distance=distance_name, tset=set_name, model=model_name, ax=ax)
+	_plot_mean_std(reconstruction_loss, distance=distance_name, tset=set_name, model=model_name, n_partitions=n_partitions, ax=ax)
 
 
 
@@ -87,40 +87,40 @@ def plot_mean_std_loss(eeg_train, bold_train,
 						eeg_test, bold_test, 
 						encoder_network, decoder_network, 
 						distance_name, distance_function,
-						model_name):
+						model_name, n_partitions=30):
 
 	plt.figure(figsize=(20,5))
 	ax1 = plt.subplot(131)
 
 	shared_eeg_train = encoder_network.predict(eeg_train)
 	synthesized_bold_train = decoder_network.predict(shared_eeg_train)
-	_plot_mean_std_loss(synthesized_bold_train, bold_train, distance_function, distance_name, "train", model_name, ax=ax1)
+	_plot_mean_std_loss(synthesized_bold_train, bold_train, distance_function, distance_name, "train", model_name, n_partitions=n_partitions, ax=ax1)
 
 	ax2 = plt.subplot(132)
 
 	shared_eeg_val = encoder_network.predict(eeg_val)
 	synthesized_bold_val = decoder_network.predict(shared_eeg_val)
-	_plot_mean_std_loss(synthesized_bold_val, bold_val, distance_function, distance_name, "validation", model_name, ax=ax2)
+	_plot_mean_std_loss(synthesized_bold_val, bold_val, distance_function, distance_name, "validation", model_name, n_partitions=n_partitions, ax=ax2)
 
 	ax3 = plt.subplot(133)
 	shared_eeg_test = encoder_network.predict(eeg_test)
 	synthesized_bold_test = decoder_network.predict(shared_eeg_test)
-	_plot_mean_std_loss(synthesized_bold_test, bold_test, distance_function, distance_name, "test", model_name, ax=ax3)
+	_plot_mean_std_loss(synthesized_bold_test, bold_test, distance_function, distance_name, "test", model_name, n_partitions=n_partitions, ax=ax3)
 
 	plt.show()
 
-def plot_loss_results(eeg_train, bold_train, eeg_val, bold_val, eeg_test, bold_test, eeg_network, decoder_network, model_name):
+def plot_loss_results(eeg_train, bold_train, eeg_val, bold_val, eeg_test, bold_test, eeg_network, decoder_network, model_name, n_partitions=30):
 
 	plot_mean_std_loss(eeg_train, bold_train, 
 	eeg_val, bold_val, 
 	eeg_test, bold_test, 
 	eeg_network, decoder_network, 
 	"Cosine", losses.get_reconstruction_loss,
-	model_name)
+	model_name, n_partitions=n_partitions)
 
 	plot_mean_std_loss(eeg_train, bold_train, 
 	eeg_val, bold_val, 
 	eeg_test, bold_test, 
 	eeg_network, decoder_network, 
 	"Euclidean", losses.get_euclidean_reconstruction_loss,
-	model_name)
+	model_name, n_partitions=n_partitions)
