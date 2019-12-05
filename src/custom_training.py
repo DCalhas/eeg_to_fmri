@@ -74,19 +74,17 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
 #
 #############################################################################################################
 
-def loss_decoder(outputs, targets):
-    reconstruction_loss = losses_utils.correlation_angle([outputs, targets])
-    return K.mean(K.log(1-reconstruction_loss))
+def loss_decoder(outputs, targets, loss_function=losses_utils.get_reconstruction_loss):
+    return loss_function(outputs, targets)
 
-def grad_decoder(model, inputs, targets):
+def grad_decoder(model, inputs, targets, loss=losses_utils.get_reconstruction_loss):
     tensor_inputs = tf.convert_to_tensor(inputs)
     with tf.GradientTape() as tape:    
         tape.watch(tensor_inputs)
 
         outputs = model(tensor_inputs)
 
-        reconstruction_loss = losses_utils.correlation_angle([outputs, targets])
-        reconstruction_loss = K.mean(K.log(1-reconstruction_loss))
+        reconstruction_loss = loss(outputs, targets)
 
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
 
@@ -186,6 +184,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     decoder_model, multi_modal_model, epochs=10, 
     encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    loss_function=losses_utils.get_reconstruction_loss,
     linear_combination=0.5, 
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
@@ -212,7 +211,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
             
             # Optimize the synthesizer mode
-            decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
+            decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop], loss=loss_function)
             with tf.name_scope("gradient_decoder") as scope:
                 decoder_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
@@ -234,14 +233,14 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
 
         #get validation analyses
         shared_eeg_val = eeg_network(X_val_eeg)
-        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
+        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function)
         
         print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
             "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
         sys.stdout.flush()
 
     shared_eeg_val = eeg_network(X_val_eeg)
-    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function))
 
 
 
@@ -256,6 +255,7 @@ def dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     decoder_model, multi_modal_model, epochs=10, 
     encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    loss_function=losses_utils.get_reconstruction_loss,
     linear_combination=0.5, dcca_output=None,
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
@@ -282,7 +282,7 @@ def dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
             
             # Optimize the synthesizer mode
-            decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
+            decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop], loss=loss_function)
             with tf.name_scope("gradient_decoder") as scope:
                 decoder_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
@@ -305,14 +305,14 @@ def dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
 
         #get validation analyses
         shared_eeg_val = eeg_network(X_val_eeg)
-        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
+        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function)
         
         print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
             "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
         sys.stdout.flush()
 
     shared_eeg_val = eeg_network(X_val_eeg)
-    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function))
 
 
 
@@ -329,6 +329,7 @@ def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     decoder_model, multi_modal_model, epochs=10, 
     encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    loss_function=losses_utils.get_reconstruction_loss,
     linear_combination=1.0, top_k=5, eeg_train=None, bold_train=None, eeg_val=None, bold_val=None, bold_network=None,
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
@@ -391,7 +392,8 @@ def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             # Optimize the synthesizer mode
             decoder_loss, decoder_grads = grad_decoder(decoder_model, 
                                                         ranked_bold_train[batch_start:batch_stop], 
-                                                        bold_train[batch_start:batch_stop])
+                                                        bold_train[batch_start:batch_stop], 
+                                                        loss=loss_function)
             with tf.name_scope("gradient_decoder") as scope:
                 decoder_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
@@ -402,13 +404,13 @@ def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         decoder_loss = losses.get_batch_decoder_loss_avg()
 
         #get validation analyses
-        val_loss = loss_decoder(decoder_model(ranked_bold_val), bold_val)
+        val_loss = loss_decoder(decoder_model(ranked_bold_val), bold_val, loss_function=loss_function)
         
         print("Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
             "Validation Decoder Loss: ", tf.keras.backend.eval(val_loss))
         sys.stdout.flush()
 
-    return tf.keras.backend.eval(loss_decoder(decoder_model(ranked_bold_val), bold_val))
+    return tf.keras.backend.eval(loss_decoder(decoder_model(ranked_bold_val), bold_val, loss_function=loss_function))
 
 """
 alternate_training
@@ -425,6 +427,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     decoder_model, multi_modal_model, epochs=10, interval_epochs_encoder=5, interval_epochs_decoder=5,
     encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
+    loss_function=losses_utils.get_reconstruction_loss,
     linear_combination=1.0, 
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None, verbose=1):
@@ -469,7 +472,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                         shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
                         
                         #Compute decoder loss
-                        decoder_loss, _ = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
+                        decoder_loss, _ = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop], loss=loss_function)
 
                         #now train the compression by correlation model
                         encoder_loss, encoder_grads = grad_multi_encoder(multi_modal_model, 
@@ -506,7 +509,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                         shared_eeg = eeg_network(X_train_eeg[batch_start:batch_stop])
                         
                         # Optimize the synthesizer mode
-                        decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop])
+                        decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, X_train_bold[batch_start:batch_stop], loss=loss_function)
                         with tf.name_scope("gradient_decoder") as scope:
                             decoder_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
@@ -520,7 +523,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
 
         #get validation analyses
         shared_eeg_val = eeg_network(X_val_eeg)
-        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
+        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function)
         
         if(verbose):
             print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss), " || Decoder Loss: ", tf.keras.backend.eval(decoder_loss),
@@ -538,7 +541,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         optimizing_encoder = not optimizing_encoder
 
     shared_eeg_val = eeg_network(X_val_eeg)
-    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function))
 
 
 
@@ -616,9 +619,9 @@ def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         #get validation analyses
         shared_eeg_train = eeg_network(X_train_eeg)
         shared_eeg_val = eeg_network(X_val_eeg)
-        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
-        train_reconstruction_loss = losses_utils.get_reconstruction_loss(decoder_model(shared_eeg_train), X_train_bold)
-        val_reconstruction_loss = losses_utils.get_reconstruction_loss(decoder_model(shared_eeg_val), X_val_bold)
+        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function)
+        train_reconstruction_loss = losses_utils.get_reconstruction_cosine_loss(decoder_model(shared_eeg_train), X_train_bold)
+        val_reconstruction_loss = losses_utils.get_reconstruction_cosine_loss(decoder_model(shared_eeg_val), X_val_bold)
         
         if(verbose):
             print("GAN Encoder Loss: ", tf.keras.backend.eval(encoder_loss), 
@@ -629,7 +632,7 @@ def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             sys.stdout.flush()
 
     shared_eeg_val = eeg_network(X_val_eeg)
-    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function))
 
 
 
@@ -749,9 +752,9 @@ def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         #get validation analyses
         shared_eeg_train = eeg_network(X_train_eeg)
         shared_eeg_val = eeg_network(X_val_eeg)
-        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
-        train_reconstruction_loss = losses_utils.get_reconstruction_loss(decoder_model(shared_eeg_train), X_train_bold)
-        val_reconstruction_loss = losses_utils.get_reconstruction_loss(decoder_model(shared_eeg_val), X_val_bold)
+        val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function)
+        train_reconstruction_loss = losses_utils.get_reconstruction_cosine_loss(decoder_model(shared_eeg_train), X_train_bold)
+        val_reconstruction_loss = losses_utils.get_reconstruction_cosine_loss(decoder_model(shared_eeg_val), X_val_bold)
         
         if(verbose):
             print("GAN Encoder Loss: ", tf.keras.backend.eval(encoder_loss), 
@@ -772,7 +775,7 @@ def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         optimizing_encoder = not optimizing_encoder
 
     shared_eeg_val = eeg_network(X_val_eeg)
-    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold))
+    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function))
 
 
 """
@@ -784,6 +787,7 @@ it gives the model a reconstruction loss (cosine loss)
 def autoencoder_training(X_train_eeg, X_train_bold, auto_encoder, 
     epochs=10, 
     auto_encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
+    loss_function=losses_utils.get_reconstruction_loss,
     batch_size=16,
     X_val_eeg=None, X_val_bold=None, session=None):
     # keep results for plotting
@@ -810,7 +814,8 @@ def autoencoder_training(X_train_eeg, X_train_bold, auto_encoder,
             # Optimize the synthesizer mode
             auto_encoder_loss, auto_encoder_grads = grad_decoder(auto_encoder, 
                                                             X_train_eeg[batch_start:batch_stop], 
-                                                            X_train_bold[batch_start:batch_stop])
+                                                            X_train_bold[batch_start:batch_stop], 
+                                                            loss=loss_function)
             with tf.name_scope("gradient_decoder") as scope:
                 auto_encoder_optimizer.apply_gradients(zip(auto_encoder_grads, auto_encoder.trainable_variables), name=scope)
 
@@ -821,10 +826,10 @@ def autoencoder_training(X_train_eeg, X_train_bold, auto_encoder,
         auto_encoder_loss = losses.get_batch_decoder_loss_avg()
 
         #get validation analyses
-        val_loss = loss_decoder(auto_encoder(X_val_eeg), X_val_bold)
+        val_loss = loss_decoder(auto_encoder(X_val_eeg), X_val_bold, loss_function=loss_function)
         
         print("Autoencoder Loss: ", tf.keras.backend.eval(auto_encoder_loss),
             "|| Validation Autoencoder Loss: ", tf.keras.backend.eval(val_loss))
         sys.stdout.flush()
 
-    return tf.keras.backend.eval(loss_decoder(auto_encoder(X_val_eeg), X_val_bold))
+    return tf.keras.backend.eval(loss_decoder(auto_encoder(X_val_eeg), X_val_bold, loss_function=loss_function))

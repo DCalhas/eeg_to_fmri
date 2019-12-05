@@ -1,6 +1,6 @@
 import GPyOpt
 
-from utils import data_utils
+from utils import data_utils, losses_utils
 
 from sklearn.model_selection import train_test_split
 
@@ -173,6 +173,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 			epochs=10, 
 			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+			loss_function=losses_utils.get_reconstruction_cosine_loss,
 			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
@@ -376,6 +377,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			epochs=10, 
 			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+			loss_function=losses_utils.get_reconstruction_cosine_loss,
 			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,

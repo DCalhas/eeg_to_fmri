@@ -172,6 +172,10 @@ def get_reconstruction_loss(outputs, targets):
     reconstruction_loss = correlation_angle([outputs, targets])
     return K.mean(K.log(1-reconstruction_loss))
 
+def get_reconstruction_cosine_loss(outputs, targets):
+    reconstruction_loss = correlation_angle([outputs, targets])
+    return K.mean(reconstruction_loss)
+
 
 def get_euclidean_reconstruction_loss(outputs, targets):
     reconstruction_loss = euclidean(outputs, targets)
