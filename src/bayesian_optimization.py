@@ -20,7 +20,7 @@ tf.enable_eager_execution(config=config)
 
 
 eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(10)), list(range(10, 12)),
-																n_partitions=40, bold_shift=3, f_resample=1.8,
+																n_partitions=21, bold_shift=3, f_resample=1.8,
 																roi=1, roi_ica_components=20)
 
 #standardize data
