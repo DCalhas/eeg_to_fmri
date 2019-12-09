@@ -74,10 +74,10 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
 #
 #############################################################################################################
 
-def loss_decoder(outputs, targets, loss_function=losses_utils.get_reconstruction_loss):
+def loss_decoder(outputs, targets, loss_function=losses_utils.get_reconstruction_log_cosine_loss):
     return loss_function(outputs, targets)
 
-def grad_decoder(model, inputs, targets, loss=losses_utils.get_reconstruction_loss):
+def grad_decoder(model, inputs, targets, loss=losses_utils.get_reconstruction_log_cosine_loss):
     tensor_inputs = tf.convert_to_tensor(inputs)
     with tf.GradientTape() as tape:    
         tape.watch(tensor_inputs)
@@ -184,7 +184,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     decoder_model, multi_modal_model, epochs=10, 
     encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
-    loss_function=losses_utils.get_reconstruction_loss,
+    loss_function=losses_utils.get_reconstruction_log_cosine_loss,
     linear_combination=0.5, 
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
@@ -255,7 +255,7 @@ def dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     decoder_model, multi_modal_model, epochs=10, 
     encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
-    loss_function=losses_utils.get_reconstruction_loss,
+    loss_function=losses_utils.get_reconstruction_log_cosine_loss,
     linear_combination=0.5, dcca_output=None,
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
@@ -329,7 +329,7 @@ def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     decoder_model, multi_modal_model, epochs=10, 
     encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
-    loss_function=losses_utils.get_reconstruction_loss,
+    loss_function=losses_utils.get_reconstruction_log_cosine_loss,
     linear_combination=1.0, top_k=5, eeg_train=None, bold_train=None, eeg_val=None, bold_val=None, bold_network=None,
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
@@ -427,7 +427,7 @@ def alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     decoder_model, multi_modal_model, epochs=10, interval_epochs_encoder=5, interval_epochs_decoder=5,
     encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
     decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
-    loss_function=losses_utils.get_reconstruction_loss,
+    loss_function=losses_utils.get_reconstruction_log_cosine_loss,
     linear_combination=1.0, 
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, session=None, verbose=1):
@@ -787,7 +787,7 @@ it gives the model a reconstruction loss (cosine loss)
 def autoencoder_training(X_train_eeg, X_train_bold, auto_encoder, 
     epochs=10, 
     auto_encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
-    loss_function=losses_utils.get_reconstruction_loss,
+    loss_function=losses_utils.get_reconstruction_log_cosine_loss,
     batch_size=16,
     X_val_eeg=None, X_val_bold=None, session=None):
     # keep results for plotting
