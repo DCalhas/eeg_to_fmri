@@ -92,7 +92,7 @@ class Multi_Modal_Model:
 												real_output_shape[2], 
 												real_output_shape[3]))
 
-	def build_eeg(self, input_shape, output_shape, regularization=0.0, activation='sigmoid', dropout=0.0):
+	def build_eeg(self, input_shape, output_shape, regularization=0.0, activation='relu', dropout=0.0):
 		return self.eeg_encoder.build_net(input_shape, output_shape, 
 										previous_model=self.previous_eeg_network,
 										regularization=regularization,
@@ -100,7 +100,7 @@ class Multi_Modal_Model:
 										dropout=dropout,
 										verbose=True)
 
-	def build_bold(self, input_shape, output_shape, regularization=0.0, activation='sigmoid', dropout=0.0):
+	def build_bold(self, input_shape, output_shape, regularization=0.0, activation='relu', dropout=0.0):
 
 		return self.bold_encoder.build_net(input_shape, output_shape, 
 										previous_model=self.previous_bold_network,
@@ -109,7 +109,7 @@ class Multi_Modal_Model:
 										dropout=dropout,
 										verbose=True)
 
-	def build_decoder(self, input_shape, output_shape, regularization=0.0, activation='sigmoid', dropout=0.0):
+	def build_decoder(self, input_shape, output_shape, regularization=0.0, activation='relu', dropout=0.0):
 
 		return self.decoder.build_net(input_shape, output_shape, 
 									previous_model=self.previous_decoder_network,
@@ -258,7 +258,7 @@ class Neural_Architecture:
 	#											BUILDING TENSORFLOW INSTANCE NETWORK
 	#
 	#######################################################################################################################
-	def build_net(self, input_shape, hidden_output_shape, previous_model=None, regularization=0.0, activation='sigmoid', dropout=0.0, verbose=False):
+	def build_net(self, input_shape, hidden_output_shape, previous_model=None, regularization=0.0, activation='relu', dropout=0.0, verbose=False):
 		model = tf.keras.Sequential()
 
 		#try:
@@ -570,7 +570,7 @@ class Iterative_Naive_NAS:
 	######################################################################################################################################
 
 	#Dense layer is simple to generate
-	def build_layer_Dense(self, input_shape, output_shape, regularization=0.0, activation='sigmoid', initializer=tf.keras.initializers.Constant(value=0.5)):
+	def build_layer_Dense(self, input_shape, output_shape, regularization=0.0, activation='relu', initializer=tf.keras.initializers.Constant(value=0.5)):
 		if(type(output_shape) is not int and type(output_shape) is not tuple):
 			return None
 
@@ -583,7 +583,7 @@ class Iterative_Naive_NAS:
                 bias_initializer=initializer), 
 				tf.keras.layers.Reshape(output_shape)]
 
-	def build_layer_Conv2D(self, input_shape, output_shape, regularization=0.0, activation='sigmoid', initializer=tf.keras.initializers.Constant(value=0.5)):
+	def build_layer_Conv2D(self, input_shape, output_shape, regularization=0.0, activation='relu', initializer=tf.keras.initializers.Constant(value=0.5)):
 		generated = self.generate_kernel_stride_Conv2D(input_shape, output_shape)
 
 		if(not generated):
@@ -599,7 +599,7 @@ class Iterative_Naive_NAS:
                 			bias_initializer=initializer)]
 
 
-	def build_layer_Conv2DTranspose(self, input_shape, output_shape, regularization=0.0, activation='sigmoid', initializer=tf.keras.initializers.Constant(value=0.5)):
+	def build_layer_Conv2DTranspose(self, input_shape, output_shape, regularization=0.0, activation='relu', initializer=tf.keras.initializers.Constant(value=0.5)):
 		generated = self.generate_kernel_stride_Conv2DTranspose(input_shape, output_shape)
 
 		if(not generated):
@@ -619,7 +619,7 @@ class Iterative_Naive_NAS:
 
 
 	#returns a list of layers
-	def build_layer_UpSampling2D(self, input_shape, output_shape, regularization=0.0, activation='sigmoid', initializer=tf.keras.initializers.Constant(value=0.5)):
+	def build_layer_UpSampling2D(self, input_shape, output_shape, regularization=0.0, activation='relu', initializer=tf.keras.initializers.Constant(value=0.5)):
 		#augment dimension with Dense layer
 		upsampling_layers = []		
 
@@ -653,7 +653,7 @@ class Iterative_Naive_NAS:
 		return upsampling_layers
 
 
-	def build_layer_Conv3D(self, input_shape, output_shape, regularization=0.0, activation='sigmoid', initializer=tf.keras.initializers.Constant(value=0.5)):
+	def build_layer_Conv3D(self, input_shape, output_shape, regularization=0.0, activation='relu', initializer=tf.keras.initializers.Constant(value=0.5)):
 		generated = self.generate_kernel_stride_Conv3D(input_shape, output_shape)
 
 		if(not generated):
@@ -669,7 +669,7 @@ class Iterative_Naive_NAS:
                 			bias_initializer=initializer)]
 
 
-	def build_layer_Conv3DTranspose(self, input_shape, output_shape, next_input_shape=None, regularization=0.0, activation='sigmoid', initializer=tf.keras.initializers.Constant(value=0.5)):
+	def build_layer_Conv3DTranspose(self, input_shape, output_shape, next_input_shape=None, regularization=0.0, activation='relu', initializer=tf.keras.initializers.Constant(value=0.5)):
 		generated = self.generate_kernel_stride_Conv3DTranspose(input_shape, output_shape, next_input_shape=next_input_shape)
 
 		if(not generated):
