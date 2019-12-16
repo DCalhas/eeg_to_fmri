@@ -16,6 +16,7 @@ import utils.data_utils as data_utils
 
 import matplotlib.pyplot as plt
 
+from scipy import spatial
 
 
 
@@ -115,7 +116,7 @@ def plot_loss_results(eeg_train, bold_train, eeg_val, bold_val, eeg_test, bold_t
 	eeg_val, bold_val, 
 	eeg_test, bold_test, 
 	eeg_network, decoder_network, 
-	"Cosine", losses.get_reconstruction_loss,
+	"Cosine", losses.get_reconstruction_log_cosine_loss,
 	model_name, n_partitions=n_partitions)
 
 	plot_mean_std_loss(eeg_train, bold_train, 
@@ -124,3 +125,72 @@ def plot_loss_results(eeg_train, bold_train, eeg_val, bold_val, eeg_test, bold_t
 	eeg_network, decoder_network, 
 	"Euclidean", losses.get_euclidean_reconstruction_loss,
 	model_name, n_partitions=n_partitions)
+
+
+######################################################################################################################################################
+#
+#															PLOT VOXELS REAL AND SYNTHESIZED
+#
+######################################################################################################################################################
+
+
+def _plot_voxel(real_signal, synth_signal, rows=1, columns=2, index=1, y_bottom=None, y_top=None):
+    ax = plt.subplot(rows, columns, index)
+    ax.plot(list(range(0, len(real_signal)*2, 2)), real_signal, color='b')
+    ax.set_xlabel("Seconds")
+    ax.set_ylabel("BOLD intensity")
+    
+    if(y_bottom==None and y_top==None):
+        y_bottom_real = np.amin(real_signal)
+        y_top_real = np.amax(real_signal)
+        y_bottom_synth = np.amin(synth_signal)
+        y_top_synth = np.amax(synth_signal)
+        
+    ax.set_ylim(y_bottom_real, y_top_real)
+    
+    if(index == 1):
+        ax.set_title("Real BOLD Signal", y=0.99999)
+
+        
+    
+    ax = plt.subplot(rows, columns, index+1)
+    ax.plot(list(range(0, len(synth_signal)*2, 2)), synth_signal, color='r')
+    ax.set_xlabel("Seconds")
+    ax.set_ylabel("BOLD intensity")
+    
+    ax.set_ylim(y_bottom_synth, y_top_synth)
+    
+    if(index == 1):
+        ax.set_title("Synthesized BOLD Signal")
+
+def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, y_top=None):
+    n_voxels=len(voxels)
+    fig = plt.figure(figsize=(20,n_voxels*2))
+    
+    fig.suptitle('Top-' + str(len(voxels)) + ' correlated voxels', fontsize=16)
+    
+    if(individual != None):
+        real_set = real_set[individual] 
+        synth_set = synth_set[individual]
+        
+    index=1
+    if(voxels):
+        for voxel in range(n_voxels):
+            _plot_voxel(real_set[voxel], synth_set[voxel], 
+                        rows=n_voxels, index=index, 
+                        y_bottom=y_bottom, y_top=y_top)
+            index += 2
+
+    plt.show()
+
+def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10):
+    sort_voxels = {}
+    n_voxels = real_signal.shape[0]
+    
+    for voxel in range(n_voxels):
+        sort_voxels[voxel] = 1/abs(1-abs(spatial.distance.cosine(real_signal[voxel].reshape((real_signal[voxel].shape[0])), 
+                                               synth_signal[voxel].reshape((synth_signal[voxel].shape[0])))))-1
+        
+    sort_voxels = dict(sorted(sort_voxels.items(), key=lambda kv: kv[1]))
+    
+    return list(sort_voxels.keys())[0:top_k]
