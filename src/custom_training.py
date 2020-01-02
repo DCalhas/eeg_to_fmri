@@ -620,8 +620,8 @@ def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         shared_eeg_train = eeg_network(X_train_eeg)
         shared_eeg_val = eeg_network(X_val_eeg)
         val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold)
-        train_reconstruction_loss = losses_utils.get_reconstruction_cosine_loss(decoder_model(shared_eeg_train), X_train_bold)
-        val_reconstruction_loss = losses_utils.get_reconstruction_cosine_loss(decoder_model(shared_eeg_val), X_val_bold)
+        train_reconstruction_loss = losses_utils.get_reconstruction_log_cosine_loss(decoder_model(shared_eeg_train), X_train_bold)
+        val_reconstruction_loss = losses_utils.get_reconstruction_log_cosine_loss(decoder_model(shared_eeg_val), X_val_bold)
         
         if(verbose):
             print("GAN Encoder Loss: ", tf.keras.backend.eval(encoder_loss), 
@@ -753,8 +753,8 @@ def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         shared_eeg_train = eeg_network(X_train_eeg)
         shared_eeg_val = eeg_network(X_val_eeg)
         val_loss = loss_decoder(decoder_model(shared_eeg_val), X_val_bold, loss_function=loss_function)
-        train_reconstruction_loss = losses_utils.get_reconstruction_cosine_loss(decoder_model(shared_eeg_train), X_train_bold)
-        val_reconstruction_loss = losses_utils.get_reconstruction_cosine_loss(decoder_model(shared_eeg_val), X_val_bold)
+        train_reconstruction_loss = losses_utils.get_reconstruction_log_cosine_loss(decoder_model(shared_eeg_train), X_train_bold)
+        val_reconstruction_loss = losses_utils.get_reconstruction_log_cosine_loss(decoder_model(shared_eeg_val), X_val_bold)
         
         if(verbose):
             print("GAN Encoder Loss: ", tf.keras.backend.eval(encoder_loss), 
