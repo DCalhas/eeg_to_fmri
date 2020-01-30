@@ -72,8 +72,6 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
     if(lstm):
         processed_eeg = add_lstm_embedding(eeg_network)(processed_eeg)
         processed_bold = add_lstm_embedding(bold_network)(processed_bold)
-    
-    return model
 
     if(dcca):
         dcca = tf.keras.layers.Concatenate(axis=1)([processed_eeg, processed_bold])
