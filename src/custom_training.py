@@ -27,6 +27,8 @@ tf.enable_eager_execution(config=config)
 
 import tensorflow.keras.backend as K
 
+from tensorflow.compat.v1.keras.layers import LSTM, TimeDistributed, Dense, Reshape
+
 import sys
 
 #############################################################################################################
@@ -44,7 +46,19 @@ def auto_encoder_network(eeg_input_shape, eeg_network, decoder_network):
     return tf.keras.Model(input_eeg, synthesized_bold)
 
 
-def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, corr_distance=False):
+def add_lstm_embedding(model):
+    channels = model.output_shape[1]
+    time = model.output_shape[2]
+    
+    lstm_model = tf.keras.Sequential()
+    lstm_model.add(tf.keras.layers.Input(shape=model.output_shape))
+    lstm_model.add(Reshape((time, channels)))
+    lstm_model.add(TimeDistributed(Dense(1)))
+    lstm_model.add(LSTM(1, return_sequences=True))
+    
+    return lstm_model
+
+def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, lstm=False, corr_distance=False):
     input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
     input_bold = tf.keras.layers.Input(shape=bold_input_shape)
 
@@ -54,6 +68,12 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
 
     processed_eeg = eeg_network(input_eeg)
     processed_bold = bold_network(input_bold)
+
+    if(lstm):
+        processed_eeg = add_lstm_embedding(eeg_network)(processed_eeg)
+        processed_bold = add_lstm_embedding(bold_network)(processed_bold)
+    
+    return model
 
     if(dcca):
         dcca = tf.keras.layers.Concatenate(axis=1)([processed_eeg, processed_bold])
