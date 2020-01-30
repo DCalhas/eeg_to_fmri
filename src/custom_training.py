@@ -247,7 +247,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             losses.update_batch_decoder_loss_avg(decoder_loss)
             losses.update_batch_encoder_loss_avg(encoder_loss)
             if(verbose):
-                print("Loss Encoder:", encoder_loss, "|| Loss Decoder:", decoder_loss)
+                print("Loss Encoder:", tf.keras.backend.eval(encoder_loss), "|| Loss Decoder:", tf.keras.backend.eval(decoder_loss))
 
         # end epoch
         decoder_loss = losses.get_batch_decoder_loss_avg()
