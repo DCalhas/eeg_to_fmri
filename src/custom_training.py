@@ -205,7 +205,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     loss_function=losses_utils.get_reconstruction_log_cosine_loss,
     linear_combination=0.5, 
     batch_size=128,
-    X_val_eeg=None, X_val_bold=None, tv_y=None, session=None):
+    X_val_eeg=None, X_val_bold=None, tv_y=None, verbose=False, session=None):
     # keep results for plotting
 
     validation = False
@@ -246,6 +246,8 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             # Track progress
             losses.update_batch_decoder_loss_avg(decoder_loss)
             losses.update_batch_encoder_loss_avg(encoder_loss)
+            if(verbose):
+                print("Loss Encoder:", encoder_loss, "|| Loss Decoder:", decoder_loss)
 
         # end epoch
         decoder_loss = losses.get_batch_decoder_loss_avg()
