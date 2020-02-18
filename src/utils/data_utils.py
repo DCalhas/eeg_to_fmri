@@ -118,36 +118,37 @@ def get_data(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partition
 
 	return X, y
 
-def create_eeg_bold_pairs(eeg, bold):
-	x_eeg = []
-	x_bold = []
+def create_eeg_bold_pairs(eeg, bold, instances_per_individual=16):
+	x_eeg_indeces = []
+	x_bold_indeces_pair = []
+	x_bold_indeces_true = []
 	y = []
 
 	#how are we going to pair these? only different individuals??
 	#different timesteps of the same individual
-
-	#redefine this variable
-	instances_per_individual = 16
-
 
 	#building pairs
 	for individual in range(int(len(eeg)/instances_per_individual)):
 		for other_individual in range(int(len(eeg)/instances_per_individual)):
 			for time_partitions in range(instances_per_individual):
 				if(individual == other_individual):
-					x_eeg += [eeg[individual + time_partitions]]
-					x_bold += [bold[other_individual + time_partitions]]
+					true_pair = other_individual+time_partitions
+					x_eeg_indeces += [[individual + time_partitions]]
+					x_bold_indeces_pair += [[other_individual + time_partitions]]
+					x_bold_indeces_true += [[true_pair]]
 					y += [[1]]
 				else:
-					x_eeg += [eeg[individual + time_partitions]]
-					x_bold += [bold[other_individual + time_partitions]]
+					x_eeg_indeces += [[individual + time_partitions]]
+					x_bold_indeces_pair += [[other_individual + time_partitions]]
+					x_bold_indeces_true += [[true_pair]]
 					y += [[0]]
 
-	x_eeg = np.array(x_eeg)
-	x_bold = np.array(x_bold)
+	x_eeg_indeces = np.array(x_eeg_indeces)
+	x_bold_indeces_pair = np.array(x_bold_indeces_pair)
+	x_bold_indeces_true = np.array(x_bold_indeces_true)
 	y = np.array(y)
 
-	return x_eeg, x_bold, y
+	return x_eeg_indeces, x_bold_indeces_pair, y, x_bold_indeces_true
 
 
 #############################################################################################################
