@@ -168,7 +168,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 			epochs=40, 
 			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-			loss_function=losses_utils.get_reconstruction_cosine_loss,
+			loss_function=losses_utils.get_reconstruction_cosine_voxel_loss,
 			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
@@ -184,11 +184,16 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		#	tv_y=tv_y)
 		#	eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val, bold_network=bold_network)
 		#validation_loss = custom_training.ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
-		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+		#	epochs=40, 
+		#	encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+		#	decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 		#	batch_size=current_batch_size,
 		#	X_val_eeg=X_val_eeg,
 		#	X_val_bold=X_val_bold,
-		#	tv_y=tv_y)
+		#	tv_y=tv_y,
+		#	eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val, bold_network=bold_network,
+		#	X_bold_train_target=X_bold_train_target,
+		#	X_bold_val_target=X_bold_val_target)
 		#validation_loss = custom_training.dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 		#	batch_size=current_batch_size, linear_combination=current_loss_coefficient, dcca_output=current_dcca_output,
@@ -362,23 +367,32 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 		#this try should be checked
 		#validation_loss = custom_training.ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
-		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+		#	epochs=40, 
+		#	encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+		#	decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 		#	batch_size=current_batch_size,
 		#	X_val_eeg=X_val_eeg,
 		#	X_val_bold=X_val_bold,
 		#	tv_y=tv_y,
-		#	eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val, bold_network=bold_network)
+		#	eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val, bold_network=bold_network,
+		#	X_bold_train_target=X_bold_train_target,
+		#	X_bold_val_target=X_bold_val_target)
 		#validation_loss = custom_training.adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
-		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+		#	epochs=40, 
+		#	discriminator_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
+    	#	generator_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate), 
 		#	batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 		#	X_val_eeg=X_val_eeg,
 		#	X_val_bold=X_val_bold,
-		#	tv_y=tv_y)
+		#	tv_y=tv_y,
+		#	eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val,
+		#	X_bold_train_target=X_bold_train_target,
+    	#	X_bold_val_target=X_bold_val_target)
 		validation_loss = custom_training.linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 			epochs=40, 
 			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-			loss_function=losses_utils.get_reconstruction_cosine_loss,
+			loss_function=losses_utils.get_reconstruction_cosine_voxel_loss,
 			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,

@@ -81,6 +81,19 @@ def correlation_angle(vects):
     return tf.abs(a / (K.sqrt(b) * K.sqrt(c)))
 
 
+def correlation_angle_mean_voxels(vects):
+    #how should the normalization be done??
+    x, y = vects
+    x = K.l2_normalize(x, axis=2)
+    y = K.l2_normalize(y, axis=2)
+
+    a = K.batch_dot(x, y, axes=2)
+
+    b = K.batch_dot(x, x, axes=2)
+    c = K.batch_dot(y, y, axes=2)
+
+    return tf.squeeze(tf.keras.backend.mean(tf.abs(a / (K.sqrt(b) * K.sqrt(c))), axis=1), [2])
+
 def correlation_decoder_loss(x, y):
     x = K.l2_normalize(x, axis=1)
     y = K.l2_normalize(y, axis=1)
@@ -172,8 +185,17 @@ def get_reconstruction_cosine_loss(outputs, targets):
     reconstruction_loss = correlation_angle([outputs, targets])
     return K.mean(reconstruction_loss)
 
+def get_reconstruction_cosine_voxel_loss(outputs, targets):
+    reconstruction_loss = correlation_angle_mean_voxels([outputs, targets])
+    return K.mean(reconstruction_loss)
+
 def get_reconstruction_log_cosine_loss(outputs, targets):
     reconstruction_loss = correlation_angle([outputs, targets])
+    return K.mean(K.log(1-reconstruction_loss))
+
+
+def get_reconstruction_log_cosine_voxel_loss(outputs, targets):
+    reconstruction_loss = correlation_angle_mean_voxels([outputs, targets])
     return K.mean(K.log(1-reconstruction_loss))
 
 

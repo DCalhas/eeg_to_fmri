@@ -353,7 +353,8 @@ ranked_synthesis_training
 
 trains a encoder and decoder
 it gives the encoder a contrastive loss, learn most correlated instances
-it gives the decoder a reconstruction losses
+it gives the decode  File "/home/david/eeg_informed_fmri/src/custom_training.py", line 378, in ranked_synthesis_training
+r a reconstruction losses
 """
 def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network, 
     decoder_model, multi_modal_model, epochs=10, 
@@ -373,11 +374,6 @@ def ranked_synthesis_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
         validation = True
 
     global_step = tf.Variable(0)
-    encoder_loss, _ = grad_multi_encoder(multi_modal_model, 
-                             [X_train_eeg, X_train_bold], 
-                             tr_y, 0, linear_combination)
-
-    print("Encoder Loss: ", tf.keras.backend.eval(encoder_loss))
 
     #train encoder first
     for epoch in range(epochs):
@@ -673,7 +669,7 @@ def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             sys.stdout.flush()
 
     shared_eeg_val = eeg_network(tf.gather_nd(eeg_val, X_val_eeg))
-    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), tf.gather_nd(bold_val, tf.gather_nd(bold_val, X_val_bold))))
+    return tf.keras.backend.eval(loss_decoder(decoder_model(shared_eeg_val), tf.gather_nd(bold_val, X_val_bold)))
 
 
 
