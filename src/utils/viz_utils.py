@@ -185,7 +185,7 @@ def _plot_voxel(real_signal, synth_signal, rows=1, columns=2, index=1, y_bottom=
     if(index == 1):
         ax.set_title("Synthesized BOLD Signal")
 
-def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, y_top=None):
+def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, y_top=None, normalized=False):
     n_voxels=len(voxels)
     fig = plt.figure(figsize=(20,n_voxels*2))
     
@@ -198,7 +198,15 @@ def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, 
     index=1
     if(voxels):
         for voxel in range(n_voxels):
-            _plot_voxel(real_set[voxel], synth_set[voxel], 
+        	real_voxel = real_set[voxel]
+        	synth_voxel = synth_set[voxel]
+        	
+        	if(normalized):
+            	real_voxel = real_voxel/norm(real_voxel)
+            	synth_voxel = synth_voxel/norm(synth_voxel)
+
+
+            _plot_voxel(real_voxel, synth_voxel, 
                         rows=n_voxels, index=index, 
                         y_bottom=y_bottom, y_top=y_top)
             index += 2
