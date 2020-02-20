@@ -200,7 +200,7 @@ def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, 
         for voxel in range(n_voxels):
         	real_voxel = real_set[voxel]
         	synth_voxel = synth_set[voxel]
-
+        	
 			if(normalized):
 				real_voxel = real_voxel/norm(real_voxel)
 				synth_voxel = synth_voxel/norm(synth_voxel)
