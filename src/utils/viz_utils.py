@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 
 from scipy import spatial
 
+from numpy.linalg import norm
 
 
 
@@ -209,8 +210,9 @@ def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10, verbose=0)
     n_voxels = real_signal.shape[0]
     
     for voxel in range(n_voxels):
-    	distance_cosine = spatial.distance.cosine(real_signal[voxel].reshape((real_signal[voxel].shape[0])), 
-                                               synth_signal[voxel].reshape((synth_signal[voxel].shape[0])))
+    	voxel_a = real_signal[voxel].reshape((real_signal[voxel].shape[0]))
+    	voxel_b = synth_signal[voxel].reshape((synth_signal[voxel].shape[0]))
+    	distance_cosine = spatial.distance.cosine(voxel_a/norm(voxel_a), voxel_b/norm(voxel_b))
     	if(verbose>1):
     		print("Distance:", distance_cosine)
 
