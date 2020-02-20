@@ -196,20 +196,20 @@ def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, 
         synth_set = synth_set[individual]
         
     index=1
-    if(voxels):
-        for voxel in range(n_voxels):
-        	real_voxel = real_set[voxel]
-        	synth_voxel = synth_set[voxel]
-        	
+	if(voxels):
+		for voxel in range(n_voxels):
+			real_voxel = real_set[voxel]
+			synth_voxel = synth_set[voxel]
+
 			if(normalized):
 				real_voxel = real_voxel/norm(real_voxel)
 				synth_voxel = synth_voxel/norm(synth_voxel)
 
 
-            _plot_voxel(real_voxel, synth_voxel, 
-                        rows=n_voxels, index=index, 
-                        y_bottom=y_bottom, y_top=y_top)
-            index += 2
+			_plot_voxel(real_voxel, synth_voxel, 
+						rows=n_voxels, index=index, 
+						y_bottom=y_bottom, y_top=y_top)
+			index += 2
 
     plt.show()
 
