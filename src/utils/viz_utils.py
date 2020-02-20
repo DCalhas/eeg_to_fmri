@@ -213,8 +213,8 @@ def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10, verbose=0)
                                                synth_signal[voxel].reshape((synth_signal[voxel].shape[0])))
     	if(verbose>1):
     		print("Distance:", distance_cosine)
-    	
-        sort_voxels[voxel] = distance_cosine
+
+    	sort_voxels[voxel] = distance_cosine
 
     sort_voxels = dict(sorted(sort_voxels.items(), key=lambda kv: kv[1], reverse=True))
     
