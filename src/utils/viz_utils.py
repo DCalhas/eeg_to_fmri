@@ -218,7 +218,7 @@ def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10, verbose=0)
 
     	sort_voxels[voxel] = distance_cosine
 
-    sort_voxels = dict(sorted(sort_voxels.items(), key=lambda kv: kv[1], reverse=True))
+    sort_voxels = dict(sorted(sort_voxels.items(), key=lambda kv: kv[1]))
     
     if(verbose>0):
     	print(list(sort_voxels.values())[0:top_k])
