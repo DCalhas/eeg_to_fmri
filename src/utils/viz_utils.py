@@ -123,7 +123,21 @@ def plot_loss_results(eeg_train, bold_train, eeg_val, bold_val, eeg_test, bold_t
 	eeg_val, bold_val, 
 	eeg_test, bold_test, 
 	eeg_network, decoder_network, 
+	"Log Cosine Voxels Mean", losses.get_reconstruction_log_cosine_voxel_loss,
+	model_name, n_partitions=n_partitions)
+
+	plot_mean_std_loss(eeg_train, bold_train, 
+	eeg_val, bold_val, 
+	eeg_test, bold_test, 
+	eeg_network, decoder_network, 
 	"Cosine", losses.get_reconstruction_cosine_loss,
+	model_name, n_partitions=n_partitions)
+
+	plot_mean_std_loss(eeg_train, bold_train, 
+	eeg_val, bold_val, 
+	eeg_test, bold_test, 
+	eeg_network, decoder_network, 
+	"Cosine Voxels Mean", losses.get_reconstruction_cosine_voxel_loss,
 	model_name, n_partitions=n_partitions)
 
 	plot_mean_std_loss(eeg_train, bold_train, 
