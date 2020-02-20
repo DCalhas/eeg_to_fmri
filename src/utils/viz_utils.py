@@ -204,14 +204,21 @@ def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, 
 
     plt.show()
 
-def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10):
+def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10, verbose=0):
     sort_voxels = {}
     n_voxels = real_signal.shape[0]
     
     for voxel in range(n_voxels):
-        sort_voxels[voxel] = 1/abs(1-abs(spatial.distance.cosine(real_signal[voxel].reshape((real_signal[voxel].shape[0])), 
-                                               synth_signal[voxel].reshape((synth_signal[voxel].shape[0])))))-1
+    	distance_cosine = spatial.distance.cosine(real_signal[voxel].reshape((real_signal[voxel].shape[0])), 
+                                               synth_signal[voxel].reshape((synth_signal[voxel].shape[0])))
+    	if(verbose>1):
+    		print("Distance:", distance_cosine)
+        sort_voxels[voxel] = distance_cosine
         
-    sort_voxels = dict(sorted(sort_voxels.items(), key=lambda kv: kv[1]))
     
+    sort_voxels = dict(sorted(sort_voxels.items(), key=lambda kv: kv[1], reverse=True))
+    
+    if(verbose>0):
+    	print(list(sort_voxels.values())[0:top_k])
+    	
     return list(sort_voxels.keys())[0:top_k]
