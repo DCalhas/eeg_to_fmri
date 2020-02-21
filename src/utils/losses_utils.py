@@ -187,7 +187,7 @@ def get_reconstruction_cosine_loss(outputs, targets):
 
 def get_reconstruction_cosine_voxel_loss(outputs, targets):
     reconstruction_loss = correlation_angle_mean_voxels([outputs, targets])
-    return K.mean(reconstruction_loss)
+    return -K.mean(reconstruction_loss)
 
 def get_reconstruction_log_cosine_loss(outputs, targets):
     reconstruction_loss = correlation_angle([outputs, targets])
