@@ -21,7 +21,8 @@ tf.enable_eager_execution(config=config)
 
 n_partitions=25
 eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(10)), list(range(10, 12)),
-																n_partitions=n_partitions, bold_shift=3, f_resample=1.8,
+																n_partitions=n_partitions, by_partitions=False, partition_length=7,
+																bold_shift=3, f_resample=1.8,
 																roi=1, roi_ica_components=90)
 
 #standardize data
