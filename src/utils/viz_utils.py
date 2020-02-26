@@ -145,7 +145,14 @@ def plot_loss_results(eeg_train, bold_train, eeg_val, bold_val, eeg_test, bold_t
 	eeg_val, bold_val, 
 	eeg_test, bold_test, 
 	eeg_network, decoder_network, 
-	"Euclidean", losses.get_euclidean_reconstruction_loss,
+	"Euclidean", losses.get_reconstruction_euclidean_loss,
+	model_name, n_partitions=n_partitions)
+
+	plot_mean_std_loss(eeg_train, bold_train, 
+	eeg_val, bold_val, 
+	eeg_test, bold_test, 
+	eeg_network, decoder_network, 
+	"Euclidean Per Volume", losses.get_reconstruction_euclidean_volume_loss,
 	model_name, n_partitions=n_partitions)
 
 
