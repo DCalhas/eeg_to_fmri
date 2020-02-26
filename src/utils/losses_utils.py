@@ -121,8 +121,7 @@ def euclidean(x, y):
 
 def mean_volume_euclidean(x, y):
     n_volumes_distance = tf.keras.backend.sqrt(tf.keras.backend.sum(tf.keras.backend.square(x - y), axis=1))
-    n_volumes_distance = tf.keras.backend.sum(n_volumes_distance, axis=1)
-    return tf.keras.backend.mean(n_volumes_distance)
+    return tf.keras.backend.sum(n_volumes_distance, axis=1)
 
 def cos_dist_output_shape(shapes):
     shape1, shape2 = shapes
@@ -203,6 +202,9 @@ def get_euclidean_reconstruction_loss(outputs, targets):
     reconstruction_loss = euclidean(outputs, targets)
     return K.mean(reconstruction_loss)
 
+def get_euclidean_volume_reconstruction_loss(outputs, targets):
+    reconstruction_loss = mean_volume_euclidean(outputs, targets)
+    return K.mean(reconstruction_loss)
 
 ######################################################################################################################
 #
