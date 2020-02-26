@@ -198,11 +198,11 @@ def get_reconstruction_log_cosine_voxel_loss(outputs, targets):
     return K.mean(K.log(1-reconstruction_loss))
 
 
-def get_euclidean_reconstruction_loss(outputs, targets):
+def get_reconstruction_euclidean_loss(outputs, targets):
     reconstruction_loss = euclidean(outputs, targets)
     return K.mean(reconstruction_loss)
 
-def get_euclidean_volume_reconstruction_loss(outputs, targets):
+def get_reconstruction_euclidean_volume_loss(outputs, targets):
     reconstruction_loss = mean_volume_euclidean(outputs, targets)
     return K.mean(reconstruction_loss)
 
