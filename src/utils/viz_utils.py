@@ -220,11 +220,13 @@ def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, 
 
 	plt.show()
 
-def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10, verbose=0):
+def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10, ignore_static=True, verbose=0):
     sort_voxels = {}
     n_voxels = real_signal.shape[0]
     
     for voxel in range(n_voxels):
+    	if(ignore_static and all(x==real_signal[voxel][0] for x in real_signal[voxel])):
+    		continue
     	voxel_a = real_signal[voxel].reshape((real_signal[voxel].shape[0]))
     	voxel_b = synth_signal[voxel].reshape((synth_signal[voxel].shape[0]))
     	distance_cosine = spatial.distance.cosine(voxel_a/norm(voxel_a), voxel_b/norm(voxel_b))
