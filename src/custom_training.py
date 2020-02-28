@@ -871,10 +871,10 @@ def autoencoder_training(X_train_eeg, X_train_bold, auto_encoder,
         auto_encoder_loss = losses.get_batch_decoder_loss_avg()
 
         #get validation analyses
-        val_loss = loss_decoder(auto_encoder(tf.gather_nd(eeg_val, X_val_eeg)), tf.gather_nd(bold_val, X_val_bold), loss_function=loss_function)
+        val_loss = loss_decoder(auto_encoder(tf.convert_to_tensor(eeg_val)), tf.convert_to_tensor(bold_val), loss_function=loss_function)
         
         print("Autoencoder Loss: ", tf.keras.backend.eval(auto_encoder_loss),
             "|| Validation Autoencoder Loss: ", tf.keras.backend.eval(val_loss))
         sys.stdout.flush()
 
-    return tf.keras.backend.eval(loss_decoder(auto_encoder(tf.gather_nd(eeg_val, X_val_eeg)), tf.gather_nd(bold_val, X_val_bold), loss_function=loss_function))
+    return tf.keras.backend.eval(loss_decoder(auto_encoder(tf.convert_to_tensor(eeg_val)), tf.convert_to_tensor(bold_val), loss_function=loss_function))
