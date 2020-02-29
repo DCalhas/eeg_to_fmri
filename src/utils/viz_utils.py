@@ -192,11 +192,11 @@ def _plot_voxel(real_signal, synth_signal, rows=1, columns=2, index=1, y_bottom=
     if(index == 1):
         ax.set_title("Synthesized BOLD Signal")
 
-def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, y_top=None, normalized=False):
+def _plot_voxels(real_set, synth_set, individual=0, voxels=None, y_bottom=None, y_top=None, title_pos=0.999, normalized=False):
 	n_voxels=len(voxels)
 	fig = plt.figure(figsize=(20,n_voxels*2))
 
-	fig.suptitle('Top-' + str(len(voxels)) + ' correlated voxels', fontsize=16)
+	fig.suptitle('Top-' + str(len(voxels)) + ' correlated voxels', fontsize=16, y=title_pos)
 
 	if(individual != None):
 		real_set = real_set[individual] 
@@ -225,6 +225,7 @@ def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10, ignore_sta
     n_voxels = real_signal.shape[0]
     
     for voxel in range(n_voxels):
+    	#ignore voxels that are constant over time
     	if(ignore_static and all(x==real_signal[voxel][0] for x in real_signal[voxel])):
     		continue
     	voxel_a = real_signal[voxel].reshape((real_signal[voxel].shape[0]))
