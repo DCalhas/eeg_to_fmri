@@ -244,3 +244,39 @@ def rank_best_synthesized_voxels(real_signal, synth_signal, top_k=10, ignore_sta
     	print(list(sort_voxels.values())[0:top_k])
 
     return list(sort_voxels.keys())[0:top_k]
+
+
+##########################################################################################################
+#
+#												HEATMAP
+#
+##########################################################################################################
+
+def heat_map(real_bold_set, synth_bold_set, individual=8, timestep=0, normalize=False):
+    real_mapping = np.copy(real_bold_set[individual][:, timestep, 0])
+    synth_mapping = np.copy(synth_bold_set[individual][:, timestep, 0])
+    
+    if(normalize):
+        for voxel in range(len(real_bold_set[individual])):
+            real_bold_set[individual][voxel] = real_bold_set[individual][voxel]/norm(real_bold_set[individual][voxel])            
+            synth_bold_set[individual][voxel] = synth_bold_set[individual][voxel]/norm(synth_bold_set[individual][voxel])
+                
+    real_mapping.resize((50, 52))
+    synth_mapping.resize((50, 52))
+    
+    
+    fig, (ax1, ax2) = plt.subplots(1,2, figsize=(20,8))
+    
+    ax1.imshow(real_mapping, cmap='gnuplot2', interpolation='nearest')#, cmap="YlGnBu")
+    
+    ax1.set_xticks([], [])
+    ax1.set_yticks([],[])
+    ax1.set_title('Real Bold Signal')
+    
+    ax2.imshow(synth_mapping, cmap='gnuplot2', interpolation='nearest')#, cmap="YlGnBu")
+    
+    ax2.set_xticks([], [])
+    ax2.set_yticks([],[])
+    ax2.set_title('Synthesized Bold Signal')
+    
+    plt.show()
