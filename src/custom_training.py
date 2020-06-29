@@ -27,7 +27,7 @@ tf.enable_eager_execution(config=config)
 
 import tensorflow.keras.backend as K
 
-from tensorflow.compat.v1.keras.layers import LSTM, TimeDistributed, Dense, Reshape
+from tensorflow.compat.v1.keras.layers import LSTM, GRU, TimeDistributed, Dense, Reshape
 
 import sys
 
@@ -54,7 +54,7 @@ def add_lstm_embedding(model):
     lstm_model.add(tf.keras.layers.Input(shape=model.output_shape))
     lstm_model.add(Reshape((time, channels)))
     lstm_model.add(TimeDistributed(Dense(1)))
-    lstm_model.add(LSTM(1, return_sequences=True))
+    lstm_model.add(GRU(1, return_sequences=True))
     
     return lstm_model
 
