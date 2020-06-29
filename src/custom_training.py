@@ -235,7 +235,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             # Optimize the synthesizer mode
             decoder_loss, decoder_grads = grad_decoder(decoder_model, shared_eeg, tf.gather_nd(bold_train, X_bold_train_target[batch_start:batch_stop]), loss=loss_function)
             with tf.name_scope("gradient_decoder") as scope:
-                decoder_grads, _ = tf.clip_by_global_norm(decoder_grads, 1.0)
+                decoder_grads, _ = tf.clip_by_value(decoder_grads, clip_value_min=-0.5, clip_value_max=0.5)
                 decoder_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
             #now train the compression by correlation model
@@ -244,7 +244,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                                                  tf.gather_nd(bold_train, X_train_bold[batch_start:batch_stop])], 
                                                              tr_y[batch_start:batch_stop], decoder_loss, linear_combination)
             with tf.name_scope("gradient_encoders") as scope:
-                encoder_grads, _ = tf.clip_by_global_norm(encoder_grads, 1.0)
+                encoder_grads, _ = tf.clip_by_value(encoder_grads, clip_value_min=-0.5, clip_value_max=0.5)
                 encoder_optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
 
             # Track progress
