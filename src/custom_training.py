@@ -107,7 +107,7 @@ def grad_decoder(model, inputs, targets, loss=losses_utils.get_reconstruction_lo
 
         return reconstruction_loss,  tape.gradient(reconstruction_loss, model.trainable_weights)
 
-def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combination, clip_value=2, dcca=False, dcca_output=None):
+def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combination, clip_value=2, margin_constrastive=1.0, dcca=False, dcca_output=None):
     eeg = tf.convert_to_tensor(inputs[0])
     bold = tf.convert_to_tensor(inputs[1])
     with tf.GradientTape() as tape:
@@ -121,7 +121,7 @@ def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combi
             dcca_loss = losses_utils.cca_loss(dcca_output, False)
             encoder_loss = linear_combination*abs(dcca_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
         else:
-            encoder_loss = linear_combination*abs(losses_utils.contrastive_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
+            encoder_loss = linear_combination*abs(losses_utils.contrastive_loss(outputs, targets, margin=margin_constrastive)) + (1-linear_combination)*abs(reconstruction_loss)
 
         encoder_loss = tf.clip_by_value(encoder_loss, 0, clip_value)
 
@@ -218,6 +218,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
     linear_combination=0.5, 
     clip_value_gradient=0.5, 
     clip_value_loss=2, 
+    margin_constrastive=1.0,
     batch_size=128,
     X_val_eeg=None, X_val_bold=None, tv_y=None, 
     eeg_train=None, bold_train=None, eeg_val=None, bold_val=None,
@@ -257,7 +258,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                              [tf.gather_nd(eeg_train, X_train_eeg[batch_start:batch_stop]), 
                                                                                  tf.gather_nd(bold_train, X_train_bold[batch_start:batch_stop])], 
                                                              tr_y[batch_start:batch_stop], decoder_loss, linear_combination, 
-                                                             clip_value=clip_value_loss)
+                                                             clip_value=clip_value_loss, margin_constrastive=margin_constrastive)
             with tf.name_scope("gradient_encoders") as scope:
                 encoder_clipped_grads = ()
                 for grad in encoder_grads:
