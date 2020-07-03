@@ -56,6 +56,7 @@ def add_lstm_embedding(model):
     lstm_model.add(TimeDistributed(Dense(1)))
     lstm_model.add(BatchNormalization())
     lstm_model.add(GRU(1, return_sequences=True)) 
+    lstm_model.add(BatchNormalization())
     
     return lstm_model
 
