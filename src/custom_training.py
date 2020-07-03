@@ -52,10 +52,10 @@ def add_lstm_embedding(model):
     
     lstm_model = tf.keras.Sequential()
     lstm_model.add(tf.keras.layers.Input(shape=model.output_shape))
-    lstm_model.add(BatchNormalization())
     lstm_model.add(Reshape((time, channels)))
     lstm_model.add(TimeDistributed(Dense(1)))
-    lstm_model.add(GRU(1, return_sequences=True))
+    lstm_model.add(BatchNormalization())
+    lstm_model.add(GRU(1, return_sequences=True)) 
     
     return lstm_model
 
