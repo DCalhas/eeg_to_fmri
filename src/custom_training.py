@@ -55,8 +55,7 @@ def add_lstm_embedding(model):
     lstm_model.add(Reshape((time, channels)))
     lstm_model.add(TimeDistributed(Dense(1)))
     lstm_model.add(BatchNormalization())
-    lstm_model.add(GRU(1, return_sequences=True)) 
-    lstm_model.add(BatchNormalization())
+    lstm_model.add(GRU(1, return_sequences=True))
     
     return lstm_model
 
@@ -187,6 +186,9 @@ class custom_training_loss:
         self.batch += 1
     
     def get_batch_decoder_loss_avg(self):
+
+        if(self.batch == 0):
+            return 0.
         return self.decoder_loss/self.batch
     
     def update_batch_encoder_loss_avg(self, loss):
@@ -194,6 +196,9 @@ class custom_training_loss:
         self.batch += 1
     
     def get_batch_encoder_loss_avg(self):
+
+        if(self.batch == 0):
+            return 0.
         return self.encoder_loss/self.batch
 
 
