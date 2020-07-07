@@ -149,7 +149,7 @@ def grad_decoder_adversarial(discriminator, synthesizer, z, eeg, clip=True, clip
                                             synthesizer.trainable_weights)
 
 
-def grad_multi_encoder_adversarial(discriminator, synthesizer, z, eeg, bold, y_pairs, clip=True, clip_value=2, loss=losses_utils.loss_minmax_discriminator):
+def grad_multi_encoder_adversarial(discriminator, synthesizer, z, eeg, bold, y_pairs, clip=True, clip_value=2, d_loss=losses_utils.loss_minmax_discriminator, g_loss=losses_utils.loss_minmax_generator):
     with tf.GradientTape(watch_accessed_variables=False) as tape:
         synthesized = synthesizer(z)
 
@@ -166,12 +166,14 @@ def grad_multi_encoder_adversarial(discriminator, synthesizer, z, eeg, bold, y_p
         real_labels = discriminator([eeg, bold])
         gen_labels = discriminator([eeg, synthesized])
         
-        discriminator_loss = loss(real_labels, y_pairs, gen_labels)
+        discriminator_loss = d_loss(real_labels, y_pairs, gen_labels)
+        synthesizer_loss = g_loss(gen_labels)
         
         if(clip):
             discriminator_loss = tf.clip_by_value(discriminator_loss, -clip_value, clip_value)
+            synthesizer_loss = tf.clip_by_value(synthesizer_loss, -clip_value, clip_value)
 
-        return discriminator_loss,  tape.gradient(discriminator_loss, 
+        return discriminator_loss, synthesizer_loss,  tape.gradient(discriminator_loss, 
                                             discriminator.trainable_weights)
 
 
@@ -681,12 +683,13 @@ def adversarial_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                 generator_optimizer.apply_gradients(zip(decoder_grads, decoder_model.trainable_variables), name=scope)
 
             #now train the compression by correlation model
-            encoder_loss, encoder_grads = grad_multi_encoder_adversarial(multi_modal_model, decoder_model, 
+            encoder_loss, decoder_loss, encoder_grads = grad_multi_encoder_adversarial(multi_modal_model, decoder_model, 
                                                                         shared_eeg,
                                                                         tf.gather_nd(eeg_train, X_train_eeg[batch_start:batch_stop]), 
                                                                         tf.gather_nd(bold_train, X_train_bold[batch_start:batch_stop]), 
                                                                         tr_y[batch_start:batch_stop],
-                                                                        loss=d_loss_function,
+                                                                        d_loss=d_loss_function,
+                                                                        g_loss=g_loss_function,
                                                                         clip=clip,
                                                                         clip_value=clip_value_loss)
             with tf.name_scope("gradient_encoders") as scope:
@@ -800,7 +803,8 @@ def adversarial_alternate_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                                                 tf.gather_nd(bold_train, X_train_bold[batch_start:batch_stop]), 
                                                                                 tr_y[batch_start:batch_stop],
                                                                                 clip_value=clip_value_loss,
-                                                                                loss=d_loss_function)
+                                                                                d_loss=d_loss_function,
+                                                                                g_loss=g_loss_function)
                         with tf.name_scope("gradient_encoders") as scope:
                             encoder_clipped_grads = ()
                             for grad in encoder_grads:
