@@ -188,7 +188,7 @@ class custom_training_loss:
     def get_batch_decoder_loss_avg(self):
 
         if(self.batch == 0):
-            return 0.
+            return np.inf
         return self.decoder_loss/self.batch
     
     def update_batch_encoder_loss_avg(self, loss):
@@ -198,7 +198,7 @@ class custom_training_loss:
     def get_batch_encoder_loss_avg(self):
 
         if(self.batch == 0):
-            return 0.
+            return np.inf
         return self.encoder_loss/self.batch
 
 
