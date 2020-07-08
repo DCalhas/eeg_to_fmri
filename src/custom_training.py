@@ -84,7 +84,8 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
     elif(gan):
         correlation = tf.keras.layers.Concatenate(axis=1)([processed_eeg, processed_bold])
         correlation = tf.keras.layers.Flatten()(correlation)
-        correlation = tf.keras.layers.Dense(1)(correlation)
+        correlation = tf.keras.layers.BatchNormalization()(correlation)
+        correlation = tf.keras.layers.Dense(1, activation="softmax")(correlation)#softmax activation for a probability output
     else:
         correlation = tf.keras.layers.Lambda(losses.correlation_angle, 
                              output_shape=losses.cos_dist_output_shape, name="correlation_layer")([processed_eeg, processed_bold])
