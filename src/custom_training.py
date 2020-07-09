@@ -59,7 +59,7 @@ def add_lstm_embedding(model):
     
     return lstm_model
 
-def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, lstm=False, corr_distance=False, gan=False):
+def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, lstm=False, corr_distance=False, gan=False, gan_activation="softmax"):
     input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
     input_bold = tf.keras.layers.Input(shape=bold_input_shape)
 
@@ -85,7 +85,7 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
         correlation = tf.keras.layers.Concatenate(axis=1)([processed_eeg, processed_bold])
         correlation = tf.keras.layers.Flatten()(correlation)
         correlation = tf.keras.layers.BatchNormalization()(correlation)
-        correlation = tf.keras.layers.Dense(1, activation="softmax")(correlation)#softmax activation for a probability output
+        correlation = tf.keras.layers.Dense(3, activation=gan_activation)(correlation)#softmax activation for a probability output does not work as it outputs zeroed gradients
     else:
         correlation = tf.keras.layers.Lambda(losses_utils.correlation_angle, 
                              output_shape=losses_utils.cos_dist_output_shape, name="correlation_layer")([processed_eeg, processed_bold])
