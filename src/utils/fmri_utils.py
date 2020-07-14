@@ -120,7 +120,7 @@ def get_voxel(masked_fmri, voxel=0):
 def get_resampled_bold(voxel, new_TR=2, TR=2.160):
 	return resample(voxel, int((len(voxel)*(1/new_TR))/TR))
 
-def get_masked_epi(fmri_instance, masker=None):
+def get_masked_epi(fmri_instances, masker=None):
 	if(masker == None):
 		if(isinstance(fmri_instances, list)):
 			masker = compute_multi_epi_mask(fmri_instances, 
