@@ -122,9 +122,21 @@ def get_resampled_bold(voxel, new_TR=2, TR=2.160):
 
 def get_masked_epi(fmri_instance, masker=None):
 	if(masker == None):
-		masker = NiftiMasker(mask_strategy='epi', standardize=True)
-		masker.fit(fmri_instance)
-	return masker.transform(fmri_instance), masker
+        if(isinstance(fmri_instances, list)):
+            masker = compute_multi_epi_mask(fmri_instances, 
+                                            upper_cutoff=.9, 
+                                            lower_cutoff=.0)
+            
+            masked_instances = []
+            
+            for instance in fmri_instances:
+                masked_instances += [apply_mask(instance, masker)]
+
+            return masked_instances, masker
+        else:
+            masker = compute_epi_mask(fmri_instances)
+
+    return apply_mask(fmri_instances, masker), masker
 
 def get_inverse_masked_epi(fmri_masked, masker):
 	return masker.inverse_transform(fmri_masked)
