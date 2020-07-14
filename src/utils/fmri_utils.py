@@ -82,13 +82,15 @@ def get_individuals_ids(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMR
 	return individuals
 
 
-def get_individuals_paths(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
+def get_individuals_paths(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/', resolution_factor = 5):
 
 	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
 	target_affine = image.load_img(path_fmri + individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').affine
 	target_shape = image.load_img(path_fmri + individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').shape
-	target_shape = (target_shape[0], target_shape[1], target_shape[2])
+	target_shape = (int(target_shape[0]/resolution_factor), 
+					int(target_shape[1]/resolution_factor), 
+					int(target_shape[2]/resolution_factor))
 
 	for i in range(len(individuals)):
 		individual = individuals[i]
