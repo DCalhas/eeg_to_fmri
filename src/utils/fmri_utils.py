@@ -129,11 +129,11 @@ def get_masked_epi(fmri_instances, masker=None):
 
 			masker = NiftiMasker()
 			masker.fit(img_epi)
-			
+
 			masked_instances = []
 
 			for instance in fmri_instances:
-				masked_instances += [apply_mask(instance, masker)]
+				masked_instances += [apply_mask(instance, masker.mask_img_)]
 
 			return masked_instances, masker
 		else:
