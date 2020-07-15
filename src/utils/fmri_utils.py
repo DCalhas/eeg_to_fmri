@@ -123,10 +123,13 @@ def get_resampled_bold(voxel, new_TR=2, TR=2.160):
 def get_masked_epi(fmri_instances, masker=None):
 	if(masker == None):
 		if(isinstance(fmri_instances, list)):
-			masker = compute_multi_epi_mask(fmri_instances, 
-											upper_cutoff=.9, 
-											lower_cutoff=.0)
+			img_epi = image.mean_img(fmri_instances)
+			img_epi = image.smooth_img(img_epi, 10)
+			img_epi = image.threshold_img(img_epi, threshold="80%")
 
+			masker = NiftiMasker()
+			masker.fit(img_epi)
+			
 			masked_instances = []
 
 			for instance in fmri_instances:
