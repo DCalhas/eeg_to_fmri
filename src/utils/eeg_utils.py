@@ -82,7 +82,7 @@ def stft(eeg, channel=0, window_size=2, fs=250, start_time=None, stop_time=None)
 		fft1 = compute_fft(signal[time:time+fs_window_size], fs=fs)
 
 		N = len(signal[time:time+fs_window_size])/2
-		f = np.linspace (0, len(fft1), N/2)
+		f = np.linspace (0, len(fft1), int(N/2))
 
 		#average
 		Z += [list(abs(fft1[1:]))]

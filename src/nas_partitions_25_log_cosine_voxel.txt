@@ -1,0 +1,988 @@
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/32/export/20130410320002_Segmentation_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 162022  =      0.000 ...   648.088 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(51, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/35/export/20130424350002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 197234  =      0.000 ...   788.936 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(102, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/36/export/20130425360002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 181949  =      0.000 ...   727.796 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(153, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/37/export/20130426370002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 195159  =      0.000 ...   780.636 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(204, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/38/export/20130105380002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 179384  =      0.000 ...   717.536 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(255, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/39/export/20130501390002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 182129  =      0.000 ...   728.516 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(306, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/40/export/20130510400002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 173914  =      0.000 ...   695.656 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(357, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/42/export/20130523420002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 184909  =      0.000 ...   739.636 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(408, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/43/export/20130529430002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 170594  =      0.000 ...   682.376 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(459, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/44/export/20130605440002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 169854  =      0.000 ...   679.416 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(510, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/45/export/20130627450002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 168099  =      0.000 ...   672.396 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+(51, 926, 6)
+Extracting parameters from /home/davidcalhas/eeg_to_fmri/datasets/01/EEG/46/export/20130703460002_Pulse_Artifact_Correction_bin.vhdr...
+Setting channel info structure...
+Reading 0 ... 172264  =      0.000 ...   689.056 secs...
+DigMontage is a superset of info. 1 in DigMontage will be ignored. The ignored channels are: {'ECG'}
+2020-03-16 14:52:43.711358: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-03-16 14:52:43.727456: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: TITAN RTX major: 7 minor: 5 memoryClockRate(GHz): 1.77
+pciBusID: 0000:65:00.0
+2020-03-16 14:52:43.729188: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-03-16 14:52:43.761322: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-03-16 14:52:43.779293: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-03-16 14:52:43.783868: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-03-16 14:52:43.816744: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-03-16 14:52:43.821523: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-03-16 14:52:43.880067: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-03-16 14:52:43.881806: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2020-03-16 14:52:43.882434: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 AVX512F FMA
+2020-03-16 14:52:43.915206: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 3499910000 Hz
+2020-03-16 14:52:43.916437: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x55d52aed9f10 executing computations on platform Host. Devices:
+2020-03-16 14:52:43.916656: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): <undefined>, <undefined>
+2020-03-16 14:52:43.918364: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: TITAN RTX major: 7 minor: 5 memoryClockRate(GHz): 1.77
+pciBusID: 0000:65:00.0
+2020-03-16 14:52:43.918410: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-03-16 14:52:43.918423: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-03-16 14:52:43.918434: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-03-16 14:52:43.918446: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-03-16 14:52:43.918457: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-03-16 14:52:43.918469: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-03-16 14:52:43.918480: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-03-16 14:52:43.920087: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2020-03-16 14:52:43.920601: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-03-16 14:52:44.134167: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-03-16 14:52:44.134195: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 
+2020-03-16 14:52:44.134200: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N 
+2020-03-16 14:52:44.136079: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 8064 MB memory) -> physical GPU (device: 0, name: TITAN RTX, pci bus id: 0000:65:00.0, compute capability: 7.5)
+2020-03-16 14:52:44.137858: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x55d52bdd2460 executing computations on platform CUDA. Devices:
+2020-03-16 14:52:44.137874: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): TITAN RTX, Compute Capability 7.5
+2020-03-16 14:52:45.515265: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-03-16 14:52:46.796268: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:516: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:517: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:518: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:519: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:520: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:525: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:541: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:542: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:543: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:544: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:545: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:550: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+ /home/davidcalhas/eeg_to_fmri/src/utils/eeg_utils.py:35: DeprecationWarning:The `montage` parameter from `read_raw_brainvision` is deprecated and will be removed  in version 0.20. Use  raw.set_montage(montage) instead.
+WARNING:tensorflow:From /home/davidcalhas/anaconda3/envs/gpu_tensor/lib/python3.6/site-packages/tensorflow/python/ops/math_grad.py:1220: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.where in 2.0, which has the same broadcast rule as np.where
+(102, 926, 6)
+Finished Loading Data
+Pairs Created
+Optimizing at level  1
+NAS BO
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose (Conv3DTran (None, 74, 5, 6, 1)       12        
+_________________________________________________________________
+reshape (Reshape)            (None, 370, 6, 1)         0         
+=================================================================
+Total params: 12
+Trainable params: 12
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d (Conv2D)              (None, 370, 6, 1)         558       
+=================================================================
+Total params: 558
+Trainable params: 558
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_2"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose (Conv2DTran (None, 926, 6, 1)         558       
+=================================================================
+Total params: 558
+Trainable params: 558
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.20745984  || Decoder Loss:  -0.3473654 Validation Decoder Loss:  -1.2303327
+Encoder Loss:  0.20807244  || Decoder Loss:  -0.35012338 Validation Decoder Loss:  -1.2352898
+Encoder Loss:  0.20916541  || Decoder Loss:  -0.3542556 Validation Decoder Loss:  -1.2533916
+Encoder Loss:  0.21059373  || Decoder Loss:  -0.35963738 Validation Decoder Loss:  -1.2757019
+Encoder Loss:  0.21137828  || Decoder Loss:  -0.36419725 Validation Decoder Loss:  -1.2898079
+Encoder Loss:  0.21159817  || Decoder Loss:  -0.36842734 Validation Decoder Loss:  -1.3055558
+Encoder Loss:  0.21104455  || Decoder Loss:  -0.37225065 Validation Decoder Loss:  -1.3184582
+Encoder Loss:  0.20928763  || Decoder Loss:  -0.37527636 Validation Decoder Loss:  -1.3280189
+Encoder Loss:  0.20610115  || Decoder Loss:  -0.3783971 Validation Decoder Loss:  -1.3391205
+Encoder Loss:  0.20044132  || Decoder Loss:  -0.38199747 Validation Decoder Loss:  -1.3527207
+Encoder Loss:  0.19205388  || Decoder Loss:  -0.38775587 Validation Decoder Loss:  -1.3674634
+Encoder Loss:  0.18912503  || Decoder Loss:  -0.395312 Validation Decoder Loss:  -1.3873241
+Encoder Loss:  0.19335954  || Decoder Loss:  -0.40757352 Validation Decoder Loss:  -1.4194249
+Encoder Loss:  0.20247428  || Decoder Loss:  -0.4303849 Validation Decoder Loss:  -1.4605606
+Encoder Loss:  0.2135584  || Decoder Loss:  -0.45764273 Validation Decoder Loss:  -1.4850852
+Encoder Loss:  0.22597522  || Decoder Loss:  -0.48781928 Validation Decoder Loss:  -1.530711
+Encoder Loss:  0.24078743  || Decoder Loss:  -0.5233536 Validation Decoder Loss:  -1.5858779
+Encoder Loss:  0.25362808  || Decoder Loss:  -0.55403936 Validation Decoder Loss:  -1.5843499
+Encoder Loss:  0.2610373  || Decoder Loss:  -0.5718545 Validation Decoder Loss:  -1.5274673
+Encoder Loss:  0.26490045  || Decoder Loss:  -0.5812859 Validation Decoder Loss:  -1.4907477
+Encoder Loss:  0.26672536  || Decoder Loss:  -0.5858808 Validation Decoder Loss:  -1.4927789
+Encoder Loss:  0.26776198  || Decoder Loss:  -0.5885586 Validation Decoder Loss:  -1.4998053
+Encoder Loss:  0.26877177  || Decoder Loss:  -0.59113425 Validation Decoder Loss:  -1.5079284
+Encoder Loss:  0.2697033  || Decoder Loss:  -0.593498 Validation Decoder Loss:  -1.5157561
+Encoder Loss:  0.27076894  || Decoder Loss:  -0.5961495 Validation Decoder Loss:  -1.5216466
+Encoder Loss:  0.27163693  || Decoder Loss:  -0.5983144 Validation Decoder Loss:  -1.5259117
+Encoder Loss:  0.27226853  || Decoder Loss:  -0.599912 Validation Decoder Loss:  -1.5301846
+Encoder Loss:  0.27311975  || Decoder Loss:  -0.6020176 Validation Decoder Loss:  -1.5358343
+Encoder Loss:  0.27375478  || Decoder Loss:  -0.6036091 Validation Decoder Loss:  -1.5393596
+Encoder Loss:  0.27436712  || Decoder Loss:  -0.60514647 Validation Decoder Loss:  -1.543771
+Encoder Loss:  0.2749535  || Decoder Loss:  -0.60662055 Validation Decoder Loss:  -1.547349
+Encoder Loss:  0.27549377  || Decoder Loss:  -0.60798836 Validation Decoder Loss:  -1.5523678
+Encoder Loss:  0.27607834  || Decoder Loss:  -0.60945654 Validation Decoder Loss:  -1.5559819
+Encoder Loss:  0.27653593  || Decoder Loss:  -0.6106293 Validation Decoder Loss:  -1.5589963
+Encoder Loss:  0.27691373  || Decoder Loss:  -0.6116127 Validation Decoder Loss:  -1.5642673
+Encoder Loss:  0.2772823  || Decoder Loss:  -0.6125743 Validation Decoder Loss:  -1.5677794
+Encoder Loss:  0.2776876  || Decoder Loss:  -0.61362267 Validation Decoder Loss:  -1.5706242
+Encoder Loss:  0.27803412  || Decoder Loss:  -0.61453366 Validation Decoder Loss:  -1.5726585
+Encoder Loss:  0.27833146  || Decoder Loss:  -0.6153269 Validation Decoder Loss:  -1.5753056
+Encoder Loss:  0.27862006  || Decoder Loss:  -0.61609954 Validation Decoder Loss:  -1.5776193
+Model: bold_synthesis_net_lr_3.260495254762521e-05 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -1.5776193
+NAS BO
+Model: "sequential_3"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_1 (Conv3DTr (None, 154, 5, 6, 1)      92        
+_________________________________________________________________
+reshape_1 (Reshape)          (None, 770, 6, 1)         0         
+=================================================================
+Total params: 92
+Trainable params: 92
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_4"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_1 (Conv2D)            (None, 770, 6, 1)         158       
+=================================================================
+Total params: 158
+Trainable params: 158
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_5"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_1 (Conv2DTr (None, 926, 6, 1)         158       
+=================================================================
+Total params: 158
+Trainable params: 158
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.072366714  || Decoder Loss:  -0.5345254 Validation Decoder Loss:  -1.7396672
+Encoder Loss:  0.03131277  || Decoder Loss:  -0.6792123 Validation Decoder Loss:  -6.0526695
+Encoder Loss:  0.030738885  || Decoder Loss:  -1.0861745 Validation Decoder Loss:  -7.828747
+Encoder Loss:  0.02985195  || Decoder Loss:  -1.0868472 Validation Decoder Loss:  -8.583206
+Encoder Loss:  0.02928357  || Decoder Loss:  -1.0868691 Validation Decoder Loss:  -8.708695
+Encoder Loss:  0.02893742  || Decoder Loss:  -1.0868591 Validation Decoder Loss:  -8.546486
+Encoder Loss:  0.028712701  || Decoder Loss:  -1.0868866 Validation Decoder Loss:  -8.3969345
+Encoder Loss:  0.028562905  || Decoder Loss:  -1.0868934 Validation Decoder Loss:  -8.708815
+Encoder Loss:  0.028489301  || Decoder Loss:  -1.0869375 Validation Decoder Loss:  -8.737066
+Encoder Loss:  0.028465271  || Decoder Loss:  -1.0869676 Validation Decoder Loss:  -8.7469845
+Encoder Loss:  0.028459763  || Decoder Loss:  -1.0869915 Validation Decoder Loss:  -8.814288
+Encoder Loss:  0.028444989  || Decoder Loss:  -1.0870146 Validation Decoder Loss:  -8.761504
+Encoder Loss:  0.028441025  || Decoder Loss:  -1.0870258 Validation Decoder Loss:  -8.634656
+Encoder Loss:  0.028437296  || Decoder Loss:  -1.0870364 Validation Decoder Loss:  -8.612677
+Encoder Loss:  0.028437044  || Decoder Loss:  -1.0870457 Validation Decoder Loss:  -8.646222
+Encoder Loss:  0.028431794  || Decoder Loss:  -1.0870498 Validation Decoder Loss:  -8.666332
+Encoder Loss:  0.028423456  || Decoder Loss:  -1.0870535 Validation Decoder Loss:  -8.645599
+Encoder Loss:  0.02842154  || Decoder Loss:  -1.087056 Validation Decoder Loss:  -8.636302
+Encoder Loss:  0.028421398  || Decoder Loss:  -1.0870599 Validation Decoder Loss:  -8.686101
+Encoder Loss:  0.028416425  || Decoder Loss:  -1.0870632 Validation Decoder Loss:  -8.707483
+Encoder Loss:  0.028416106  || Decoder Loss:  -1.0870656 Validation Decoder Loss:  -8.711589
+Encoder Loss:  0.028409222  || Decoder Loss:  -1.0870651 Validation Decoder Loss:  -8.695789
+Encoder Loss:  0.02841439  || Decoder Loss:  -1.0870672 Validation Decoder Loss:  -8.685406
+Encoder Loss:  0.028415771  || Decoder Loss:  -1.08707 Validation Decoder Loss:  -8.690151
+Encoder Loss:  0.028412448  || Decoder Loss:  -1.087071 Validation Decoder Loss:  -8.700801
+Encoder Loss:  0.028411167  || Decoder Loss:  -1.0870732 Validation Decoder Loss:  -8.706123
+Encoder Loss:  0.028410288  || Decoder Loss:  -1.0870738 Validation Decoder Loss:  -8.711471
+Encoder Loss:  0.02840445  || Decoder Loss:  -1.0870752 Validation Decoder Loss:  -8.715179
+Encoder Loss:  0.028401865  || Decoder Loss:  -1.0870767 Validation Decoder Loss:  -8.718643
+Encoder Loss:  0.028406486  || Decoder Loss:  -1.0870776 Validation Decoder Loss:  -8.730965
+Encoder Loss:  0.028401019  || Decoder Loss:  -1.0870787 Validation Decoder Loss:  -8.73968
+Encoder Loss:  0.028401937  || Decoder Loss:  -1.0870793 Validation Decoder Loss:  -8.75161
+Encoder Loss:  0.028398758  || Decoder Loss:  -1.0870799 Validation Decoder Loss:  -8.763109
+Encoder Loss:  0.028402936  || Decoder Loss:  -1.0870818 Validation Decoder Loss:  -8.767939
+Encoder Loss:  0.028401181  || Decoder Loss:  -1.0870825 Validation Decoder Loss:  -8.777143
+Encoder Loss:  0.028393561  || Decoder Loss:  -1.0870833 Validation Decoder Loss:  -8.781966
+Encoder Loss:  0.028398786  || Decoder Loss:  -1.0870837 Validation Decoder Loss:  -8.783846
+Encoder Loss:  0.028402396  || Decoder Loss:  -1.087085 Validation Decoder Loss:  -8.783856
+Encoder Loss:  0.028394174  || Decoder Loss:  -1.0870852 Validation Decoder Loss:  -8.781583
+Encoder Loss:  0.028395487  || Decoder Loss:  -1.0870861 Validation Decoder Loss:  -8.779977
+Model: bold_synthesis_net_lr_0.0009134252926038886 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -8.779978
+NAS BO
+Model: "sequential_6"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_2 (Conv3DTr (None, 124, 5, 6, 1)      62        
+_________________________________________________________________
+reshape_2 (Reshape)          (None, 620, 6, 1)         0         
+=================================================================
+Total params: 62
+Trainable params: 62
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_7"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_2 (Conv2D)            (None, 620, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_8"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_2 (Conv2DTr (None, 926, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.19257475  || Decoder Loss:  -0.5647753 Validation Decoder Loss:  -1.9011409
+Encoder Loss:  0.28411275  || Decoder Loss:  -0.9706822 Validation Decoder Loss:  -7.9674373
+Encoder Loss:  0.31511325  || Decoder Loss:  -1.0867577 Validation Decoder Loss:  -8.220515
+Encoder Loss:  0.3149739  || Decoder Loss:  -1.0869188 Validation Decoder Loss:  -8.4242525
+Encoder Loss:  0.31492686  || Decoder Loss:  -1.0870191 Validation Decoder Loss:  -8.526337
+Encoder Loss:  0.3148977  || Decoder Loss:  -1.0870615 Validation Decoder Loss:  -8.57716
+Encoder Loss:  0.31488642  || Decoder Loss:  -1.0870916 Validation Decoder Loss:  -8.5972805
+Encoder Loss:  0.3148926  || Decoder Loss:  -1.0871097 Validation Decoder Loss:  -8.602277
+Encoder Loss:  0.31487095  || Decoder Loss:  -1.0871254 Validation Decoder Loss:  -8.633958
+Encoder Loss:  0.31487653  || Decoder Loss:  -1.0871341 Validation Decoder Loss:  -8.629574
+Encoder Loss:  0.31487352  || Decoder Loss:  -1.0871413 Validation Decoder Loss:  -8.623922
+Encoder Loss:  0.31486553  || Decoder Loss:  -1.0871465 Validation Decoder Loss:  -8.619808
+Encoder Loss:  0.31487018  || Decoder Loss:  -1.087151 Validation Decoder Loss:  -8.616568
+Encoder Loss:  0.314867  || Decoder Loss:  -1.0871545 Validation Decoder Loss:  -8.614596
+Encoder Loss:  0.31487462  || Decoder Loss:  -1.0871589 Validation Decoder Loss:  -8.61384
+Encoder Loss:  0.31486773  || Decoder Loss:  -1.087161 Validation Decoder Loss:  -8.615226
+Encoder Loss:  0.3148635  || Decoder Loss:  -1.0871639 Validation Decoder Loss:  -8.615947
+Encoder Loss:  0.31486365  || Decoder Loss:  -1.0871656 Validation Decoder Loss:  -8.61828
+Encoder Loss:  0.31485426  || Decoder Loss:  -1.0871683 Validation Decoder Loss:  -8.619197
+Encoder Loss:  0.31486368  || Decoder Loss:  -1.0871706 Validation Decoder Loss:  -8.620772
+Encoder Loss:  0.31486258  || Decoder Loss:  -1.0871726 Validation Decoder Loss:  -8.624943
+Encoder Loss:  0.31485397  || Decoder Loss:  -1.0871738 Validation Decoder Loss:  -8.628806
+Encoder Loss:  0.31485292  || Decoder Loss:  -1.0871745 Validation Decoder Loss:  -8.630757
+Encoder Loss:  0.3148572  || Decoder Loss:  -1.0871756 Validation Decoder Loss:  -8.633349
+Encoder Loss:  0.31484535  || Decoder Loss:  -1.0871773 Validation Decoder Loss:  -8.637693
+Encoder Loss:  0.31485546  || Decoder Loss:  -1.087178 Validation Decoder Loss:  -8.643392
+Encoder Loss:  0.3148484  || Decoder Loss:  -1.0871786 Validation Decoder Loss:  -8.644636
+Encoder Loss:  0.31485137  || Decoder Loss:  -1.0871801 Validation Decoder Loss:  -8.649158
+Encoder Loss:  0.31485158  || Decoder Loss:  -1.0871822 Validation Decoder Loss:  -8.650356
+Encoder Loss:  0.31484413  || Decoder Loss:  -1.0871837 Validation Decoder Loss:  -8.655097
+Encoder Loss:  0.31484345  || Decoder Loss:  -1.0871835 Validation Decoder Loss:  -8.656062
+Encoder Loss:  0.3148462  || Decoder Loss:  -1.0871856 Validation Decoder Loss:  -8.659364
+Encoder Loss:  0.31484547  || Decoder Loss:  -1.0871855 Validation Decoder Loss:  -8.662244
+Encoder Loss:  0.31484282  || Decoder Loss:  -1.0871867 Validation Decoder Loss:  -8.663524
+Encoder Loss:  0.31483832  || Decoder Loss:  -1.0871876 Validation Decoder Loss:  -8.664554
+Encoder Loss:  0.3148402  || Decoder Loss:  -1.0871881 Validation Decoder Loss:  -8.666191
+Encoder Loss:  0.31484574  || Decoder Loss:  -1.0871886 Validation Decoder Loss:  -8.665463
+Encoder Loss:  0.31483907  || Decoder Loss:  -1.0871892 Validation Decoder Loss:  -8.6651125
+Encoder Loss:  0.31484452  || Decoder Loss:  -1.0871893 Validation Decoder Loss:  -8.663589
+Encoder Loss:  0.31484  || Decoder Loss:  -1.0871911 Validation Decoder Loss:  -8.663397
+Model: bold_synthesis_net_lr_0.0008030816453195614 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -8.663397
+NAS BO
+Model: "sequential_9"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_3 (Conv3DTr (None, 77, 10, 6, 1)      29        
+_________________________________________________________________
+reshape_3 (Reshape)          (None, 770, 6, 1)         0         
+=================================================================
+Total params: 29
+Trainable params: 29
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_10"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_3 (Conv2D)            (None, 770, 6, 1)         158       
+=================================================================
+Total params: 158
+Trainable params: 158
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_11"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_3 (Conv2DTr (None, 926, 6, 1)         158       
+=================================================================
+Total params: 158
+Trainable params: 158
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.1937376  || Decoder Loss:  -0.37831554 Validation Decoder Loss:  -1.2103516
+Encoder Loss:  0.19464403  || Decoder Loss:  -0.3845187 Validation Decoder Loss:  -1.2140981
+Encoder Loss:  0.19653213  || Decoder Loss:  -0.39480227 Validation Decoder Loss:  -1.2319746
+Encoder Loss:  0.20038646  || Decoder Loss:  -0.4137437 Validation Decoder Loss:  -1.311762
+Encoder Loss:  0.20029044  || Decoder Loss:  -0.42856106 Validation Decoder Loss:  -1.3441794
+Encoder Loss:  0.18979912  || Decoder Loss:  -0.43564445 Validation Decoder Loss:  -1.3747104
+Encoder Loss:  0.17612658  || Decoder Loss:  -0.4420789 Validation Decoder Loss:  -1.4085405
+Encoder Loss:  0.17425545  || Decoder Loss:  -0.44671655 Validation Decoder Loss:  -1.4218354
+Encoder Loss:  0.17314988  || Decoder Loss:  -0.4466428 Validation Decoder Loss:  -1.428722
+Encoder Loss:  0.17253247  || Decoder Loss:  -0.44612268 Validation Decoder Loss:  -1.4343663
+Encoder Loss:  0.17245987  || Decoder Loss:  -0.44632846 Validation Decoder Loss:  -1.4395766
+Encoder Loss:  0.17264439  || Decoder Loss:  -0.4470797 Validation Decoder Loss:  -1.4431125
+Encoder Loss:  0.17288238  || Decoder Loss:  -0.44793555 Validation Decoder Loss:  -1.4453374
+Encoder Loss:  0.1730912  || Decoder Loss:  -0.44868702 Validation Decoder Loss:  -1.4479071
+Encoder Loss:  0.17328674  || Decoder Loss:  -0.44938928 Validation Decoder Loss:  -1.45089
+Encoder Loss:  0.17351247  || Decoder Loss:  -0.4501684 Validation Decoder Loss:  -1.454878
+Encoder Loss:  0.17385796  || Decoder Loss:  -0.45128578 Validation Decoder Loss:  -1.4583052
+Encoder Loss:  0.17422517  || Decoder Loss:  -0.45245785 Validation Decoder Loss:  -1.4603055
+Encoder Loss:  0.17465687  || Decoder Loss:  -0.45381427 Validation Decoder Loss:  -1.4635799
+Encoder Loss:  0.17486551  || Decoder Loss:  -0.45451856 Validation Decoder Loss:  -1.4675035
+Encoder Loss:  0.17736228  || Decoder Loss:  -0.46187893 Validation Decoder Loss:  -1.4492488
+Encoder Loss:  0.18849096  || Decoder Loss:  -0.4943542 Validation Decoder Loss:  -1.4316263
+Encoder Loss:  0.20573314  || Decoder Loss:  -0.5446184 Validation Decoder Loss:  -1.4680289
+Encoder Loss:  0.2126842  || Decoder Loss:  -0.5649294 Validation Decoder Loss:  -1.471069
+Encoder Loss:  0.21436071  || Decoder Loss:  -0.569884 Validation Decoder Loss:  -1.4814467
+Encoder Loss:  0.21523072  || Decoder Loss:  -0.57249016 Validation Decoder Loss:  -1.4906671
+Encoder Loss:  0.21575905  || Decoder Loss:  -0.57409734 Validation Decoder Loss:  -1.496194
+Encoder Loss:  0.21609856  || Decoder Loss:  -0.5751523 Validation Decoder Loss:  -1.5008147
+Encoder Loss:  0.21634084  || Decoder Loss:  -0.5759191 Validation Decoder Loss:  -1.5026486
+Encoder Loss:  0.21653189  || Decoder Loss:  -0.57653606 Validation Decoder Loss:  -1.5018307
+Encoder Loss:  0.21669021  || Decoder Loss:  -0.577057 Validation Decoder Loss:  -1.505901
+Encoder Loss:  0.21681896  || Decoder Loss:  -0.5774913 Validation Decoder Loss:  -1.5086823
+Encoder Loss:  0.21693729  || Decoder Loss:  -0.5778936 Validation Decoder Loss:  -1.5117161
+Encoder Loss:  0.21702641  || Decoder Loss:  -0.57820934 Validation Decoder Loss:  -1.5133705
+Encoder Loss:  0.21709496  || Decoder Loss:  -0.57846725 Validation Decoder Loss:  -1.5150647
+Encoder Loss:  0.217176  || Decoder Loss:  -0.5787597 Validation Decoder Loss:  -1.5151777
+Encoder Loss:  0.21725398  || Decoder Loss:  -0.5790441 Validation Decoder Loss:  -1.5161788
+Encoder Loss:  0.21730866  || Decoder Loss:  -0.5792552 Validation Decoder Loss:  -1.5173739
+Encoder Loss:  0.2173458  || Decoder Loss:  -0.5794182 Validation Decoder Loss:  -1.51817
+Encoder Loss:  0.2174098  || Decoder Loss:  -0.5796564 Validation Decoder Loss:  -1.5181776
+Model: bold_synthesis_net_lr_0.000664696284943497 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -1.5181776
+NAS BO
+Model: "sequential_12"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_4 (Conv3DTr (None, 70, 6, 6, 1)       15        
+_________________________________________________________________
+reshape_4 (Reshape)          (None, 420, 6, 1)         0         
+=================================================================
+Total params: 15
+Trainable params: 15
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_13"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_4 (Conv2D)            (None, 420, 6, 1)         89        
+=================================================================
+Total params: 89
+Trainable params: 89
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_14"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_4 (Conv2DTr (None, 926, 6, 1)         508       
+=================================================================
+Total params: 508
+Trainable params: 508
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.28021935  || Decoder Loss:  -0.35994822 Validation Decoder Loss:  -1.3018308
+Encoder Loss:  0.35901362  || Decoder Loss:  -0.47712535 Validation Decoder Loss:  -1.2561123
+Encoder Loss:  0.4104708  || Decoder Loss:  -0.5471311 Validation Decoder Loss:  -1.2632322
+Encoder Loss:  0.4176066  || Decoder Loss:  -0.55689704 Validation Decoder Loss:  -1.2883776
+Encoder Loss:  0.4199189  || Decoder Loss:  -0.5600981 Validation Decoder Loss:  -1.2962103
+Encoder Loss:  0.42202666  || Decoder Loss:  -0.5630074 Validation Decoder Loss:  -1.2894951
+Encoder Loss:  0.4243747  || Decoder Loss:  -0.5662315 Validation Decoder Loss:  -1.2961391
+Encoder Loss:  0.42663208  || Decoder Loss:  -0.56932515 Validation Decoder Loss:  -1.2966594
+Encoder Loss:  0.4291585  || Decoder Loss:  -0.57277673 Validation Decoder Loss:  -1.301763
+Encoder Loss:  0.4314432  || Decoder Loss:  -0.5758948 Validation Decoder Loss:  -1.3093623
+Encoder Loss:  0.43399736  || Decoder Loss:  -0.57937515 Validation Decoder Loss:  -1.3192925
+Encoder Loss:  0.4367155  || Decoder Loss:  -0.58307195 Validation Decoder Loss:  -1.332444
+Encoder Loss:  0.43950316  || Decoder Loss:  -0.5868595 Validation Decoder Loss:  -1.3361413
+Encoder Loss:  0.44184613  || Decoder Loss:  -0.59004724 Validation Decoder Loss:  -1.3414361
+Encoder Loss:  0.4429014  || Decoder Loss:  -0.5914812 Validation Decoder Loss:  -1.3495932
+Encoder Loss:  0.4438937  || Decoder Loss:  -0.592831 Validation Decoder Loss:  -1.3669083
+Encoder Loss:  0.4446627  || Decoder Loss:  -0.59388334 Validation Decoder Loss:  -1.3654987
+Encoder Loss:  0.44524863  || Decoder Loss:  -0.5946813 Validation Decoder Loss:  -1.3695318
+Encoder Loss:  0.4459569  || Decoder Loss:  -0.5956457 Validation Decoder Loss:  -1.3701001
+Encoder Loss:  0.44584438  || Decoder Loss:  -0.59549695 Validation Decoder Loss:  -1.3740125
+Encoder Loss:  0.445956  || Decoder Loss:  -0.5956516 Validation Decoder Loss:  -1.3733063
+Encoder Loss:  0.4451417  || Decoder Loss:  -0.59454817 Validation Decoder Loss:  -1.3706566
+Encoder Loss:  0.44491416  || Decoder Loss:  -0.5942431 Validation Decoder Loss:  -1.3682405
+Encoder Loss:  0.4447827  || Decoder Loss:  -0.5940685 Validation Decoder Loss:  -1.3707825
+Encoder Loss:  0.44423866  || Decoder Loss:  -0.59333205 Validation Decoder Loss:  -1.3665539
+Encoder Loss:  0.4438248  || Decoder Loss:  -0.5927698 Validation Decoder Loss:  -1.3654541
+Encoder Loss:  0.44290775  || Decoder Loss:  -0.5915303 Validation Decoder Loss:  -1.3546631
+Encoder Loss:  0.4421795  || Decoder Loss:  -0.5905443 Validation Decoder Loss:  -1.3533713
+Encoder Loss:  0.44177562  || Decoder Loss:  -0.5900002 Validation Decoder Loss:  -1.3519583
+Encoder Loss:  0.44135922  || Decoder Loss:  -0.58944 Validation Decoder Loss:  -1.3490448
+Encoder Loss:  0.44109955  || Decoder Loss:  -0.5890869 Validation Decoder Loss:  -1.3452185
+Encoder Loss:  0.44024  || Decoder Loss:  -0.58792514 Validation Decoder Loss:  -1.342344
+Encoder Loss:  0.43987373  || Decoder Loss:  -0.5874304 Validation Decoder Loss:  -1.3401212
+Encoder Loss:  0.43947208  || Decoder Loss:  -0.5868918 Validation Decoder Loss:  -1.3336803
+Encoder Loss:  0.43903056  || Decoder Loss:  -0.58629334 Validation Decoder Loss:  -1.3282925
+Encoder Loss:  0.43870288  || Decoder Loss:  -0.5858539 Validation Decoder Loss:  -1.3275468
+Encoder Loss:  0.43798774  || Decoder Loss:  -0.5848838 Validation Decoder Loss:  -1.3352646
+Encoder Loss:  0.43699858  || Decoder Loss:  -0.5835456 Validation Decoder Loss:  -1.3261664
+Encoder Loss:  0.43615285  || Decoder Loss:  -0.58240384 Validation Decoder Loss:  -1.3304989
+Encoder Loss:  0.43556392  || Decoder Loss:  -0.58160746 Validation Decoder Loss:  -1.3315172
+reconstraining parameters GP_regression.rbf
+reconstraining parameters GP_regression.Gaussian_noise.variance
+Model: bold_synthesis_net_lr_0.0005007345520401874 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -1.3315172
+Started Optimization Process
+NAS BO
+Model: "sequential_15"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_5 (Conv3DTr (None, 124, 5, 6, 1)      62        
+_________________________________________________________________
+reshape_5 (Reshape)          (None, 620, 6, 1)         0         
+=================================================================
+Total params: 62
+Trainable params: 62
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_16"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_5 (Conv2D)            (None, 620, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_17"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_5 (Conv2DTr (None, 926, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.19261521  || Decoder Loss:  -0.56487924 Validation Decoder Loss:  -1.9016021
+Encoder Loss:  0.28425086  || Decoder Loss:  -0.97118056 Validation Decoder Loss:  -7.979801
+Encoder Loss:  0.31511253  || Decoder Loss:  -1.0867621 Validation Decoder Loss:  -8.2235365
+Encoder Loss:  0.314977  || Decoder Loss:  -1.0869217 Validation Decoder Loss:  -8.424084
+Encoder Loss:  0.31493786  || Decoder Loss:  -1.087019 Validation Decoder Loss:  -8.524406
+Encoder Loss:  0.3148972  || Decoder Loss:  -1.0870621 Validation Decoder Loss:  -8.580615
+Encoder Loss:  0.3148879  || Decoder Loss:  -1.0870925 Validation Decoder Loss:  -8.598927
+Encoder Loss:  0.31489578  || Decoder Loss:  -1.0871094 Validation Decoder Loss:  -8.604132
+Encoder Loss:  0.31488383  || Decoder Loss:  -1.0871243 Validation Decoder Loss:  -8.63358
+Encoder Loss:  0.3148782  || Decoder Loss:  -1.0871332 Validation Decoder Loss:  -8.62925
+Encoder Loss:  0.31487086  || Decoder Loss:  -1.0871412 Validation Decoder Loss:  -8.623366
+Encoder Loss:  0.31487206  || Decoder Loss:  -1.0871458 Validation Decoder Loss:  -8.618248
+Encoder Loss:  0.3148714  || Decoder Loss:  -1.087151 Validation Decoder Loss:  -8.615684
+Encoder Loss:  0.3148813  || Decoder Loss:  -1.087154 Validation Decoder Loss:  -8.615619
+Encoder Loss:  0.31486845  || Decoder Loss:  -1.0871576 Validation Decoder Loss:  -8.615249
+Encoder Loss:  0.31486666  || Decoder Loss:  -1.0871605 Validation Decoder Loss:  -8.615431
+Encoder Loss:  0.31485814  || Decoder Loss:  -1.0871636 Validation Decoder Loss:  -8.614843
+Encoder Loss:  0.31486946  || Decoder Loss:  -1.0871668 Validation Decoder Loss:  -8.617854
+Encoder Loss:  0.31485128  || Decoder Loss:  -1.0871687 Validation Decoder Loss:  -8.618888
+Encoder Loss:  0.31485727  || Decoder Loss:  -1.0871687 Validation Decoder Loss:  -8.62272
+Encoder Loss:  0.31485808  || Decoder Loss:  -1.0871702 Validation Decoder Loss:  -8.627917
+Encoder Loss:  0.31486025  || Decoder Loss:  -1.0871723 Validation Decoder Loss:  -8.631663
+Encoder Loss:  0.31486258  || Decoder Loss:  -1.0871733 Validation Decoder Loss:  -8.634424
+Encoder Loss:  0.31485447  || Decoder Loss:  -1.0871749 Validation Decoder Loss:  -8.638164
+Encoder Loss:  0.31485406  || Decoder Loss:  -1.0871763 Validation Decoder Loss:  -8.640524
+Encoder Loss:  0.31485158  || Decoder Loss:  -1.0871785 Validation Decoder Loss:  -8.641902
+Encoder Loss:  0.31485665  || Decoder Loss:  -1.0871801 Validation Decoder Loss:  -8.646219
+Encoder Loss:  0.31485665  || Decoder Loss:  -1.0871806 Validation Decoder Loss:  -8.648465
+Encoder Loss:  0.31485197  || Decoder Loss:  -1.0871817 Validation Decoder Loss:  -8.651772
+Encoder Loss:  0.3148491  || Decoder Loss:  -1.0871829 Validation Decoder Loss:  -8.652776
+Encoder Loss:  0.31484154  || Decoder Loss:  -1.0871844 Validation Decoder Loss:  -8.655743
+Encoder Loss:  0.3148474  || Decoder Loss:  -1.0871855 Validation Decoder Loss:  -8.659449
+Encoder Loss:  0.3148423  || Decoder Loss:  -1.0871862 Validation Decoder Loss:  -8.659737
+Encoder Loss:  0.31484562  || Decoder Loss:  -1.0871861 Validation Decoder Loss:  -8.661563
+Encoder Loss:  0.3148457  || Decoder Loss:  -1.0871876 Validation Decoder Loss:  -8.662437
+Encoder Loss:  0.31484  || Decoder Loss:  -1.0871881 Validation Decoder Loss:  -8.664201
+Encoder Loss:  0.31484026  || Decoder Loss:  -1.0871888 Validation Decoder Loss:  -8.664277
+Encoder Loss:  0.31484342  || Decoder Loss:  -1.0871891 Validation Decoder Loss:  -8.663632
+Encoder Loss:  0.314843  || Decoder Loss:  -1.0871898 Validation Decoder Loss:  -8.661717
+Encoder Loss:  0.31484103  || Decoder Loss:  -1.087191 Validation Decoder Loss:  -8.66174
+Model: bold_synthesis_net_lr_0.000803106867963051 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -8.661727
+NAS BO
+Model: "sequential_18"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_6 (Conv3DTr (None, 124, 5, 6, 1)      62        
+_________________________________________________________________
+reshape_6 (Reshape)          (None, 620, 6, 1)         0         
+=================================================================
+Total params: 62
+Trainable params: 62
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_19"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_6 (Conv2D)            (None, 620, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_20"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_6 (Conv2DTr (None, 926, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.31019667  || Decoder Loss:  -0.5713749 Validation Decoder Loss:  -1.9372336
+Encoder Loss:  0.46550864  || Decoder Loss:  -0.90703535 Validation Decoder Loss:  -7.714386
+Encoder Loss:  0.554699  || Decoder Loss:  -1.0866798 Validation Decoder Loss:  -8.1871
+Encoder Loss:  0.5547083  || Decoder Loss:  -1.0869011 Validation Decoder Loss:  -8.414568
+Encoder Loss:  0.5547145  || Decoder Loss:  -1.0870122 Validation Decoder Loss:  -8.524232
+Encoder Loss:  0.55472445  || Decoder Loss:  -1.0870571 Validation Decoder Loss:  -8.576855
+Encoder Loss:  0.554724  || Decoder Loss:  -1.0870863 Validation Decoder Loss:  -8.599554
+Encoder Loss:  0.5547277  || Decoder Loss:  -1.0871062 Validation Decoder Loss:  -8.6031685
+Encoder Loss:  0.5547333  || Decoder Loss:  -1.0871197 Validation Decoder Loss:  -8.636177
+Encoder Loss:  0.5547332  || Decoder Loss:  -1.0871304 Validation Decoder Loss:  -8.632358
+Encoder Loss:  0.5547406  || Decoder Loss:  -1.0871369 Validation Decoder Loss:  -8.627386
+Encoder Loss:  0.5547311  || Decoder Loss:  -1.0871439 Validation Decoder Loss:  -8.62302
+Encoder Loss:  0.5547353  || Decoder Loss:  -1.0871488 Validation Decoder Loss:  -8.615132
+Encoder Loss:  0.5547387  || Decoder Loss:  -1.0871532 Validation Decoder Loss:  -8.61567
+Encoder Loss:  0.55473673  || Decoder Loss:  -1.0871568 Validation Decoder Loss:  -8.613836
+Encoder Loss:  0.55472875  || Decoder Loss:  -1.0871598 Validation Decoder Loss:  -8.610893
+Encoder Loss:  0.5547381  || Decoder Loss:  -1.0871623 Validation Decoder Loss:  -8.610047
+Encoder Loss:  0.5547313  || Decoder Loss:  -1.087165 Validation Decoder Loss:  -8.609259
+Encoder Loss:  0.5547321  || Decoder Loss:  -1.0871673 Validation Decoder Loss:  -8.611701
+Encoder Loss:  0.5547371  || Decoder Loss:  -1.0871695 Validation Decoder Loss:  -8.613308
+Encoder Loss:  0.55473137  || Decoder Loss:  -1.087171 Validation Decoder Loss:  -8.615814
+Encoder Loss:  0.5547344  || Decoder Loss:  -1.087172 Validation Decoder Loss:  -8.618571
+Encoder Loss:  0.5547333  || Decoder Loss:  -1.0871747 Validation Decoder Loss:  -8.620035
+Encoder Loss:  0.55473506  || Decoder Loss:  -1.0871754 Validation Decoder Loss:  -8.622698
+Encoder Loss:  0.5547278  || Decoder Loss:  -1.0871757 Validation Decoder Loss:  -8.625464
+Encoder Loss:  0.55472237  || Decoder Loss:  -1.0871776 Validation Decoder Loss:  -8.626798
+Encoder Loss:  0.55472654  || Decoder Loss:  -1.0871787 Validation Decoder Loss:  -8.627605
+Encoder Loss:  0.5547335  || Decoder Loss:  -1.0871795 Validation Decoder Loss:  -8.632136
+Encoder Loss:  0.5547305  || Decoder Loss:  -1.0871807 Validation Decoder Loss:  -8.636099
+Encoder Loss:  0.5547192  || Decoder Loss:  -1.0871818 Validation Decoder Loss:  -8.6388
+Encoder Loss:  0.5547241  || Decoder Loss:  -1.0871824 Validation Decoder Loss:  -8.640322
+Encoder Loss:  0.5547238  || Decoder Loss:  -1.0871849 Validation Decoder Loss:  -8.643866
+Encoder Loss:  0.5547215  || Decoder Loss:  -1.0871854 Validation Decoder Loss:  -8.646841
+Encoder Loss:  0.55472136  || Decoder Loss:  -1.087186 Validation Decoder Loss:  -8.649375
+Encoder Loss:  0.5547244  || Decoder Loss:  -1.0871865 Validation Decoder Loss:  -8.651659
+Encoder Loss:  0.55472285  || Decoder Loss:  -1.0871868 Validation Decoder Loss:  -8.652535
+Encoder Loss:  0.5547262  || Decoder Loss:  -1.087188 Validation Decoder Loss:  -8.652666
+Encoder Loss:  0.55473244  || Decoder Loss:  -1.0871894 Validation Decoder Loss:  -8.6530905
+Encoder Loss:  0.55472255  || Decoder Loss:  -1.0871899 Validation Decoder Loss:  -8.653914
+Encoder Loss:  0.5547256  || Decoder Loss:  -1.0871904 Validation Decoder Loss:  -8.6524
+Model: bold_synthesis_net_lr_0.0008888825549319986 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -8.652395
+NAS BO
+Model: "sequential_21"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_7 (Conv3DTr (None, 124, 5, 6, 1)      62        
+_________________________________________________________________
+reshape_7 (Reshape)          (None, 620, 6, 1)         0         
+=================================================================
+Total params: 62
+Trainable params: 62
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_22"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_7 (Conv2D)            (None, 620, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_23"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_7 (Conv2DTr (None, 926, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.33530888  || Decoder Loss:  -0.44632667 Validation Decoder Loss:  -1.5754559
+Encoder Loss:  0.41113585  || Decoder Loss:  -0.56997424 Validation Decoder Loss:  -1.715236
+Encoder Loss:  0.41466093  || Decoder Loss:  -0.59033823 Validation Decoder Loss:  -1.8080455
+Encoder Loss:  0.42125392  || Decoder Loss:  -0.60339755 Validation Decoder Loss:  -1.8692822
+Encoder Loss:  0.4311999  || Decoder Loss:  -0.6186261 Validation Decoder Loss:  -1.8506296
+Encoder Loss:  0.4382311  || Decoder Loss:  -0.62921995 Validation Decoder Loss:  -1.8002342
+Encoder Loss:  0.49940738  || Decoder Loss:  -0.71905667 Validation Decoder Loss:  -1.7639014
+Encoder Loss:  0.60822356  || Decoder Loss:  -0.8786205 Validation Decoder Loss:  -4.8183775
+Encoder Loss:  0.7471506  || Decoder Loss:  -1.0822409 Validation Decoder Loss:  -7.452805
+Encoder Loss:  0.75002664  || Decoder Loss:  -1.0865555 Validation Decoder Loss:  -7.972037
+Encoder Loss:  0.7501897  || Decoder Loss:  -1.0868604 Validation Decoder Loss:  -8.18893
+Encoder Loss:  0.7502402  || Decoder Loss:  -1.0869824 Validation Decoder Loss:  -8.302943
+Encoder Loss:  0.7502645  || Decoder Loss:  -1.0870543 Validation Decoder Loss:  -8.403239
+Encoder Loss:  0.7502791  || Decoder Loss:  -1.0871015 Validation Decoder Loss:  -8.49822
+Encoder Loss:  0.7502869  || Decoder Loss:  -1.0871359 Validation Decoder Loss:  -8.573536
+Encoder Loss:  0.7502924  || Decoder Loss:  -1.0871584 Validation Decoder Loss:  -8.621137
+Encoder Loss:  0.7502922  || Decoder Loss:  -1.0871706 Validation Decoder Loss:  -8.643998
+Encoder Loss:  0.75029093  || Decoder Loss:  -1.0871787 Validation Decoder Loss:  -8.657704
+Encoder Loss:  0.75028807  || Decoder Loss:  -1.0871835 Validation Decoder Loss:  -8.66439
+Encoder Loss:  0.7502861  || Decoder Loss:  -1.0871868 Validation Decoder Loss:  -8.6688
+Encoder Loss:  0.75028247  || Decoder Loss:  -1.0871887 Validation Decoder Loss:  -8.672885
+Encoder Loss:  0.7502809  || Decoder Loss:  -1.0871906 Validation Decoder Loss:  -8.675499
+Encoder Loss:  0.7502786  || Decoder Loss:  -1.0871924 Validation Decoder Loss:  -8.676935
+Encoder Loss:  0.75027514  || Decoder Loss:  -1.0871935 Validation Decoder Loss:  -8.677995
+Encoder Loss:  0.75027275  || Decoder Loss:  -1.0871929 Validation Decoder Loss:  -8.680302
+Encoder Loss:  0.7502703  || Decoder Loss:  -1.0871928 Validation Decoder Loss:  -8.681069
+Encoder Loss:  0.7502675  || Decoder Loss:  -1.0871933 Validation Decoder Loss:  -8.682345
+Encoder Loss:  0.75026524  || Decoder Loss:  -1.0871934 Validation Decoder Loss:  -8.70196
+Encoder Loss:  0.7502641  || Decoder Loss:  -1.0871938 Validation Decoder Loss:  -8.703302
+Encoder Loss:  0.75026256  || Decoder Loss:  -1.0871947 Validation Decoder Loss:  -8.7038
+Encoder Loss:  0.75026166  || Decoder Loss:  -1.0871949 Validation Decoder Loss:  -8.704062
+Encoder Loss:  0.75025994  || Decoder Loss:  -1.0871944 Validation Decoder Loss:  -8.705021
+Encoder Loss:  0.7502575  || Decoder Loss:  -1.0871946 Validation Decoder Loss:  -8.705903
+Encoder Loss:  0.7502567  || Decoder Loss:  -1.0871946 Validation Decoder Loss:  -8.707545
+Encoder Loss:  0.7502556  || Decoder Loss:  -1.0871947 Validation Decoder Loss:  -8.708241
+Encoder Loss:  0.75025487  || Decoder Loss:  -1.0871952 Validation Decoder Loss:  -8.709374
+Encoder Loss:  0.75025386  || Decoder Loss:  -1.0871958 Validation Decoder Loss:  -8.704406
+Encoder Loss:  0.7502545  || Decoder Loss:  -1.0871959 Validation Decoder Loss:  -8.705761
+Encoder Loss:  0.75025284  || Decoder Loss:  -1.0871959 Validation Decoder Loss:  -8.707086
+Encoder Loss:  0.75025266  || Decoder Loss:  -1.0871962 Validation Decoder Loss:  -8.708762
+Model: bold_synthesis_net_lr_0.00027347368167433833 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -8.708754
+NAS BO
+Model: "sequential_24"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_8 (Conv3DTr (None, 154, 5, 6, 1)      92        
+_________________________________________________________________
+reshape_8 (Reshape)          (None, 770, 6, 1)         0         
+=================================================================
+Total params: 92
+Trainable params: 92
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_25"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_8 (Conv2D)            (None, 770, 6, 1)         158       
+=================================================================
+Total params: 158
+Trainable params: 158
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_26"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_8 (Conv2DTr (None, 926, 6, 1)         158       
+=================================================================
+Total params: 158
+Trainable params: 158
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.4247068  || Decoder Loss:  -0.4247068 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355353
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.4247068  || Decoder Loss:  -0.4247068 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Encoder Loss:  0.42470685  || Decoder Loss:  -0.42470685 Validation Decoder Loss:  -1.4355354
+Model: bold_synthesis_net_lr_1e-14 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -1.4355353
+NAS BO
+Model: "sequential_27"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_9 (Conv3DTr (None, 124, 5, 6, 1)      62        
+_________________________________________________________________
+reshape_9 (Reshape)          (None, 620, 6, 1)         0         
+=================================================================
+Total params: 62
+Trainable params: 62
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_28"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_9 (Conv2D)            (None, 620, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_29"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_9 (Conv2DTr (None, 926, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.32203358  || Decoder Loss:  -0.5456219 Validation Decoder Loss:  -1.817991
+Encoder Loss:  0.45383736  || Decoder Loss:  -0.8213195 Validation Decoder Loss:  -7.796043
+Encoder Loss:  0.5958631  || Decoder Loss:  -1.0868556 Validation Decoder Loss:  -8.348429
+Encoder Loss:  0.5957155  || Decoder Loss:  -1.0870057 Validation Decoder Loss:  -8.454989
+Encoder Loss:  0.5956567  || Decoder Loss:  -1.0870613 Validation Decoder Loss:  -8.531724
+Encoder Loss:  0.59562576  || Decoder Loss:  -1.087094 Validation Decoder Loss:  -8.570942
+Encoder Loss:  0.59560657  || Decoder Loss:  -1.0871122 Validation Decoder Loss:  -8.587319
+Encoder Loss:  0.59560645  || Decoder Loss:  -1.0871259 Validation Decoder Loss:  -8.590359
+Encoder Loss:  0.5955988  || Decoder Loss:  -1.0871369 Validation Decoder Loss:  -8.585836
+Encoder Loss:  0.5956025  || Decoder Loss:  -1.0871437 Validation Decoder Loss:  -8.584831
+Encoder Loss:  0.5955983  || Decoder Loss:  -1.0871494 Validation Decoder Loss:  -8.581255
+Encoder Loss:  0.5955998  || Decoder Loss:  -1.087154 Validation Decoder Loss:  -8.613799
+Encoder Loss:  0.59559524  || Decoder Loss:  -1.0871576 Validation Decoder Loss:  -8.615808
+Encoder Loss:  0.5955946  || Decoder Loss:  -1.0871618 Validation Decoder Loss:  -8.616872
+Encoder Loss:  0.5955947  || Decoder Loss:  -1.0871642 Validation Decoder Loss:  -8.620025
+Encoder Loss:  0.59559363  || Decoder Loss:  -1.0871671 Validation Decoder Loss:  -8.6218815
+Encoder Loss:  0.5955954  || Decoder Loss:  -1.0871694 Validation Decoder Loss:  -8.625745
+Encoder Loss:  0.59559333  || Decoder Loss:  -1.0871707 Validation Decoder Loss:  -8.627472
+Encoder Loss:  0.5955891  || Decoder Loss:  -1.0871725 Validation Decoder Loss:  -8.632578
+Encoder Loss:  0.5955931  || Decoder Loss:  -1.0871736 Validation Decoder Loss:  -8.640247
+Encoder Loss:  0.5955855  || Decoder Loss:  -1.0871747 Validation Decoder Loss:  -8.644998
+Encoder Loss:  0.59558946  || Decoder Loss:  -1.0871761 Validation Decoder Loss:  -8.650406
+Encoder Loss:  0.59558886  || Decoder Loss:  -1.0871773 Validation Decoder Loss:  -8.656779
+Encoder Loss:  0.59558845  || Decoder Loss:  -1.0871792 Validation Decoder Loss:  -8.660329
+Encoder Loss:  0.5955874  || Decoder Loss:  -1.0871801 Validation Decoder Loss:  -8.664177
+Encoder Loss:  0.59558976  || Decoder Loss:  -1.0871806 Validation Decoder Loss:  -8.667905
+Encoder Loss:  0.595589  || Decoder Loss:  -1.0871816 Validation Decoder Loss:  -8.672729
+Encoder Loss:  0.595585  || Decoder Loss:  -1.087182 Validation Decoder Loss:  -8.675372
+Encoder Loss:  0.5955875  || Decoder Loss:  -1.0871838 Validation Decoder Loss:  -8.677092
+Encoder Loss:  0.5955861  || Decoder Loss:  -1.0871844 Validation Decoder Loss:  -8.677586
+Encoder Loss:  0.5955849  || Decoder Loss:  -1.087186 Validation Decoder Loss:  -8.678537
+Encoder Loss:  0.5955817  || Decoder Loss:  -1.0871874 Validation Decoder Loss:  -8.677979
+Encoder Loss:  0.59558505  || Decoder Loss:  -1.087188 Validation Decoder Loss:  -8.6782255
+Encoder Loss:  0.5955787  || Decoder Loss:  -1.0871885 Validation Decoder Loss:  -8.678637
+Encoder Loss:  0.59558874  || Decoder Loss:  -1.0871891 Validation Decoder Loss:  -8.674598
+Encoder Loss:  0.595585  || Decoder Loss:  -1.0871893 Validation Decoder Loss:  -8.672843
+Encoder Loss:  0.5955818  || Decoder Loss:  -1.0871902 Validation Decoder Loss:  -8.671668
+Encoder Loss:  0.5955857  || Decoder Loss:  -1.0871919 Validation Decoder Loss:  -8.668844
+Encoder Loss:  0.5955798  || Decoder Loss:  -1.0871925 Validation Decoder Loss:  -8.665367
+Encoder Loss:  0.5955806  || Decoder Loss:  -1.0871929 Validation Decoder Loss:  -8.6652775
+Model: bold_synthesis_net_lr_0.0005832773218351647 Train Intances: 10000 | Validation Instances: 400 | Validation Loss: -8.665281
+NAS BO
+Model: "sequential_30"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_transpose_10 (Conv3DT (None, 124, 5, 6, 1)      62        
+_________________________________________________________________
+reshape_10 (Reshape)         (None, 620, 6, 1)         0         
+=================================================================
+Total params: 62
+Trainable params: 62
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_31"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_10 (Conv2D)           (None, 620, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_32"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_10 (Conv2DT (None, 926, 6, 1)         308       
+=================================================================
+Total params: 308
+Trainable params: 308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208866
+Encoder Loss:  0.122504555  || Decoder Loss:  -0.4177786 Validation Decoder Loss:  -1.4208869
