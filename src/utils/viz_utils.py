@@ -1,24 +1,16 @@
-import sys
-
-import iterative_naive_nas
-
-from sklearn.model_selection import train_test_split
-
 import tensorflow.compat.v1 as tf
 
 import numpy as np
 
-import custom_training
-
 import utils.losses_utils as losses
-
-import utils.data_utils as data_utils
 
 import matplotlib.pyplot as plt
 
 from scipy import spatial
 
 from numpy.linalg import norm
+
+from nilearn import plotting, image
 
 
 
@@ -161,6 +153,24 @@ def plot_loss_results(eeg_train, bold_train, eeg_val, bold_val, eeg_test, bold_t
 #															PLOT VOXELS REAL AND SYNTHESIZED
 #
 ######################################################################################################################################################
+
+
+def plot_view_mask(img, timestep=4, resampling_factor=4, save_file="/tmp/plot.html"):
+    img = image.index_img(img, timestep)
+
+    view = plotting.view_img(img, 
+                            threshold=0,
+                            colorbar=False,
+                            annotate=False,
+                            draw_cross=False,
+                            cut_coords=[0, 0,  0],
+                            black_bg=True,
+                            bg_img=False,
+                            dim=-2,
+                            resampling_interpolation="nearest",
+                            title="Dataset 01 Downsampling " + str(resampling_factor))
+
+    view.save_as_html(save_file)
 
 
 def _plot_voxel(real_signal, synth_signal, rows=1, columns=2, index=1, y_bottom=None, y_top=None):

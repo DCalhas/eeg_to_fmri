@@ -5,16 +5,21 @@ from nilearn import image
 from nilearn import _utils
 from nilearn.input_data import NiftiMasker
 from nilearn.decomposition import CanICA
-from nilearn.masking import apply_mask, compute_epi_mask, compute_multi_epi_mask, _apply_mask_fmri
+from nilearn.masking import apply_mask, compute_epi_mask, compute_multi_epi_mask, _apply_mask_fmri, unmask
 from nilearn.image import smooth_img, index_img, iter_img, clean_img, math_img, mean_img, new_img_like
 
 import numpy as np
 
+from scipy.signal import resample
+
 import os
 from os import listdir
 from os.path import isfile, join, isdir
+from pathlib import Path
 
-from scipy.signal import resample
+home = str(Path.home())
+
+dataset_path = home + '/eeg_to_fmri'
 
 
 ##########################################################################################################################
@@ -22,7 +27,7 @@ from scipy.signal import resample
 #											READING UTILS
 #			
 ##########################################################################################################################
-def get_fmri_instance(individual=0, path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
+def get_fmri_instance(individual=0, path_fmri=dataset_path+'/datasets/01/fMRI/'):
 
 	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
@@ -37,7 +42,7 @@ def get_fmri_instance(individual=0, path_fmri='/home/davidcalhas/eeg_to_fmri/dat
 	return apply_mask(complete_path, mask_img)
 
 
-def get_fmri_instance_img(individual=0, path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
+def get_fmri_instance_img(individual=0, path_fmri=dataset_path+'/datasets/01/fMRI/'):
 
 	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
@@ -49,7 +54,7 @@ def get_fmri_instance_img(individual=0, path_fmri='/home/davidcalhas/eeg_to_fmri
 
 	return image.load_img(complete_path)
 
-def get_population_mask(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
+def get_population_mask(path_fmri=dataset_path+'/datasets/01/fMRI/'):
 
     individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
@@ -75,35 +80,46 @@ def get_population_mask(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMR
 
 
 
-def get_individuals_ids(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/'):
+def get_individuals_ids(path_fmri=dataset_path+'/datasets/01/fMRI/'):
 
 	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
 	return individuals
 
 
-def get_individuals_paths(path_fmri='/home/davidcalhas/eeg_to_fmri/datasets/01/fMRI/', resolution_factor = 5):
+def get_individuals_paths(path_fmri='/home/david/eeg_to_fmri/datasets/01/fMRI/', resolution_factor = 5, number_individuals=10):
+    
+    fmri_individuals = []
+    file_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
-	individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
+    target_shape = image.load_img(path_fmri + file_individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').shape
+    target_shape = (int(target_shape[0]/resolution_factor), 
+                    int(target_shape[1]/resolution_factor), 
+                    int(target_shape[2]/resolution_factor))
+    
+    for i in range(number_individuals):
+        
+        individual = file_individuals[i]
 
-	target_affine = image.load_img(path_fmri + individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').affine
-	target_shape = image.load_img(path_fmri + individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').shape
-	target_shape = (int(target_shape[0]/resolution_factor), 
-					int(target_shape[1]/resolution_factor), 
-					int(target_shape[2]/resolution_factor))
+        fmri_file = '/3_nw_mepi_rest_with_cross.nii.gz'
 
-	for i in range(len(individuals)):
-		individual = individuals[i]
+        individual_path = path_fmri + individual + fmri_file
+        
+        img = image.load_img(individual_path)
+        
+        #scale affine accordingly
+        off_set = img.affine[:,3]
+        new_affine = img.affine*resolution_factor
+        new_affine[:,3] = off_set
+        
+        fmri_image = image.resample_img(img, 
+                                        target_affine=new_affine,
+                                        target_shape=target_shape,
+                                        interpolation='nearest')
 
-		fmri_file = '/3_nw_mepi_rest_with_cross.nii.gz'
+        fmri_individuals += [fmri_image]
 
-		individual_path = path_fmri + individual + fmri_file
-
-		fmri_image = image.resample_img(image.load_img(individual_path), target_affine=target_affine, target_shape=target_shape)
-
-		individuals[i] = fmri_image
-
-	return individuals
+    return fmri_individuals
 
 
 ##########################################################################################################################
@@ -143,6 +159,25 @@ def get_masked_epi(fmri_instances, masker=None):
 
 def get_inverse_masked_epi(fmri_masked, masker):
 	return masker.inverse_transform(fmri_masked)
+
+
+"""
+get_nifti_from_voxels - transforms voxels 2D to a nifti image
+"""
+def get_nifti_from_voxels(voxels, mask):
+   return unmask(np.swapaxes(voxels, 0, 1), mask)
+
+"""
+get_nifti_from_set - transforms a set of voxels 2D instances to a list of nifti images
+"""
+def get_nifti_from_set(data, mask):
+    
+    nifti_intances = []
+    
+    for instance in data:
+        nifti_intances += [get_nifti_from_voxels(instance, mask)]
+        
+    return nifti_intances
 
 ##########################################################################################################################
 #

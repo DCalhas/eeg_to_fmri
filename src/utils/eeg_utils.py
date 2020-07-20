@@ -8,13 +8,18 @@ import numpy as np
 import os
 from os import listdir
 from os.path import isfile, join, isdir
+from pathlib import Path
+
+home = str(Path.home())
+
+dataset_path = home + '/eeg_to_fmri'
 
 ##########################################################################################################################
 #
 #											READING UTILS
 #			
 ##########################################################################################################################
-def get_eeg_instance(individual, path_eeg='/home/davidcalhas/eeg_to_fmri/datasets/01/EEG/', preprocessed=True):
+def get_eeg_instance(individual, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
 
 	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
 
@@ -32,13 +37,13 @@ def get_eeg_instance(individual, path_eeg='/home/davidcalhas/eeg_to_fmri/dataset
 
 	complete_path = path + vhdr_file
 
-	return mne.io.read_raw_brainvision(complete_path, preload=True)
+	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 
-def get_eeg_dataset(number_individuals=16, path_eeg='/home/davidcalhas/eeg_to_fmri/datasets/01/EEG/', preprocessed=True):
+def get_eeg_dataset(number_individuals=16, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
 	individuals = []
 
 	for i in range(number_individuals):
-		individuals += [get_individual(i, path_eeg='/home/davidcalhas/eeg_to_fmri/datasets/01/EEG/', preprocessed=True)]
+		individuals += [get_individual(i, path_eeg=path_eeg, preprocessed=True)]
 
 	return individuals
 
