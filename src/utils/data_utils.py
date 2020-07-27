@@ -6,7 +6,7 @@ from numpy import correlate
 
 import mne
 from nilearn.masking import apply_mask, compute_epi_mask
-from nilearn import signal
+from nilearn import signal, image
 
 from sklearn.preprocessing import normalize
 
@@ -31,55 +31,23 @@ n_epochs = 20
 #
 #############################################################################################################
 
-def load_data(train_instances, test_instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, fmri_resolution_factor=4, standardize_eeg=True, roi=None, roi_ica_components=None):
+def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, roi=None, roi_ica_components=None, dataset="01"):
 
 	#Load Data
-	eeg_train, bold_train = get_data(train_instances,
+	eeg, bold, mask, scalers = get_data(instances,
 	                                n_voxels=n_voxels, bold_shift=bold_shift, n_partitions=n_partitions, 
 	                                by_partitions=by_partitions, partition_length=partition_length,
 	                                f_resample=f_resample, fmri_resolution_factor=fmri_resolution_factor,
-	                                standardize_eeg=standardize_eeg)
-	eeg_test, bold_test = get_data(test_instances,
-	                                n_voxels=n_voxels, bold_shift=bold_shift, n_partitions=n_partitions, 
-	                                by_partitions=by_partitions, partition_length=partition_length,
-	                                f_resample=f_resample, fmri_resolution_factor=fmri_resolution_factor,
-	                                standardize_eeg=standardize_eeg)
+	                                standardize_fmri=standardize_fmri,
+	                                standardize_eeg=standardize_eeg,
+	                                dataset=dataset)
 
-	if(train_instances):
-		eeg_train = eeg_train.reshape(eeg_train.shape[0], eeg_train.shape[1], eeg_train.shape[2], eeg_train.shape[3], 1)
-		bold_train = bold_train.reshape(bold_train.shape[0], bold_train.shape[1], bold_train.shape[2], 1)
-
-	if(test_instances):
-		eeg_test = eeg_test.reshape(eeg_test.shape[0], eeg_test.shape[1], eeg_test.shape[2], eeg_test.shape[3], 1)
-		bold_test = bold_test.reshape(bold_test.shape[0], bold_test.shape[1], bold_test.shape[2], 1)
-
-	return eeg_train, bold_train, eeg_test, bold_test
-
-
-import sys
-sys.path.append('..')
-sys.path.append('../..')
-
-from utils import eeg_utils
-from utils import fmri_utils
-
-import importlib
-importlib.reload(fmri_utils)
-importlib.reload(eeg_utils)
-
-from scipy.signal import resample
-
-from nilearn import signal, image
-
-from scipy.stats import zscore
-
-from sklearn.preprocessing import StandardScaler
-
+	return eeg, bold, mask, scalers
 
 """
 """
 
-def get_data_01(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, fmri_resolution_factor=5, standardize_eeg=True):
+def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, dataset="01"):
     TR = 1/TR
 
     X = []
@@ -88,7 +56,8 @@ def get_data_01(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_p
 
 
     #setting mask and fMRI signals
-    individuals_imgs = fmri_utils.get_individuals_paths(resolution_factor=fmri_resolution_factor, number_individuals=10)
+
+    individuals_imgs = getattr(fmri_utils, "get_individuals_paths_"+dataset)(resolution_factor=fmri_resolution_factor, number_individuals=10)
     individuals_imgs, mask = fmri_utils.get_masked_epi(individuals_imgs)
     
     #clean fMRI signal
@@ -97,20 +66,30 @@ def get_data_01(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_p
                                            detrend=True, 
                                            standardize=False, 
                                            low_pass=None, high_pass=0.008, t_r=1/TR)
-        
-        scaler = StandardScaler(copy=True)
-        individuals_imgs[i] = scaler.fit_transform(individuals_imgs[i])
-        fmri_scalers += [scaler]
-    
+        if(standardize_fmri):
+	        scaler = StandardScaler(copy=True)
+	        print(individuals_imgs[i].shape)
+	        individuals_imgs[i] = scaler.fit_transform(individuals_imgs[i])
+	        fmri_scalers += [scaler]
+	    
     for individual in individuals:
-        eeg = eeg_utils.get_eeg_instance(individual)
+        eeg = getattr(eeg_utils, "get_eeg_instance_"+dataset)(individual)
+        
+        if(dataset!="01"):
+        	len_channels=len(eeg)
+        else:
+        	len_channels = len(eeg.ch_names)
+        
         x_instance = []
         #eeg
-        for channel in range(len(eeg.ch_names)):
+        for channel in range(len_channels):
             f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample)
             x_instance += [Zxx]
         
-        x_instance = zscore(np.array(x_instance))
+        if(standardize_eeg):
+        	x_instance = zscore(np.array(x_instance))
+        else:
+        	x_instance = np.array(x_instance)
         
         fmri_masked_instance = individuals_imgs[individual]
 

@@ -3,6 +3,7 @@ import mne
 import matplotlib.pyplot as plt
 
 from scipy import fft
+from scipy.io import loadmat
 import numpy as np
 
 import os
@@ -19,7 +20,7 @@ dataset_path = home + '/eeg_to_fmri'
 #											READING UTILS
 #			
 ##########################################################################################################################
-def get_eeg_instance(individual, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
+def get_eeg_instance_01(individual, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
 
 	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
 
@@ -38,6 +39,26 @@ def get_eeg_instance(individual, path_eeg=dataset_path+'/datasets/01/EEG/', prep
 	complete_path = path + vhdr_file
 
 	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+
+
+def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=True, path_eeg=dataset_path+'/datasets/tmp_02'):
+
+    individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
+    
+    path_eeg = path_eeg + '/' + individuals[individual] + '/EEG'
+    
+    runs = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
+    
+    run = runs[task*total_runs+run]
+
+    if(preprocessed):
+        path = path_eeg + '/' + run + '/EEG_noGA.mat'
+    else:
+        path = path_eeg + '/' + run + '/EEG_noGA.mat'
+
+    eeg_file = loadmat(path)
+    
+    return eeg_file['data_noGA']
 
 def get_eeg_dataset(number_individuals=16, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
 	individuals = []
@@ -64,8 +85,12 @@ def compute_fft(channel, fs=128):
 	return fft1[range(int(N/2))]
 
 def stft(eeg, channel=0, window_size=2, fs=250, start_time=None, stop_time=None):
-	signal, _ = eeg[channel][:]
-	signal = signal.reshape((signal.shape[1]))
+	signal = eeg[channel][:]
+	if(type(signal) is tuple):
+		signal, _ = signal
+		signal = signal.reshape((signal.shape[1]))
+	else:
+		signal = signal.reshape((signal.shape[0]))
 
 
 	if(start_time == None):

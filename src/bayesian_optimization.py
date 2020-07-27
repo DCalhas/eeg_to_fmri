@@ -12,41 +12,40 @@ import iterative_naive_nas as nas
 
 import custom_training
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-config = tf.ConfigProto(allow_soft_placement=True,
-						gpu_options=gpu_options)
-config.gpu_options.allow_growth=True
-tf.enable_eager_execution(config=config)
+if (__name__ == "__main__"):
+
+	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+	config = tf.ConfigProto(allow_soft_placement=True,
+							gpu_options=gpu_options)
+	config.gpu_options.allow_growth=True
+	tf.enable_eager_execution(config=config)
 
 
-n_partitions=25
-eeg_train, bold_train, eeg_val, bold_val = data_utils.load_data(list(range(10)), list(range(10, 12)),
-																n_partitions=n_partitions, by_partitions=False, partition_length=7,
-																bold_shift=3, f_resample=1.8,
-																roi=1, roi_ica_components=90)
-
-#standardize data
-eeg_train, bold_train, eeg_scaler, bold_scaler = data_utils.standardize(eeg_train, bold_train)
-eeg_val, bold_val, _, _ = data_utils.standardize(eeg_val, bold_val, eeg_scaler=eeg_scaler, bold_scaler=bold_scaler)
+	n_partitions=25
+	eeg_train, bold_train, mask, scalers = data_utils.load_data(list(range(10)),n_voxels=None, 
+																	bold_shift=3, n_partitions=25, 
+																	by_partitions=True, partition_length=14, 
+																	f_resample=2, fmri_resolution_factor=4, 
+																	standardize_eeg=True)
 
 
-n_voxels = bold_train.shape[1]
-interval_length = bold_train.shape[2]
+	n_voxels = bold_train.shape[1]
+	interval_length = bold_train.shape[2]
 
-print("Finished Loading Data")
+	print("Finished Loading Data")
 
-X_train_eeg, X_train_bold, tr_y, X_bold_train_target = data_utils.create_eeg_bold_pairs(eeg_train, bold_train, instances_per_individual=n_partitions)
-X_val_eeg, X_val_bold, tv_y, X_bold_val_target = data_utils.create_eeg_bold_pairs(eeg_val, bold_val, instances_per_individual=n_partitions)
+	X_train_eeg, X_train_bold, tr_y, X_bold_train_target = data_utils.create_eeg_bold_pairs(eeg_train, bold_train, instances_per_individual=n_partitions)
+	#X_val_eeg, X_val_bold, tv_y, X_bold_val_target = data_utils.create_eeg_bold_pairs(eeg_val, bold_val, instances_per_individual=n_partitions)
 
-tr_y = np.array(tr_y, dtype=np.float32)
-tv_y = np.array(tv_y, dtype=np.float32)
+	tr_y = np.array(tr_y, dtype=np.float32)
+	#tv_y = np.array(tv_y, dtype=np.float32)
 
-eeg_train = eeg_train.astype('float32')
-bold_train = bold_train.astype('float32')
-eeg_val = eeg_val.astype('float32')
-bold_val = bold_val.astype('float32')
+	eeg_train = eeg_train.astype('float32')
+	bold_train = bold_train.astype('float32')
+	#eeg_val = eeg_val.astype('float32')
+	#bold_val = bold_val.astype('float32')
 
-print("Pairs Created")
+	print("Pairs Created")
 
 
 ################################################################################################################################

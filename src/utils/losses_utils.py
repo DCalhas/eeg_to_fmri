@@ -5,6 +5,9 @@ import tensorflow.compat.v1 as tf
 
 import tensorflow.keras.backend as K
 
+from scipy.stats import norm
+from scipy.stats import entropy
+
 
 ######################################################################################################################
 #
@@ -119,6 +122,15 @@ def euclidean(x, y):
     return tf.keras.backend.sqrt(tf.keras.backend.sum(tf.keras.backend.square(x - y), axis=-1))
 
 
+
+def kl_loss(x, y, n_bins=10):
+
+    kl = tf.keras.losses.kullback_leibler_divergence(y, x)
+    kl = tf.reduce_mean(kl, axis=-2)
+    
+    return tf.reduce_mean(kl, axis=-1)
+
+
 def mean_volume_euclidean(x, y):
     n_volumes_distance = tf.keras.backend.sqrt(tf.keras.backend.sum(tf.keras.backend.square(x - y), axis=1))
     return tf.keras.backend.sum(n_volumes_distance, axis=1)
@@ -200,6 +212,10 @@ def get_reconstruction_log_cosine_voxel_loss(outputs, targets):
 
 def get_reconstruction_euclidean_loss(outputs, targets):
     reconstruction_loss = euclidean(outputs, targets)
+    return K.mean(reconstruction_loss)
+
+def get_reconstruction_kl_loss(outputs, targets):
+    reconstruction_loss = kl_loss(outputs, targets)
     return K.mean(reconstruction_loss)
 
 def get_reconstruction_euclidean_volume_loss(outputs, targets):

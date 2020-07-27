@@ -87,7 +87,7 @@ def get_individuals_ids(path_fmri=dataset_path+'/datasets/01/fMRI/'):
 	return individuals
 
 
-def get_individuals_paths(path_fmri='/home/david/eeg_to_fmri/datasets/01/fMRI/', resolution_factor = 5, number_individuals=10):
+def get_individuals_paths_01(path_fmri='/home/david/eeg_to_fmri/datasets/01/fMRI/', resolution_factor = 5, number_individuals=10):
     
     fmri_individuals = []
     file_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
@@ -122,6 +122,54 @@ def get_individuals_paths(path_fmri='/home/david/eeg_to_fmri/datasets/01/fMRI/',
     return fmri_individuals
 
 
+def get_individuals_paths_02(path_fmri=dataset_path+"/datasets/tmp_02/", task=1, run=1, resolution_factor = 1, number_individuals=10):
+    
+    task_run = "task" + '%03d' % (task,) + "_run" + '%03d' % (run,)
+    
+    fmri_individuals = []
+    
+    dir_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
+    
+    #target_shape = image.load_img(path_fmri + file_individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').shape
+    #target_shape = (int(target_shape[0]/resolution_factor), 
+    #                int(target_shape[1]/resolution_factor), 
+    #                int(target_shape[2]/resolution_factor))
+    
+    affine = np.zeros((4,4))
+    
+    for i in range(number_individuals):
+        individual_path = path_fmri + dir_individuals[i] + "/BOLD/" + task_run + "/bold.nii.gz"
+        
+        img = image.load_img(individual_path)
+        
+        affine+=img.affine
+        shape=img.shape[:-1]
+        
+        #fmri_image = image.resample_img(img, 
+        #                                target_affine=new_affine,
+        #                                target_shape=target_shape,
+        #                                interpolation='nearest')
+
+        fmri_individuals += [img]
+    
+    affine/=number_individuals
+    
+    #scale affine accordingly
+    off_set = affine[:,3]
+    new_affine = affine*resolution_factor
+    new_affine[:,3] = off_set
+    new_shape = (int(shape[0]/resolution_factor),
+		    	int(shape[1]/resolution_factor),
+		    	int(shape[2]/resolution_factor))
+    
+    for img in range(len(fmri_individuals)):
+        fmri_individuals[img] = image.resample_img(fmri_individuals[img], 
+                                                    target_affine=new_affine,
+                                                    target_shape=new_shape,
+                                                    interpolation='nearest')
+    
+    return fmri_individuals
+
 ##########################################################################################################################
 #
 #											FMRI UTILS
@@ -136,12 +184,12 @@ def get_voxel(masked_fmri, voxel=0):
 def get_resampled_bold(voxel, new_TR=2, TR=2.160):
 	return resample(voxel, int((len(voxel)*(1/new_TR))/TR))
 
-def get_masked_epi(fmri_instances, masker=None):
+def get_masked_epi(fmri_instances, masker=None, smooth_factor=10, threshold="80%"):
 	if(masker == None):
 		if(isinstance(fmri_instances, list)):
 			img_epi = image.mean_img(fmri_instances)
-			img_epi = image.smooth_img(img_epi, 10)
-			img_epi = image.threshold_img(img_epi, threshold="80%")
+			img_epi = image.smooth_img(img_epi, smooth_factor)
+			img_epi = image.threshold_img(img_epi, threshold=threshold)
 
 			masker = NiftiMasker()
 			masker.fit(img_epi)
