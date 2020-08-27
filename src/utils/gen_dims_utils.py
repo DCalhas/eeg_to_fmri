@@ -4,8 +4,8 @@ import numpy as np
 
 from utils import conv_sat_utils
 
-def get_possible_kernel_size_conv(input_shape, output_shape):
-	return conv_sat_utils.conv_sat(input_shape, output_shape).solve()
+def get_possible_kernel_size_conv(input_shape, output_shape, next_input_shape=None):
+	return conv_sat_utils.conv_sat(input_shape, output_shape, next_input_shape=next_input_shape).solve()
 
 def get_possible_kernel_size_deconv(input_shape, output_shape, next_input_shape=None):
 	return conv_sat_utils.conv_sat(input_shape, output_shape, next_input_shape=next_input_shape).solve()

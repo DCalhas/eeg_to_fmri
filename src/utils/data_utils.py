@@ -31,13 +31,14 @@ n_epochs = 20
 #
 #############################################################################################################
 
-def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, roi=None, roi_ica_components=None, dataset="01"):
+def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, roi=None, roi_ica_components=None, dataset="01"):
 
 	#Load Data
 	eeg, bold, mask, scalers = get_data(instances,
 	                                n_voxels=n_voxels, bold_shift=bold_shift, n_partitions=n_partitions, 
 	                                by_partitions=by_partitions, partition_length=partition_length,
-	                                f_resample=f_resample, fmri_resolution_factor=fmri_resolution_factor,
+	                                f_resample=f_resample, mutate_bands=mutate_bands,
+	                                fmri_resolution_factor=fmri_resolution_factor,
 	                                standardize_fmri=standardize_fmri,
 	                                standardize_eeg=standardize_eeg,
 	                                dataset=dataset)
@@ -47,7 +48,7 @@ def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partit
 """
 """
 
-def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, dataset="01"):
+def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, dataset="01"):
     TR = 1/TR
 
     X = []
@@ -84,6 +85,8 @@ def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_part
         #eeg
         for channel in range(len_channels):
             f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample)
+            if(mutate_bands):
+            	Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
             x_instance += [Zxx]
         
         if(standardize_eeg):
@@ -230,7 +233,7 @@ def create_eeg_bold_pairs(eeg, bold, instances_per_individual=16):
 
 	#how are we going to pair these? only different individuals??
 	#different timesteps of the same individual
-
+	
 	#building pairs
 	for individual in range(int(len(eeg)/instances_per_individual)):
 		for other_individual in range(int(len(eeg)/instances_per_individual)):

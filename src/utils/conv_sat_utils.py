@@ -12,9 +12,6 @@ class conv_sat:
 		self.kernel_1 = z3.Int('k_1')
 		self.stride_1 = z3.Int('s_1')
 
-		if(next_input_shape == None):
-			next_input_shape = (140000, 140000)
-
 		self.is_tuple = False
 
 		if(type(input_shape) is tuple):
@@ -33,15 +30,28 @@ class conv_sat:
 
 			self.output_shape = int(output_shape)
 
+			if(self.input_shape_1*self.input_shape_2 < self.output_shape):
+				self.gt=True
+				if(next_input_shape == None):
+					next_input_shape = (140000, 140000)
+			else:
+				self.gt=False
+				if(next_input_shape == None):
+					next_input_shape = (1, 1)
+
 		else:
 			
 			
 			if(input_shape < output_shape):
 				self.input_shape = int(input_shape)
 				self.output_shape = int(output_shape)
+				if(next_input_shape == None):
+					next_input_shape = (140000, 140000)
 			else:
 				self.input_shape = int(output_shape)
 				self.output_shape = int(input_shape)
+				if(next_input_shape == None):
+					next_input_shape = (1, 1)
 
 		self.next_input_shape_1 = next_input_shape[0]
 		self.next_input_shape_2 = next_input_shape[1]
@@ -56,19 +66,24 @@ class conv_sat:
 			self.conv_solver.add(self.kernel_1 > 0)
 			self.conv_solver.add(self.stride_1 > 0)
 			self.conv_solver.add(self.kernel_2 > 0)
-			self.conv_solver.add(self.stride_2 > 0)
+			self.conv_solver.add(self.stride_2 > 0)			
 
-			
+			if(self.gt):
+				self.conv_solver.add( ( (self.input_shape_1 - 1)*self.stride_1 + self.kernel_1 ) == self.out_1)
+				self.conv_solver.add( ( (self.input_shape_2 - 1)*self.stride_2 + self.kernel_2 ) == self.out_2)
 
-			self.conv_solver.add( ( (self.input_shape_1 - 1)*self.stride_1 + self.kernel_1 ) == self.out_1)
-			self.conv_solver.add( ( (self.input_shape_2 - 1)*self.stride_2 + self.kernel_2 ) == self.out_2)
+				self.conv_solver.add(self.out_1 * self.out_2 == self.output_shape)
 
-			self.conv_solver.add(self.out_1 * self.out_2 == self.output_shape)
-			self.conv_solver.add( self.out_1 <= self.next_input_shape_1)
-			self.conv_solver.add( self.out_2 <= self.next_input_shape_2)
-			self.conv_solver.add( self.out_1 >= self.input_shape_1)
-			self.conv_solver.add( self.out_2 >= self.input_shape_2)
+				self.conv_solver.add( self.out_1 <= self.next_input_shape_1)
+				self.conv_solver.add( self.out_2 <= self.next_input_shape_2)
+			else:
+				self.conv_solver.add( ( (self.out_1 - 1)*self.stride_1 + self.kernel_1 ) == self.input_shape_1)
+				self.conv_solver.add( ( (self.out_2 - 1)*self.stride_2 + self.kernel_2 ) == self.input_shape_2)
 
+				self.conv_solver.add(self.out_1 * self.out_2 == self.output_shape)
+
+				self.conv_solver.add( self.out_1 >= self.next_input_shape_1)
+				self.conv_solver.add( self.out_2 >= self.next_input_shape_2)
 		else:
 
 			self.conv_solver.add(self.kernel_1 - self.stride_1 >= 0)
@@ -105,9 +120,10 @@ class conv_sat:
 	def solve(self):
 		self.setup_restrictions()
 
+		self.conv_solver.set("timeout", 60000)
+
 		#while there are solutions to be returned
 		while(self.conv_solver.check() == z3.sat):
-
 			self.add_solution()
 
 		return self.possible_combinations

@@ -41,7 +41,7 @@ def get_eeg_instance_01(individual, path_eeg=dataset_path+'/datasets/01/EEG/', p
 	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 
 
-def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=True, path_eeg=dataset_path+'/datasets/tmp_02'):
+def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=True, path_eeg=dataset_path+'/datasets/02'):
 
     individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
     

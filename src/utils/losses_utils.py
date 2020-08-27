@@ -89,13 +89,13 @@ def correlation_angle_mean_voxels(vects):
     x, y = vects
     x = K.l2_normalize(x, axis=2)
     y = K.l2_normalize(y, axis=2)
-
+    
     a = K.batch_dot(x, y, axes=2)
-
+    
     b = K.batch_dot(x, x, axes=2)
     c = K.batch_dot(y, y, axes=2)
 
-    return tf.squeeze(tf.keras.backend.mean(tf.abs(a / (K.sqrt(b) * K.sqrt(c))), axis=1), [2])
+    return tf.squeeze(tf.math.reduce_mean(tf.math.reduce_mean(tf.abs(a / (tf.keras.backend.sqrt(b) * tf.keras.backend.sqrt(c))), axis=1), axis=2))
 
 def correlation_decoder_loss(x, y):
     x = K.l2_normalize(x, axis=1)
@@ -131,7 +131,8 @@ def kl_loss(x, y, n_bins=10):
     return tf.reduce_mean(kl, axis=-1)
 
 
-def mean_volume_euclidean(x, y):
+def mean_volume_euclidean(vects):
+    x, y = vects
     n_volumes_distance = tf.keras.backend.sqrt(tf.keras.backend.sum(tf.keras.backend.square(x - y), axis=1))
     return tf.keras.backend.sum(n_volumes_distance, axis=1)
 
@@ -194,7 +195,7 @@ def loss_wasserstein_discriminator(real_pred, real_true, gen_pred):
 
 def get_reconstruction_cosine_loss(outputs, targets):
     reconstruction_loss = correlation_angle([outputs, targets])
-    return K.mean(reconstruction_loss)
+    return -K.mean(reconstruction_loss)
 
 def get_reconstruction_cosine_voxel_loss(outputs, targets):
     reconstruction_loss = correlation_angle_mean_voxels([outputs, targets])
@@ -219,7 +220,7 @@ def get_reconstruction_kl_loss(outputs, targets):
     return K.mean(reconstruction_loss)
 
 def get_reconstruction_euclidean_volume_loss(outputs, targets):
-    reconstruction_loss = mean_volume_euclidean(outputs, targets)
+    reconstruction_loss = mean_volume_euclidean([outputs, targets])
     return K.mean(reconstruction_loss)
 
 ######################################################################################################################

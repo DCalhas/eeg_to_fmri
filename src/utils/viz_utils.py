@@ -83,23 +83,39 @@ def plot_mean_std_loss(eeg_train, bold_train,
 						distance_name, distance_function,
 						model_name, n_partitions=30):
 
+	n_plotted = 1
+
+	n_plots = int(type(eeg_train) is np.ndarray and type(bold_train) is np.ndarray) + \
+		int(type(eeg_val) is np.ndarray and type(bold_val) is np.ndarray) + \
+		int(type(eeg_test) is np.ndarray and type(bold_test) is np.ndarray)
+
 	plt.figure(figsize=(20,5))
-	ax1 = plt.subplot(131)
 
-	shared_eeg_train = encoder_network.predict(eeg_train)
-	synthesized_bold_train = decoder_network.predict(shared_eeg_train)
-	_plot_mean_std_loss(synthesized_bold_train, bold_train, distance_function, distance_name, "train", model_name, n_partitions=n_partitions, ax=ax1)
+	if(type(eeg_train) is np.ndarray and type(bold_train) is np.ndarray):
+		ax1 = plt.subplot(1,n_plots,n_plotted)
+		n_plotted += 1
 
-	ax2 = plt.subplot(132)
+		shared_eeg_train = encoder_network.predict(eeg_train)
+		synthesized_bold_train = decoder_network.predict(shared_eeg_train)
+		_plot_mean_std_loss(synthesized_bold_train, bold_train, distance_function, distance_name, "train", model_name, n_partitions=n_partitions, ax=ax1)
 
-	shared_eeg_val = encoder_network.predict(eeg_val)
-	synthesized_bold_val = decoder_network.predict(shared_eeg_val)
-	_plot_mean_std_loss(synthesized_bold_val, bold_val, distance_function, distance_name, "validation", model_name, n_partitions=n_partitions, ax=ax2)
+	if(type(eeg_val) is np.ndarray and type(bold_val) is np.ndarray):
+		ax2 = plt.subplot(1,n_plots,n_plotted)
+		n_plotted += 1
 
-	ax3 = plt.subplot(133)
-	shared_eeg_test = encoder_network.predict(eeg_test)
-	synthesized_bold_test = decoder_network.predict(shared_eeg_test)
-	_plot_mean_std_loss(synthesized_bold_test, bold_test, distance_function, distance_name, "test", model_name, n_partitions=n_partitions, ax=ax3)
+		shared_eeg_val = encoder_network.predict(eeg_val)
+		synthesized_bold_val = decoder_network.predict(shared_eeg_val)
+		_plot_mean_std_loss(synthesized_bold_val, bold_val, distance_function, distance_name, "validation", model_name, n_partitions=n_partitions, ax=ax2)
+
+	
+
+	if(type(eeg_test) is np.ndarray and type(bold_test) is np.ndarray):
+		ax3 = plt.subplot(1,n_plots,n_plotted)
+		n_plotted += 1
+
+		shared_eeg_test = encoder_network.predict(eeg_test)
+		synthesized_bold_test = decoder_network.predict(shared_eeg_test)
+		_plot_mean_std_loss(synthesized_bold_test, bold_test, distance_function, distance_name, "test", model_name, n_partitions=n_partitions, ax=ax3)
 
 	plt.show()
 
@@ -176,8 +192,7 @@ def plot_view_mask(img, timestep=4, vmin=None, vmax=None, resampling_factor=4, s
                             vmax=vmax,
                             vmin=vmin,
                             dim=-2,
-                            resampling_interpolation="nearest",
-                            title="Dataset 01 Downsampling " + str(resampling_factor))
+                            resampling_interpolation="nearest")
 
     view.save_as_html(save_file)
 

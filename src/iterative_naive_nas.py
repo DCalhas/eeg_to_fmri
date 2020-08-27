@@ -93,6 +93,7 @@ class Multi_Modal_Model:
 												real_output_shape[3]))
 
 	def build_eeg(self, input_shape, output_shape, regularization=0.0, activation='linear', dropout=0.0):
+		
 		return self.eeg_encoder.build_net(input_shape, output_shape, 
 										previous_model=self.previous_eeg_network,
 										regularization=regularization,
@@ -132,7 +133,7 @@ class Multi_Modal_Model:
 
 		#DEFINE NEW SHAPE DOMAIN - FIRST LEVEL DOMAIN
 		if(self.get_level() == 1):
-			for i in range(int(64*5), bayesian_optimization.n_voxels-50, 50):
+			for i in range(int(bayesian_optimization.n_voxels/1000)*1000 + int((bayesian_optimization.n_voxels+50)/100)*100, int(bayesian_optimization.eeg_channels*bayesian_optimization.frequency_resolution), 50):
 				domain += [i]
 
 			output_shape_domain = {'name': 'shape_domain', 'type': 'discrete',
@@ -240,13 +241,26 @@ class Neural_Architecture:
 
 		#dilation factor in order to recontruct midlayer
 		if(self.get_layers()[0].__name__ == "build_layer_Conv2DTranspose"):
-			for i in range(self.get_output_shapes()[-1][0], self.get_real_output_shapes()[0][0], 10):
+		
+			if(self.get_output_shapes()[-1][0] > bayesian_optimization.n_voxels):
+				amin, amax=(bayesian_optimization.n_voxels, self.get_output_shapes()[0][0])
+			else:
+				amax, amin=(bayesian_optimization.n_voxels, self.get_output_shapes()[0][0])
+
+			for i in range(amin, amax, 10):
 				domain += [i]
+
 		elif(self.get_layers()[0].__name__ == "build_layer_Conv2D"):
-			for i in range(self.get_output_shapes()[-1][0], bayesian_optimization.n_voxels, 10):
+			if(self.get_output_shapes()[-1][0] < bayesian_optimization.n_voxels):
+				amin, amax=(self.get_output_shapes()[-1][0], bayesian_optimization.n_voxels)
+			else:
+				amax, amin=(self.get_output_shapes()[-1][0], bayesian_optimization.n_voxels)
+
+			for i in range(amin, amax, 10):
 				domain += [i]
+
 		else:
-			for i in range(int(64*5), self.get_output_shapes()[-1][0], 10):
+			for i in range(self.get_output_shapes()[-1][0], int(bayesian_optimization.eeg_channels*bayesian_optimization.frequency_resolution), 10):
 				domain += [i]
 
 		return {'name': 'eeg_shape_domain', 'type': 'discrete', 
@@ -266,6 +280,7 @@ class Neural_Architecture:
 		_layers = []
 
 		if(len(self.get_layers()) > 1 and self.get_layers()[0].__name__ == "build_layer_Conv3DTranspose"):
+			
 			if(not self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1], 
 																		regularization=regularization, 
 																		activation=activation)):
@@ -274,6 +289,8 @@ class Neural_Architecture:
 			_layers += self.get_layers()[0](input_shape, hidden_output_shape, next_input_shape=self.get_real_output_shapes()[-1],
 																			regularization=regularization,
 																			activation=activation)
+
+			
 			if(dropout):
 				_layers += [tf.keras.layers.Dropout(dropout)]
 
@@ -311,9 +328,13 @@ class Neural_Architecture:
 				hidden_input_shape = input_shape
 
 		else:
-			_layers += self.get_layers()[0](input_shape, hidden_output_shape, 
-											regularization=regularization, 
-											activation=activation)
+			try:
+				_layers += self.get_layers()[0](input_shape, hidden_output_shape, 
+												regularization=regularization, 
+												activation=activation)
+			except:
+				print("NOT POSSIBLE")
+				return None
 
 			if(not _layers):
 				return None
@@ -410,6 +431,7 @@ class Neural_Architecture:
 		for l in range(len(_layers)):
 			if(l == len(_layers)-1 and dropout):
 				continue
+
 			model.add(_layers[l])
 
 		if(len(hidden_input_shape) == 3 and len(input_shape) == 4):
@@ -447,18 +469,47 @@ class Iterative_Naive_NAS:
 	######################################################################################################################################
 
 
-	def generate_kernel_stride_Conv1D(self, input_shape, output_shape):
-		possible = gen_dims_utils.get_possible_kernel_size_conv(input_shape[0], output_shape[0])
+	def generate_kernel_stride_Conv1D(self, input_shape, output_shape, next_input_shape=None):
+		if(len(output_shape) + 1 == len(input_shape) and next_input_shape == None):
+			
+			possible = gen_dims_utils.get_possible_kernel_size_conv((input_shape[0], input_shape[1]), output_shape[0])
 
-		pos = list(range(len(possible)))
-		
-		if(not len(pos)):
-			return None
+			pos = list(range(len(possible)))
 
-		generated_kernel_stride = possible[np.random.choice(pos)]
+			if(not len(pos)):
+				return None
+			
+			generated_kernel_stride = possible[np.random.choice(pos)]
 
-		return {'kernel': (generated_kernel_stride[0],),
-				'stride': (generated_kernel_stride[1],)}
+			return {'kernel': generated_kernel_stride[0],
+					'stride': generated_kernel_stride[1]}
+
+		elif(len(output_shape) + 1 == len(input_shape) and next_input_shape != None):
+
+			possible = gen_dims_utils.get_possible_kernel_size_conv((input_shape[0], input_shape[1]), output_shape[0], next_input_shape=next_input_shape)
+
+			pos = list(range(len(possible)))
+
+			if(not len(pos)):
+				return None
+			
+			generated_kernel_stride = possible[np.random.choice(pos)]
+
+			return {'kernel': generated_kernel_stride[0],
+					'stride': generated_kernel_stride[1]}
+
+		else:
+			possible = gen_dims_utils.get_possible_kernel_size_conv(input_shape[0], output_shape[0])
+
+			pos = list(range(len(possible)))
+			
+			if(not len(pos)):
+				return None
+
+			generated_kernel_stride = possible[np.random.choice(pos)]
+
+			return {'kernel': (generated_kernel_stride[0],),
+					'stride': (generated_kernel_stride[1],)}
 
 
 	def generate_kernel_stride_Conv1DTranspose(self, input_shape, output_shape, next_input_shape=None):
@@ -503,7 +554,13 @@ class Iterative_Naive_NAS:
 					'stride': (generated_kernel_stride[1],)}
 
 
-	def generate_kernel_stride_Conv2D(self, input_shape, output_shape):
+	def generate_kernel_stride_Conv2D(self, input_shape, output_shape, next_input_shape=None):
+		if(len(output_shape) + 1 == len(input_shape) and next_input_shape == None):
+			return self.generate_kernel_stride_Conv1D(input_shape, output_shape)
+
+		if(len(output_shape) + 1 == len(input_shape) and next_input_shape != None):
+			return self.generate_kernel_stride_Conv1D(input_shape, output_shape, next_input_shape=next_input_shape)
+
 		generated = self.generate_kernel_stride_Conv1D((input_shape[0],1), (output_shape[0], 1))
 
 		if(not generated):
@@ -527,7 +584,24 @@ class Iterative_Naive_NAS:
 		return gen_dims_utils.add_generated_dim(generated, input_shape[1], output_shape[1], gen_dims_utils.get_possible_kernel_size_deconv)
 
 
-	def generate_kernel_stride_Conv3D(self, input_shape, output_shape):
+	def generate_kernel_stride_Conv3D(self, input_shape, output_shape, next_input_shape=None):
+		if(len(output_shape) + 1 == len(input_shape) and next_input_shape == None):
+			generated = self.generate_kernel_stride_Conv2D((input_shape[0], input_shape[1], 1), (output_shape[0], 1))
+
+			if(not generated):
+				return None
+			
+			return gen_dims_utils.add_generated_dim(generated, input_shape[2], output_shape[1], gen_dims_utils.get_possible_kernel_size_conv)
+
+		elif(len(output_shape) + 1 == len(input_shape) and next_input_shape != None):
+			generated = self.generate_kernel_stride_Conv2D((input_shape[0], input_shape[1], 1), (output_shape[0], 1), 
+																	next_input_shape=next_input_shape)
+
+			if(not generated):
+				return None
+			
+			return gen_dims_utils.add_generated_dim(generated, input_shape[2], output_shape[1], gen_dims_utils.get_possible_kernel_size_conv)
+
 		generated = self.generate_kernel_stride_Conv2D((input_shape[0], input_shape[1],1), (output_shape[0], output_shape[1], 1))
 
 		if(not generated):
@@ -654,6 +728,7 @@ class Iterative_Naive_NAS:
 
 
 	def build_layer_Conv3D(self, input_shape, output_shape, regularization=0.0, activation='linear', initializer=tf.keras.initializers.Constant(value=0.5)):
+		
 		generated = self.generate_kernel_stride_Conv3D(input_shape, output_shape)
 
 		if(not generated):
@@ -709,9 +784,9 @@ class Iterative_Naive_NAS:
 		core_layers = [self.build_layer_Dense, self.build_layer_Conv2D, self.build_layer_Conv2DTranspose, 
 						self.build_layer_Conv3D, self.build_layer_Conv3DTranspose]
 
-		bold_layers = [self.build_layer_Conv2D]
+		bold_layers = [self.build_layer_Conv2DTranspose]
 
-		decoder_layers = [self.build_layer_Conv2DTranspose]
+		decoder_layers = [self.build_layer_Conv2D]
 		#ecoder_layers = [self.build_layer_UpSampling2D]
 
 		synthesizer = Multi_Modal_Model(None, None, None, None, None, None)
@@ -727,7 +802,7 @@ class Iterative_Naive_NAS:
 				del decoder_queue[-1]
 
 
-				for layer in [core_layers[4]]:#[core_layers[3], core_layers[4]]:
+				for layer in [core_layers[3]]:#[core_layers[3], core_layers[4]]:
 					eeg_queue += [Neural_Architecture(layers=[layer], output_shapes=[], real_output_shapes=[])]
 
 				for layer in bold_layers:

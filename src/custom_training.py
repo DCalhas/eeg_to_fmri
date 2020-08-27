@@ -59,7 +59,7 @@ def add_lstm_embedding(model):
     
     return lstm_model
 
-def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, lstm=False, corr_distance=False, gan=False, gan_activation="softmax", gan_output_dimension=1):
+def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, lstm=False, corr_distance=False, dist_function=losses_utils.correlation, gan=False, gan_activation="softmax", gan_output_dimension=1):
     input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
     input_bold = tf.keras.layers.Input(shape=bold_input_shape)
 
@@ -79,7 +79,7 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
         return tf.keras.Model([input_eeg, input_bold], dcca)
 
     if(corr_distance):
-        correlation = tf.keras.layers.Lambda(losses_utils.correlation, 
+        correlation = tf.keras.layers.Lambda(dist_function, 
                              output_shape=losses_utils.cos_dist_output_shape, name="correlation_layer")([processed_eeg, processed_bold])
     elif(gan):
         correlation = tf.keras.layers.Concatenate(axis=1)([processed_eeg, processed_bold])

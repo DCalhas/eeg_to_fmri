@@ -12,7 +12,9 @@ import iterative_naive_nas as nas
 
 import custom_training
 
-if (__name__ == "__main__"):
+mode=1
+
+if (__name__ == "__main__" or mode==1):
 
 	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
 	config = tf.ConfigProto(allow_soft_placement=True,
@@ -20,30 +22,52 @@ if (__name__ == "__main__"):
 	config.gpu_options.allow_growth=True
 	tf.enable_eager_execution(config=config)
 
+	print("Starting to Load Data")
 
 	n_partitions=25
-	eeg_train, bold_train, mask, scalers = data_utils.load_data(list(range(10)),n_voxels=None, 
-																	bold_shift=3, n_partitions=25, 
-																	by_partitions=True, partition_length=14, 
-																	f_resample=2, fmri_resolution_factor=4, 
-																	standardize_eeg=True)
+	n_individuals=10
+	dataset="01"
 
+	eeg_train, bold_train, mask, scalers = data_utils.load_data(list(range(n_individuals)),n_voxels=None, 
+																	bold_shift=3, n_partitions=n_partitions, 
+																	mutate_bands=False,
+																	by_partitions=False, partition_length=14, 
+																	f_resample=1.8, fmri_resolution_factor=4, 
+																	standardize_eeg=True, standardize_fmri=True,
+																	dataset="01")
 
+	frequency_resolution=eeg_train.shape[2]
+	eeg_channels=eeg_train.shape[1]
 	n_voxels = bold_train.shape[1]
 	interval_length = bold_train.shape[2]
+	n_partitions = bold_train.shape[0]//n_individuals
+	
+	if(dataset=="01"):
+		n_individuals_train = 6
+		n_individuals_val = 2
+
+	eeg_val = eeg_train[(n_individuals_train)*n_partitions:(n_individuals_train+n_individuals_val)*n_partitions]
+	bold_val = bold_train[(n_individuals_train)*n_partitions:(n_individuals_train+n_individuals_val)*n_partitions]
+	eeg_train = eeg_train[:(n_individuals_train)*n_partitions]
+	bold_train = bold_train[:(n_individuals_train)*n_partitions]
 
 	print("Finished Loading Data")
 
 	X_train_eeg, X_train_bold, tr_y, X_bold_train_target = data_utils.create_eeg_bold_pairs(eeg_train, bold_train, instances_per_individual=n_partitions)
-	#X_val_eeg, X_val_bold, tv_y, X_bold_val_target = data_utils.create_eeg_bold_pairs(eeg_val, bold_val, instances_per_individual=n_partitions)
+	X_val_eeg, X_val_bold, tv_y, X_bold_val_target = data_utils.create_eeg_bold_pairs(eeg_val, bold_val, instances_per_individual=n_partitions)
 
 	tr_y = np.array(tr_y, dtype=np.float32)
-	#tv_y = np.array(tv_y, dtype=np.float32)
+	tv_y = np.array(tv_y, dtype=np.float32)
+
+	eeg_train = eeg_train.reshape(eeg_train.shape + (1,))
+	bold_train = bold_train.reshape(bold_train.shape + (1,))
+	eeg_val = eeg_val.reshape(eeg_val.shape + (1,))
+	bold_val = bold_val.reshape(bold_val.shape + (1,))
 
 	eeg_train = eeg_train.astype('float32')
 	bold_train = bold_train.astype('float32')
-	#eeg_val = eeg_val.astype('float32')
-	#bold_val = bold_val.astype('float32')
+	eeg_val = eeg_val.astype('float32')
+	bold_val = bold_val.astype('float32')
 
 	print("Pairs Created")
 
@@ -116,15 +140,14 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		#EEG network branch
 
 		global X_train_eeg, X_train_bold, X_val_bold, X_val_eeg, tv_y, tr_y, eeg_train, bold_train, eeg_val, bold_val, X_bold_train_target, X_bold_val_target
-
-
+		
 		eeg_input_shape = eeg_train.shape[1:]
 		current_eeg_hidden_shape = (current_eeg_hidden_shape,) + output_shape
 		eeg_network = multi_modal_instance.build_eeg(eeg_input_shape, 
 													current_eeg_hidden_shape,
 													regularization=current_l1_penalization_eeg,
 													dropout=current_dropout)
-
+		
 		#BOLD network branch
 		bold_input_shape = bold_train.shape[1:]
 		current_bold_hidden_shape = (current_bold_hidden_shape,) + output_shape
@@ -132,14 +155,14 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 													current_bold_hidden_shape,
 													regularization=current_l1_penalization_bold,
 													dropout=current_dropout)
-
+		
 		current_decoder_hidden_shape = (current_decoder_hidden_shape,) + output_shape
 		#THE ERROR IS HERE; PUT current_decoder_hidden_shape as the second argument, and the first argument is the compressed size
 		decoder_network = multi_modal_instance.build_decoder(current_decoder_hidden_shape, 
 															bold_input_shape,
 															regularization=current_l1_penalization_decoder,
 															dropout=current_dropout)
-
+		
 		if(not (eeg_network and bold_network and decoder_network)):
 			return 1
 
@@ -165,7 +188,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		
 		#exception can appear
 		validation_loss = custom_training.linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
-			epochs=40, 
+			epochs=5, 
 			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			loss_function=losses_utils.get_reconstruction_log_cosine_voxel_loss,
@@ -212,7 +235,7 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=100)
+	optimizer.run_optimization(max_iter=1)
 
 	#SAVE BEST MODELS
 	#EEG network branch
@@ -321,7 +344,6 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		global X_train_eeg, X_train_bold, X_val_bold, X_val_eeg, tv_y, tr_y, eeg_train, bold_train, eeg_val, bold_val, X_bold_train_target, X_bold_val_target
 
 		print("NAS BO")
-
 	
 		eeg_input_shape = eeg_train.shape[1:]
 		current_shape = (current_shape,) + output_shape
@@ -389,7 +411,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		#	X_bold_train_target=X_bold_train_target,
     	#	X_bold_val_target=X_bold_val_target)
 		validation_loss = custom_training.linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
-			epochs=40, 
+			epochs=5, 
 			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			loss_function=losses_utils.get_reconstruction_log_cosine_voxel_loss,
@@ -416,7 +438,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=100)
+	optimizer.run_optimization(max_iter=1)
 
 
 	#SAVE BEST MODELS

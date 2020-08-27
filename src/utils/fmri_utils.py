@@ -122,7 +122,7 @@ def get_individuals_paths_01(path_fmri='/home/david/eeg_to_fmri/datasets/01/fMRI
     return fmri_individuals
 
 
-def get_individuals_paths_02(path_fmri=dataset_path+"/datasets/tmp_02/", task=1, run=1, resolution_factor = 1, number_individuals=10):
+def get_individuals_paths_02(path_fmri=dataset_path+"/datasets/02/", task=1, run=1, resolution_factor = 1, number_individuals=10):
     
     task_run = "task" + '%03d' % (task,) + "_run" + '%03d' % (run,)
     
