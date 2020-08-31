@@ -11,6 +11,8 @@ import sys
 
 import bayesian_optimization
 
+import gc
+
 import os
 
 
@@ -872,6 +874,8 @@ class Iterative_Naive_NAS:
 						output_shapes=last_element_decoder.get_output_shapes(), real_output_shapes=last_element_decoder.get_real_output_shapes())
 
 				decoder_queue = decoder_queue + [new_architecture]
+
+			gc.collect()
 
 					
 			#call BO to optimize the output_shape for each layer at this level

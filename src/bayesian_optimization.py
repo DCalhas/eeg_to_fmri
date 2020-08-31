@@ -12,6 +12,8 @@ import iterative_naive_nas as nas
 
 import custom_training
 
+import gc
+
 mode=1
 
 if (__name__ == "__main__" or mode==1):
@@ -32,7 +34,7 @@ if (__name__ == "__main__" or mode==1):
 																	bold_shift=3, n_partitions=n_partitions, 
 																	mutate_bands=False,
 																	by_partitions=False, partition_length=14, 
-																	f_resample=1.8, fmri_resolution_factor=4, 
+																	f_resample=1.8, fmri_resolution_factor=3, 
 																	standardize_eeg=True, standardize_fmri=True,
 																	dataset="01")
 
@@ -417,8 +419,10 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			epochs=5, 
 			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-			loss_function=losses_utils.get_reconstruction_log_cosine_loss,
+			loss_function=losses_utils.get_reconstruction_absolute_volume_loss,
 			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
+			clip_value_gradient=10.0, 
+    		clip_value_loss=np.inf, 
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
 			tv_y=tv_y,
@@ -433,10 +437,12 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		#	X_val_bold=X_val_bold,
 		#	tv_y=tv_y)
 
+		gc.collect()
+
 		print("Model: " + model_name +
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
 		
-		return validation_loss
+		return -1*validation_loss
 
 	optimizer = GPyOpt.methods.BayesianOptimization(
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")

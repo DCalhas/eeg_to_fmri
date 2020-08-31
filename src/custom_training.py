@@ -13,6 +13,8 @@ sys.path.append("..")
 
 from utils import eeg_utils, fmri_utils, losses_utils
 
+import gc
+
 import numpy as np
 
 import tensorflow.compat.v1 as tf
@@ -128,7 +130,7 @@ def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combi
         else:
             encoder_loss = linear_combination*abs(losses_utils.contrastive_loss(outputs, targets, margin=margin_constrastive)) + (1-linear_combination)*abs(reconstruction_loss)
 
-        encoder_loss = tf.clip_by_value(encoder_loss, 0, clip_value)
+        encoder_loss = tf.clip_by_value(encoder_loss, -clip_value, clip_value)
 
         return encoder_loss,  tape.gradient(encoder_loss, 
                                             model.trainable_weights)
@@ -274,11 +276,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                              clip_value=clip_value_loss, margin_constrastive=margin_constrastive)
             
             with tf.name_scope("gradient_encoders") as scope:
-                encoder_clipped_grads = ()
-                for grad in encoder_grads:
-                    encoder_clipped_grads += (tf.clip_by_value(grad, clip_value_min=-clip_value_gradient, clip_value_max=clip_value_gradient), )
-                encoder_grads=encoder_clipped_grads
-
+                encoder_grads,_ = tf.clip_by_global_norm(encoder_grads, clip_value_gradient)
                 encoder_optimizer.apply_gradients(zip(encoder_grads, multi_modal_model.trainable_variables), name=scope)
 
             # Track progress
@@ -286,6 +284,8 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
             losses.update_batch_encoder_loss_avg(encoder_loss)
             if(verbose):
                 print("Loss Encoder:", tf.keras.backend.eval(encoder_loss), "|| Loss Decoder:", tf.keras.backend.eval(decoder_loss))
+
+            gc.collect()
 
         # end epoch
         decoder_loss = losses.get_batch_decoder_loss_avg()
