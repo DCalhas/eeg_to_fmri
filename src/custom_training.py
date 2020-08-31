@@ -71,7 +71,8 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
     processed_bold = bold_network(input_bold)
 
     if(batch_normalization):
-        correlation=tf.keras.layers.BatchNormalization()(correlation)
+        processed_eeg=tf.keras.layers.BatchNormalization()(processed_eeg)
+        processed_bold=tf.keras.layers.BatchNormalization()(processed_bold)
 
     if(lstm):
         processed_eeg = add_lstm_embedding(eeg_network)(processed_eeg)
