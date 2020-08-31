@@ -16,11 +16,11 @@ mode=1
 
 if (__name__ == "__main__" or mode==1):
 
-	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-	config = tf.ConfigProto(allow_soft_placement=True,
-							gpu_options=gpu_options)
-	config.gpu_options.allow_growth=True
-	tf.enable_eager_execution(config=config)
+	gpu = tf.config.experimental.list_physical_devices(device)[0]
+	tf.config.set_soft_device_placement(True)
+	tf.config.log_device_placement=True
+	tf.config.experimental.set_memory_growth(gpu, True)
+	tf.config.experimental.set_virtual_device_configuration(gpu, [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=1024)])
 
 	print("Starting to Load Data")
 
