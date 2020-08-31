@@ -87,7 +87,7 @@ def get_individuals_ids(path_fmri=dataset_path+'/datasets/01/fMRI/'):
 	return individuals
 
 
-def get_individuals_paths_01(path_fmri='/home/david/eeg_to_fmri/datasets/01/fMRI/', resolution_factor = 5, number_individuals=10):
+def get_individuals_paths_01(path_fmri=dataset_path+'/datasets/01/fMRI/', resolution_factor = 5, number_individuals=10):
     
     fmri_individuals = []
     file_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
