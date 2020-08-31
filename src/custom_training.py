@@ -59,7 +59,7 @@ def add_lstm_embedding(model):
     
     return lstm_model
 
-def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, lstm=False, corr_distance=False, batch_normalization=True, dist_function=losses_utils.correlation, gan=False, gan_activation="softmax", gan_output_dimension=1):
+def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, dcca=False, dcca_output=None, lstm=False, corr_distance=False, dist_function=losses_utils.correlation, gan=False, gan_activation="softmax", gan_output_dimension=1):
     input_eeg = tf.keras.layers.Input(shape=eeg_input_shape)
     input_bold = tf.keras.layers.Input(shape=bold_input_shape)
 
@@ -69,10 +69,6 @@ def multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_net
 
     processed_eeg = eeg_network(input_eeg)
     processed_bold = bold_network(input_bold)
-
-    if(batch_normalization):
-        processed_eeg=tf.keras.layers.BatchNormalization()(processed_eeg)
-        processed_bold=tf.keras.layers.BatchNormalization()(processed_bold)
 
     if(lstm):
         processed_eeg = add_lstm_embedding(eeg_network)(processed_eeg)
@@ -125,7 +121,7 @@ def grad_multi_encoder(model, inputs, targets, reconstruction_loss, linear_combi
         tape.watch(bold)
 
         outputs = model([eeg, bold])
-        
+
         if(dcca):
             dcca_loss = losses_utils.cca_loss(dcca_output, False)
             encoder_loss = linear_combination*abs(dcca_loss(outputs, targets)) + (1-linear_combination)*abs(reconstruction_loss)
@@ -276,6 +272,7 @@ def linear_combination_training(X_train_eeg, X_train_bold, tr_y, eeg_network,
                                                                                  tf.gather_nd(bold_train, X_train_bold[batch_start:batch_stop])], 
                                                              tr_y[batch_start:batch_stop], decoder_loss, linear_combination, 
                                                              clip_value=clip_value_loss, margin_constrastive=margin_constrastive)
+            
             with tf.name_scope("gradient_encoders") as scope:
                 encoder_clipped_grads = ()
                 for grad in encoder_grads:

@@ -33,7 +33,7 @@ if (__name__ == "__main__" or mode==1):
 																	mutate_bands=False,
 																	by_partitions=False, partition_length=14, 
 																	f_resample=1.8, fmri_resolution_factor=4, 
-																	standardize_eeg=False, standardize_fmri=False,
+																	standardize_eeg=True, standardize_fmri=True,
 																	dataset="01")
 
 	frequency_resolution=eeg_train.shape[2]
@@ -417,9 +417,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			epochs=5, 
 			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-			loss_function=losses_utils.get_reconstruction_log_cosine_voxel_loss,
-			clip_value_gradient=1.5, 
-			clip_value_loss=3.0, 
+			loss_function=losses_utils.get_reconstruction_log_cosine_loss,
 			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
@@ -427,7 +425,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			eeg_train=eeg_train, bold_train=bold_train, eeg_val=eeg_val, bold_val=bold_val,
 			X_bold_train_target=X_bold_train_target,
     		X_bold_val_target=X_bold_val_target,
-    		verbose=True)
+    		verbose=False)
 		#validation_loss = custom_training.dcca_training(X_train_eeg, X_train_bold, tr_y, eeg_network, decoder_network, multi_modal_model, 
 		#	epochs=40, optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 		#	batch_size=current_batch_size, linear_combination=current_loss_coefficient, dcca_output=current_dcca_output,

@@ -77,7 +77,7 @@ def correlation_angle(vects):
     #y = tf.reshape(y, (tf.shape(y)[0]*tf.shape(y)[1], tf.shape(y)[2], tf.shape(y)[3]))
 
     a = K.batch_dot(x, y, axes=1)
-
+    
     b = K.batch_dot(x, x, axes=1)
     c = K.batch_dot(y, y, axes=1)
 
