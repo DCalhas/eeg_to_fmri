@@ -229,6 +229,9 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 		print("Model: " + model_name +
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
 		
+		if(validation_loss==np.nan):
+			print("NAN")
+			validation_loss=np.inf
 		return validation_loss
 
 	optimizer = GPyOpt.methods.BayesianOptimization(
