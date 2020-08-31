@@ -16,7 +16,7 @@ mode=1
 
 if (__name__ == "__main__" or mode==1):
 
-	gpu = tf.config.experimental.list_physical_devices(device)[0]
+	gpu = tf.config.experimental.list_physical_devices("GPU")[0]
 	tf.config.set_soft_device_placement(True)
 	tf.config.log_device_placement=True
 	tf.config.experimental.set_memory_growth(gpu, True)
