@@ -33,7 +33,7 @@ if (__name__ == "__main__" or mode==1):
 																	mutate_bands=False,
 																	by_partitions=False, partition_length=14, 
 																	f_resample=1.8, fmri_resolution_factor=4, 
-																	standardize_eeg=True, standardize_fmri=False,
+																	standardize_eeg=False, standardize_fmri=False,
 																	dataset="01")
 
 	frequency_resolution=eeg_train.shape[2]
