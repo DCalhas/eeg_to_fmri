@@ -138,7 +138,7 @@ def mean_volume_euclidean(vects):
 
 def mean_volume_abs(vects):
     x, y = vects
-    n_volumes_distance = tf.keras.backend.abs(tf.keras.backend.sum(tf.keras.backend.square(x - y), axis=1))
+    n_volumes_distance = tf.keras.backend.sum(tf.keras.backend.abs(tf.keras.backend.square(x - y)), axis=1)
     return tf.keras.backend.mean(n_volumes_distance, axis=1)
 
 def cos_dist_output_shape(shapes):

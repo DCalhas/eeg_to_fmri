@@ -442,7 +442,10 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		print("Model: " + model_name +
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
 		
-		return validation_loss
+		if(validation_loss==np.nan):
+			return np.inf
+
+		return np.abs(validation_loss)
 
 	optimizer = GPyOpt.methods.BayesianOptimization(
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
