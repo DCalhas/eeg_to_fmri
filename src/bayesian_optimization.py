@@ -454,10 +454,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=1)
-
-	print("Validation Loss Best\n\n\n\n\n")
-	print(optimizer.fx_opt)
+	optimizer.run_optimization(max_iter=100)
 
 	#SAVE BEST MODELS
 	#EEG network branch
