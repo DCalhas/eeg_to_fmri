@@ -240,7 +240,10 @@ def hidden_layer_NAS_BO(multi_modal_instance, eeg_domain, bold_domain, decoder_d
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
 
 	print("Started Optimization Process")
-	optimizer.run_optimization(max_iter=100)
+	optimizer.run_optimization(max_iter=1)
+
+	print("Validation Loss Best\n\n\n\n\n")
+	print(optimizer.fx_opt)
 
 	#SAVE BEST MODELS
 	#EEG network branch
