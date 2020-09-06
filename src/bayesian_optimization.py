@@ -34,7 +34,7 @@ if (__name__ == "__main__" or mode==1):
 																	bold_shift=3, n_partitions=n_partitions, 
 																	mutate_bands=False,
 																	by_partitions=False, partition_length=14, 
-																	f_resample=1.8, fmri_resolution_factor=3, 
+																	f_resample=1.8, fmri_resolution_factor=4, 
 																	standardize_eeg=True, standardize_fmri=False,
 																	dataset="01")
 
