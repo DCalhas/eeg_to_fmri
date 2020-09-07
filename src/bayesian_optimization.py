@@ -379,7 +379,7 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		#Joining EEG and BOLD branches
 		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, 
 																corr_distance=True,
-																dist_function=losses_utils.mean_abs_euclidean,#mean_volume_abs/euclidean /kl_loss
+																dist_function=losses_utils.mean_volume_euclidean,#mean_volume_abs/euclidean /kl_loss
 																lstm=True,
 																gan=False,
 																gan_activation="softmax",
