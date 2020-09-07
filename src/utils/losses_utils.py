@@ -115,7 +115,8 @@ def correlation_decoder_loss(x, y):
 
     return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
 
-def euclidean([x, y]):
+def euclidean(vects):
+    x,y= vects
     x = tf.keras.backend.batch_flatten(x)
     y = tf.keras.backend.batch_flatten(y)
     
