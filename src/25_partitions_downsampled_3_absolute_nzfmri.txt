@@ -1,0 +1,3556 @@
+2020-09-05 23:08:50.582898: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
+2020-09-05 23:08:50.605801: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:981] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-09-05 23:08:50.606241: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1561] Found device 0 with properties: 
+pciBusID: 0000:0a:00.0 name: GeForce RTX 2080 SUPER computeCapability: 7.5
+coreClock: 1.845GHz coreCount: 48 deviceMemorySize: 7.79GiB deviceMemoryBandwidth: 462.00GiB/s
+2020-09-05 23:08:50.606376: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-09-05 23:08:50.608053: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-09-05 23:08:50.609005: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+2020-09-05 23:08:50.609142: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+2020-09-05 23:08:50.610029: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+2020-09-05 23:08:50.610541: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+2020-09-05 23:08:50.612480: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-09-05 23:08:50.612616: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:981] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-09-05 23:08:50.613097: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:981] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-09-05 23:08:50.613472: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1703] Adding visible gpu devices: 0
+2020-09-05 23:09:21.725186: I tensorflow/core/platform/cpu_feature_guard.cc:143] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2020-09-05 23:09:21.729970: I tensorflow/core/platform/profile_utils/cpu_utils.cc:102] CPU Frequency: 3699875000 Hz
+2020-09-05 23:09:21.730751: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x562b51bf93c0 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
+2020-09-05 23:09:21.730771: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Host, Default Version
+2020-09-05 23:09:21.731130: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:981] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-09-05 23:09:21.731580: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1561] Found device 0 with properties: 
+pciBusID: 0000:0a:00.0 name: GeForce RTX 2080 SUPER computeCapability: 7.5
+coreClock: 1.845GHz coreCount: 48 deviceMemorySize: 7.79GiB deviceMemoryBandwidth: 462.00GiB/s
+2020-09-05 23:09:21.731618: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-09-05 23:09:21.731635: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-09-05 23:09:21.731644: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+2020-09-05 23:09:21.731652: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+2020-09-05 23:09:21.731661: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+2020-09-05 23:09:21.731668: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+2020-09-05 23:09:21.731684: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-09-05 23:09:21.731748: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:981] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-09-05 23:09:21.732190: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:981] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-09-05 23:09:21.732571: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1703] Adding visible gpu devices: 0
+2020-09-05 23:09:21.732629: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-09-05 23:09:21.800038: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1102] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-09-05 23:09:21.800067: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1108]      0 
+2020-09-05 23:09:21.800071: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1121] 0:   N 
+2020-09-05 23:09:21.800222: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:981] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-09-05 23:09:21.800677: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:981] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-09-05 23:09:21.801100: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:981] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-09-05 23:09:21.801479: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1247] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 1024 MB memory) -> physical GPU (device: 0, name: GeForce RTX 2080 SUPER, pci bus id: 0000:0a:00.0, compute capability: 7.5)
+2020-09-05 23:09:21.802978: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x562b52e53040 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2020-09-05 23:09:21.802995: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): GeForce RTX 2080 SUPER, Compute Capability 7.5
+2020-09-05 23:09:22.204033: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-09-05 23:09:22.932245: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+Starting to Load Data
+(250, 64, 111, 14)
+(250, 882, 14)
+Finished Loading Data
+Pairs Created
+Optimizing at level  1
+NAS BO
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d (Conv3D)              (None, 25, 106, 14, 1)    97        
+_________________________________________________________________
+reshape (Reshape)            (None, 2650, 14, 1)       0         
+=================================================================
+Total params: 97
+Trainable params: 97
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose (Conv2DTran (None, 2650, 14, 1)       8         
+=================================================================
+Total params: 8
+Trainable params: 8
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_2"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d (Conv2D)              (None, 882, 14, 1)        1770      
+=================================================================
+Total params: 1,770
+Trainable params: 1,770
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  513762.56  || Decoder Loss:  1310411.8 Validation Decoder Loss:  663439.8
+Encoder Loss:  520457.38  || Decoder Loss:  1327487.4 Validation Decoder Loss:  663943.25
+Encoder Loss:  519851.8  || Decoder Loss:  1325942.9 Validation Decoder Loss:  658324.8
+Encoder Loss:  516925.22  || Decoder Loss:  1318478.4 Validation Decoder Loss:  658118.75
+Encoder Loss:  516590.88  || Decoder Loss:  1317625.6 Validation Decoder Loss:  658089.25
+Model: bold_synthesis_net_lr_0.0006814683009445642 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 658089.25
+NAS BO
+Model: "sequential_3"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_1 (Conv3D)            (None, 60, 45, 14, 1)     116       
+_________________________________________________________________
+reshape_1 (Reshape)          (None, 2700, 14, 1)       0         
+=================================================================
+Total params: 116
+Trainable params: 116
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_4"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_1 (Conv2DTr (None, 2700, 14, 1)       939       
+=================================================================
+Total params: 939
+Trainable params: 939
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_5"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_1 (Conv2D)            (None, 882, 14, 1)        58        
+=================================================================
+Total params: 58
+Trainable params: 58
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1329415.1  || Decoder Loss:  1361773.6 Validation Decoder Loss:  659176.06
+Encoder Loss:  1328950.4  || Decoder Loss:  1361299.0 Validation Decoder Loss:  659054.06
+Encoder Loss:  1328728.1  || Decoder Loss:  1361070.5 Validation Decoder Loss:  658962.5
+Encoder Loss:  1328747.5  || Decoder Loss:  1361091.0 Validation Decoder Loss:  659054.06
+Encoder Loss:  1328728.1  || Decoder Loss:  1361070.5 Validation Decoder Loss:  658962.5
+Model: bold_synthesis_net_lr_0.0008320863585938479 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 658962.5
+NAS BO
+Model: "sequential_6"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_2 (Conv3D)            (None, 55, 90, 14, 1)     221       
+_________________________________________________________________
+reshape_2 (Reshape)          (None, 4950, 14, 1)       0         
+=================================================================
+Total params: 221
+Trainable params: 221
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_7"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_2 (Conv2DTr (None, 4950, 14, 1)       1427      
+=================================================================
+Total params: 1,427
+Trainable params: 1,427
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_8"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_2 (Conv2D)            (None, 882, 14, 1)        4070      
+=================================================================
+Total params: 4,070
+Trainable params: 4,070
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1046897.94  || Decoder Loss:  1356137.2 Validation Decoder Loss:  657972.2
+Encoder Loss:  1048985.0  || Decoder Loss:  1358840.9 Validation Decoder Loss:  662252.7
+Encoder Loss:  1045340.7  || Decoder Loss:  1354119.9 Validation Decoder Loss:  658286.8
+Encoder Loss:  1047917.9  || Decoder Loss:  1357459.1 Validation Decoder Loss:  662003.6
+Encoder Loss:  1045320.75  || Decoder Loss:  1354095.4 Validation Decoder Loss:  660560.9
+Model: bold_synthesis_net_lr_7.34902439889354e-05 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660560.9
+NAS BO
+Model: "sequential_9"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_3 (Conv3D)            (None, 25, 90, 14, 1)     353       
+_________________________________________________________________
+reshape_3 (Reshape)          (None, 2250, 14, 1)       0         
+=================================================================
+Total params: 353
+Trainable params: 353
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_10"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_3 (Conv2DTr (None, 2250, 14, 1)       1370      
+=================================================================
+Total params: 1,370
+Trainable params: 1,370
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_11"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_3 (Conv2D)            (None, 882, 14, 1)        489       
+=================================================================
+Total params: 489
+Trainable params: 489
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1053864.2  || Decoder Loss:  1369504.0 Validation Decoder Loss:  657265.5
+Encoder Loss:  1054441.6  || Decoder Loss:  1370252.4 Validation Decoder Loss:  657498.4
+Encoder Loss:  1055082.8  || Decoder Loss:  1371086.0 Validation Decoder Loss:  657712.75
+Encoder Loss:  1055612.5  || Decoder Loss:  1371774.4 Validation Decoder Loss:  657913.7
+Encoder Loss:  1056082.0  || Decoder Loss:  1372384.6 Validation Decoder Loss:  658094.06
+reconstraining parameters GP_regression.rbf
+reconstraining parameters GP_regression.Gaussian_noise.variance
+Model: bold_synthesis_net_lr_9.040178626984221e-06 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 658094.06
+NAS BO
+NOT POSSIBLE
+Model: "sequential_13"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_4 (Conv2DTr (None, 5950, 14, 1)       3308      
+=================================================================
+Total params: 3,308
+Trainable params: 3,308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_14"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_4 (Conv2D)            (None, 882, 14, 1)        2427      
+=================================================================
+Total params: 2,427
+Trainable params: 2,427
+Non-trainable params: 0
+_________________________________________________________________
+None
+Started Optimization Process
+NAS BO
+Model: "sequential_15"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_4 (Conv3D)            (None, 35, 110, 14, 1)    61        
+_________________________________________________________________
+reshape_4 (Reshape)          (None, 3850, 14, 1)       0         
+=================================================================
+Total params: 61
+Trainable params: 61
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_16"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_5 (Conv2DTr (None, 3850, 14, 1)       2970      
+=================================================================
+Total params: 2,970
+Trainable params: 2,970
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_17"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_5 (Conv2D)            (None, 882, 14, 1)        2089      
+=================================================================
+Total params: 2,089
+Trainable params: 2,089
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  100328.71  || Decoder Loss:  1269032.6 Validation Decoder Loss:  660482.2
+Encoder Loss:  95831.3  || Decoder Loss:  1212147.5 Validation Decoder Loss:  660759.1
+Encoder Loss:  95832.43  || Decoder Loss:  1212161.8 Validation Decoder Loss:  660763.06
+Encoder Loss:  95830.48  || Decoder Loss:  1212136.2 Validation Decoder Loss:  660764.9
+Encoder Loss:  95829.37  || Decoder Loss:  1212122.8 Validation Decoder Loss:  660765.6
+Model: bold_synthesis_net_lr_0.0006690615447842216 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660765.6
+NAS BO
+NOT POSSIBLE
+Model: "sequential_19"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_6 (Conv2DTr (None, 5950, 14, 1)       5070      
+=================================================================
+Total params: 5,070
+Trainable params: 5,070
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_20"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_6 (Conv2D)            (None, 882, 14, 1)        1546      
+=================================================================
+Total params: 1,546
+Trainable params: 1,546
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_22"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_7 (Conv2DTr (None, 5950, 14, 1)       1546      
+=================================================================
+Total params: 1,546
+Trainable params: 1,546
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_23"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_7 (Conv2D)            (None, 882, 14, 1)        3308      
+=================================================================
+Total params: 3,308
+Trainable params: 3,308
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_25"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_8 (Conv2DTr (None, 5950, 14, 1)       5070      
+=================================================================
+Total params: 5,070
+Trainable params: 5,070
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_26"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_8 (Conv2D)            (None, 882, 14, 1)        5070      
+=================================================================
+Total params: 5,070
+Trainable params: 5,070
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_28"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_9 (Conv2DTr (None, 5950, 14, 1)       3308      
+=================================================================
+Total params: 3,308
+Trainable params: 3,308
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_29"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_9 (Conv2D)            (None, 882, 14, 1)        4189      
+=================================================================
+Total params: 4,189
+Trainable params: 4,189
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_31"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_10 (Conv2DT (None, 5950, 14, 1)       4189      
+=================================================================
+Total params: 4,189
+Trainable params: 4,189
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_32"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_10 (Conv2D)           (None, 882, 14, 1)        5070      
+=================================================================
+Total params: 5,070
+Trainable params: 5,070
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_34"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_11 (Conv2DT (None, 5950, 14, 1)       4189      
+=================================================================
+Total params: 4,189
+Trainable params: 4,189
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_35"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_11 (Conv2D)           (None, 882, 14, 1)        5070      
+=================================================================
+Total params: 5,070
+Trainable params: 5,070
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_37"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_12 (Conv2DT (None, 5950, 14, 1)       665       
+=================================================================
+Total params: 665
+Trainable params: 665
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_38"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_12 (Conv2D)           (None, 882, 14, 1)        2427      
+=================================================================
+Total params: 2,427
+Trainable params: 2,427
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_39"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_5 (Conv3D)            (None, 60, 100, 14, 1)    61        
+_________________________________________________________________
+reshape_5 (Reshape)          (None, 6000, 14, 1)       0         
+=================================================================
+Total params: 61
+Trainable params: 61
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_40"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_13 (Conv2DT (None, 6000, 14, 1)       2477      
+=================================================================
+Total params: 2,477
+Trainable params: 2,477
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_41"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_13 (Conv2D)           (None, 882, 14, 1)        715       
+=================================================================
+Total params: 715
+Trainable params: 715
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  981287.4  || Decoder Loss:  1353224.1 Validation Decoder Loss:  660860.2
+Encoder Loss:  978019.56  || Decoder Loss:  1348717.5 Validation Decoder Loss:  658467.44
+Encoder Loss:  976630.3  || Decoder Loss:  1346801.6 Validation Decoder Loss:  660814.56
+Encoder Loss:  978007.44  || Decoder Loss:  1348700.5 Validation Decoder Loss:  658467.4
+Encoder Loss:  976630.3  || Decoder Loss:  1346801.6 Validation Decoder Loss:  660814.56
+Model: bold_synthesis_net_lr_0.000990705199643434 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660814.56
+NAS BO
+NOT POSSIBLE
+Model: "sequential_43"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_14 (Conv2DT (None, 5950, 14, 1)       665       
+=================================================================
+Total params: 665
+Trainable params: 665
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_44"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_14 (Conv2D)           (None, 882, 14, 1)        4189      
+=================================================================
+Total params: 4,189
+Trainable params: 4,189
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_46"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_15 (Conv2DT (None, 5950, 14, 1)       665       
+=================================================================
+Total params: 665
+Trainable params: 665
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_47"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_15 (Conv2D)           (None, 882, 14, 1)        3308      
+=================================================================
+Total params: 3,308
+Trainable params: 3,308
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_49"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_16 (Conv2DT (None, 5950, 14, 1)       2427      
+=================================================================
+Total params: 2,427
+Trainable params: 2,427
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_50"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_16 (Conv2D)           (None, 882, 14, 1)        5070      
+=================================================================
+Total params: 5,070
+Trainable params: 5,070
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_52"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_17 (Conv2DT (None, 5950, 14, 1)       4189      
+=================================================================
+Total params: 4,189
+Trainable params: 4,189
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_53"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_17 (Conv2D)           (None, 882, 14, 1)        5070      
+=================================================================
+Total params: 5,070
+Trainable params: 5,070
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_54"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_6 (Conv3D)            (None, 59, 100, 14, 1)    73        
+_________________________________________________________________
+reshape_6 (Reshape)          (None, 5900, 14, 1)       0         
+=================================================================
+Total params: 73
+Trainable params: 73
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_55"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_18 (Conv2DT (None, 5900, 14, 1)       5020      
+=================================================================
+Total params: 5,020
+Trainable params: 5,020
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_56"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_18 (Conv2D)           (None, 882, 14, 1)        4139      
+=================================================================
+Total params: 4,139
+Trainable params: 4,139
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1422988.9  || Decoder Loss:  1422988.9 Validation Decoder Loss:  880155.44
+Encoder Loss:  1410446.1  || Decoder Loss:  1410446.1 Validation Decoder Loss:  742865.4
+Encoder Loss:  1398431.5  || Decoder Loss:  1398431.5 Validation Decoder Loss:  878385.8
+Encoder Loss:  1410343.8  || Decoder Loss:  1410343.8 Validation Decoder Loss:  742865.2
+Encoder Loss:  1398430.9  || Decoder Loss:  1398430.9 Validation Decoder Loss:  878385.94
+Model: bold_synthesis_net_lr_0.001 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 878385.94
+NAS BO
+Model: "sequential_57"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_7 (Conv3D)            (None, 60, 100, 14, 1)    61        
+_________________________________________________________________
+reshape_7 (Reshape)          (None, 6000, 14, 1)       0         
+=================================================================
+Total params: 61
+Trainable params: 61
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_58"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_19 (Conv2DT (None, 6000, 14, 1)       1596      
+=================================================================
+Total params: 1,596
+Trainable params: 1,596
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_59"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_19 (Conv2D)           (None, 882, 14, 1)        5120      
+=================================================================
+Total params: 5,120
+Trainable params: 5,120
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  413156.03  || Decoder Loss:  1290739.1 Validation Decoder Loss:  693617.44
+Encoder Loss:  393426.88  || Decoder Loss:  1229103.4 Validation Decoder Loss:  659906.94
+Encoder Loss:  403566.94  || Decoder Loss:  1260782.0 Validation Decoder Loss:  706204.06
+Encoder Loss:  417222.7  || Decoder Loss:  1303443.8 Validation Decoder Loss:  729658.4
+Encoder Loss:  419815.75  || Decoder Loss:  1311545.0 Validation Decoder Loss:  699813.1
+Model: bold_synthesis_net_lr_0.0005602947573390152 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 699813.1
+NAS BO
+Model: "sequential_60"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_8 (Conv3D)            (None, 60, 50, 14, 1)     66        
+_________________________________________________________________
+reshape_8 (Reshape)          (None, 3000, 14, 1)       0         
+=================================================================
+Total params: 66
+Trainable params: 66
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_61"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_20 (Conv2DT (None, 3000, 14, 1)       2120      
+=================================================================
+Total params: 2,120
+Trainable params: 2,120
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_62"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_20 (Conv2D)           (None, 882, 14, 1)        358       
+=================================================================
+Total params: 358
+Trainable params: 358
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  558014.44  || Decoder Loss:  1339997.8 Validation Decoder Loss:  656391.2
+Encoder Loss:  558147.25  || Decoder Loss:  1340316.8 Validation Decoder Loss:  658059.25
+Encoder Loss:  560851.44  || Decoder Loss:  1346810.6 Validation Decoder Loss:  660091.8
+Encoder Loss:  562447.4  || Decoder Loss:  1350643.0 Validation Decoder Loss:  660109.4
+Encoder Loss:  561752.9  || Decoder Loss:  1348975.1 Validation Decoder Loss:  658877.2
+Model: bold_synthesis_net_lr_0.0005854698742783483 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 658877.2
+NAS BO
+Model: "sequential_63"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_9 (Conv3D)            (None, 59, 100, 14, 1)    73        
+_________________________________________________________________
+reshape_9 (Reshape)          (None, 5900, 14, 1)       0         
+=================================================================
+Total params: 73
+Trainable params: 73
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_64"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_21 (Conv2DT (None, 5900, 14, 1)       2377      
+=================================================================
+Total params: 2,377
+Trainable params: 2,377
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_65"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_21 (Conv2D)           (None, 882, 14, 1)        4139      
+=================================================================
+Total params: 4,139
+Trainable params: 4,139
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  24205.383  || Decoder Loss:  1279943.2 Validation Decoder Loss:  679618.56
+Encoder Loss:  23298.693  || Decoder Loss:  1232004.2 Validation Decoder Loss:  659192.56
+Encoder Loss:  23796.012  || Decoder Loss:  1258303.2 Validation Decoder Loss:  689286.56
+Encoder Loss:  24382.402  || Decoder Loss:  1289311.4 Validation Decoder Loss:  707879.25
+Encoder Loss:  24635.553  || Decoder Loss:  1302698.0 Validation Decoder Loss:  712801.44
+Model: bold_synthesis_net_lr_0.0005673290112444484 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 712801.44
+NAS BO
+Model: "sequential_66"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_10 (Conv3D)           (None, 25, 62, 14, 1)     801       
+_________________________________________________________________
+reshape_10 (Reshape)         (None, 1550, 14, 1)       0         
+=================================================================
+Total params: 801
+Trainable params: 801
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_67"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_22 (Conv2DT (None, 1550, 14, 1)       670       
+=================================================================
+Total params: 670
+Trainable params: 670
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_68"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_22 (Conv2D)           (None, 882, 14, 1)        670       
+=================================================================
+Total params: 670
+Trainable params: 670
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  303901.38  || Decoder Loss:  1355196.2 Validation Decoder Loss:  660140.0
+Encoder Loss:  303854.97  || Decoder Loss:  1354989.2 Validation Decoder Loss:  662477.8
+Encoder Loss:  305894.06  || Decoder Loss:  1364082.8 Validation Decoder Loss:  660035.06
+Encoder Loss:  304187.94  || Decoder Loss:  1356475.0 Validation Decoder Loss:  661751.9
+Encoder Loss:  305146.9  || Decoder Loss:  1360751.2 Validation Decoder Loss:  660019.1
+Model: bold_synthesis_net_lr_0.0005545401512318376 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660019.1
+NAS BO
+NOT POSSIBLE
+Model: "sequential_70"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_23 (Conv2DT (None, 6900, 14, 1)       2496      
+=================================================================
+Total params: 2,496
+Trainable params: 2,496
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_71"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_23 (Conv2D)           (None, 882, 14, 1)        1615      
+=================================================================
+Total params: 1,615
+Trainable params: 1,615
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_73"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_24 (Conv2DT (None, 6900, 14, 1)       6020      
+=================================================================
+Total params: 6,020
+Trainable params: 6,020
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_74"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_24 (Conv2D)           (None, 882, 14, 1)        1615      
+=================================================================
+Total params: 1,615
+Trainable params: 1,615
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_76"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_25 (Conv2DT (None, 6850, 14, 1)       3327      
+=================================================================
+Total params: 3,327
+Trainable params: 3,327
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_77"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_25 (Conv2D)           (None, 882, 14, 1)        5970      
+=================================================================
+Total params: 5,970
+Trainable params: 5,970
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_79"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_26 (Conv2DT (None, 6900, 14, 1)       3377      
+=================================================================
+Total params: 3,377
+Trainable params: 3,377
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_80"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_26 (Conv2D)           (None, 882, 14, 1)        5139      
+=================================================================
+Total params: 5,139
+Trainable params: 5,139
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_82"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_27 (Conv2DT (None, 6950, 14, 1)       2546      
+=================================================================
+Total params: 2,546
+Trainable params: 2,546
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_83"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_27 (Conv2D)           (None, 882, 14, 1)        4308      
+=================================================================
+Total params: 4,308
+Trainable params: 4,308
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_85"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_28 (Conv2DT (None, 6850, 14, 1)       2446      
+=================================================================
+Total params: 2,446
+Trainable params: 2,446
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_86"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_28 (Conv2D)           (None, 882, 14, 1)        1565      
+=================================================================
+Total params: 1,565
+Trainable params: 1,565
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_88"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_29 (Conv2DT (None, 6950, 14, 1)       5189      
+=================================================================
+Total params: 5,189
+Trainable params: 5,189
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_89"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_29 (Conv2D)           (None, 882, 14, 1)        1665      
+=================================================================
+Total params: 1,665
+Trainable params: 1,665
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_91"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_30 (Conv2DT (None, 6800, 14, 1)       4158      
+=================================================================
+Total params: 4,158
+Trainable params: 4,158
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_92"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_30 (Conv2D)           (None, 882, 14, 1)        4158      
+=================================================================
+Total params: 4,158
+Trainable params: 4,158
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_94"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_31 (Conv2DT (None, 6800, 14, 1)       634       
+=================================================================
+Total params: 634
+Trainable params: 634
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_95"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_31 (Conv2D)           (None, 882, 14, 1)        4158      
+=================================================================
+Total params: 4,158
+Trainable params: 4,158
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_97"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_32 (Conv2DT (None, 6750, 14, 1)       3227      
+=================================================================
+Total params: 3,227
+Trainable params: 3,227
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_98"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_32 (Conv2D)           (None, 882, 14, 1)        2346      
+=================================================================
+Total params: 2,346
+Trainable params: 2,346
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_100"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_33 (Conv2DT (None, 7000, 14, 1)       3477      
+=================================================================
+Total params: 3,477
+Trainable params: 3,477
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_101"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_33 (Conv2D)           (None, 882, 14, 1)        834       
+=================================================================
+Total params: 834
+Trainable params: 834
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_103"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_34 (Conv2DT (None, 6750, 14, 1)       2346      
+=================================================================
+Total params: 2,346
+Trainable params: 2,346
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_104"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_34 (Conv2D)           (None, 882, 14, 1)        4989      
+=================================================================
+Total params: 4,989
+Trainable params: 4,989
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_106"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_35 (Conv2DT (None, 6750, 14, 1)       2346      
+=================================================================
+Total params: 2,346
+Trainable params: 2,346
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_107"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_35 (Conv2D)           (None, 882, 14, 1)        2346      
+=================================================================
+Total params: 2,346
+Trainable params: 2,346
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_109"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_36 (Conv2DT (None, 6700, 14, 1)       4939      
+=================================================================
+Total params: 4,939
+Trainable params: 4,939
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_110"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_36 (Conv2D)           (None, 882, 14, 1)        1415      
+=================================================================
+Total params: 1,415
+Trainable params: 1,415
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_112"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_37 (Conv2DT (None, 6700, 14, 1)       2296      
+=================================================================
+Total params: 2,296
+Trainable params: 2,296
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_113"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_37 (Conv2D)           (None, 882, 14, 1)        534       
+=================================================================
+Total params: 534
+Trainable params: 534
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_115"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_38 (Conv2DT (None, 7000, 14, 1)       834       
+=================================================================
+Total params: 834
+Trainable params: 834
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_116"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_38 (Conv2D)           (None, 882, 14, 1)        4358      
+=================================================================
+Total params: 4,358
+Trainable params: 4,358
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_118"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_39 (Conv2DT (None, 6750, 14, 1)       1465      
+=================================================================
+Total params: 1,465
+Trainable params: 1,465
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_119"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_39 (Conv2D)           (None, 882, 14, 1)        584       
+=================================================================
+Total params: 584
+Trainable params: 584
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_121"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_40 (Conv2DT (None, 6650, 14, 1)       2246      
+=================================================================
+Total params: 2,246
+Trainable params: 2,246
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_122"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_40 (Conv2D)           (None, 882, 14, 1)        4889      
+=================================================================
+Total params: 4,889
+Trainable params: 4,889
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_124"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_41 (Conv2DT (None, 6700, 14, 1)       1415      
+=================================================================
+Total params: 1,415
+Trainable params: 1,415
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_125"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_41 (Conv2D)           (None, 882, 14, 1)        534       
+=================================================================
+Total params: 534
+Trainable params: 534
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_127"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_42 (Conv2DT (None, 6650, 14, 1)       3127      
+=================================================================
+Total params: 3,127
+Trainable params: 3,127
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_128"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_42 (Conv2D)           (None, 882, 14, 1)        4008      
+=================================================================
+Total params: 4,008
+Trainable params: 4,008
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_130"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_43 (Conv2DT (None, 6850, 14, 1)       4208      
+=================================================================
+Total params: 4,208
+Trainable params: 4,208
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_131"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_43 (Conv2D)           (None, 882, 14, 1)        4208      
+=================================================================
+Total params: 4,208
+Trainable params: 4,208
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_133"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_44 (Conv2DT (None, 6900, 14, 1)       5139      
+=================================================================
+Total params: 5,139
+Trainable params: 5,139
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_134"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_44 (Conv2D)           (None, 882, 14, 1)        2496      
+=================================================================
+Total params: 2,496
+Trainable params: 2,496
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_136"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_45 (Conv2DT (None, 7000, 14, 1)       3477      
+=================================================================
+Total params: 3,477
+Trainable params: 3,477
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_137"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_45 (Conv2D)           (None, 882, 14, 1)        3477      
+=================================================================
+Total params: 3,477
+Trainable params: 3,477
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_139"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_46 (Conv2DT (None, 6950, 14, 1)       3427      
+=================================================================
+Total params: 3,427
+Trainable params: 3,427
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_140"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_46 (Conv2D)           (None, 882, 14, 1)        1665      
+=================================================================
+Total params: 1,665
+Trainable params: 1,665
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_141"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_11 (Conv3D)           (None, 60, 110, 14, 1)    11        
+_________________________________________________________________
+reshape_11 (Reshape)         (None, 6600, 14, 1)       0         
+=================================================================
+Total params: 11
+Trainable params: 11
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_142"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_47 (Conv2DT (None, 6600, 14, 1)       1315      
+=================================================================
+Total params: 1,315
+Trainable params: 1,315
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_143"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_47 (Conv2D)           (None, 882, 14, 1)        3958      
+=================================================================
+Total params: 3,958
+Trainable params: 3,958
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.36621094  || Decoder Loss:  1318989.0 Validation Decoder Loss:  732767.5
+Encoder Loss:  0.36621094  || Decoder Loss:  1224961.8 Validation Decoder Loss:  661555.75
+Encoder Loss:  0.36621094  || Decoder Loss:  1267119.0 Validation Decoder Loss:  745128.8
+Encoder Loss:  0.36621094  || Decoder Loss:  1335037.8 Validation Decoder Loss:  788437.4
+Encoder Loss:  0.36621094  || Decoder Loss:  1344485.2 Validation Decoder Loss:  720706.9
+Model: bold_synthesis_net_lr_0.001 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 720706.9
+NAS BO
+NOT POSSIBLE
+Model: "sequential_145"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_48 (Conv2DT (None, 6850, 14, 1)       1565      
+=================================================================
+Total params: 1,565
+Trainable params: 1,565
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_146"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_48 (Conv2D)           (None, 882, 14, 1)        3327      
+=================================================================
+Total params: 3,327
+Trainable params: 3,327
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_148"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_49 (Conv2DT (None, 7100, 14, 1)       5339      
+=================================================================
+Total params: 5,339
+Trainable params: 5,339
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_149"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_49 (Conv2D)           (None, 882, 14, 1)        2696      
+=================================================================
+Total params: 2,696
+Trainable params: 2,696
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_151"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_50 (Conv2DT (None, 7050, 14, 1)       3527      
+=================================================================
+Total params: 3,527
+Trainable params: 3,527
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_152"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_50 (Conv2D)           (None, 882, 14, 1)        3527      
+=================================================================
+Total params: 3,527
+Trainable params: 3,527
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_154"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_51 (Conv2DT (None, 7100, 14, 1)       53        
+=================================================================
+Total params: 53
+Trainable params: 53
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_155"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_51 (Conv2D)           (None, 882, 14, 1)        5339      
+=================================================================
+Total params: 5,339
+Trainable params: 5,339
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_156"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_12 (Conv3D)           (None, 19, 50, 14, 1)     131       
+_________________________________________________________________
+reshape_12 (Reshape)         (None, 950, 14, 1)        0         
+=================================================================
+Total params: 131
+Trainable params: 131
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_157"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_52 (Conv2DT (None, 950, 14, 1)        70        
+=================================================================
+Total params: 70
+Trainable params: 70
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_158"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_52 (Conv2D)           (None, 882, 14, 1)        70        
+=================================================================
+Total params: 70
+Trainable params: 70
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1288068.9  || Decoder Loss:  1342330.8 Validation Decoder Loss:  656860.2
+Encoder Loss:  1288018.4  || Decoder Loss:  1342278.6 Validation Decoder Loss:  657081.7
+Encoder Loss:  1288843.6  || Decoder Loss:  1343138.8 Validation Decoder Loss:  657248.5
+Encoder Loss:  1289327.8  || Decoder Loss:  1343643.2 Validation Decoder Loss:  657424.0
+Encoder Loss:  1289802.9  || Decoder Loss:  1344137.9 Validation Decoder Loss:  657615.06
+Model: bold_synthesis_net_lr_0.00045016670556277997 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657615.06
+NAS BO
+NOT POSSIBLE
+Model: "sequential_160"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_53 (Conv2DT (None, 6800, 14, 1)       2396      
+=================================================================
+Total params: 2,396
+Trainable params: 2,396
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_161"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_53 (Conv2D)           (None, 882, 14, 1)        634       
+=================================================================
+Total params: 634
+Trainable params: 634
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_163"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_54 (Conv2DT (None, 6900, 14, 1)       3377      
+=================================================================
+Total params: 3,377
+Trainable params: 3,377
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_164"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_54 (Conv2D)           (None, 882, 14, 1)        6020      
+=================================================================
+Total params: 6,020
+Trainable params: 6,020
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_165"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_13 (Conv3D)           (None, 55, 80, 14, 1)     321       
+_________________________________________________________________
+reshape_13 (Reshape)         (None, 4400, 14, 1)       0         
+=================================================================
+Total params: 321
+Trainable params: 321
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_166"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_55 (Conv2DT (None, 4400, 14, 1)       877       
+=================================================================
+Total params: 877
+Trainable params: 877
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_167"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_55 (Conv2D)           (None, 882, 14, 1)        3520      
+=================================================================
+Total params: 3,520
+Trainable params: 3,520
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1099555.5  || Decoder Loss:  1264092.8 Validation Decoder Loss:  662314.3
+Encoder Loss:  1077956.5  || Decoder Loss:  1239261.9 Validation Decoder Loss:  658135.1
+Encoder Loss:  1091642.1  || Decoder Loss:  1254995.2 Validation Decoder Loss:  670074.8
+Encoder Loss:  1105085.0  || Decoder Loss:  1270449.5 Validation Decoder Loss:  677092.5
+Encoder Loss:  1110709.2  || Decoder Loss:  1276915.5 Validation Decoder Loss:  679265.1
+Model: bold_synthesis_net_lr_0.0003848782490106831 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 679265.1
+NAS BO
+Model: "sequential_168"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_14 (Conv3D)           (None, 60, 90, 14, 1)     111       
+_________________________________________________________________
+reshape_14 (Reshape)         (None, 5400, 14, 1)       0         
+=================================================================
+Total params: 111
+Trainable params: 111
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_169"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_56 (Conv2DT (None, 5400, 14, 1)       996       
+=================================================================
+Total params: 996
+Trainable params: 996
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_170"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_56 (Conv2D)           (None, 882, 14, 1)        996       
+=================================================================
+Total params: 996
+Trainable params: 996
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  784472.9  || Decoder Loss:  1336717.9 Validation Decoder Loss:  661660.0
+Encoder Loss:  793352.2  || Decoder Loss:  1351848.1 Validation Decoder Loss:  660197.9
+Encoder Loss:  794331.5  || Decoder Loss:  1353517.0 Validation Decoder Loss:  663219.1
+Encoder Loss:  793626.44  || Decoder Loss:  1352315.8 Validation Decoder Loss:  661090.2
+Encoder Loss:  794372.4  || Decoder Loss:  1353586.6 Validation Decoder Loss:  660984.75
+Model: bold_synthesis_net_lr_0.000725814949080247 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660984.75
+NAS BO
+NOT POSSIBLE
+Model: "sequential_172"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_57 (Conv2DT (None, 7050, 14, 1)       2646      
+=================================================================
+Total params: 2,646
+Trainable params: 2,646
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_173"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_57 (Conv2D)           (None, 882, 14, 1)        3527      
+=================================================================
+Total params: 3,527
+Trainable params: 3,527
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_175"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_58 (Conv2DT (None, 7100, 14, 1)       2696      
+=================================================================
+Total params: 2,696
+Trainable params: 2,696
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_176"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_58 (Conv2D)           (None, 882, 14, 1)        934       
+=================================================================
+Total params: 934
+Trainable params: 934
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_177"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_15 (Conv3D)           (None, 50, 69, 14, 1)     646       
+_________________________________________________________________
+reshape_15 (Reshape)         (None, 3450, 14, 1)       0         
+=================================================================
+Total params: 646
+Trainable params: 646
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_178"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_59 (Conv2DT (None, 3450, 14, 1)       2570      
+=================================================================
+Total params: 2,570
+Trainable params: 2,570
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_179"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_59 (Conv2D)           (None, 882, 14, 1)        1689      
+=================================================================
+Total params: 1,689
+Trainable params: 1,689
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  409725.75  || Decoder Loss:  1254870.4 Validation Decoder Loss:  656381.9
+Encoder Loss:  407863.72  || Decoder Loss:  1249167.6 Validation Decoder Loss:  656498.3
+Encoder Loss:  408327.75  || Decoder Loss:  1250588.6 Validation Decoder Loss:  657454.2
+Encoder Loss:  409259.6  || Decoder Loss:  1253442.8 Validation Decoder Loss:  658994.4
+Encoder Loss:  410270.72  || Decoder Loss:  1256539.5 Validation Decoder Loss:  659833.44
+Model: bold_synthesis_net_lr_0.00023998755455743623 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 659833.44
+NAS BO
+NOT POSSIBLE
+Model: "sequential_181"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_60 (Conv2DT (None, 7050, 14, 1)       5289      
+=================================================================
+Total params: 5,289
+Trainable params: 5,289
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_182"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_60 (Conv2D)           (None, 882, 14, 1)        1765      
+=================================================================
+Total params: 1,765
+Trainable params: 1,765
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_183"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_16 (Conv3D)           (None, 20, 95, 14, 1)     443       
+_________________________________________________________________
+reshape_16 (Reshape)         (None, 1900, 14, 1)       0         
+=================================================================
+Total params: 443
+Trainable params: 443
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_184"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_61 (Conv2DT (None, 1900, 14, 1)       1020      
+=================================================================
+Total params: 1,020
+Trainable params: 1,020
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_185"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_61 (Conv2D)           (None, 882, 14, 1)        1020      
+=================================================================
+Total params: 1,020
+Trainable params: 1,020
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  462973.75  || Decoder Loss:  1253908.5 Validation Decoder Loss:  656417.2
+Encoder Loss:  461689.75  || Decoder Loss:  1250431.0 Validation Decoder Loss:  656664.44
+Encoder Loss:  462042.34  || Decoder Loss:  1251386.0 Validation Decoder Loss:  657295.4
+Encoder Loss:  462685.78  || Decoder Loss:  1253128.5 Validation Decoder Loss:  658108.8
+Encoder Loss:  463367.9  || Decoder Loss:  1254975.9 Validation Decoder Loss:  658522.56
+Model: bold_synthesis_net_lr_0.00024471801936019183 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 658522.56
+NAS BO
+Model: "sequential_186"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_17 (Conv3D)           (None, 50, 25, 14, 1)     946       
+_________________________________________________________________
+reshape_17 (Reshape)         (None, 1250, 14, 1)       0         
+=================================================================
+Total params: 946
+Trainable params: 946
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_187"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_62 (Conv2DT (None, 1250, 14, 1)       370       
+=================================================================
+Total params: 370
+Trainable params: 370
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_188"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_62 (Conv2D)           (None, 882, 14, 1)        370       
+=================================================================
+Total params: 370
+Trainable params: 370
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  171200.55  || Decoder Loss:  1311158.6 Validation Decoder Loss:  656377.8
+Encoder Loss:  170752.16  || Decoder Loss:  1307724.6 Validation Decoder Loss:  656524.44
+Encoder Loss:  170953.1  || Decoder Loss:  1309263.9 Validation Decoder Loss:  656689.1
+Encoder Loss:  171055.6  || Decoder Loss:  1310048.4 Validation Decoder Loss:  656863.44
+Encoder Loss:  171140.64  || Decoder Loss:  1310699.8 Validation Decoder Loss:  657063.9
+Model: bold_synthesis_net_lr_0.00036790504459731306 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657063.9
+NAS BO
+Model: "sequential_189"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_18 (Conv3D)           (None, 41, 100, 14, 1)    289       
+_________________________________________________________________
+reshape_18 (Reshape)         (None, 4100, 14, 1)       0         
+=================================================================
+Total params: 289
+Trainable params: 289
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_190"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_63 (Conv2DT (None, 4100, 14, 1)       577       
+=================================================================
+Total params: 577
+Trainable params: 577
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_191"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_63 (Conv2D)           (None, 882, 14, 1)        577       
+=================================================================
+Total params: 577
+Trainable params: 577
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  14255.573  || Decoder Loss:  1255415.5 Validation Decoder Loss:  656472.06
+Encoder Loss:  14177.876  || Decoder Loss:  1248572.8 Validation Decoder Loss:  656439.2
+Encoder Loss:  14196.251  || Decoder Loss:  1250190.9 Validation Decoder Loss:  657539.2
+Encoder Loss:  14235.117  || Decoder Loss:  1253614.0 Validation Decoder Loss:  659510.6
+Encoder Loss:  14277.771  || Decoder Loss:  1257370.2 Validation Decoder Loss:  660613.1
+Model: bold_synthesis_net_lr_0.0008388346159570243 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660613.1
+NAS BO
+Model: "sequential_192"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_19 (Conv3D)           (None, 63, 100, 14, 1)    25        
+_________________________________________________________________
+reshape_19 (Reshape)         (None, 6300, 14, 1)       0         
+=================================================================
+Total params: 25
+Trainable params: 25
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_193"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_64 (Conv2DT (None, 6300, 14, 1)       1015      
+=================================================================
+Total params: 1,015
+Trainable params: 1,015
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_194"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_64 (Conv2D)           (None, 882, 14, 1)        134       
+=================================================================
+Total params: 134
+Trainable params: 134
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1024160.0  || Decoder Loss:  1252827.9 Validation Decoder Loss:  656939.94
+Encoder Loss:  1023791.8  || Decoder Loss:  1252377.5 Validation Decoder Loss:  657004.3
+Encoder Loss:  1023906.3  || Decoder Loss:  1252517.6 Validation Decoder Loss:  657095.0
+Encoder Loss:  1024091.25  || Decoder Loss:  1252743.8 Validation Decoder Loss:  657177.06
+Encoder Loss:  1024280.56  || Decoder Loss:  1252975.2 Validation Decoder Loss:  657212.6
+Model: bold_synthesis_net_lr_0.0002446657288669243 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657212.6
+NAS BO
+Model: "sequential_195"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_20 (Conv3D)           (None, 50, 93, 14, 1)     286       
+_________________________________________________________________
+reshape_20 (Reshape)         (None, 4650, 14, 1)       0         
+=================================================================
+Total params: 286
+Trainable params: 286
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_196"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_65 (Conv2DT (None, 4650, 14, 1)       246       
+=================================================================
+Total params: 246
+Trainable params: 246
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_197"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_65 (Conv2D)           (None, 882, 14, 1)        246       
+=================================================================
+Total params: 246
+Trainable params: 246
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  274892.38  || Decoder Loss:  1330726.6 Validation Decoder Loss:  658665.94
+Encoder Loss:  274891.84  || Decoder Loss:  1330724.2 Validation Decoder Loss:  658665.94
+Encoder Loss:  274891.88  || Decoder Loss:  1330724.2 Validation Decoder Loss:  658665.94
+Encoder Loss:  274891.84  || Decoder Loss:  1330724.2 Validation Decoder Loss:  658665.94
+Encoder Loss:  274891.84  || Decoder Loss:  1330724.2 Validation Decoder Loss:  658665.94
+Model: bold_synthesis_net_lr_0.0005059515233524983 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 658665.94
+NAS BO
+Model: "sequential_198"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_21 (Conv3D)           (None, 50, 65, 14, 1)     706       
+_________________________________________________________________
+reshape_21 (Reshape)         (None, 3250, 14, 1)       0         
+=================================================================
+Total params: 706
+Trainable params: 706
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_199"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_66 (Conv2DT (None, 3250, 14, 1)       2370      
+=================================================================
+Total params: 2,370
+Trainable params: 2,370
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_200"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_66 (Conv2D)           (None, 882, 14, 1)        1489      
+=================================================================
+Total params: 1,489
+Trainable params: 1,489
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1065947.5  || Decoder Loss:  1297947.2 Validation Decoder Loss:  659309.06
+Encoder Loss:  1046241.4  || Decoder Loss:  1273953.0 Validation Decoder Loss:  658654.56
+Encoder Loss:  1042122.3  || Decoder Loss:  1268937.0 Validation Decoder Loss:  660441.44
+Encoder Loss:  1048822.8  || Decoder Loss:  1277096.4 Validation Decoder Loss:  661273.9
+Encoder Loss:  1052803.6  || Decoder Loss:  1281943.1 Validation Decoder Loss:  660422.4
+Model: bold_synthesis_net_lr_0.0005343674788754726 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660422.4
+NAS BO
+Model: "sequential_201"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_22 (Conv3D)           (None, 50, 103, 14, 1)    136       
+_________________________________________________________________
+reshape_22 (Reshape)         (None, 5150, 14, 1)       0         
+=================================================================
+Total params: 136
+Trainable params: 136
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_202"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_67 (Conv2DT (None, 5150, 14, 1)       2508      
+=================================================================
+Total params: 2,508
+Trainable params: 2,508
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_203"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_67 (Conv2D)           (None, 882, 14, 1)        3389      
+=================================================================
+Total params: 3,389
+Trainable params: 3,389
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  141854.23  || Decoder Loss:  1255593.5 Validation Decoder Loss:  656515.1
+Encoder Loss:  141040.61  || Decoder Loss:  1248392.1 Validation Decoder Loss:  656424.25
+Encoder Loss:  141229.88  || Decoder Loss:  1250067.2 Validation Decoder Loss:  657566.4
+Encoder Loss:  141636.8  || Decoder Loss:  1253669.1 Validation Decoder Loss:  659681.2
+Encoder Loss:  142084.83  || Decoder Loss:  1257634.8 Validation Decoder Loss:  660872.94
+Model: bold_synthesis_net_lr_0.0001500715550832012 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660872.94
+NAS BO
+Model: "sequential_204"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_23 (Conv3D)           (None, 56, 100, 14, 1)    109       
+_________________________________________________________________
+reshape_23 (Reshape)         (None, 5600, 14, 1)       0         
+=================================================================
+Total params: 109
+Trainable params: 109
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_205"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_68 (Conv2DT (None, 5600, 14, 1)       4720      
+=================================================================
+Total params: 4,720
+Trainable params: 4,720
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_206"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_68 (Conv2D)           (None, 882, 14, 1)        4720      
+=================================================================
+Total params: 4,720
+Trainable params: 4,720
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  50748.56  || Decoder Loss:  1334543.4 Validation Decoder Loss:  752475.8
+Encoder Loss:  46539.188  || Decoder Loss:  1223852.0 Validation Decoder Loss:  662307.1
+Encoder Loss:  48310.48  || Decoder Loss:  1270432.6 Validation Decoder Loss:  741390.94
+Encoder Loss:  50318.164  || Decoder Loss:  1323229.9 Validation Decoder Loss:  712378.56
+Encoder Loss:  49537.42  || Decoder Loss:  1302698.6 Validation Decoder Loss:  676878.6
+Model: bold_synthesis_net_lr_0.0009475797882096132 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 676878.6
+NAS BO
+Model: "sequential_207"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_24 (Conv3D)           (None, 50, 73, 14, 1)     586       
+_________________________________________________________________
+reshape_24 (Reshape)         (None, 3650, 14, 1)       0         
+=================================================================
+Total params: 586
+Trainable params: 586
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_208"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_69 (Conv2DT (None, 3650, 14, 1)       2770      
+=================================================================
+Total params: 2,770
+Trainable params: 2,770
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_209"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_69 (Conv2D)           (None, 882, 14, 1)        1008      
+=================================================================
+Total params: 1,008
+Trainable params: 1,008
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  23263.994  || Decoder Loss:  1350801.6 Validation Decoder Loss:  657610.4
+Encoder Loss:  23596.422  || Decoder Loss:  1370104.8 Validation Decoder Loss:  657484.2
+Encoder Loss:  23607.44  || Decoder Loss:  1370744.5 Validation Decoder Loss:  657599.6
+Encoder Loss:  23589.441  || Decoder Loss:  1369700.1 Validation Decoder Loss:  657704.9
+Encoder Loss:  23578.438  || Decoder Loss:  1369061.9 Validation Decoder Loss:  657783.1
+Model: bold_synthesis_net_lr_0.00016663745624543656 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657783.1
+NAS BO
+Model: "sequential_210"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_25 (Conv3D)           (None, 25, 98, 14, 1)     225       
+_________________________________________________________________
+reshape_25 (Reshape)         (None, 2450, 14, 1)       0         
+=================================================================
+Total params: 225
+Trainable params: 225
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_211"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_70 (Conv2DT (None, 2450, 14, 1)       689       
+=================================================================
+Total params: 689
+Trainable params: 689
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_212"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_70 (Conv2D)           (None, 882, 14, 1)        1570      
+=================================================================
+Total params: 1,570
+Trainable params: 1,570
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  281631.34  || Decoder Loss:  1262123.1 Validation Decoder Loss:  660564.25
+Encoder Loss:  276838.28  || Decoder Loss:  1240643.2 Validation Decoder Loss:  657984.3
+Encoder Loss:  279939.84  || Decoder Loss:  1254543.1 Validation Decoder Loss:  668112.8
+Encoder Loss:  282963.78  || Decoder Loss:  1268094.6 Validation Decoder Loss:  674722.5
+Encoder Loss:  284323.16  || Decoder Loss:  1274186.4 Validation Decoder Loss:  677911.6
+Model: bold_synthesis_net_lr_0.0007603597610444142 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 677911.6
+NAS BO
+Model: "sequential_213"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_26 (Conv3D)           (None, 35, 50, 14, 1)     1861      
+_________________________________________________________________
+reshape_26 (Reshape)         (None, 1750, 14, 1)       0         
+=================================================================
+Total params: 1,861
+Trainable params: 1,861
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_214"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_71 (Conv2DT (None, 1750, 14, 1)       870       
+=================================================================
+Total params: 870
+Trainable params: 870
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_215"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_71 (Conv2D)           (None, 882, 14, 1)        870       
+=================================================================
+Total params: 870
+Trainable params: 870
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  976842.6  || Decoder Loss:  1297424.9 Validation Decoder Loss:  656362.5
+Encoder Loss:  976115.94  || Decoder Loss:  1296459.0 Validation Decoder Loss:  656362.44
+Encoder Loss:  976116.06  || Decoder Loss:  1296459.0 Validation Decoder Loss:  656362.5
+Encoder Loss:  976116.0  || Decoder Loss:  1296459.1 Validation Decoder Loss:  656362.5
+Encoder Loss:  976116.06  || Decoder Loss:  1296459.2 Validation Decoder Loss:  656362.44
+Model: bold_synthesis_net_lr_0.0007212519426540283 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 656362.44
+NAS BO
+Model: "sequential_216"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_27 (Conv3D)           (None, 28, 75, 14, 1)     1370      
+_________________________________________________________________
+reshape_27 (Reshape)         (None, 2100, 14, 1)       0         
+=================================================================
+Total params: 1,370
+Trainable params: 1,370
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_217"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_72 (Conv2DT (None, 2100, 14, 1)       339       
+=================================================================
+Total params: 339
+Trainable params: 339
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_218"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_72 (Conv2D)           (None, 882, 14, 1)        339       
+=================================================================
+Total params: 339
+Trainable params: 339
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  78174.74  || Decoder Loss:  1254056.4 Validation Decoder Loss:  656706.94
+Encoder Loss:  77934.75  || Decoder Loss:  1250207.8 Validation Decoder Loss:  657175.1
+Encoder Loss:  78028.82  || Decoder Loss:  1251718.6 Validation Decoder Loss:  657475.2
+Encoder Loss:  78125.5  || Decoder Loss:  1253269.8 Validation Decoder Loss:  657426.2
+Encoder Loss:  78094.06  || Decoder Loss:  1252765.5 Validation Decoder Loss:  657325.1
+Model: bold_synthesis_net_lr_0.0008952776950703615 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657325.1
+NAS BO
+NOT POSSIBLE
+Model: "sequential_220"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_73 (Conv2DT (None, 6550, 14, 1)       2146      
+=================================================================
+Total params: 2,146
+Trainable params: 2,146
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_221"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_73 (Conv2D)           (None, 882, 14, 1)        3027      
+=================================================================
+Total params: 3,027
+Trainable params: 3,027
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_223"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_74 (Conv2DT (None, 6500, 14, 1)       2096      
+=================================================================
+Total params: 2,096
+Trainable params: 2,096
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_224"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_74 (Conv2D)           (None, 882, 14, 1)        2096      
+=================================================================
+Total params: 2,096
+Trainable params: 2,096
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_225"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_28 (Conv3D)           (None, 50, 85, 14, 1)     406       
+_________________________________________________________________
+reshape_28 (Reshape)         (None, 4250, 14, 1)       0         
+=================================================================
+Total params: 406
+Trainable params: 406
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_226"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_75 (Conv2DT (None, 4250, 14, 1)       2489      
+=================================================================
+Total params: 2,489
+Trainable params: 2,489
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_227"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_75 (Conv2D)           (None, 882, 14, 1)        727       
+=================================================================
+Total params: 727
+Trainable params: 727
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  0.41666666  || Decoder Loss:  1300699.9 Validation Decoder Loss:  657356.6
+Encoder Loss:  0.41666666  || Decoder Loss:  1300294.4 Validation Decoder Loss:  658611.9
+Encoder Loss:  0.41666666  || Decoder Loss:  1300198.2 Validation Decoder Loss:  658613.4
+Encoder Loss:  0.41666666  || Decoder Loss:  1300184.8 Validation Decoder Loss:  658613.94
+Encoder Loss:  0.41666666  || Decoder Loss:  1300178.8 Validation Decoder Loss:  658614.25
+Model: bold_synthesis_net_lr_0.0009723327453114374 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 658614.25
+NAS BO
+Model: "sequential_228"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_29 (Conv3D)           (None, 64, 75, 14, 1)     38        
+_________________________________________________________________
+reshape_29 (Reshape)         (None, 4800, 14, 1)       0         
+=================================================================
+Total params: 38
+Trainable params: 38
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_229"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_76 (Conv2DT (None, 4800, 14, 1)       396       
+=================================================================
+Total params: 396
+Trainable params: 396
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_230"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_76 (Conv2D)           (None, 882, 14, 1)        3920      
+=================================================================
+Total params: 3,920
+Trainable params: 3,920
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1317875.9  || Decoder Loss:  1317875.9 Validation Decoder Loss:  731167.7
+Encoder Loss:  1225061.8  || Decoder Loss:  1225061.8 Validation Decoder Loss:  661492.8
+Encoder Loss:  1266867.9  || Decoder Loss:  1266867.9 Validation Decoder Loss:  743582.9
+Encoder Loss:  1333820.9  || Decoder Loss:  1333820.9 Validation Decoder Loss:  786097.1
+Encoder Loss:  1343238.0  || Decoder Loss:  1343238.0 Validation Decoder Loss:  732045.8
+Model: bold_synthesis_net_lr_0.001 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 732045.8
+NAS BO
+Model: "sequential_231"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_30 (Conv3D)           (None, 64, 100, 14, 1)    13        
+_________________________________________________________________
+reshape_30 (Reshape)         (None, 6400, 14, 1)       0         
+=================================================================
+Total params: 13
+Trainable params: 13
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_232"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_77 (Conv2DT (None, 6400, 14, 1)       1115      
+=================================================================
+Total params: 1,115
+Trainable params: 1,115
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_233"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_77 (Conv2D)           (None, 882, 14, 1)        2877      
+=================================================================
+Total params: 2,877
+Trainable params: 2,877
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  127047.086  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Encoder Loss:  127047.086  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Encoder Loss:  127047.086  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Encoder Loss:  127047.086  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Encoder Loss:  127047.086  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Model: bold_synthesis_net_lr_1e-14 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657066.75
+NAS BO
+Model: "sequential_234"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_31 (Conv3D)           (None, 57, 50, 14, 1)     105       
+_________________________________________________________________
+reshape_31 (Reshape)         (None, 2850, 14, 1)       0         
+=================================================================
+Total params: 105
+Trainable params: 105
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_235"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_78 (Conv2DT (None, 2850, 14, 1)       208       
+=================================================================
+Total params: 208
+Trainable params: 208
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_236"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_78 (Conv2D)           (None, 882, 14, 1)        208       
+=================================================================
+Total params: 208
+Trainable params: 208
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1086661.1  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Encoder Loss:  1086661.1  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Encoder Loss:  1086661.1  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Encoder Loss:  1086661.1  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Encoder Loss:  1086661.1  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Model: bold_synthesis_net_lr_1e-14 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657066.75
+NAS BO
+NOT POSSIBLE
+Model: "sequential_238"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_79 (Conv2DT (None, 6500, 14, 1)       1215      
+=================================================================
+Total params: 1,215
+Trainable params: 1,215
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_239"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_79 (Conv2D)           (None, 882, 14, 1)        1215      
+=================================================================
+Total params: 1,215
+Trainable params: 1,215
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_240"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_32 (Conv3D)           (None, 55, 20, 14, 1)     541       
+_________________________________________________________________
+reshape_32 (Reshape)         (None, 1100, 14, 1)       0         
+=================================================================
+Total params: 541
+Trainable params: 541
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_241"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_80 (Conv2DT (None, 1100, 14, 1)       220       
+=================================================================
+Total params: 220
+Trainable params: 220
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_242"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_80 (Conv2D)           (None, 882, 14, 1)        220       
+=================================================================
+Total params: 220
+Trainable params: 220
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  188656.72  || Decoder Loss:  1253240.9 Validation Decoder Loss:  656655.7
+Encoder Loss:  188400.89  || Decoder Loss:  1251541.2 Validation Decoder Loss:  656847.75
+Encoder Loss:  188476.58  || Decoder Loss:  1252044.2 Validation Decoder Loss:  657175.4
+Encoder Loss:  188604.84  || Decoder Loss:  1252896.2 Validation Decoder Loss:  657521.75
+Encoder Loss:  188738.2  || Decoder Loss:  1253782.1 Validation Decoder Loss:  657684.3
+Model: bold_synthesis_net_lr_0.0005586929455386018 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657684.3
+NAS BO
+Model: "sequential_243"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_33 (Conv3D)           (None, 60, 110, 14, 1)    11        
+_________________________________________________________________
+reshape_33 (Reshape)         (None, 6600, 14, 1)       0         
+=================================================================
+Total params: 11
+Trainable params: 11
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_244"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_81 (Conv2DT (None, 6600, 14, 1)       1315      
+=================================================================
+Total params: 1,315
+Trainable params: 1,315
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_245"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_81 (Conv2D)           (None, 882, 14, 1)        5720      
+=================================================================
+Total params: 5,720
+Trainable params: 5,720
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1397856.4  || Decoder Loss:  1397856.4 Validation Decoder Loss:  684870.5
+Encoder Loss:  1386655.9  || Decoder Loss:  1386655.9 Validation Decoder Loss:  747795.6
+Encoder Loss:  1510176.2  || Decoder Loss:  1510176.2 Validation Decoder Loss:  706626.56
+Encoder Loss:  1447824.1  || Decoder Loss:  1447824.1 Validation Decoder Loss:  753373.1
+Encoder Loss:  1498748.4  || Decoder Loss:  1498748.4 Validation Decoder Loss:  701978.3
+Model: bold_synthesis_net_lr_0.001 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 701978.3
+NAS BO
+NOT POSSIBLE
+Model: "sequential_247"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_82 (Conv2DT (None, 6800, 14, 1)       1515      
+=================================================================
+Total params: 1,515
+Trainable params: 1,515
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_248"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_82 (Conv2D)           (None, 882, 14, 1)        1515      
+=================================================================
+Total params: 1,515
+Trainable params: 1,515
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_249"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_34 (Conv3D)           (None, 56, 25, 14, 1)     568       
+_________________________________________________________________
+reshape_34 (Reshape)         (None, 1400, 14, 1)       0         
+=================================================================
+Total params: 568
+Trainable params: 568
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_250"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_83 (Conv2DT (None, 1400, 14, 1)       520       
+=================================================================
+Total params: 520
+Trainable params: 520
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_251"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_83 (Conv2D)           (None, 882, 14, 1)        520       
+=================================================================
+Total params: 520
+Trainable params: 520
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  111189.49  || Decoder Loss:  1255426.4 Validation Decoder Loss:  656474.5
+Encoder Loss:  110581.53  || Decoder Loss:  1248561.5 Validation Decoder Loss:  656438.25
+Encoder Loss:  110725.17  || Decoder Loss:  1250183.5 Validation Decoder Loss:  657540.75
+Encoder Loss:  111029.28  || Decoder Loss:  1253617.2 Validation Decoder Loss:  659520.75
+Encoder Loss:  111363.086  || Decoder Loss:  1257386.2 Validation Decoder Loss:  660628.75
+Model: bold_synthesis_net_lr_0.0009336656852389925 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660628.75
+NAS BO
+NOT POSSIBLE
+Model: "sequential_253"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_84 (Conv2DT (None, 6450, 14, 1)       3808      
+=================================================================
+Total params: 3,808
+Trainable params: 3,808
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_254"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_84 (Conv2D)           (None, 882, 14, 1)        5570      
+=================================================================
+Total params: 5,570
+Trainable params: 5,570
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+NOT POSSIBLE
+Model: "sequential_256"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_85 (Conv2DT (None, 6500, 14, 1)       334       
+=================================================================
+Total params: 334
+Trainable params: 334
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_257"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_85 (Conv2D)           (None, 882, 14, 1)        334       
+=================================================================
+Total params: 334
+Trainable params: 334
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_258"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_35 (Conv3D)           (None, 62, 100, 14, 1)    37        
+_________________________________________________________________
+reshape_35 (Reshape)         (None, 6200, 14, 1)       0         
+=================================================================
+Total params: 37
+Trainable params: 37
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_259"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_86 (Conv2DT (None, 6200, 14, 1)       1796      
+=================================================================
+Total params: 1,796
+Trainable params: 1,796
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_260"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_86 (Conv2D)           (None, 882, 14, 1)        1796      
+=================================================================
+Total params: 1,796
+Trainable params: 1,796
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1100041.5  || Decoder Loss:  1296686.4 Validation Decoder Loss:  657930.4
+Encoder Loss:  1099321.5  || Decoder Loss:  1295836.9 Validation Decoder Loss:  657382.4
+Encoder Loss:  1099325.5  || Decoder Loss:  1295841.4 Validation Decoder Loss:  657382.44
+Encoder Loss:  1099325.6  || Decoder Loss:  1295841.6 Validation Decoder Loss:  657382.44
+Encoder Loss:  1099325.5  || Decoder Loss:  1295841.6 Validation Decoder Loss:  657382.4
+Model: bold_synthesis_net_lr_0.0002689705650621488 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657382.4
+NAS BO
+Model: "sequential_261"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_36 (Conv3D)           (None, 42, 75, 14, 1)     852       
+_________________________________________________________________
+reshape_36 (Reshape)         (None, 3150, 14, 1)       0         
+=================================================================
+Total params: 852
+Trainable params: 852
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_262"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_87 (Conv2DT (None, 3150, 14, 1)       1389      
+=================================================================
+Total params: 1,389
+Trainable params: 1,389
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_263"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_87 (Conv2D)           (None, 882, 14, 1)        2270      
+=================================================================
+Total params: 2,270
+Trainable params: 2,270
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  758523.2  || Decoder Loss:  1252992.8 Validation Decoder Loss:  656810.56
+Encoder Loss:  757938.25  || Decoder Loss:  1252026.5 Validation Decoder Loss:  656936.8
+Encoder Loss:  758116.4  || Decoder Loss:  1252320.5 Validation Decoder Loss:  657127.75
+Encoder Loss:  758408.94  || Decoder Loss:  1252804.1 Validation Decoder Loss:  657312.8
+Encoder Loss:  758708.5  || Decoder Loss:  1253299.0 Validation Decoder Loss:  657396.6
+Model: bold_synthesis_net_lr_3.089291411953899e-05 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657396.6
+NAS BO
+NOT POSSIBLE
+Model: "sequential_265"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_88 (Conv2DT (None, 7050, 14, 1)       3527      
+=================================================================
+Total params: 3,527
+Trainable params: 3,527
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_266"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_88 (Conv2D)           (None, 882, 14, 1)        1765      
+=================================================================
+Total params: 1,765
+Trainable params: 1,765
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_267"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_37 (Conv3D)           (None, 60, 95, 14, 1)     86        
+_________________________________________________________________
+reshape_37 (Reshape)         (None, 5700, 14, 1)       0         
+=================================================================
+Total params: 86
+Trainable params: 86
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_268"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_89 (Conv2DT (None, 5700, 14, 1)       1296      
+=================================================================
+Total params: 1,296
+Trainable params: 1,296
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_269"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_89 (Conv2D)           (None, 882, 14, 1)        3939      
+=================================================================
+Total params: 3,939
+Trainable params: 3,939
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1292312.9  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Encoder Loss:  1292312.9  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Encoder Loss:  1292312.9  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Encoder Loss:  1292312.9  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Encoder Loss:  1292312.9  || Decoder Loss:  1372839.0 Validation Decoder Loss:  657066.75
+Model: bold_synthesis_net_lr_1e-14 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657066.75
+NAS BO
+Model: "sequential_270"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_38 (Conv3D)           (None, 50, 75, 14, 1)     556       
+_________________________________________________________________
+reshape_38 (Reshape)         (None, 3750, 14, 1)       0         
+=================================================================
+Total params: 556
+Trainable params: 556
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_271"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_90 (Conv2DT (None, 3750, 14, 1)       227       
+=================================================================
+Total params: 227
+Trainable params: 227
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_272"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_90 (Conv2D)           (None, 882, 14, 1)        1989      
+=================================================================
+Total params: 1,989
+Trainable params: 1,989
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1201815.2  || Decoder Loss:  1267469.1 Validation Decoder Loss:  665619.8
+Encoder Loss:  1173150.1  || Decoder Loss:  1237237.9 Validation Decoder Loss:  658386.5
+Encoder Loss:  1190634.6  || Decoder Loss:  1255677.6 Validation Decoder Loss:  675000.8
+Encoder Loss:  1209208.9  || Decoder Loss:  1275266.8 Validation Decoder Loss:  686267.7
+Encoder Loss:  1217799.9  || Decoder Loss:  1284327.1 Validation Decoder Loss:  691748.9
+Model: bold_synthesis_net_lr_0.0008063945208150378 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 691748.9
+NAS BO
+Model: "sequential_273"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_39 (Conv3D)           (None, 25, 80, 14, 1)     513       
+_________________________________________________________________
+reshape_39 (Reshape)         (None, 2000, 14, 1)       0         
+=================================================================
+Total params: 513
+Trainable params: 513
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_274"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_91 (Conv2DT (None, 2000, 14, 1)       1120      
+=================================================================
+Total params: 1,120
+Trainable params: 1,120
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_275"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_91 (Conv2D)           (None, 882, 14, 1)        239       
+=================================================================
+Total params: 239
+Trainable params: 239
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  29262.34  || Decoder Loss:  1313513.4 Validation Decoder Loss:  656361.94
+Encoder Loss:  29181.42  || Decoder Loss:  1309880.9 Validation Decoder Loss:  656460.06
+Encoder Loss:  29182.293  || Decoder Loss:  1309920.1 Validation Decoder Loss:  656460.06
+Encoder Loss:  29182.293  || Decoder Loss:  1309920.1 Validation Decoder Loss:  656460.06
+Encoder Loss:  29182.295  || Decoder Loss:  1309920.0 Validation Decoder Loss:  656460.06
+Model: bold_synthesis_net_lr_0.0009277011113743983 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 656460.06
+NAS BO
+Model: "sequential_276"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_40 (Conv3D)           (None, 50, 105, 14, 1)    106       
+_________________________________________________________________
+reshape_40 (Reshape)         (None, 5250, 14, 1)       0         
+=================================================================
+Total params: 106
+Trainable params: 106
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_277"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_92 (Conv2DT (None, 5250, 14, 1)       1727      
+=================================================================
+Total params: 1,727
+Trainable params: 1,727
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_278"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_92 (Conv2D)           (None, 882, 14, 1)        4370      
+=================================================================
+Total params: 4,370
+Trainable params: 4,370
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  955619.44  || Decoder Loss:  1034492.94 Validation Decoder Loss:  657536.94
+Encoder Loss:  955316.2  || Decoder Loss:  1034164.5 Validation Decoder Loss:  657536.94
+Encoder Loss:  955315.94  || Decoder Loss:  1034164.3 Validation Decoder Loss:  657536.9
+Encoder Loss:  955315.94  || Decoder Loss:  1034164.25 Validation Decoder Loss:  657536.9
+Encoder Loss:  955316.1  || Decoder Loss:  1034164.44 Validation Decoder Loss:  657536.8
+Model: bold_synthesis_net_lr_0.0008633657808493923 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657536.8
+NAS BO
+Model: "sequential_279"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_41 (Conv3D)           (None, 25, 66, 14, 1)     737       
+_________________________________________________________________
+reshape_41 (Reshape)         (None, 1650, 14, 1)       0         
+=================================================================
+Total params: 737
+Trainable params: 737
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_280"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_93 (Conv2DT (None, 1650, 14, 1)       770       
+=================================================================
+Total params: 770
+Trainable params: 770
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_281"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_93 (Conv2D)           (None, 882, 14, 1)        770       
+=================================================================
+Total params: 770
+Trainable params: 770
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  996469.44  || Decoder Loss:  1255077.2 Validation Decoder Loss:  656408.25
+Encoder Loss:  991591.4  || Decoder Loss:  1248933.1 Validation Decoder Loss:  656473.3
+Encoder Loss:  992782.56  || Decoder Loss:  1250433.6 Validation Decoder Loss:  657486.75
+Encoder Loss:  995223.7  || Decoder Loss:  1253508.1 Validation Decoder Loss:  659189.4
+Encoder Loss:  997884.1  || Decoder Loss:  1256859.0 Validation Decoder Loss:  660126.94
+Model: bold_synthesis_net_lr_0.0005661038890094138 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660126.94
+NAS BO
+NOT POSSIBLE
+Model: "sequential_283"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_94 (Conv2DT (None, 6500, 14, 1)       5620      
+=================================================================
+Total params: 5,620
+Trainable params: 5,620
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_284"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_94 (Conv2D)           (None, 882, 14, 1)        4739      
+=================================================================
+Total params: 4,739
+Trainable params: 4,739
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_285"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_42 (Conv3D)           (None, 50, 80, 14, 1)     481       
+_________________________________________________________________
+reshape_42 (Reshape)         (None, 4000, 14, 1)       0         
+=================================================================
+Total params: 481
+Trainable params: 481
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_286"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_95 (Conv2DT (None, 4000, 14, 1)       477       
+=================================================================
+Total params: 477
+Trainable params: 477
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_287"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_95 (Conv2D)           (None, 882, 14, 1)        2239      
+=================================================================
+Total params: 2,239
+Trainable params: 2,239
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1195368.4  || Decoder Loss:  1195368.4 Validation Decoder Loss:  659792.1
+Encoder Loss:  1184168.1  || Decoder Loss:  1184168.1 Validation Decoder Loss:  659792.2
+Encoder Loss:  1184168.2  || Decoder Loss:  1184168.2 Validation Decoder Loss:  659792.3
+Encoder Loss:  1184168.1  || Decoder Loss:  1184168.1 Validation Decoder Loss:  659792.44
+Encoder Loss:  1184168.4  || Decoder Loss:  1184168.4 Validation Decoder Loss:  659792.4
+Model: bold_synthesis_net_lr_0.0007525101247013167 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 659792.4
+NAS BO
+Model: "sequential_288"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_43 (Conv3D)           (None, 60, 75, 14, 1)     186       
+_________________________________________________________________
+reshape_43 (Reshape)         (None, 4500, 14, 1)       0         
+=================================================================
+Total params: 186
+Trainable params: 186
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_289"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_96 (Conv2DT (None, 4500, 14, 1)       3620      
+=================================================================
+Total params: 3,620
+Trainable params: 3,620
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_290"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_96 (Conv2D)           (None, 882, 14, 1)        96        
+=================================================================
+Total params: 96
+Trainable params: 96
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  924930.56  || Decoder Loss:  1354979.9 Validation Decoder Loss:  658914.7
+Encoder Loss:  924567.94  || Decoder Loss:  1354448.8 Validation Decoder Loss:  658912.8
+Encoder Loss:  924569.3  || Decoder Loss:  1354450.8 Validation Decoder Loss:  658912.2
+Encoder Loss:  924570.4  || Decoder Loss:  1354451.6 Validation Decoder Loss:  658911.8
+Encoder Loss:  924570.5  || Decoder Loss:  1354451.9 Validation Decoder Loss:  658911.75
+Model: bold_synthesis_net_lr_0.00038885967508401833 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 658911.75
+NAS BO
+NOT POSSIBLE
+Model: "sequential_292"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_97 (Conv2DT (None, 7000, 14, 1)       2596      
+=================================================================
+Total params: 2,596
+Trainable params: 2,596
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_293"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_97 (Conv2D)           (None, 882, 14, 1)        1715      
+=================================================================
+Total params: 1,715
+Trainable params: 1,715
+Non-trainable params: 0
+_________________________________________________________________
+None
+NAS BO
+Model: "sequential_294"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_44 (Conv3D)           (None, 35, 100, 14, 1)    361       
+_________________________________________________________________
+reshape_44 (Reshape)         (None, 3500, 14, 1)       0         
+=================================================================
+Total params: 361
+Trainable params: 361
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_295"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_98 (Conv2DT (None, 3500, 14, 1)       1739      
+=================================================================
+Total params: 1,739
+Trainable params: 1,739
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_296"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_98 (Conv2D)           (None, 882, 14, 1)        2620      
+=================================================================
+Total params: 2,620
+Trainable params: 2,620
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1109999.1  || Decoder Loss:  1109999.1 Validation Decoder Loss:  656742.75
+Encoder Loss:  1097146.4  || Decoder Loss:  1097146.4 Validation Decoder Loss:  656742.75
+Encoder Loss:  1097146.1  || Decoder Loss:  1097146.1 Validation Decoder Loss:  656742.75
+Encoder Loss:  1097146.1  || Decoder Loss:  1097146.1 Validation Decoder Loss:  656742.75
+Encoder Loss:  1097145.9  || Decoder Loss:  1097145.9 Validation Decoder Loss:  656742.8
+Model: bold_synthesis_net_lr_0.001 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 656742.8
+NAS BO
+Model: "sequential_297"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_45 (Conv3D)           (None, 25, 100, 14, 1)    193       
+_________________________________________________________________
+reshape_45 (Reshape)         (None, 2500, 14, 1)       0         
+=================================================================
+Total params: 193
+Trainable params: 193
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_298"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_99 (Conv2DT (None, 2500, 14, 1)       739       
+=================================================================
+Total params: 739
+Trainable params: 739
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_299"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_99 (Conv2D)           (None, 882, 14, 1)        739       
+=================================================================
+Total params: 739
+Trainable params: 739
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  994765.9  || Decoder Loss:  1304208.6 Validation Decoder Loss:  656413.4
+Encoder Loss:  996644.2  || Decoder Loss:  1306671.1 Validation Decoder Loss:  656934.56
+Encoder Loss:  994066.6  || Decoder Loss:  1303291.5 Validation Decoder Loss:  656562.0
+Encoder Loss:  994783.8  || Decoder Loss:  1304232.4 Validation Decoder Loss:  656407.6
+Encoder Loss:  994772.8  || Decoder Loss:  1304218.1 Validation Decoder Loss:  656407.75
+Model: bold_synthesis_net_lr_0.0004965988032115493 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 656407.75
+NAS BO
+Model: "sequential_300"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_46 (Conv3D)           (None, 50, 92, 14, 1)     301       
+_________________________________________________________________
+reshape_46 (Reshape)         (None, 4600, 14, 1)       0         
+=================================================================
+Total params: 301
+Trainable params: 301
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_301"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_100 (Conv2D (None, 4600, 14, 1)       3720      
+=================================================================
+Total params: 3,720
+Trainable params: 3,720
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_302"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_100 (Conv2D)          (None, 882, 14, 1)        1958      
+=================================================================
+Total params: 1,958
+Trainable params: 1,958
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  725506.44  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Encoder Loss:  725506.44  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Encoder Loss:  725506.44  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Encoder Loss:  725506.44  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Encoder Loss:  725506.44  || Decoder Loss:  1252691.2 Validation Decoder Loss:  657066.75
+Model: bold_synthesis_net_lr_1e-14 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657066.75
+NAS BO
+Model: "sequential_303"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_47 (Conv3D)           (None, 50, 79, 14, 1)     496       
+_________________________________________________________________
+reshape_47 (Reshape)         (None, 3950, 14, 1)       0         
+=================================================================
+Total params: 496
+Trainable params: 496
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_304"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_101 (Conv2D (None, 3950, 14, 1)       3070      
+=================================================================
+Total params: 3,070
+Trainable params: 3,070
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_305"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_101 (Conv2D)          (None, 882, 14, 1)        427       
+=================================================================
+Total params: 427
+Trainable params: 427
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1101791.0  || Decoder Loss:  1255016.6 Validation Decoder Loss:  656399.5
+Encoder Loss:  1096509.9  || Decoder Loss:  1249000.9 Validation Decoder Loss:  656480.4
+Encoder Loss:  1097807.2  || Decoder Loss:  1250478.8 Validation Decoder Loss:  657477.2
+Encoder Loss:  1100450.1  || Decoder Loss:  1253489.2 Validation Decoder Loss:  659131.94
+Encoder Loss:  1103326.5  || Decoder Loss:  1256765.6 Validation Decoder Loss:  660040.25
+Model: bold_synthesis_net_lr_0.001 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 660040.25
+NAS BO
+Model: "sequential_306"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_48 (Conv3D)           (None, 23, 100, 14, 1)    505       
+_________________________________________________________________
+reshape_48 (Reshape)         (None, 2300, 14, 1)       0         
+=================================================================
+Total params: 505
+Trainable params: 505
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_307"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_102 (Conv2D (None, 2300, 14, 1)       1420      
+=================================================================
+Total params: 1,420
+Trainable params: 1,420
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_308"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_102 (Conv2D)          (None, 882, 14, 1)        1420      
+=================================================================
+Total params: 1,420
+Trainable params: 1,420
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  349884.38  || Decoder Loss:  1259114.1 Validation Decoder Loss:  658178.5
+Encoder Loss:  345398.06  || Decoder Loss:  1242969.9 Validation Decoder Loss:  657767.75
+Encoder Loss:  348440.2  || Decoder Loss:  1253917.5 Validation Decoder Loss:  663455.7
+Encoder Loss:  350789.0  || Decoder Loss:  1262370.1 Validation Decoder Loss:  665301.2
+Encoder Loss:  351275.38  || Decoder Loss:  1264120.5 Validation Decoder Loss:  664714.5
+Model: bold_synthesis_net_lr_0.0007173709984137875 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 664714.5
+NAS BO
+Model: "sequential_309"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_49 (Conv3D)           (None, 50, 111, 14, 1)    16        
+_________________________________________________________________
+reshape_49 (Reshape)         (None, 5550, 14, 1)       0         
+=================================================================
+Total params: 16
+Trainable params: 16
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_310"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_103 (Conv2D (None, 5550, 14, 1)       4670      
+=================================================================
+Total params: 4,670
+Trainable params: 4,670
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_311"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_103 (Conv2D)          (None, 882, 14, 1)        4670      
+=================================================================
+Total params: 4,670
+Trainable params: 4,670
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1294211.9  || Decoder Loss:  1294211.9 Validation Decoder Loss:  656583.25
+Encoder Loss:  1294110.8  || Decoder Loss:  1294110.8 Validation Decoder Loss:  656583.25
+Encoder Loss:  1295330.9  || Decoder Loss:  1295330.9 Validation Decoder Loss:  656832.94
+Encoder Loss:  1279274.2  || Decoder Loss:  1279274.2 Validation Decoder Loss:  662241.2
+Encoder Loss:  1223343.6  || Decoder Loss:  1223343.6 Validation Decoder Loss:  656967.6
+Model: bold_synthesis_net_lr_0.0002847736704982233 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 656967.6
+NAS BO
+Model: "sequential_312"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d_50 (Conv3D)           (None, 60, 85, 14, 1)     136       
+_________________________________________________________________
+reshape_50 (Reshape)         (None, 5100, 14, 1)       0         
+=================================================================
+Total params: 136
+Trainable params: 136
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_313"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_transpose_104 (Conv2D (None, 5100, 14, 1)       696       
+=================================================================
+Total params: 696
+Trainable params: 696
+Non-trainable params: 0
+_________________________________________________________________
+None
+Model: "sequential_314"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_104 (Conv2D)          (None, 882, 14, 1)        696       
+=================================================================
+Total params: 696
+Trainable params: 696
+Non-trainable params: 0
+_________________________________________________________________
+None
+Starting training
+Encoder Loss:  1300220.1  || Decoder Loss:  1300220.1 Validation Decoder Loss:  657395.06
+Encoder Loss:  1300176.2  || Decoder Loss:  1300176.2 Validation Decoder Loss:  657395.06
+Encoder Loss:  1300176.5  || Decoder Loss:  1300176.5 Validation Decoder Loss:  657395.06
+Encoder Loss:  1300176.4  || Decoder Loss:  1300176.4 Validation Decoder Loss:  657395.06
+Encoder Loss:  1300176.6  || Decoder Loss:  1300176.6 Validation Decoder Loss:  657395.06
+Model: bold_synthesis_net_lr_0.001 Train Intances: 900 | Validation Instances: 100 | Validation Loss: 657395.06
+NOT POSSIBLE
+Traceback (most recent call last):
+  File "iterative_naive_nas.py", line 895, in <module>
+    nas.search()
+  File "iterative_naive_nas.py", line 834, in search
+    val_loss = synthesizer.BO()
+  File "iterative_naive_nas.py", line 144, in BO
+    new_output_shape, loss = bayesian_optimization.NAS_BO(self, [output_shape_domain])
+  File "/home/ist_davidcalhas/eeg_to_fmri/src/bayesian_optimization.py", line 465, in NAS_BO
+    dropout=float(optimizer.x_opt[5])))
+  File "iterative_naive_nas.py", line 53, in save_eeg
+    eeg_json = eeg_network.to_json()
+AttributeError: 'NoneType' object has no attribute 'to_json'
