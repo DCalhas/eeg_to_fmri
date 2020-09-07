@@ -34,7 +34,7 @@ if (__name__ == "__main__" or mode==1):
 																	bold_shift=3, n_partitions=n_partitions, 
 																	mutate_bands=False,
 																	by_partitions=False, partition_length=14, 
-																	f_resample=1.8, fmri_resolution_factor=4, 
+																	f_resample=1.8, fmri_resolution_factor=3, 
 																	standardize_eeg=True, standardize_fmri=True,
 																	dataset="01")
 
@@ -378,7 +378,12 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 
 		#Joining EEG and BOLD branches
 		multi_modal_model = custom_training.multi_modal_network(eeg_input_shape, bold_input_shape, eeg_network, bold_network, 
-																dcca=dcca, corr_distance=True)
+																corr_distance=True,
+																dist_function=losses.mean_volume_euclidean,#mean_volume_abs/euclidean /kl_loss
+																lstm=True,
+																gan=False,
+																gan_activation="softmax",
+																gan_output_dimension=1)
 
 		#normalization of the BOLD signal, please change this
 		#norm = tf.keras.Sequential()
@@ -422,9 +427,9 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 			epochs=5, 
 			encoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
 			decoder_optimizer=tf.keras.optimizers.Adam(learning_rate=current_learning_rate),
-			loss_function=losses_utils.get_reconstruction_absolute_volume_loss,
-			batch_size=current_batch_size, linear_combination=current_loss_coefficient,
-			clip_value_gradient=10.0, 
+			loss_function=losses_utils.get_reconstruction_euclidean_volume_loss,
+			batch_size=current_batch_size, linear_combination=1.0,
+			clip_value_gradient=25.0, 
     		clip_value_loss=np.inf, 
 			X_val_eeg=X_val_eeg,
 			X_val_bold=X_val_bold,
@@ -446,9 +451,9 @@ def NAS_BO(multi_modal_instance, output_shape_domain):
 		' Train Intances: ' + str(len(X_train_bold)) + ' | Validation Instances: ' + str(len(X_val_bold)) +  ' | Validation Loss: ' + str(validation_loss))
 		
 		if(validation_loss==np.nan):
-			return 10000000.
+			return 1000.
 
-		return np.abs(validation_loss)/10000000.
+		return np.abs(validation_loss)/1000.
 
 	optimizer = GPyOpt.methods.BayesianOptimization(
 	f=bayesian_optimization_function, domain=hyperparameters, model_type="GP_MCMC", acquisition_type="EI_MCMC")
