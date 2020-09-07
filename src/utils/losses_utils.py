@@ -115,7 +115,7 @@ def correlation_decoder_loss(x, y):
 
     return 1 - (a / (K.sqrt(b) * K.sqrt(c)))
 
-def euclidean(x, y):
+def euclidean([x, y]):
     x = tf.keras.backend.batch_flatten(x)
     y = tf.keras.backend.batch_flatten(y)
     
@@ -218,7 +218,7 @@ def get_reconstruction_log_cosine_voxel_loss(outputs, targets):
 
 
 def get_reconstruction_euclidean_loss(outputs, targets):
-    reconstruction_loss = euclidean(outputs, targets)
+    reconstruction_loss = euclidean([outputs, targets])
     return K.mean(reconstruction_loss)
 
 def get_reconstruction_kl_loss(outputs, targets):
