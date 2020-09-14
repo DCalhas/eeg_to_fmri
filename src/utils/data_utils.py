@@ -58,7 +58,7 @@ def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_part
 
     #setting mask and fMRI signals
 
-    individuals_imgs = getattr(fmri_utils, "get_individuals_paths_"+dataset)(resolution_factor=fmri_resolution_factor, number_individuals=10)
+    individuals_imgs = getattr(fmri_utils, "get_individuals_paths_"+dataset)(resolution_factor=fmri_resolution_factor, number_individuals=len(individuals))
     individuals_imgs, mask = fmri_utils.get_masked_epi(individuals_imgs)
     
     #clean fMRI signal
