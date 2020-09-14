@@ -27,8 +27,8 @@ if (__name__ == "__main__" or mode==1):
 	print("Starting to Load Data")
 
 	n_partitions=25
-	n_individuals=10
-	dataset="01"
+	n_individuals=14
+	dataset="02"
 
 	eeg_train, bold_train, mask, scalers = data_utils.load_data(list_physical_devices(range(n_individuals)),n_voxels=None, 
 																	bold_shift=3, n_partitions=n_partitions, 
@@ -36,7 +36,7 @@ if (__name__ == "__main__" or mode==1):
 																	by_partitions=False, partition_length=14, 
 																	f_resample=1.8, fmri_resolution_factor=3, 
 																	standardize_eeg=True, standardize_fmri=True,
-																	dataset="01")
+																	dataset=dataset)
 
 	frequency_resolution=eeg_train.shape[2]
 	eeg_channels=eeg_train.shape[1]
@@ -46,6 +46,9 @@ if (__name__ == "__main__" or mode==1):
 	
 	if(dataset=="01"):
 		n_individuals_train = 6
+		n_individuals_val = 2
+	elif(dataset=="02"):
+		n_individuals_train = 8
 		n_individuals_val = 2
 
 	eeg_val = eeg_train[(n_individuals_train)*n_partitions:(n_individuals_train+n_individuals_val)*n_partitions]
