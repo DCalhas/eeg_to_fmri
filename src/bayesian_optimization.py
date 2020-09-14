@@ -14,7 +14,7 @@ import custom_training
 
 import gc
 
-mode=0
+mode=1
 
 if (__name__ == "__main__" or mode==1):
 
