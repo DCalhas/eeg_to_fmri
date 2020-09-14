@@ -30,7 +30,7 @@ if (__name__ == "__main__" or mode==1):
 	n_individuals=14
 	dataset="02"
 
-	eeg_train, bold_train, mask, scalers = data_utils.load_data(list_physical_devices(range(n_individuals)),n_voxels=None, 
+	eeg_train, bold_train, mask, scalers = data_utils.load_data(list(range(n_individuals)),n_voxels=None, 
 																	bold_shift=3, n_partitions=n_partitions, 
 																	mutate_bands=False,
 																	by_partitions=False, partition_length=14, 
