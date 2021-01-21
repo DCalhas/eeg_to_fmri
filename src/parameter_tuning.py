@@ -54,7 +54,7 @@ _, fmri_train =train_data
 _, fmri_val =val_data
 
 iterations = 100
-param_tuner = algorithm(iterations, fmri_ae, fmri_train[1:])
+param_tuner = algorithm(iterations, fmri_ae, fmri_train.shape[1:])
 param_tuner.set_hyperparameters(fmri_ae.search_space)
 param_tuner.set_data(fmri_train, fmri_val)
 param_tuner.run()

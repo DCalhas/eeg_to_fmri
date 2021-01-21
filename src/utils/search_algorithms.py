@@ -27,7 +27,7 @@ class Bayesian_Optimization:
 		hyperparameters = (self.input_shape,) + tuple(hyperparameters[0])
 		
 		model = self.model_class.build(*hyperparameters)
-		optimizer = self.optimizer(learning_rate)
+		optimizer = self.optimizer(float(hyperparameters[1]))
 		loss_fn = tf.keras.losses.MAE
 		X_train = tf.data.Dataset.from_tensor_slices(self.X_train).batch(int(hyperparameters[10]))
 		X_val = tf.data.Dataset.from_tensor_slices(self.X_val).batch(1)
