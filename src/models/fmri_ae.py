@@ -23,7 +23,7 @@ search_space = [{'name': 'learning_rate', 'type': 'continuous',
                     {'name': 'batch_size', 'type': 'discrete',
                     'domain': (2, 4, 8, 16, 32, 64, 128)}]
 
-def build(**kwargs):
+def build(*kwargs):
     input_shape = kwargs[0]
     reg = float(kwargs[2])
     kernel_size = int(kwargs[3])
