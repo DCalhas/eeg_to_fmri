@@ -2,7 +2,7 @@ import mne
 
 import matplotlib.pyplot as plt
 
-from scipy import fft
+from scipy.fft import fft
 from scipy.io import loadmat
 import numpy as np
 
