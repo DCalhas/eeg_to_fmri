@@ -29,7 +29,7 @@ def evaluate(X, model, loss_fn):
     return loss/n_batches
 
 
-def train(X_train, model, opt, loss_fn, epochs=10, X_val=None, verbose=False):
+def train(X_train, model, opt, loss_fn, epochs=10, X_val=None, file_output=None, verbose=False):
     val_loss = []
     train_loss = []
 
@@ -46,6 +46,10 @@ def train(X_train, model, opt, loss_fn, epochs=10, X_val=None, verbose=False):
         val_loss.append(evaluate(X_val, model, loss_fn))
         train_loss.append(loss/n_batches)
 
-        print("Epoch ", epoch+1, " with loss: ", train_loss[-1], flush=True)
+        if(verbose):
+            if(file_output == None):
+                print("Epoch ", epoch+1, " with loss: ", train_loss[-1], flush=True)
+            else:
+                print("Epoch ", epoch+1, " with loss: ", train_loss[-1], file=file_output, flush=True)
         
     return train_loss, val_loss

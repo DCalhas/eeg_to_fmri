@@ -37,13 +37,15 @@ class Bayesian_Optimization:
 		#train
 		train_loss, val_loss = train.train(X_train, model, optimizer, 
 										   loss_fn, epochs=int(hyperparameters[9]), 
-										   X_val=X_val, verbose=True)
+										   X_val=X_val, file_output=self.file_output, verbose=True)
 
 		#optionally plot validation loss to analyze learning curve
 
 		return val_loss[-1]
 
-	def run(self):
+	def run(self, file_output=None):
+		self.file_output = file_output
+
 		optimizer = GPyOpt.methods.BayesianOptimization(f=self.optimize, 
 														domain=self.hyperparameters, 
 														model_type="GP_MCMC", 

@@ -4,10 +4,13 @@ from utils import data_utils
 
 import numpy as np
 
-def dataset(dataset, n_individuals=8, interval_eeg=6, verbose=False):
+def dataset(dataset, n_individuals=8, interval_eeg=6, file_output=None, verbose=False):
 
 	if(verbose):
-		print("I: Starting to Load Data")	
+		if(file_output == None):
+			print("I: Starting to Load Data")	
+		else:
+			print("I: Starting to Load Data", file=file_output)
 
 	eeg_train, fmri_train, scalers = data_utils.load_data(list(range(n_individuals)),n_voxels=None, 
 															bold_shift=3, n_partitions=25, 
@@ -35,7 +38,10 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, verbose=False):
 	fmri_train = fmri_train[:n_individuals_train*n_volumes]
 
 	if(verbose):
-		print("I: Finished Loading Data")
+		if(file_output==None):
+			print("I: Finished Loading Data")
+		else:
+			print("I: Finished Loading Data", file=file_output)
 
 	eeg_train, fmri_train = data_utils.create_eeg_bold_pairs(eeg_train, fmri_train, 
 															interval_eeg=interval_eeg, 
@@ -59,6 +65,9 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, verbose=False):
 	fmri_val = fmri_val.astype('float32')
 
 	if(verbose):
-		print("I: Pairs Created")
+		if(file_output == None):
+			print("I: Pairs Created")
+		else:
+			print("I: Pairs Created", file=file_output)
 
 	return (eeg_train, fmri_train), (eeg_val, fmri_val)
