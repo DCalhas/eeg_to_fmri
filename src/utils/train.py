@@ -2,19 +2,22 @@ import tensorflow as tf
 
 import gc
 
-@tf.function
+
 def train_step(model, x, optimizer, loss_fn):
     """Executes one training step and returns the loss.
 
     This function computes the loss and gradients, and uses the latter to
     update the model's parameters.
     """
-    with tf.GradientTape() as tape:
-        loss = loss_fn(x, model(x))
-    gradients = tape.gradient(loss, model.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-    return tf.reduce_mean(loss)
+    @tf.function
+    def apply_gradient(model, x, optimizer, loss_fn):
+        with tf.GradientTape() as tape:
+            loss = loss_fn(x, model(x))
+        gradients = tape.gradient(loss, model.trainable_variables)
+        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+        return tf.reduce_mean(loss)
 
+    return apply_gradient(model, x, optimizer, loss_fn)
 
 def evaluate(X, model, loss_fn):
     loss = 0.0
