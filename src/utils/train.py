@@ -46,6 +46,6 @@ def train(X_train, model, opt, loss_fn, epochs=10, X_val=None, verbose=False):
         val_loss.append(evaluate(X_val, model, loss_fn))
         train_loss.append(loss/n_batches)
 
-        print("Epoch ", epoch+1, " with loss: ", train_loss[-1])
+        print("Epoch ", epoch+1, " with loss: ", train_loss[-1], flush=True)
         
     return train_loss, val_loss

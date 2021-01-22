@@ -19,7 +19,7 @@ search_space = [{'name': 'learning_rate', 'type': 'continuous',
                    #{'name': 'skip_connections', 'type': 'discrete',
                     #'domain': (0,1)},
                    {'name': 'epochs', 'type': 'discrete',
-                    'domain': (1,2)},#5,10,15,20,25,30)},
+                    'domain': (5,10,15,20,25,30)},
                     {'name': 'batch_size', 'type': 'discrete',
                     'domain': (2, 4, 8, 16, 32)}]
 
