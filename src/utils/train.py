@@ -36,7 +36,7 @@ def train(X_train, model, opt, loss_fn, epochs=10, X_val=None, verbose=False):
         n_batches = 0
         
         for batch_x in X_train.repeat(1):
-            loss += train_step(model, batch_x, opt, loss_fn).numpy()  
+            loss += train_step(model, batch_x, opt, loss_fn).numpy()
             n_batches += 1
             gc.collect()
 

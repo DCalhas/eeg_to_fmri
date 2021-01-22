@@ -49,9 +49,10 @@ if(algorithm == "bo"):
 
 tf_config.setup_tensorflow(memory_limit=memory_limit)
 
-train_data, val_data = preprocess_data.dataset(dataset, n_individuals=n_individuals, interval_eeg=interval_eeg, verbose=True)
-_, fmri_train =train_data
-_, fmri_val =val_data
+with tf.device('/CPU:0'):
+	train_data, val_data = preprocess_data.dataset(dataset, n_individuals=n_individuals, interval_eeg=interval_eeg, verbose=True)
+	_, fmri_train =train_data
+	_, fmri_val =val_data
 
 iterations = 100
 param_tuner = algorithm(iterations, fmri_ae, fmri_train.shape[1:])

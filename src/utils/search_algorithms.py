@@ -2,7 +2,7 @@ import tensorflow as tf
 
 import GPyOpt
 
-from utils import train
+from utils import train, tf_config
 
 
 class Bayesian_Optimization:
@@ -26,11 +26,13 @@ class Bayesian_Optimization:
 	def optimize(self, hyperparameters):
 		hyperparameters = (self.input_shape,) + tuple(hyperparameters[0])
 		
-		model = self.model_class.build(*hyperparameters)
+		with tf.device('/CPU:0'):
+			model = self.model_class.build(*hyperparameters)
+			X_train = tf.data.Dataset.from_tensor_slices(self.X_train).batch(int(hyperparameters[10]))
+			X_val = tf.data.Dataset.from_tensor_slices(self.X_val).batch(1)
+
 		optimizer = self.optimizer(float(hyperparameters[1]))
 		loss_fn = tf.keras.losses.MAE
-		X_train = tf.data.Dataset.from_tensor_slices(self.X_train).batch(int(hyperparameters[10]))
-		X_val = tf.data.Dataset.from_tensor_slices(self.X_val).batch(1)
 
 		#train
 		train_loss, val_loss = train.train(X_train, model, optimizer, 

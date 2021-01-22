@@ -9,7 +9,7 @@ search_space = [{'name': 'learning_rate', 'type': 'continuous',
                    {'name': 'stride_size', 'type': 'discrete',
                     'domain': (1,2)},
                    {'name': 'channels', 'type': 'discrete',
-                    'domain': (4,8,16,32,64)},
+                    'domain': (4,8,16)},
                    {'name': 'latent_dimension', 'type': 'discrete',
                     'domain': (2,3,4,5)},
                    {'name': 'batch_norm', 'type': 'discrete',
@@ -21,7 +21,7 @@ search_space = [{'name': 'learning_rate', 'type': 'continuous',
                    {'name': 'epochs', 'type': 'discrete',
                     'domain': (5,10,15,20,25,30)},
                     {'name': 'batch_size', 'type': 'discrete',
-                    'domain': (2, 4, 8, 16, 32, 64, 128)}]
+                    'domain': (2, 4, 8, 16, 32)}]
 
 def build(*kwargs):
     input_shape = kwargs[0]
@@ -34,7 +34,6 @@ def build(*kwargs):
     dropout = float(kwargs[8])
 
     return fMRI_AE((latent_dimension,)*3, input_shape, kernel_size, stride_size, n_channels)
-
 
 class fMRI_AE(tf.keras.Model):
     
