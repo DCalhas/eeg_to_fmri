@@ -1,10 +1,23 @@
+#install nvidia-driver-450
+#sudo apt-get purge nvidia-*
+#sudo apt-get install nvidia-driver-450
+#reboot
+
 
 source $HOME/anaconda3/bin/activate
-conda create -n eeg_fmri python=3.7
+conda create -n eeg_fmri python=3.8
 source $HOME/anaconda3/etc/profile.d/conda.sh
 conda activate eeg_fmri
-conda install tensorflow-gpu==2.1.0
-pip install tensorflow-estimator==2.1.*
+conda install -c anaconda cudatoolkit==11.0.221
+
+#download cudnn
+tar -xzvf cudnn-11.0-linux-x64-v8.0.1.13.tgz
+mv cuda/include/cudnn*.h ../anaconda3/envs/eeg_fmri/include/
+mv cuda/lib64/libcudnn* ../anaconda3/envs/eeg_fmri/lib/
+rm -r cuda
+chmod a+r ../anaconda3/envs/eeg_fmri/include/cudnn*.h ../anaconda3/envs/eeg_fmri/lib/libcudnn*
+
+pip install tensorflow-gpu==2.4.0
 pip install -r requirements.txt
 
 echo "I: Setting up datasets directory"
@@ -23,3 +36,7 @@ else
     mkdir datasets/02
     mkdir datasets/zipped_datasets
 fi
+
+
+journalctl --disk-usage
+journalctl --vacuum-time=3d
