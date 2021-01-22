@@ -14,6 +14,9 @@ import matplotlib.pyplot as plt
 
 import gc
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('model',
