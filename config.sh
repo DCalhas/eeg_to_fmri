@@ -26,6 +26,7 @@ echo "I: Setting up datasets directory"
 FILE=datasets/zipped_datasets/01.zip
 if [ -f "$FILE" ]; then
     echo "I: Datasets already downloaded."
+    unzip $FILE -d datasets/.
 else 
     echo "I: Please download datasets indicated in the Datasets Description of the paper"
     echo "I: Organize them in datasets/01 and datasets/02"

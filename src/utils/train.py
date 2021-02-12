@@ -4,20 +4,20 @@ import gc
 
 from utils import print_utils
 
+@tf.function
+def apply_gradient(model, optimizer, loss_fn, x, y):
+    with tf.GradientTape() as tape:
+        loss = loss_fn(y, model(x))
+    gradients = tape.gradient(loss, model.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+    return tf.reduce_mean(loss)
+
 def train_step(model, x, optimizer, loss_fn):
     """Executes one training step and returns the loss.
 
     This function computes the loss and gradients, and uses the latter to
     update the model's parameters.
     """
-    @tf.function
-    def apply_gradient(model, optimizer, loss_fn, x, y):
-        with tf.GradientTape() as tape:
-            loss = loss_fn(y, model(x))
-        gradients = tape.gradient(loss, model.trainable_variables)
-        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-        return tf.reduce_mean(loss)
-
     if(tf.is_tensor(x)):
         return apply_gradient(model, optimizer, loss_fn, x, x)
     else:
@@ -43,9 +43,12 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=N
         n_batches = 0
         
         for batch_set in train_set.repeat(1):
+            print("STARTED")
             loss += train_step(model, batch_set, opt, loss_fn).numpy()
             n_batches += 1
             gc.collect()
+
+            print("ONE BATCH")
 
         val_loss.append(evaluate(val_set, model, loss_fn))
         train_loss.append(loss/n_batches)
