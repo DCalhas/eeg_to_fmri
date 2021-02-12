@@ -43,14 +43,12 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=N
         n_batches = 0
         
         for batch_set in train_set.repeat(1):
-            print("STARTED")
             loss += train_step(model, batch_set, opt, loss_fn).numpy()
             n_batches += 1
             gc.collect()
 
-            print("ONE BATCH")
-
-        val_loss.append(evaluate(val_set, model, loss_fn))
+        if(val_set is not None):
+            val_loss.append(evaluate(val_set, model, loss_fn))
         train_loss.append(loss/n_batches)
 
         print_utils.print_message("Epoch " + str(epoch+1) + " with loss: " + str(train_loss[-1]), file_output=file_output, verbose=verbose)
