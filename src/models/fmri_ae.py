@@ -77,7 +77,7 @@ def stack(x, previous_block_x, operation, kernel_size, stride_size, n_channels,
     #skip connection
     if(skip_connections):
         if(maxpool):
-            skip_kernel = (kernel_size[0]*2+1, kernel_size[1]*2+1, kernel_size[2]*2+1)
+            skip_kernel = (kernel_size[0]*2, kernel_size[1]*2, kernel_size[2]*2)
         else:
             skip_kernel = (kernel_size[0]*2-1, kernel_size[1]*2-1, kernel_size[2]*2-1)
         x = skip_block(x, previous_block_x, operation, 

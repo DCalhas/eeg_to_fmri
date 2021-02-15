@@ -27,7 +27,10 @@ def evaluate(X, model, loss_fn):
     loss = 0.0
     n_batches = 0
     for batch_x in X.repeat(1):
-        loss += tf.reduce_mean(loss_fn(batch_x, model(batch_x))).numpy()
+        if(type(batch_x) is tuple):
+            loss += tf.reduce_mean(loss_fn(batch_x[1], model(batch_x[0]))).numpy()
+        else:
+            loss += tf.reduce_mean(loss_fn(batch_x, model(batch_x))).numpy()
         n_batches += 1
     
     return loss/n_batches
