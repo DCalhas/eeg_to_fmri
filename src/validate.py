@@ -58,14 +58,15 @@ dev_losses_2 = []
 
 fold = 1
 for train_idx, dev_idx in kf.split(fmri_train):
-	train_set = tf.data.Dataset.from_tensor_slices((fmri_train[train_idx], fmri_train[train_idx])).batch(batch_size)
-	dev_set = tf.data.Dataset.from_tensor_slices((fmri_train[dev_idx], fmri_train[dev_idx])).batch(1)
+	with tf.device('/CPU:0'):
+		train_set = tf.data.Dataset.from_tensor_slices((fmri_train[train_idx], fmri_train[train_idx])).batch(batch_size)
+		dev_set = tf.data.Dataset.from_tensor_slices((fmri_train[dev_idx], fmri_train[dev_idx])).batch(1)
 
-	model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
-				kernel_size, stride_size, n_channels,
-				maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
-				skip_connections=skip_connections, n_stacks=n_stacks, 
-				local=True, local_attention=False)
+		model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
+					kernel_size, stride_size, n_channels,
+					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+					skip_connections=skip_connections, n_stacks=n_stacks, 
+					local=True, local_attention=False)
 
 	#train
 	train_loss, val_loss = train.train(train_set, model, optimizer, 
@@ -76,12 +77,12 @@ for train_idx, dev_idx in kf.split(fmri_train):
 
 	gc.collect()
 	tf.keras.backend.clear_session()
-
-	model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
-				kernel_size, stride_size, n_channels,
-				maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
-				skip_connections=skip_connections, n_stacks=n_stacks, 
-				local=False, local_attention=False)
+	with tf.device('/CPU:0'):
+		model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
+					kernel_size, stride_size, n_channels,
+					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+					skip_connections=skip_connections, n_stacks=n_stacks, 
+					local=False, local_attention=False)
 
 	#train
 	train_loss, val_loss = train.train(train_set, model, optimizer, 
