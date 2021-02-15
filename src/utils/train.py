@@ -4,7 +4,6 @@ import gc
 
 from utils import print_utils
 
-@tf.function
 def apply_gradient(model, optimizer, loss_fn, x, y):
     with tf.GradientTape() as tape:
         loss = loss_fn(y, model(x))
