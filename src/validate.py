@@ -74,6 +74,9 @@ for train_idx, dev_idx in kf.split(fmri_train):
 
 	dev_losses_1.append(val_loss[-1])
 
+	gc.collect()
+	tf.keras.backend.clear_session()
+
 	model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
 				kernel_size, stride_size, n_channels,
 				maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
@@ -88,6 +91,7 @@ for train_idx, dev_idx in kf.split(fmri_train):
 	dev_losses_2.append(val_loss[-1])
 
 	gc.collect()
+	tf.keras.backend.clear_session()
 
 	print("Finished fold ", fold)
 	fold += 1
