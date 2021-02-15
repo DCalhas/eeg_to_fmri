@@ -18,6 +18,8 @@ import os
 
 from sklearn.model_selection import train_test_split, KFold
 
+from scipy.stats import normaltest, ttest_ind, wilcoxon
+
 dataset="01"
 memory_limit=1500
 n_individuals=8
@@ -45,7 +47,7 @@ n_channels=16
 latent_dimension=(5,5,5)
 kernel_size=(9,9,5)
 stride_size=(1,1,1)
-n_stacks=3
+n_stacks=2
 
 optimizer = tf.keras.optimizers.Adam(learning_rate)
 loss_fn = tf.keras.losses.MSE
@@ -57,7 +59,7 @@ dev_losses_2 = []
 fold = 1
 for train_idx, dev_idx in kf.split(fmri_train):
 	train_set = tf.data.Dataset.from_tensor_slices((fmri_train[train_idx], fmri_train[train_idx])).batch(batch_size)
-	dev_set = tf.data.Dataset.from_tensor_slices((fmri_val[dev_idx], fmri_val[dev_idx])).batch(1)
+	dev_set = tf.data.Dataset.from_tensor_slices((fmri_train[dev_idx], fmri_train[dev_idx])).batch(1)
 
 	model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
 				kernel_size, stride_size, n_channels,
@@ -95,3 +97,23 @@ print(dev_losses_1)
 
 print("Model 2 with dev losses: ")
 print(dev_losses_2)
+
+
+
+#Get significance
+dev_losses_1 = np.array(dev_losses_1)
+dev_losses_2 = np.array(dev_losses_2)
+
+_, pv_normal1 = normaltest(dev_losses_1)
+_, pv_normal2 = normaltest(dev_losses_2)
+
+if(pv_normal2 > 0.05 and pv_normal1 > 0.05):
+
+	#two normal distributions
+	_, pvalue = ttest_ind(dev_losses_1, dev_losses_2)
+
+
+else:
+	_, pvalue = wilcoxon(dev_losses_1, dev_losses_2)
+
+print("Difference with p-value of ", pvalue)

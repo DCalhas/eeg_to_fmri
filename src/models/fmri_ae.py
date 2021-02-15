@@ -46,7 +46,7 @@ def block(x, operation, kernel_size, stride_size, n_channels,
                     kernel_regularizer=tf.keras.regularizers.L2(weight_decay),
                     bias_regularizer=tf.keras.regularizers.L2(weight_decay))(x)
     if(maxpool):
-        x = tf.keras.layers.MaxPool3D(pool_size=(3, 3, 3), strides=(1,1,1))(x)
+        x = tf.keras.layers.MaxPool3D(pool_size=(3, 3, 1), strides=(1,1,1))(x)
     if(batch_norm):
         x = tf.keras.layers.BatchNormalization()(x)
 
@@ -77,7 +77,7 @@ def stack(x, previous_block_x, operation, kernel_size, stride_size, n_channels,
     #skip connection
     if(skip_connections):
         if(maxpool):
-            skip_kernel = (kernel_size[0]*2, kernel_size[1]*2, kernel_size[2]*2)
+            skip_kernel = (kernel_size[0]*2+3, kernel_size[1]*2+3, kernel_size[2]*2-1)
         else:
             skip_kernel = (kernel_size[0]*2-1, kernel_size[1]*2-1, kernel_size[2]*2-1)
         x = skip_block(x, previous_block_x, operation, 
