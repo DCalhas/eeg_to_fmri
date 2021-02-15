@@ -47,7 +47,7 @@ n_channels=16
 latent_dimension=(5,5,5)
 kernel_size=(9,9,5)
 stride_size=(1,1,1)
-n_stacks=2
+n_stacks=3
 
 optimizer = tf.keras.optimizers.Adam(learning_rate)
 loss_fn = tf.keras.losses.MSE
