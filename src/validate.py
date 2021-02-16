@@ -20,12 +20,21 @@ from sklearn.model_selection import train_test_split, KFold
 
 from scipy.stats import normaltest, ttest_ind, wilcoxon
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-splits', default=10, type=int, help="Number of splits for validation")
+parser.add_argument('-seed', default=42, type=int, help="Seed for random state")
+opt = parser.parse_args()
+
+splits = opt.splits
+seed = opt.seed
+
 dataset="01"
 memory_limit=1500
 n_individuals=8
 interval_eeg=6
 
-tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit, seed=42)
+tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit, seed=seed)
 
 with tf.device('/CPU:0'):
 	train_data, _ = preprocess_data.dataset(dataset, n_individuals=n_individuals, interval_eeg=interval_eeg, verbose=True)
@@ -34,7 +43,7 @@ with tf.device('/CPU:0'):
 	
 	fmri_train = fmri_train[:296]
 	
-	kf = KFold(shuffle=True, random_state=42, n_splits=10)
+	kf = KFold(shuffle=True, random_state=seed, n_splits=splits)
 
 
 batch_size=16
