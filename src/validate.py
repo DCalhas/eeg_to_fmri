@@ -43,16 +43,22 @@ gpu_mem = opt.gpu_mem
 
 if(technique1 == "encoder_conv"):
 	local_1=True
+	local_attention_1=False
 elif(technique1 == "encoder_nonlocal"):
 	local_1=False
+	local_attention_1=False
 elif(technique1 == "encoder_attention"):
+	local_1=True
 	local_attention_1=True
 
 if(technique2 == "encoder_conv"):
 	local_2=True
+	local_attention_2=False
 elif(technique2 == "encoder_nonlocal"):
 	local_2=False
+	local_attention_2=False
 elif(technique2 == "encoder_attention"):
+	local_2=True
 	local_attention_2=True
 
 dataset="01"
