@@ -51,10 +51,10 @@ learning_rate=0.001
 skip_connections=True
 maxpool=True
 batch_norm=True
-weight_decay=1e-5
+weight_decay=1e-3
 n_channels=16
 latent_dimension=(5,5,5)
-kernel_size=(9,9,5)
+kernel_size=(9,9,4)
 stride_size=(1,1,1)
 n_stacks=3
 
