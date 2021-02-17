@@ -22,19 +22,44 @@ from scipy.stats import normaltest, ttest_ind, wilcoxon
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument('technique1',
+					choices=['encoder_conv', 'encoder_nonlocal', 'encoder_attention'],
+					help="Technique to be compared")
+parser.add_argument('technique2',
+					choices=['encoder_conv', 'encoder_nonlocal', 'encoder_attention'],
+					help="Technique to be compared")
 parser.add_argument('-splits', default=10, type=int, help="Number of splits for validation")
+parser.add_argument('-epochs', default=10, type=int, help="Number of epochs for the training session")
+parser.add_argument('-gpu_mem', default=1500, type=int, help="Memory limit for gpu")
 parser.add_argument('-seed', default=42, type=int, help="Seed for random state")
 opt = parser.parse_args()
 
+technique1 = opt.technique1
+technique2 = opt.technique2
 splits = opt.splits
+epochs = opt.epochs
 seed = opt.seed
+gpu_mem = opt.gpu_mem
+
+if(technique1 == "encoder_conv"):
+	local_1=True
+elif(technique1 == "encoder_nonlocal"):
+	local_1=False
+elif(technique1 == "encoder_attention"):
+	local_attention_1=True
+
+if(technique2 == "encoder_conv"):
+	local_2=True
+elif(technique2 == "encoder_nonlocal"):
+	local_2=False
+elif(technique2 == "encoder_attention"):
+	local_attention_2=True
 
 dataset="01"
-memory_limit=1500
 n_individuals=8
 interval_eeg=6
 
-tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit, seed=seed)
+tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, seed=seed)
 
 with tf.device('/CPU:0'):
 	train_data, _ = preprocess_data.dataset(dataset, n_individuals=n_individuals, interval_eeg=interval_eeg, verbose=True)
@@ -75,11 +100,11 @@ for train_idx, dev_idx in kf.split(fmri_train):
 					kernel_size, stride_size, n_channels,
 					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
 					skip_connections=skip_connections, n_stacks=n_stacks, 
-					local=True, local_attention=False)
+					local=local_1, local_attention=local_attention_1)
 
 	#train
 	train_loss, val_loss = train.train(train_set, model, optimizer, 
-									loss_fn, epochs=10, 
+									loss_fn, epochs=epochs, 
 									val_set=dev_set, verbose=True)
 
 	dev_losses_1.append(val_loss[-1])
@@ -91,11 +116,11 @@ for train_idx, dev_idx in kf.split(fmri_train):
 					kernel_size, stride_size, n_channels,
 					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
 					skip_connections=skip_connections, n_stacks=n_stacks, 
-					local=False, local_attention=False)
+					local=local_2, local_attention=local_attention_2)
 
 	#train
 	train_loss, val_loss = train.train(train_set, model, optimizer, 
-									loss_fn, epochs=10, 
+									loss_fn, epochs=epochs, 
 									val_set=dev_set, verbose=True)
 
 	dev_losses_2.append(val_loss[-1])
@@ -131,3 +156,6 @@ else:
 	_, pvalue = wilcoxon(dev_losses_1, dev_losses_2)
 
 print("Difference with p-value of ", pvalue)
+
+print("Model " + technique1 + " with mean K-Fold validation MSE: ", np.mean(dev_losses_1), "+/-", np.std(dev_losses_1))
+print("Model " + technique2 + " with mean K-Fold validation MSE: ", np.mean(dev_losses_2), "+/-", np.std(dev_losses_2))
