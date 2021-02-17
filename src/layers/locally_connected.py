@@ -94,7 +94,25 @@ class LocallyConnected3D(tf.keras.layers.Layer):
 			)
 
 		elif self.implementation == 3:
-			raise NotImplementedError
+			self.kernel_shape = (self.output_x * self.output_y * self.output_z * self.filters,
+								input_x * input_y * input_z * input_filter)
+
+			self.kernel_idxs = sorted(
+				conv_utils.conv_kernel_idxs(
+					input_shape=(input_x, input_y, input_z),
+					kernel_shape=self.kernel_size,
+					strides=self.strides,
+					padding=self.padding,
+					filters_in=input_filter,
+					filters_out=self.filters,
+					data_format=self.data_format))
+
+			self.kernel = self.add_weight(
+				shape=(len(self.kernel_idxs),),
+				initializer=self.kernel_initializer,
+				name='kernel',
+				regularizer=self.kernel_regularizer,
+				constraint=self.kernel_constraint)
 
 		else:
 			raise ValueError('Unrecognized implementation mode: %d.' %
@@ -145,7 +163,9 @@ class LocallyConnected3D(tf.keras.layers.Layer):
 			output = local_conv_matmul(inputs, self.kernel, self.kernel_mask,
 									self.compute_output_shape(inputs.shape))
 		elif self.implementation == 3:
-			raise NotImplementedError
+			output = local_conv_sparse_matmul(inputs, self.kernel, self.kernel_idxs,
+										self.kernel_shape,
+										self.compute_output_shape(inputs.shape))
 		else:
 			raise ValueError('Unrecognized implementation mode: %d.' %
 							self.implementation)
@@ -192,6 +212,23 @@ def local_conv_matmul(inputs, kernel, kernel_mask, output_shape):
 			tf.shape(output_flat)[0],
 	] + list(output_shape)[1:])
 	return output
+
+def local_conv_sparse_matmul(inputs, kernel, kernel_idxs, kernel_shape, 
+							output_shape):
+	inputs_flat = tf.reshape(inputs, (tf.shape(inputs)[0], -1))
+	output_flat = tf.raw_ops.SparseTensorDenseMatMul(
+			a_indices=kernel_idxs,
+			a_values=kernel,
+			a_shape=kernel_shape,
+			b=inputs_flat,
+			adjoint_b=True)
+
+	output_flat_transpose = tf.transpose(output_flat)
+
+	output_reshaped = tf.reshape(output_flat_transpose, [
+			tf.shape(output_flat_transpose)[0],
+	] + list(output_shape)[1:])
+	return output_reshaped
 
 def make_2d(tensor, split_dim):
 	shape = tf.shape(tensor)

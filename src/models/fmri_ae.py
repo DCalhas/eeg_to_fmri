@@ -91,7 +91,7 @@ class fMRI_AE(tf.keras.Model):
     
     def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
-                        n_stacks=2, local=True, local_attention=False):
+                        n_stacks=2, local=True, local_attention=False, outfilter=0):
         
         
         super(fMRI_AE, self).__init__()
@@ -100,7 +100,7 @@ class fMRI_AE(tf.keras.Model):
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
                         n_stacks=n_stacks, local=local, local_attention=local_attention)
 
-        self.build_decoder()
+        self.build_decoder(outfilter=outfilter)
     
     def build_encoder(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
@@ -135,17 +135,27 @@ class fMRI_AE(tf.keras.Model):
         x = tf.keras.layers.Reshape(self.latent_shape)(x)
 
         if(local_attention):
-            x = tf.keras.layers.MultiHeadAttention(num_heads=2, key_dim=2, attention_axes=(1, 2, 3))(x,x)
+            #x = tf.keras.layers.MultiHeadAttention(num_heads=2, key_dim=2, attention_axes=(1, 2, 3))(x,x)
+            x = tf.keras.layers.MultiHeadAttention(num_heads=n_channels, key_dim=x.shape[1]*x.shape[2]*x.shape[3], attention_axes=(1, 2, 3))(x,x)
         
         self.encoder = tf.keras.Model(input_shape, x)
 
-    def build_decoder(self):
-        self.decoder = tf.keras.Sequential([
-                                            tf.keras.layers.InputLayer(input_shape=self.latent_shape),
-                                            tf.keras.layers.Flatten(),
-                                            tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2]),
-                                            tf.keras.layers.Reshape(self.in_shape)
-                                        ])
+    def build_decoder(self, outfilter=0):
+        input_shape = tf.keras.layers.Input(shape=self.latent_shape)
+
+        x = tf.keras.layers.Flatten()(input_shape)
+
+        #upsampling
+        x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
+        x = tf.keras.layers.Reshape(self.in_shape)(x)
+
+        #filter
+        if(outfilter == 1):
+            x = tf.keras.layers.Conv3D(filters=1, kernel_size=1, strides=1)(x)
+        elif(outfilter == 2):
+            x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3)(x)
+        
+        self.decoder = tf.keras.Model(input_shape, x)        
 
     def encode(self, X):
         return self.encoder(X)

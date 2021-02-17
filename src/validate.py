@@ -29,6 +29,7 @@ parser.add_argument('technique2',
 					choices=['encoder_conv', 'encoder_nonlocal', 'encoder_attention'],
 					help="Technique to be compared")
 parser.add_argument('-splits', default=10, type=int, help="Number of splits for validation")
+parser.add_argument('-outfilter', default=0, type=int, help="Number of splits for validation")
 parser.add_argument('-epochs', default=10, type=int, help="Number of epochs for the training session")
 parser.add_argument('-gpu_mem', default=1500, type=int, help="Memory limit for gpu")
 parser.add_argument('-seed', default=42, type=int, help="Seed for random state")
@@ -36,6 +37,7 @@ opt = parser.parse_args()
 
 technique1 = opt.technique1
 technique2 = opt.technique2
+outfilter = opt.outfilter
 splits = opt.splits
 epochs = opt.epochs
 seed = opt.seed
@@ -106,7 +108,7 @@ for train_idx, dev_idx in kf.split(fmri_train):
 					kernel_size, stride_size, n_channels,
 					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
 					skip_connections=skip_connections, n_stacks=n_stacks, 
-					local=local_1, local_attention=local_attention_1)
+					local=local_1, local_attention=local_attention_1, outfilter=outfilter)
 
 	#train
 	train_loss, val_loss = train.train(train_set, model, optimizer, 
@@ -122,7 +124,7 @@ for train_idx, dev_idx in kf.split(fmri_train):
 					kernel_size, stride_size, n_channels,
 					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
 					skip_connections=skip_connections, n_stacks=n_stacks, 
-					local=local_2, local_attention=local_attention_2)
+					local=local_2, local_attention=local_attention_2, outfilter=outfilter)
 
 	#train
 	train_loss, val_loss = train.train(train_set, model, optimizer, 
