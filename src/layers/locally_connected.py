@@ -21,7 +21,7 @@ class LocallyConnected3D(tf.keras.layers.Layer):
 				activity_regularizer=None,
 				kernel_constraint=None,
 				bias_constraint=None,
-				implementation=2,
+				implementation=3,
 				**kwargs):
 		super(LocallyConnected3D, self).__init__(**kwargs)
 		self.filters = filters

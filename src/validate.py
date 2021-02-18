@@ -67,9 +67,10 @@ dataset="01"
 n_individuals=8
 interval_eeg=6
 
-tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, seed=seed)
+tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
 
 with tf.device('/CPU:0'):
+	tf_config.set_seed(seed=seed)
 	train_data, _ = preprocess_data.dataset(dataset, n_individuals=n_individuals, interval_eeg=interval_eeg, verbose=True)
 	_, fmri_train =train_data
 	#eeg_val, fmri_val =val_data
@@ -78,6 +79,7 @@ with tf.device('/CPU:0'):
 	
 	kf = KFold(shuffle=True, random_state=seed, n_splits=splits)
 
+tf_config.set_seed(seed=seed)
 
 batch_size=16
 learning_rate=0.001
@@ -101,6 +103,8 @@ dev_losses_2 = []
 fold = 1
 for train_idx, dev_idx in kf.split(fmri_train):
 	with tf.device('/CPU:0'):
+		tf_config.set_seed(seed=seed)
+
 		train_set = tf.data.Dataset.from_tensor_slices((fmri_train[train_idx], fmri_train[train_idx])).batch(batch_size)
 		dev_set = tf.data.Dataset.from_tensor_slices((fmri_train[dev_idx], fmri_train[dev_idx])).batch(1)
 
@@ -109,6 +113,8 @@ for train_idx, dev_idx in kf.split(fmri_train):
 					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
 					skip_connections=skip_connections, n_stacks=n_stacks, 
 					local=local_1, local_attention=local_attention_1, outfilter=outfilter)
+
+	tf_config.set_seed(seed=seed)
 
 	#train
 	train_loss, val_loss = train.train(train_set, model, optimizer, 
@@ -120,12 +126,16 @@ for train_idx, dev_idx in kf.split(fmri_train):
 	gc.collect()
 	tf.keras.backend.clear_session()
 	with tf.device('/CPU:0'):
+		tf_config.set_seed(seed=seed)
+
 		model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
 					kernel_size, stride_size, n_channels,
 					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
 					skip_connections=skip_connections, n_stacks=n_stacks, 
 					local=local_2, local_attention=local_attention_2, outfilter=outfilter)
-
+	
+	tf_config.set_seed(seed=seed)
+	
 	#train
 	train_loss, val_loss = train.train(train_set, model, optimizer, 
 									loss_fn, epochs=epochs, 
