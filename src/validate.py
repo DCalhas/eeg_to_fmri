@@ -100,54 +100,54 @@ loss_fn = tf.keras.losses.MSE
 dev_losses_1 = []
 dev_losses_2 = []
 
-fold = 1
-for train_idx, dev_idx in kf.split(fmri_train):
-	with tf.device('/CPU:0'):
-		tf_config.set_seed(seed=seed)
+g = tf.Graph()
+g.seed(seed)
 
-		train_set = tf.data.Dataset.from_tensor_slices((fmri_train[train_idx], fmri_train[train_idx])).batch(batch_size)
-		dev_set = tf.data.Dataset.from_tensor_slices((fmri_train[dev_idx], fmri_train[dev_idx])).batch(1)
 
-		model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
-					kernel_size, stride_size, n_channels,
-					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
-					skip_connections=skip_connections, n_stacks=n_stacks, 
-					local=local_1, local_attention=local_attention_1, outfilter=outfilter)
+with g:
+	fold = 1
+	for train_idx, dev_idx in kf.split(fmri_train):
+		with tf.device('/CPU:0'):
+			train_set = tf.data.Dataset.from_tensor_slices((fmri_train[train_idx], fmri_train[train_idx])).batch(batch_size)
+			dev_set = tf.data.Dataset.from_tensor_slices((fmri_train[dev_idx], fmri_train[dev_idx])).batch(1)
 
-	tf_config.set_seed(seed=seed)
+			model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
+						kernel_size, stride_size, n_channels,
+						maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+						skip_connections=skip_connections, n_stacks=n_stacks, 
+						local=local_1, local_attention=local_attention_1, outfilter=outfilter)
 
-	#train
-	train_loss, val_loss = train.train(train_set, model, optimizer, 
-									loss_fn, epochs=epochs, 
-									val_set=dev_set, verbose=True)
+			model.name=technique1
 
-	dev_losses_1.append(val_loss[-1])
+		#train
+		train_loss, val_loss = train.train(train_set, model, optimizer, 
+										loss_fn, epochs=epochs, 
+										val_set=dev_set, verbose=True)
 
-	gc.collect()
-	tf.keras.backend.clear_session()
-	with tf.device('/CPU:0'):
-		tf_config.set_seed(seed=seed)
+		dev_losses_1.append(val_loss[-1])
 
-		model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
-					kernel_size, stride_size, n_channels,
-					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
-					skip_connections=skip_connections, n_stacks=n_stacks, 
-					local=local_2, local_attention=local_attention_2, outfilter=outfilter)
-	
-	tf_config.set_seed(seed=seed)
-	
-	#train
-	train_loss, val_loss = train.train(train_set, model, optimizer, 
-									loss_fn, epochs=epochs, 
-									val_set=dev_set, verbose=True)
+		g.clear_collection(technique1)
 
-	dev_losses_2.append(val_loss[-1])
+		with tf.device('/CPU:0'):
+			model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
+						kernel_size, stride_size, n_channels,
+						maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+						skip_connections=skip_connections, n_stacks=n_stacks, 
+						local=local_2, local_attention=local_attention_2, outfilter=outfilter)
+			
+			model.name=technique2
+		
+		#train
+		train_loss, val_loss = train.train(train_set, model, optimizer, 
+										loss_fn, epochs=epochs, 
+										val_set=dev_set, verbose=True)
 
-	gc.collect()
-	tf.keras.backend.clear_session()
+		dev_losses_2.append(val_loss[-1])
 
-	print("Finished fold ", fold)
-	fold += 1
+		g.clear_collection(technique2)
+
+		print("Finished fold ", fold)
+		fold += 1
 
 print("Model 1 with dev losses: ")
 print(dev_losses_1)
