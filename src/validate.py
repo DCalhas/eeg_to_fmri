@@ -2,6 +2,8 @@ import tensorflow as tf
 
 import numpy as np
 
+import random
+
 import argparse
 
 from utils import tf_config, preprocess_data, search_algorithms, train

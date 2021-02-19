@@ -4,6 +4,8 @@ from utils import conv_utils
 
 import numpy as np
 
+import random
+
 class LocallyConnected3D(tf.keras.layers.Layer):
 
 	def __init__(self,

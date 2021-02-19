@@ -2,6 +2,8 @@ import tensorflow as tf
 
 import numpy as np
 
+import random
+
 def setup_tensorflow(memory_limit, device="CPU"):
 	gpu = tf.config.experimental.list_physical_devices(device)[0]
 	tf.config.set_soft_device_placement(True)
@@ -13,3 +15,4 @@ def setup_tensorflow(memory_limit, device="CPU"):
 def set_seed(seed=42):
 	tf.random.set_seed(seed)
 	np.random.seed(seed)
+	random.seed(seed)
