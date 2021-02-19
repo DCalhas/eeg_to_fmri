@@ -40,11 +40,13 @@ def build(*kwargs):
 
 
 def block(x, operation, kernel_size, stride_size, n_channels,
-            maxpool=True, batch_norm=True, weight_decay=0.000):
+            maxpool=True, batch_norm=True, weight_decay=0.000,
+            seed=None):
 
     x = operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size,
                     kernel_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    bias_regularizer=tf.keras.regularizers.L2(weight_decay))(x)
+                    bias_regularizer=tf.keras.regularizers.L2(weight_decay),
+                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
     if(maxpool):
         x = tf.keras.layers.MaxPool3D(pool_size=(2, 2, 1), strides=(1,1,1))(x)
     if(batch_norm):
@@ -53,11 +55,13 @@ def block(x, operation, kernel_size, stride_size, n_channels,
     return tf.keras.layers.ReLU()(x)
 
 def skip_block(x, skip_x, operation, kernel_size, stride_size, n_channels,
-                maxpool=True, batch_norm=True, weight_decay=0.000):
+                maxpool=True, batch_norm=True, weight_decay=0.000,
+                seed=None):
 
     skip_x = operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size,
                     kernel_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    bias_regularizer=tf.keras.regularizers.L2(weight_decay))(skip_x)
+                    bias_regularizer=tf.keras.regularizers.L2(weight_decay),
+                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(skip_x)
     if(batch_norm):
         skip_x = tf.keras.layers.BatchNormalization()(skip_x)
 
@@ -66,13 +70,16 @@ def skip_block(x, skip_x, operation, kernel_size, stride_size, n_channels,
     return tf.keras.layers.ReLU()(x)
 
 def stack(x, previous_block_x, operation, kernel_size, stride_size, n_channels,
-                        maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False):
+                        maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
+                        seed=None):
     
     x = block(x, operation, kernel_size, stride_size, n_channels,
-            maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay)
+            maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay,
+            seed=seed)
 
     x = block(x, operation, kernel_size, stride_size, n_channels,
-            maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay)
+            maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay,
+            seed=seed)
 
     #skip connection
     if(skip_connections):
@@ -82,7 +89,8 @@ def stack(x, previous_block_x, operation, kernel_size, stride_size, n_channels,
             skip_kernel = (kernel_size[0]*2-1, kernel_size[1]*2-1, kernel_size[2]*2-1)
         x = skip_block(x, previous_block_x, operation, 
                         skip_kernel, stride_size, n_channels,
-                        maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay)
+                        maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay,
+                        seed=seed)
         
     return x
 
@@ -91,20 +99,20 @@ class fMRI_AE(tf.keras.Model):
     
     def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
-                        n_stacks=2, local=True, local_attention=False, outfilter=0):
+                        n_stacks=2, local=True, local_attention=False, outfilter=0, seed=None):
         
         
         super(fMRI_AE, self).__init__()
         
         self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
-                        n_stacks=n_stacks, local=local, local_attention=local_attention)
+                        n_stacks=n_stacks, local=local, local_attention=local_attention, seed=seed)
 
-        self.build_decoder(outfilter=outfilter)
+        self.build_decoder(outfilter=outfilter, seed=seed)
     
     def build_encoder(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
-                        n_stacks=2, local=True, local_attention=False):
+                        n_stacks=2, local=True, local_attention=False, seed=None):
 
         self.latent_shape = latent_shape
         self.in_shape = input_shape
@@ -119,7 +127,7 @@ class fMRI_AE(tf.keras.Model):
             x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
                         kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
-                        skip_connections=skip_connections)
+                        skip_connections=skip_connections, seed=seed)
             previous_block_x=x
 
         if(local):
@@ -127,33 +135,38 @@ class fMRI_AE(tf.keras.Model):
         else:
             operation=LocallyConnected3D
 
-        x = block(x, operation, kernel_size, stride_size, n_channels,
-                maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay)
+        x = block(x, operation, (3,3,3), (1,1,1), n_channels,
+                maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, seed=seed)
 
         x = tf.keras.layers.Flatten()(x)
-        x = tf.keras.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2])(x)
+        x = tf.keras.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2], 
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
         x = tf.keras.layers.Reshape(self.latent_shape)(x)
 
         if(local_attention):
             #x = tf.keras.layers.MultiHeadAttention(num_heads=2, key_dim=2, attention_axes=(1, 2, 3))(x,x)
-            x = tf.keras.layers.MultiHeadAttention(num_heads=n_channels, key_dim=x.shape[1]*x.shape[2]*x.shape[3], attention_axes=(1, 2, 3))(x,x)
+            x = tf.keras.layers.MultiHeadAttention(num_heads=n_channels, key_dim=x.shape[1]*x.shape[2]*x.shape[3], attention_axes=(1, 2, 3),
+                                                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x,x)
         
         self.encoder = tf.keras.Model(input_shape, x)
 
-    def build_decoder(self, outfilter=0):
+    def build_decoder(self, outfilter=0, seed=None):
         input_shape = tf.keras.layers.Input(shape=self.latent_shape)
 
         x = tf.keras.layers.Flatten()(input_shape)
 
         #upsampling
-        x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
+        x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2],
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
         x = tf.keras.layers.Reshape(self.in_shape)(x)
 
         #filter
         if(outfilter == 1):
-            x = tf.keras.layers.Conv3D(filters=1, kernel_size=1, strides=1)(x)
+            x = tf.keras.layers.Conv3D(filters=1, kernel_size=1, strides=1,
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
         elif(outfilter == 2):
-            x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3)(x)
+            x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3,
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
         
         self.decoder = tf.keras.Model(input_shape, x)        
 
