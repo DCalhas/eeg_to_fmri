@@ -101,10 +101,10 @@ dev_losses_1 = []
 dev_losses_2 = []
 
 g = tf.Graph()
-g.seed(seed)
 
-
-with g:
+with g.as_default():
+	g.seed(seed)
+	
 	fold = 1
 	for train_idx, dev_idx in kf.split(fmri_train):
 		with tf.device('/CPU:0'):
