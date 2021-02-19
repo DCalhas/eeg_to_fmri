@@ -67,6 +67,7 @@ dataset="01"
 n_individuals=8
 interval_eeg=6
 
+tf_config.set_seed(seed=seed)
 tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
 
 with tf.device('/CPU:0'):
@@ -93,6 +94,7 @@ kernel_size=(9,9,4)
 stride_size=(1,1,1)
 n_stacks=3
 
+tf_config.set_seed(seed=seed)
 optimizer = tf.keras.optimizers.Adam(learning_rate)
 loss_fn = tf.keras.losses.MSE
 
@@ -103,6 +105,7 @@ dev_losses_2 = []
 fold = 1
 for train_idx, dev_idx in kf.split(fmri_train):
 	with tf.device('/CPU:0'):
+		tf_config.set_seed(seed=seed)
 		train_set = tf.data.Dataset.from_tensor_slices((fmri_train[train_idx], fmri_train[train_idx])).batch(batch_size)
 		dev_set = tf.data.Dataset.from_tensor_slices((fmri_train[dev_idx], fmri_train[dev_idx])).batch(1)
 
@@ -124,7 +127,7 @@ for train_idx, dev_idx in kf.split(fmri_train):
 	tf_config.set_seed(seed=seed)
 
 	with tf.device('/CPU:0'):
-
+		tf_config.set_seed(seed=seed)
 		model = fmri_ae.fMRI_AE(latent_dimension, fmri_train.shape[1:], 
 					kernel_size, stride_size, n_channels,
 					maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
