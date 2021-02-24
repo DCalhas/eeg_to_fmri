@@ -31,7 +31,7 @@ n_epochs = 20
 #
 #############################################################################################################
 
-def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, roi=None, roi_ica_components=None, dataset="01"):
+def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, roi=None, roi_ica_components=None, dataset="01"):
 
     #Load Data
     eeg, bold, scalers = get_data(instances,
@@ -40,6 +40,7 @@ def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partit
                                     f_resample=f_resample, mutate_bands=mutate_bands,
                                     fmri_resolution_factor=fmri_resolution_factor,
                                     standardize_fmri=standardize_fmri,
+                                    ind_volume_fit=ind_volume_fit,
                                     standardize_eeg=standardize_eeg,
                                     dataset=dataset)
 
@@ -48,7 +49,7 @@ def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partit
 """
 """
 
-def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, dataset="01"):
+def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, dataset="01"):
     TR = 1/TR
 
     X = []
@@ -66,14 +67,24 @@ def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_part
     recording_time = len(range(bold_shift, individuals_imgs[0].shape[-1]))
     #clean fMRI signal
     for i in range(len(individuals_imgs)):
-        scaler = StandardScaler(copy=True)
         individuals_imgs[i] = individuals_imgs[i].get_fdata()
 
+        scaler = StandardScaler(copy=True)
+        if(not ind_volume_fit):
+            reshaped_individual = individuals_imgs[i].flatten().reshape(-1,1)
+            scaler.fit(reshaped_individual)
+
         for volume in range(bold_shift, individuals_imgs[i].shape[-1]):
+
             volume_shape = individuals_imgs[i][:,:,:,volume].shape
 
             reshaped_volume = individuals_imgs[i][:,:,:,volume].flatten().reshape(-1, 1)
-            scaled_volume = scaler.fit_transform(reshaped_volume).reshape((1,) + volume_shape)
+            
+            if(ind_volume_fit):
+                scaled_volume = scaler.fit_transform(reshaped_volume).reshape((1,) + volume_shape)
+            else:
+                scaled_volume = scaler.transform(reshaped_volume).reshape((1,) + volume_shape)
+            
             fmri_volumes[j] = scaled_volume
             j += 1
 

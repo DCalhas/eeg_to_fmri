@@ -15,6 +15,9 @@ home = str(Path.home())
 
 dataset_path = home + '/eeg_to_fmri'
 
+media_directory="/media/david/datasets/"
+dataset_03="ds002158"
+
 ##########################################################################################################################
 #
 #											READING UTILS
@@ -60,6 +63,35 @@ def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=Tr
     
     return eeg_file['data_noGA']
 
+
+def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run="main_run-001", preprocessed=True):
+    
+    run_types=["main_run-001", "main_run-002",
+              "main_run-003", "main_run-004",
+              "main_run-005", "main_run-006"]
+    
+    assert run in run_types, dataset_03+ " contains the following recording sessions: " + str(run_types) + ", please select one."
+    assert not preprocessed, "Preprocessed EEG signal is not available, only EEG events"
+    
+    individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[2:]
+
+    individual = individuals[individual]
+
+    if(preprocessed):
+        path = path_eeg + "derivatives/eegprep/" + individual + "/ses-001/eeg/" + individual + "_ses-001_task-main_eeg_preproc.set"
+        return mne.io.read_epochs_eeglab(path)
+    else:
+        path = path_eeg + individual + "/ses-001/eeg/"
+
+        brainvision_files = sorted([f for f in listdir(path) if isfile(join(path, f))])
+
+        vhdr_file = brainvision_files[1]
+
+        complete_path = path + vhdr_file
+
+        return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+
+        
 def get_eeg_dataset(number_individuals=16, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
 	individuals = []
 

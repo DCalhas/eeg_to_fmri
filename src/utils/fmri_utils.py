@@ -21,6 +21,8 @@ home = str(Path.home())
 
 dataset_path = home + '/eeg_to_fmri'
 
+media_directory="/media/david/datasets/"
+dataset_03="ds002158"
 
 ##########################################################################################################################
 #
@@ -170,6 +172,31 @@ def get_individuals_paths_02(path_fmri=dataset_path+"/datasets/02/", task=1, run
     
     return fmri_individuals
 
+
+def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/", 
+                            resolution_factor = 5, 
+                            number_individuals=20,
+                            run="main_run-001"):
+    
+    run_types=["main_run-001", "main_run-002",
+              "main_run-003", "main_run-004",
+              "main_run-005", "main_run-006"]
+    
+    dir_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])[2:]
+    
+    assert number_individuals <= len(dir_individuals), dataset_03+ " contains a total of 20 individuals, " + str(number_individuals) + " were requested."
+    assert run in run_types, dataset_03+ " contains the following recording sessions: " + str(run_types) + ", please select one."
+    
+    fmri_individuals=[]
+    
+    for i in range(number_individuals):
+        individual_path = path_fmri + dir_individuals[i] + "/ses-001/func/"
+        file_path= individual_path + dir_individuals[i] + "_ses-001_task-" + run + "_bold.nii.gz"
+
+        fmri_individuals += [image.load_img(file_path)]
+
+    return fmri_individuals
+    
 ##########################################################################################################################
 #
 #                                 FMRI UTILS
