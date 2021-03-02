@@ -4,7 +4,7 @@ from utils import data_utils
 
 import numpy as np
 
-def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, file_output=None, verbose=False):
+def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
 
 	if(verbose):
 		if(file_output == None):
@@ -17,8 +17,8 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, file_
 															mutate_bands=False,
 															by_partitions=False, partition_length=14, 
 															f_resample=2.160, fmri_resolution_factor=1, 
-															standardize_eeg=True, standardize_fmri=True,
-															ind_volume_fit=ind_volume_fit,
+															standardize_eeg=standardize_eeg, standardize_fmri=standardize_fmri,
+															ind_volume_fit=ind_volume_fit, iqr_outlier=iqr,
 															dataset=dataset)
 
 	frequency_resolution=eeg_train.shape[2]

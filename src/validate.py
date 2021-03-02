@@ -80,7 +80,7 @@ with tf.device('/CPU:0'):
 	
 	fmri_train = fmri_train[:296]
 	
-	kf = KFold(shuffle=True, random_state=seed, n_splits=splits)
+	kf = KFold(shuffle=False, random_state=seed, n_splits=splits)
 
 tf_config.set_seed(seed=seed)
 
@@ -168,13 +168,10 @@ _, pv_normal1 = normaltest(dev_losses_1)
 _, pv_normal2 = normaltest(dev_losses_2)
 
 if(pv_normal2 > 0.05 and pv_normal1 > 0.05):
-
+	_, pvalue = wilcoxon(dev_losses_1, dev_losses_2)
+else:
 	#two normal distributions
 	_, pvalue = ttest_ind(dev_losses_1, dev_losses_2)
-
-
-else:
-	_, pvalue = wilcoxon(dev_losses_1, dev_losses_2)
 
 print("Difference with p-value of ", pvalue)
 

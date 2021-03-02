@@ -1,5 +1,6 @@
 from utils import eeg_utils
 from utils import fmri_utils
+from utils import outlier_utils
 
 import numpy as np
 from numpy import correlate
@@ -31,7 +32,7 @@ n_epochs = 20
 #
 #############################################################################################################
 
-def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, roi=None, roi_ica_components=None, dataset="01"):
+def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, roi=None, roi_ica_components=None, dataset="01"):
 
     #Load Data
     eeg, bold, scalers = get_data(instances,
@@ -42,6 +43,7 @@ def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partit
                                     standardize_fmri=standardize_fmri,
                                     ind_volume_fit=ind_volume_fit,
                                     standardize_eeg=standardize_eeg,
+                                    iqr_outlier=iqr_outlier,
                                     dataset=dataset)
 
     return eeg, bold, scalers
@@ -49,7 +51,7 @@ def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partit
 """
 """
 
-def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, dataset="01"):
+def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
     TR = 1/TR
 
     X = []
@@ -69,12 +71,20 @@ def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_part
     for i in range(len(individuals_imgs)):
         individuals_imgs[i] = individuals_imgs[i].get_fdata()
 
+        if(iqr_outlier):
+            initial_j=j
+            iqr = outlier_utils.IQR()
+            iqr.fit(individuals_imgs[i][:,:,:,bold_shift:])
+            individuals_imgs[i] = iqr.transform(individuals_imgs[i][:,:,:,bold_shift:], channels_last=True)
+        else:
+            individuals_imgs[i] = individuals_imgs[i][:,:,:,bold_shift:]
+
         scaler = StandardScaler(copy=True)
         if(not ind_volume_fit):
             reshaped_individual = individuals_imgs[i].flatten().reshape(-1,1)
             scaler.fit(reshaped_individual)
 
-        for volume in range(bold_shift, individuals_imgs[i].shape[-1]):
+        for volume in range(individuals_imgs[i].shape[-1]):
 
             volume_shape = individuals_imgs[i][:,:,:,volume].shape
 
@@ -82,14 +92,16 @@ def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_part
             
             if(ind_volume_fit):
                 scaled_volume = scaler.fit_transform(reshaped_volume).reshape((1,) + volume_shape)
-            else:
+            elif(standardize_fmri):
                 scaled_volume = scaler.transform(reshaped_volume).reshape((1,) + volume_shape)
+            else:
+                scaled_volume = reshaped_volume.reshape((1,) + volume_shape)
             
             fmri_volumes[j] = scaled_volume
             j += 1
 
-
-            #fmri_scalers += [scaler]
+        if(iqr_outlier):
+            fmri_volumes[initial_j:j] = iqr.inverse_transform(fmri_volumes[initial_j:j], channels_last=False)
 
     individuals_imgs = fmri_volumes
     individuals_eegs = None

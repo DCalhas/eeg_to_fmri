@@ -135,7 +135,7 @@ class fMRI_AE(tf.keras.Model):
         else:
             operation=LocallyConnected3D
 
-        x = block(x, operation, (5,5,5), stride_size, n_channels,
+        x = block(x, operation, (7,7,7), stride_size, n_channels,
                 maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, seed=seed)
 
         x = tf.keras.layers.Flatten()(x)
