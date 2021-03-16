@@ -132,7 +132,7 @@ class BNN_fMRI_AE(tf.keras.Model):
             self.model.build(X.shape)
 
         if(not training):
-            self.monte_carlo_prediction(self, X, T=10)
+            self.monte_carlo_prediction(X, T=10)
 
         return self.model(X)
 
