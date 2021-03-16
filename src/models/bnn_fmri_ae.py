@@ -122,8 +122,7 @@ class BNN_fMRI_AE(tf.keras.Model):
         
 
         #variance computation along with regression
-        variance_pre = tf.keras.layers.Dense(1)(x)
-        variance = tf.keras.layers.Activation('softplus', name='variance')(variance_pre)
+        variance = tf.keras.layers.Dense(1)(x)
 
         self.model = tf.keras.Model(inputs=self._input_tensor, outputs=[x,variance])
 
