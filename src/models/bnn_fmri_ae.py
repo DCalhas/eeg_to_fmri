@@ -6,9 +6,9 @@ from layers.locally_connected import LocallyConnected3D
 
 
 def block(x, operation, kernel_size, stride_size, n_channels,
-            maxpool=True, batch_norm=True):
+            maxpool=True, batch_norm=True, dtype=tf.float32):
 
-    x = operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size)(x)
+    x = operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size, dtype=dtype)(x)
     if(maxpool):
         x = tf.keras.layers.MaxPool3D(pool_size=(2, 2, 1), strides=(1,1,1))(x)
     if(batch_norm):
