@@ -24,21 +24,23 @@ class IQR:
         self.outlier_idx=[]
 
         if(channels_last):
-            for x in range(_X.shape[0]):
-                for y in range(_X.shape[1]):
-                    for z in range(_X.shape[2]):
-                        if (np.any(_X[x,y,z,:] > self.up) or np.any(_X[x,y,z,:] < self.low)):
-                            self.outlier_idx.append((x,y,z))
-                            self.outlier_values.append(_X[x,y,z,:])
-                            _X[x,y,z,:]=np.zeros(_X[x,y,z,:].shape)
+            for volume in range(_X.shape[3]):
+                for x in range(_X.shape[0]):
+                    for y in range(_X.shape[1]):
+                        for z in range(_X.shape[2]):
+                            if (np.any(_X[x,y,z,volume] > self.up) or np.any(_X[x,y,z,volume] < self.low)):
+                                self.outlier_idx.append((x,y,z))
+                                self.outlier_values.append(_X[x,y,z,volume])
+                                _X[x,y,z,volume]=np.zeros(_X[x,y,z,volume].shape)
         else:
-            for x in range(_X.shape[1]):
-                for y in range(_X.shape[2]):
-                    for z in range(_X.shape[3]):
-                        if (np.any(_X[:,x,y,z] > self.up) or np.any(_X[:,x,y,z] < self.low)):
-                            self.outlier_idx.append((x,y,z))
-                            self.outlier_values.append(_X[:,x,y,z])
-                            _X[:,x,y,z]=np.zeros(_X[:,x,y,z].shape)
+            for volume in range(_X.shape[0]):
+                for x in range(_X.shape[1]):
+                    for y in range(_X.shape[2]):
+                        for z in range(_X.shape[3]):
+                            if (np.any(_X[volume,x,y,z] > self.up) or np.any(_X[volume,x,y,z] < self.low)):
+                                self.outlier_idx.append((x,y,z))
+                                self.outlier_values.append(_X[volume,x,y,z])
+                                _X[volume,x,y,z]=np.zeros(_X[volume,x,y,z].shape)
         
         return _X
     
