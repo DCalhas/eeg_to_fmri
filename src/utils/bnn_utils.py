@@ -5,7 +5,7 @@ import tensorflow_probability as tfp
 Loss combinating aleatoric and epistemic_uncertainty
 """
 def combined_loss(y_true, y_pred):
-	variance = tf.math.square(y_pred[1])
+	variance = tf.math.square(y_pred[1])+1e-9
 	
 	return tf.reduce_mean((tf.exp(-tf.math.log(variance))*(y_pred[0] - y_true)**2)/2 + (tf.math.log(variance))/2, axis=(1,2,3))
 
