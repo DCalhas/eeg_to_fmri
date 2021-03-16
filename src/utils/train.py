@@ -6,7 +6,7 @@ from utils import print_utils
 
 def apply_gradient(model, optimizer, loss_fn, x, y):
     with tf.GradientTape() as tape:
-        loss = loss_fn(y, model(x, training=True))
+        loss = loss_fn(y, model(x))
     gradients = tape.gradient(loss, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     return tf.reduce_mean(loss)

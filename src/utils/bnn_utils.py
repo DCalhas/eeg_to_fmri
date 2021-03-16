@@ -4,8 +4,9 @@ import tensorflow_probability as tfp
 """
 Loss combinating aleatoric and epistemic_uncertainty
 """
-def combined_loss(y_true, y_pred):    
-    D = y_true.shape[1]*y_true.shape[2]*y_true.shape[3]   
+def combined_loss(y_true, y_pred):
+	shape = tf.shape(y_true)
+    D = shape[1]*shape[2]*shape[3]   
     
     variance = tf.math.square(y_pred[1])
     
