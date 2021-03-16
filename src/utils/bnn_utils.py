@@ -3,7 +3,7 @@ import tensorflow as tf
 """
 Loss combinating aleatoric and epistemic_uncertainty
 """
-def bnn_combined_loss(y_true, y_pred):    
+def combined_loss(y_true, y_pred):    
     D = y_true.shape[1]*y_true.shape[2]*y_true.shape[3]   
     
     variance = tf.math.square(y_pred[1])
