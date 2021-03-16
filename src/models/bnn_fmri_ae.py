@@ -127,8 +127,19 @@ class BNN_fMRI_AE(tf.keras.Model):
         self.model = tf.keras.Model(inputs=self._input_tensor, outputs=[x,variance])
 
     
-    def call(self, X):
+    def call(self, X, training=False, T=10):
         if(not self.model.built):
             self.model.build(X.shape)
 
+        if(not training):
+            self.monte_carlo_prediction(self, X, T=10)
+
         return self.model(X)
+
+    def monte_carlo_prediction(self, X, T=10):
+        y_hat = tf.zeros(X.shape)
+        
+        for i in range(T):
+            y_hat = y_hat + self.model(X)[0]
+
+        return y_hat/T
