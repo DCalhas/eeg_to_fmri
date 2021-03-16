@@ -6,24 +6,24 @@ Loss combinating aleatoric and epistemic_uncertainty
 """
 def combined_loss(y_true, y_pred):
 	shape = tf.shape(y_true)
-    D = shape[1]*shape[2]*shape[3]   
-    
-    variance = tf.math.square(y_pred[1])
-    
-    return (1/D)* tf.reduce_sum((tf.exp(-tf.math.log(variance))*(y_pred[0] - y_true)**2)/2 + (tf.math.log(variance))/2)
+	D = shape[1]*shape[2]*shape[3]   
+	
+	variance = tf.math.square(y_pred[1])
+	
+	return (1/D)* tf.reduce_sum((tf.exp(-tf.math.log(variance))*(y_pred[0] - y_true)**2)/2 + (tf.math.log(variance))/2)
 
 """
 Computing \sigma_{i}^{2}
 """
 def aleatoric_uncertainty(model, X, T=10):
-    
-    y_std = tf.zeros(X.shape)
-    
-    for i in range(T):
-        y_t = model(X, training=False, T=T)
-        y_std = y_std + tf.math.square(y_t[1])
-        
-    return y_std/T
+	
+	y_std = tf.zeros(X.shape)
+	
+	for i in range(T):
+		y_t = model(X, training=False, T=T)
+		y_std = y_std + tf.math.square(y_t[1])
+		
+	return y_std/T
 
 """
 Computing Var(y*)
