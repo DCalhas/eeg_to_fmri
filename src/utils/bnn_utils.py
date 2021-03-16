@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_probability as tfp
 
 """
 Loss combinating aleatoric and epistemic_uncertainty
