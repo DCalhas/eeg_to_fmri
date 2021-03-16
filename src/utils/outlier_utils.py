@@ -2,13 +2,14 @@ import numpy as np
 
 
 class IQR:
-    def __init__(self):
-        
+    def __init__(self, l=25, h=75):
+        self.l=l
+        self.h=h
         pass
     
     def fit(self, X):
-        Q1 = np.percentile(X, 25, interpolation = 'midpoint')
-        Q3 = np.percentile(X, 75, interpolation = 'midpoint')
+        Q1 = np.percentile(X, self.l, interpolation = 'midpoint')
+        Q3 = np.percentile(X, self.h, interpolation = 'midpoint')
         
         IQR = Q3 - Q1  
         
