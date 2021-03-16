@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_probability as tfp
 
 from layers.locally_connected import LocallyConnected3D
 
@@ -167,8 +168,8 @@ class fMRI_AE(tf.keras.Model):
         elif(outfilter == 2):
             x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3,
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
-        
-        self.decoder = tf.keras.Model(input_shape, x)        
+
+        self.decoder = tf.keras.Model(input_shape, x)    
 
     def encode(self, X):
         return self.encoder(X)
@@ -181,3 +182,93 @@ class fMRI_AE(tf.keras.Model):
             self.encoder.build(X.shape)
 
         return self.decode(self.encode(X))
+
+
+
+
+class BNN_fMRI_AE(tf.keras.Model):
+    
+    def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
+                        maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
+                        n_stacks=2, local=True, local_attention=False, outfilter=0, seed=None):
+        
+        
+        super(BNN_fMRI_AE, self).__init__()
+        
+        self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels,
+                        maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
+                        n_stacks=n_stacks, local=local, local_attention=local_attention, seed=seed)
+
+        self.build_decoder(outfilter=outfilter, seed=seed)
+    
+    def build_encoder(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
+                        maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
+                        n_stacks=2, local=True, local_attention=False, seed=None):
+
+        self.latent_shape = latent_shape
+        self.in_shape = input_shape
+
+
+        input_shape = tf.keras.layers.Input(shape=input_shape)
+
+        self._input_tensor = input_shape
+        
+        x = input_shape
+        previous_block_x = input_shape
+
+        for i in range(n_stacks):
+            x = stack(x, previous_block_x, tfp.layers.Convolution3DFlipout, 
+                        kernel_size, stride_size, n_channels,
+                        maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+                        skip_connections=skip_connections, seed=seed)
+            previous_block_x=x
+
+        if(local):
+            operation=tfp.layers.Convolution3DFlipout
+        else:
+            operation=LocallyConnected3D
+
+        x = block(x, operation, (7,7,7), stride_size, n_channels,
+                maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, seed=seed)
+
+        x = tf.keras.layers.Flatten()(x)
+        x = tfp.layers.DenseFlipout(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2])(x)
+        x = tf.keras.layers.Reshape(self.latent_shape)(x)
+
+        if(local_attention):
+            #x = tf.keras.layers.MultiHeadAttention(num_heads=2, key_dim=2, attention_axes=(1, 2, 3))(x,x)
+            x = tf.keras.layers.MultiHeadAttention(num_heads=n_channels, key_dim=x.shape[1]*x.shape[2]*x.shape[3], attention_axes=(1, 2, 3),
+                                                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x,x)
+        
+        self.output_encoder = x
+
+    def build_decoder(self, outfilter=0, seed=None):
+
+        x = tf.keras.layers.Flatten()(self.output_encoder)
+
+        #upsampling
+        x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2],
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+        x = tf.keras.layers.Reshape(self.in_shape)(x)
+
+        #filter
+        if(outfilter == 1):
+            x = tf.keras.layers.Conv3D(filters=1, kernel_size=1, strides=1,
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+        elif(outfilter == 2):
+            x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3,
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+        
+
+        #variance computation along with regression
+        variance_pre = tf.keras.layers.Dense(1)(x)
+        variance = tf.keras.layers.Activation('softplus', name='variance')(variance_pre)
+
+        self.model = tf.keras.Model(inputs=self._input_tensor, outputs=[x,variance])
+
+    
+    def call(self, X):
+        if(not self.model.built):
+            self.model.build(X.shape)
+
+        return self.model(X)
