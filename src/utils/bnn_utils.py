@@ -12,17 +12,17 @@ def combined_log_loss(y_true, y_pred):
 def combined_original_loss(y_true, y_pred):
 	variance = tf.math.square(y_pred[1])+1e-9
 	
-	return tf.reduce_mean((1/variance)*(y_pred[0] - y_true)**2)/2 + (tf.math.log(variance))/2, axis=(1,2,3))
+	return tf.reduce_mean(((1/variance)*(y_pred[0] - y_true)**2)/2 + (tf.math.log(variance))/2, axis=(1,2,3))
 
 def combined_square_loss(y_true, y_pred):
 	variance = tf.math.square(y_pred[1])
 	
-	return tf.reduce_mean((1/(variance+1e-9))*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
+	return tf.reduce_mean(((1/(variance+1e-9))*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
 
 def combined_abs_loss(y_true, y_pred):
 	variance = tf.math.abs(y_pred[1])
 	
-	return tf.reduce_mean((1/variance+1e-9)*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
+	return tf.reduce_mean(((1/variance+1e-9)*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
 
 """
 Computing \sigma_{i}^{2}
