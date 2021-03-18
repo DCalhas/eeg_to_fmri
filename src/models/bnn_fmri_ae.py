@@ -82,7 +82,7 @@ class BNN_fMRI_AE(tf.keras.Model):
         previous_block_x = input_shape
 
         for i in range(n_stacks):
-            x = stack(x, previous_block_x, tfp.layers.Convolution3D,#Flipout, 
+            x = stack(x, previous_block_x, tf.layers.Convolution3D,#tfp.layers.Convolution3DFlipout, 
                         kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm,
                         skip_connections=skip_connections)
@@ -90,7 +90,7 @@ class BNN_fMRI_AE(tf.keras.Model):
 
         if(local):
             #operation=tfp.layers.Convolution3DFlipout
-            operation=tfp.layers.Convolution3D
+            operation=tf.layers.Convolution3D
         else:
             operation=LocallyConnected3D
 
@@ -99,7 +99,7 @@ class BNN_fMRI_AE(tf.keras.Model):
 
         x = tf.keras.layers.Flatten()(x)
         #x = tfp.layers.DenseFlipout(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2])(x)
-        x = tfp.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2])(x)
+        x = tf.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2])(x)
         x = tf.keras.layers.Reshape(self.latent_shape)(x)
 
         if(local_attention):
