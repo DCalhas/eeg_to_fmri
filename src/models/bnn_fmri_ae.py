@@ -113,12 +113,12 @@ class BNN_fMRI_AE(tf.keras.Model):
         x = tf.keras.layers.Flatten()(self.output_encoder)
 
         #upsampling
-        x = tfp.layers.DenseVariational(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
+        x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
         x = tf.keras.layers.Reshape(self.in_shape)(x)
 
         #filter
         if(outfilter == 1):
-            x = tfp.layers.Convolution3DFlipout(filters=1, kernel_size=1, strides=1)(x)
+            x = tfp.layers.Convolution3DReparameterization(filters=1, kernel_size=1, strides=1)(x)
         elif(outfilter == 2):
             x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3)(x)
         
