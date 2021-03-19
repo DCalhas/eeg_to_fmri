@@ -113,7 +113,8 @@ class BNN_fMRI_AE(tf.keras.Model):
         x = tf.keras.layers.Flatten()(self.output_encoder)
 
         #upsampling
-        x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
+        #x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
+        x = tfp.layers.DenseFlipout(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
         x = tf.keras.layers.Reshape(self.in_shape)(x)
 
         #filter
