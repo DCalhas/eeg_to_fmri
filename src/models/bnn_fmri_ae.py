@@ -82,15 +82,15 @@ class BNN_fMRI_AE(tf.keras.Model):
         previous_block_x = input_shape
 
         for i in range(n_stacks):
-            x = stack(x, previous_block_x, tf.keras.layers.Convolution3D, #tfp.layers.Convolution3DFlipout,
+            x = stack(x, previous_block_x, tfp.layers.Convolution3DFlipout,#tf.keras.layers.Convolution3D, 
                         kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm,
                         skip_connections=skip_connections)
             previous_block_x=x
 
         if(local):
-            #operation=tfp.layers.Convolution3DFlipout
-            operation=tf.keras.layers.Convolution3D
+            operation=tfp.layers.Convolution3DFlipout
+            #operation=tf.keras.layers.Convolution3D
         else:
             operation=LocallyConnected3D
 
@@ -98,8 +98,8 @@ class BNN_fMRI_AE(tf.keras.Model):
                 maxpool=maxpool, batch_norm=batch_norm)
 
         x = tf.keras.layers.Flatten()(x)
-        #x = tfp.layers.DenseFlipout(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2])(x)
-        x = tf.keras.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2])(x)
+        x = tfp.layers.DenseFlipout(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2])(x)
+        #x = tf.keras.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2])(x)
         x = tf.keras.layers.Reshape(self.latent_shape)(x)
 
         if(local_attention):
@@ -113,8 +113,8 @@ class BNN_fMRI_AE(tf.keras.Model):
         x = tf.keras.layers.Flatten()(self.output_encoder)
 
         #upsampling
-        x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
-        #x = tfp.layers.DenseFlipout(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
+        #x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
+        x = tfp.layers.DenseFlipout(self.in_shape[0]*self.in_shape[1]*self.in_shape[2])(x)
         x = tf.keras.layers.Reshape(self.in_shape)(x)
 
         #filter
