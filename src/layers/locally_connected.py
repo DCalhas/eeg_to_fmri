@@ -468,7 +468,9 @@ class LocallyConnected3DFlipout(_DenseVariational):
 			return (input_shape[0], x, y, z, self.filters)
 
 	def _apply_variational_kernel(self, inputs):
-		if (not isinstance(self.kernel_posterior, independent_lib.Independent) or
+
+		
+		if (not isinstance(self.kernel_posterior, tfp.distributions.independent.Independent) or
 				not isinstance(self.kernel_posterior.distribution, tfp.distributions.normal.Normal)):
 			raise TypeError(
 					'`DenseFlipout` requires '
