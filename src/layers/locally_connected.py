@@ -323,7 +323,35 @@ class _DenseVariational(tf.keras.layers.Layer):
 			return inputs
 		self.bias_posterior_tensor = self.bias_posterior_tensor_fn(
 				self.bias_posterior)
-		return tf.nn.bias_add(inputs, self.bias_posterior_tensor)
+		outputs = inputs
+		if self.data_format == 'channels_first':
+			if self.rank == 1:
+				# tf.nn.bias_add does not accept a 1D input tensor.
+				bias = tf.reshape(self.bias_posterior_tensor,
+													[1, self.filters, 1])
+				outputs += bias
+			if self.rank == 2:
+				outputs = tf.nn.bias_add(outputs,
+																 self.bias_posterior_tensor,
+																 data_format='NCHW')
+			if self.rank == 3:
+				# As of Mar 2017, direct addition is significantly slower than
+				# bias_add when computing gradients. To use bias_add, we collapse Z
+				# and Y into a single dimension to obtain a 4D input tensor.
+				outputs_shape = outputs.shape.as_list()
+				outputs_4d = tf.reshape(outputs,
+																[outputs_shape[0], outputs_shape[1],
+																 outputs_shape[2] * outputs_shape[3],
+																 outputs_shape[4]])
+				outputs_4d = tf.nn.bias_add(outputs_4d,
+																		self.bias_posterior_tensor,
+																		data_format='NCHW')
+				outputs = tf.reshape(outputs_4d, outputs_shape)
+		else:
+			outputs = tf.nn.bias_add(outputs,
+															 self.bias_posterior_tensor,
+															 data_format='NHWC')
+		return outputs
 
 	def _apply_divergence(self, divergence_fn, posterior, prior,
 												posterior_tensor, name):
@@ -337,8 +365,6 @@ class _DenseVariational(tf.keras.layers.Layer):
 						posterior, prior, posterior_tensor),
 				name=name)
 		self.add_loss(divergence)
-
-
 
 class LocallyConnected3DFlipout(_DenseVariational):
 
@@ -375,6 +401,7 @@ class LocallyConnected3DFlipout(_DenseVariational):
 		self.implementation = implementation
 		self.input_spec = tf.keras.layers.InputSpec(ndim=5)
 		self.seed=seed
+		self.rank=3
 
 	def build(self, input_shape):
 		if self.data_format == 'channels_last':
@@ -508,11 +535,11 @@ class LocallyConnected3DFlipout(_DenseVariational):
 				seed=seed_stream())
 
 		if self.data_format == 'channels_first':
-			for _ in range(3):
+			for _ in range(self.rank):
 				sign_input = tf.expand_dims(sign_input, -1)	# 2D ex: (B, C, 1, 1)
 				sign_output = tf.expand_dims(sign_output, -1)
 		else:
-			for _ in range(3):
+			for _ in range(self.rank):
 				sign_input = tf.expand_dims(sign_input, 1)	# 2D ex: (B, 1, 1, C)
 				sign_output = tf.expand_dims(sign_output, 1)
 
