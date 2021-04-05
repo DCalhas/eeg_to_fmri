@@ -2,7 +2,7 @@ import tensorflow as tf
 
 import tensorflow_probability as tfp
 
-from utils import conv_utils
+from utils import conv_utils, tfp_seed
 
 import numpy as np
 
@@ -469,7 +469,7 @@ class LocallyConnected3DFlipout(_DenseVariational):
 
 	def _apply_variational_kernel(self, inputs):
 
-		
+
 		if (not isinstance(self.kernel_posterior, tfp.distributions.independent.Independent) or
 				not isinstance(self.kernel_posterior.distribution, tfp.distributions.normal.Normal)):
 			raise TypeError(
@@ -492,7 +492,7 @@ class LocallyConnected3DFlipout(_DenseVariational):
 		else:
 			channels = input_shape[-1]
 
-		seed_stream = SeedStream(self.seed, salt='ConvFlipout')
+		seed_stream = tfp_seed.SeedStream(self.seed, salt='LocallyConnected3DFlipout')
 
 		sign_input = tfp_random.rademacher(
 				tf.concat([batch_shape,
