@@ -29,6 +29,11 @@ def combined_abs_loss(y_true, y_pred):
 	
 	return tf.reduce_mean(((1/variance+1e-9)*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
 
+def combined_abs_diff_log_loss(y_true, y_pred):
+	variance = tf.math.abs(y_pred[1])
+	
+	return tf.reduce_mean((-variance*(y_pred[0] - y_true)**2)/2 + (tf.math.log(variance))/2, axis=(1,2,3))
+
 def combined_abs_diff_loss(y_true, y_pred):
 	variance = tf.math.abs(y_pred[1])
 	
