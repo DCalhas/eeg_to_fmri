@@ -399,6 +399,8 @@ class LocallyConnected3DFlipout(_DenseVariational):
 		self.kernel_shape = (self.output_x * self.output_y * self.output_z * self.filters,
 									input_x * input_y * input_z * input_filter)
 
+		dtype = tf.as_dtype(self.dtype or tf.keras.backend.floatx())
+
 		self.kernel_idxs = sorted(
 			conv_utils.conv_kernel_idxs(
 				input_shape=(input_x, input_y, input_z),
