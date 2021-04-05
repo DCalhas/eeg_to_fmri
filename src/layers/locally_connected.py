@@ -508,11 +508,11 @@ class LocallyConnected3DFlipout(_DenseVariational):
 				seed=seed_stream())
 
 		if self.data_format == 'channels_first':
-			for _ in range(self.rank):
+			for _ in range(3):
 				sign_input = tf.expand_dims(sign_input, -1)	# 2D ex: (B, C, 1, 1)
 				sign_output = tf.expand_dims(sign_output, -1)
 		else:
-			for _ in range(self.rank):
+			for _ in range(3):
 				sign_input = tf.expand_dims(sign_input, 1)	# 2D ex: (B, 1, 1, C)
 				sign_output = tf.expand_dims(sign_output, 1)
 
