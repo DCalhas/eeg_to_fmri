@@ -340,14 +340,16 @@ class _DenseVariational(tf.keras.layers.Layer):
 				# and Y into a single dimension to obtain a 4D input tensor.
 				outputs_shape = outputs.shape.as_list()
 				outputs_4d = tf.reshape(outputs,
-																[outputs_shape[0], outputs_shape[1],
-																 outputs_shape[2] * outputs_shape[3],
-																 outputs_shape[4]])
+										[outputs_shape[0], outputs_shape[1],
+										 outputs_shape[2] * outputs_shape[3],
+										 outputs_shape[4]])
 				outputs_4d = tf.nn.bias_add(outputs_4d,
-																		self.bias_posterior_tensor,
-																		data_format='NCHW')
+											self.bias_posterior_tensor,
+											data_format='NCHW')
 				outputs = tf.reshape(outputs_4d, outputs_shape)
 		else:
+			print(outputs.shape)
+			print(self.bias_posterior_tensor.shape)
 			outputs = tf.nn.bias_add(outputs,
 															 self.bias_posterior_tensor,
 															 data_format='NHWC')
