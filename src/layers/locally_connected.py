@@ -201,15 +201,15 @@ class _DenseVariational(tf.keras.layers.Layer):
 			units,
 			activation=None,
 			activity_regularizer=None,
-			kernel_posterior_fn=tfp_layers_util.default_mean_field_normal_fn(),
+			kernel_posterior_fn=tfp.layers.util.default_mean_field_normal_fn(),
 			kernel_posterior_tensor_fn=lambda d: d.sample(),
-			kernel_prior_fn=tfp_layers_util.default_multivariate_normal_fn,
-			kernel_divergence_fn=lambda q, p, ignore: kl_lib.kl_divergence(q, p),
-			bias_posterior_fn=tfp_layers_util.default_mean_field_normal_fn(
+			kernel_prior_fn=tfp.layers.util.default_multivariate_normal_fn,
+			kernel_divergence_fn=lambda q, p, ignore: tfp.distributions.kullback_leibler.kl_divergence(q, p),
+			bias_posterior_fn=tfp.layers.util.default_mean_field_normal_fn(
 					is_singular=True),
 			bias_posterior_tensor_fn=lambda d: d.sample(),
 			bias_prior_fn=None,
-			bias_divergence_fn=lambda q, p, ignore: kl_lib.kl_divergence(q, p),
+			bias_divergence_fn=lambda q, p, ignore: tfp.distributions.kullback_leibler.kl_divergence(q, p),
 			**kwargs):
 		# pylint: disable=g-doc-args
 		"""Construct layer.
@@ -343,7 +343,7 @@ class _DenseVariational(tf.keras.layers.Layer):
 				function_name = None
 				function_type = None
 			else:
-				function_name, function_type = tfp_layers_util.serialize_function(
+				function_name, function_type = tfp.layers.util.serialize_function(
 						function)
 			config[function_key] = function_name
 			config[function_key + '_type'] = function_type
@@ -374,7 +374,7 @@ class _DenseVariational(tf.keras.layers.Layer):
 			serial = config[function_key]
 			function_type = config.pop(function_key + '_type')
 			if serial is not None:
-				config[function_key] = tfp_layers_util.deserialize_function(
+				config[function_key] = tfp.layers.util.deserialize_function(
 						serial,
 						function_type=function_type)
 		return cls(**config)
