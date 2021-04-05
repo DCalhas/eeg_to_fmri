@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-from layers.locally_connected import LocallyConnected3D
+from layers.locally_connected import LocallyConnected3D, LocallyConnected3DFlipout
 
 
 
