@@ -522,9 +522,6 @@ class LocallyConnected3DFlipout(_DenseVariational):
 		print(self.kernel_posterior_affine_tensor.shape)
 		print(self.kernel_posterior.distribution.loc)
 
-		perturbed_inputs = tf.matmul(
-				inputs * sign_input, self.kernel_posterior_affine_tensor) * sign_output
-
 		outputs = local_conv_sparse_matmul(inputs, self.kernel_posterior.distribution.loc, self.kernel_idxs,
 										self.kernel_shape,
 										self.compute_output_shape(inputs.shape))
