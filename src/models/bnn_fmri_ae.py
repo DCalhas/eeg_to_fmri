@@ -121,7 +121,7 @@ class BNN_fMRI_AE(tf.keras.Model):
         if(outfilter == 1):
             x = tfp.layers.Convolution3DFlipout(filters=1, kernel_size=1, strides=1)(x)
         elif(outfilter == 2):
-            x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3)(x)
+            x = LocallyConnected3DFlipout(filters=1, kernel_size=1, strides=1, implementation=3)(x)
         
 
         #variance computation along with regression

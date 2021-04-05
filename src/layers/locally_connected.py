@@ -232,45 +232,6 @@ class _DenseVariational(tf.keras.layers.Layer):
 		self.bias_prior_fn = bias_prior_fn
 		self.bias_divergence_fn = bias_divergence_fn
 
-	def build(self, input_shape):
-		input_shape = tf.TensorShape(input_shape)
-		in_size = tf.compat.dimension_value(input_shape.with_rank_at_least(2)[-1])
-		if in_size is None:
-			raise ValueError('The last dimension of the inputs to `Dense` '
-											 'should be defined. Found `None`.')
-		self._input_spec = tf.keras.layers.InputSpec(min_ndim=2, axes={-1: in_size})
-
-		# If self.dtype is None, build weights using the default dtype.
-		dtype = tf.as_dtype(self.dtype or tf.keras.backend.floatx())
-
-		# Must have a posterior kernel.
-		self.kernel_posterior = self.kernel_posterior_fn(
-				dtype, [in_size, self.units], 'kernel_posterior',
-				self.trainable, self.add_variable)
-
-		if self.kernel_prior_fn is None:
-			self.kernel_prior = None
-		else:
-			self.kernel_prior = self.kernel_prior_fn(
-					dtype, [in_size, self.units], 'kernel_prior',
-					self.trainable, self.add_variable)
-
-		if self.bias_posterior_fn is None:
-			self.bias_posterior = None
-		else:
-			self.bias_posterior = self.bias_posterior_fn(
-					dtype, [self.units], 'bias_posterior',
-					self.trainable, self.add_variable)
-
-		if self.bias_prior_fn is None:
-			self.bias_prior = None
-		else:
-			self.bias_prior = self.bias_prior_fn(
-					dtype, [self.units], 'bias_prior',
-					self.trainable, self.add_variable)
-
-		self.built = True
-
 	def call(self, inputs):
 		inputs = tf.convert_to_tensor(value=inputs, dtype=self.dtype)
 
@@ -411,17 +372,19 @@ class LocallyConnected3DFlipout(_DenseVariational):
 				padding='valid',
 				data_format=None,
 				activation=None,
-				use_bias=True,
-				kernel_initializer='glorot_uniform',
-				bias_initializer='zeros',
-				kernel_regularizer=None,
-				bias_regularizer=None,
-				activity_regularizer=None,
-				kernel_constraint=None,
-				bias_constraint=None,
+				trainable=True,
+				kernel_posterior_fn=tfp.layers.util.default_mean_field_normal_fn(),
+				kernel_posterior_tensor_fn=lambda d: d.sample(),
+				kernel_prior_fn=tfp.layers.util.default_multivariate_normal_fn,
+				kernel_divergence_fn=lambda q, p, ignore: tfp.distributions.kullback_leibler.kl_divergence(q, p),
+				bias_posterior_fn=tfp.layers.util.default_mean_field_normal_fn(
+								is_singular=True),
+				bias_posterior_tensor_fn=lambda d: d.sample(),
+				bias_prior_fn=None,
+				bias_divergence_fn=lambda q, p, ignore: tfp.distributions.kullback_leibler.kl_divergence(q, p),
 				implementation=3,
 				**kwargs):
-		super(LocallyConnected3D, self).__init__(**kwargs)
+		super(LocallyConnected3DFlipout, self).__init__(**kwargs)
 		self.filters = filters
 		self.kernel_size = conv_utils.normalize_tuple(kernel_size, 3, 'kernel_size')
 		self.strides = conv_utils.normalize_tuple(strides, 3, 'strides')
@@ -432,14 +395,6 @@ class LocallyConnected3DFlipout(_DenseVariational):
 							padding)
 		self.data_format = conv_utils.normalize_data_format(data_format)
 		self.activation = tf.keras.activations.get(activation)
-		self.use_bias = use_bias
-		self.kernel_initializer = tf.keras.initializers.get(kernel_initializer)
-		self.bias_initializer = tf.keras.initializers.get(bias_initializer)
-		self.kernel_regularizer = tf.keras.regularizers.get(kernel_regularizer)
-		self.bias_regularizer = tf.keras.regularizers.get(bias_regularizer)
-		self.activity_regularizer = tf.keras.regularizers.get(activity_regularizer)
-		self.kernel_constraint = tf.keras.constraints.get(kernel_constraint)
-		self.bias_constraint = tf.keras.constraints.get(bias_constraint)
 		self.implementation = implementation
 		self.input_spec = tf.keras.layers.InputSpec(ndim=5)
 
@@ -464,67 +419,48 @@ class LocallyConnected3DFlipout(_DenseVariational):
 		self.output_x = output_x
 		self.output_y = output_y
 		self.output_z = output_z
+	
+		self.kernel_shape = (self.output_x * self.output_y * self.output_z * self.filters,
+									input_x * input_y * input_z * input_filter)
 
-		if self.implementation == 1:
-			raise NotImplementedError
-
-		elif self.implementation == 2:
-			if self.data_format == 'channels_first':
-				self.kernel_shape = (input_filter, input_x, input_y, input_z, self.filters,
-									self.output_x, self.output_y, self.output_z)
-			else:
-				self.kernel_shape = (input_x, input_y, input_z, input_filter,
-									self.output_x, self.output_y, self.output_z, self.filters)
-
-			self.kernel = self.add_weight(
-				shape=self.kernel_shape,
-				initializer=self.kernel_initializer,
-				name='kernel',
-				regularizer=self.kernel_regularizer,
-				constraint=self.kernel_constraint)
-
-			self.kernel_mask = get_locallyconnected_mask(
+		self.kernel_idxs = sorted(
+			conv_utils.conv_kernel_idxs(
 				input_shape=(input_x, input_y, input_z),
 				kernel_shape=self.kernel_size,
 				strides=self.strides,
 				padding=self.padding,
-				data_format=self.data_format,
-			)
+				filters_in=input_filter,
+				filters_out=self.filters,
+				data_format=self.data_format))
 
-		elif self.implementation == 3:
-			self.kernel_shape = (self.output_x * self.output_y * self.output_z * self.filters,
-								input_x * input_y * input_z * input_filter)
+		self.kernel_posterior = self.kernel_posterior_fn(
+				dtype, [len(self.kernel_idxs)], 'kernel_posterior',
+				self.trainable, self.add_variable)
 
-			self.kernel_idxs = sorted(
-				conv_utils.conv_kernel_idxs(
-					input_shape=(input_x, input_y, input_z),
-					kernel_shape=self.kernel_size,
-					strides=self.strides,
-					padding=self.padding,
-					filters_in=input_filter,
-					filters_out=self.filters,
-					data_format=self.data_format))
-
-			self.kernel = self.add_weight(
-				shape=(len(self.kernel_idxs),),
-				initializer=self.kernel_initializer,
-				name='kernel',
-				regularizer=self.kernel_regularizer,
-				constraint=self.kernel_constraint)
-
+		if self.kernel_prior_fn is None:
+			self.kernel_prior = None
 		else:
-			raise ValueError('Unrecognized implementation mode: %d.' %
-							self.implementation)
+			self.kernel_prior = self.kernel_prior_fn(
+					dtype, [len(self.kernel_idxs)], 'kernel_prior',
+					self.trainable, self.add_variable)
 
-		if self.use_bias:
-			self.bias = self.add_weight(
-				shape=(output_x, output_y, output_z, self.filters),
-				initializer=self.bias_initializer,
-				name='bias',
-				regularizer=self.bias_regularizer,
-				constraint=self.bias_constraint)
+		if self.bias_posterior_fn is None:
+			self.bias_posterior = None
 		else:
-			self.bias = None
+			self.bias_posterior = self.bias_posterior_fn(
+					dtype, [output_x, output_y, output_z, self.filters], 'bias_posterior',
+					self.trainable, self.add_variable)
+
+		if self.bias_prior_fn is None:
+			self.bias_prior = None
+		else:
+			self.bias_prior = self.bias_prior_fn(
+					dtype, [output_x, output_y, output_z, self.filters], 'bias_prior',
+					self.trainable, self.add_variable)
+
+		self.built = True
+
+
 		if self.data_format == 'channels_first':
 			self.input_spec = tf.keras.layers.InputSpec(ndim=5, axes={1: input_filter})
 		else:
@@ -553,26 +489,64 @@ class LocallyConnected3DFlipout(_DenseVariational):
 		elif self.data_format == 'channels_last':
 			return (input_shape[0], x, y, z, self.filters)
 
-	def call(self, inputs):
-		if self.implementation == 1:
-			raise NotImplementedError
+	def _apply_variational_kernel(self, inputs):
+		if (not isinstance(self.kernel_posterior, independent_lib.Independent) or
+				not isinstance(self.kernel_posterior.distribution, tfp.distributions.normal.Normal)):
+			raise TypeError(
+					'`DenseFlipout` requires '
+					'`kernel_posterior_fn` produce an instance of '
+					'`tfd.Independent(tfd.Normal)` '
+					'(saw: \"{}\").'.format(self.kernel_posterior.name))
+		self.kernel_posterior_affine = tfp.distributions.normal.Normal(
+				loc=tf.zeros_like(self.kernel_posterior.distribution.loc),
+				scale=self.kernel_posterior.distribution.scale)
+		self.kernel_posterior_affine_tensor = (
+				self.kernel_posterior_tensor_fn(self.kernel_posterior_affine))
+		self.kernel_posterior_tensor = None
 
-		elif self.implementation == 2:
-			output = local_conv_matmul(inputs, self.kernel, self.kernel_mask,
-									self.compute_output_shape(inputs.shape))
-		elif self.implementation == 3:
-			output = local_conv_sparse_matmul(inputs, self.kernel, self.kernel_idxs,
+		input_shape = tf.shape(inputs)
+		batch_shape = tf.expand_dims(input_shape[0], 0)
+
+		if self.data_format == 'channels_first':
+			channels = input_shape[1]
+		else:
+			channels = input_shape[-1]
+
+		seed_stream = SeedStream(self.seed, salt='ConvFlipout')
+
+		sign_input = tfp_random.rademacher(
+				tf.concat([batch_shape,
+									 tf.expand_dims(channels, 0)], 0),
+				dtype=inputs.dtype,
+				seed=seed_stream())
+		sign_output = tfp_random.rademacher(
+				tf.concat([batch_shape,
+									 tf.expand_dims(self.filters, 0)], 0),
+				dtype=inputs.dtype,
+				seed=seed_stream())
+
+		if self.data_format == 'channels_first':
+			for _ in range(self.rank):
+				sign_input = tf.expand_dims(sign_input, -1)	# 2D ex: (B, C, 1, 1)
+				sign_output = tf.expand_dims(sign_output, -1)
+		else:
+			for _ in range(self.rank):
+				sign_input = tf.expand_dims(sign_input, 1)	# 2D ex: (B, 1, 1, C)
+				sign_output = tf.expand_dims(sign_output, 1)
+
+		perturbed_inputs = tf.matmul(
+				inputs * sign_input, self.kernel_posterior_affine_tensor) * sign_output
+
+		outputs = local_conv_sparse_matmul(inputs, self.kernel_posterior.distribution.loc, self.kernel_idxs,
 										self.kernel_shape,
 										self.compute_output_shape(inputs.shape))
-		else:
-			raise ValueError('Unrecognized implementation mode: %d.' %
-							self.implementation)
 
-		if self.use_bias:
-			output = tf.keras.backend.bias_add(output, self.bias, data_format=self.data_format)
 
-		output = self.activation(output)
-		return output
+		perturbed_inputs = local_conv_sparse_matmul(inputs*sign_input, self.kernel_posterior_affine_tensor, self.kernel_idxs,
+										self.kernel_shape,
+										self.compute_output_shape(inputs.shape))*sign_output
+
+		return outputs+perturbed_inputs
 
 
 def get_locallyconnected_mask(input_shape, kernel_shape, strides, padding,
