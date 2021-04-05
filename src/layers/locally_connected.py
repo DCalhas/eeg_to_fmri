@@ -196,8 +196,6 @@ class _DenseVariational(tf.keras.layers.Layer):
 	(`q(W|x)`), prior (`p(W)`), and divergence for both the `kernel` and `bias`
 	distributions.
 	"""
-
-	@docstring_util.expand_docstring(args=doc_args)
 	def __init__(
 			self,
 			units,
@@ -352,7 +350,6 @@ class _DenseVariational(tf.keras.layers.Layer):
 		base_config = super(_DenseVariational, self).get_config()
 		return dict(list(base_config.items()) + list(config.items()))
 
-	@classmethod
 	def from_config(cls, config):
 		"""Creates a layer from its config.
 		This method is the reverse of `get_config`, capable of instantiating the
@@ -402,6 +399,8 @@ class _DenseVariational(tf.keras.layers.Layer):
 						posterior, prior, posterior_tensor),
 				name=name)
 		self.add_loss(divergence)
+
+
 
 class LocallyConnected3DFlipout(_DenseVariational):
 
