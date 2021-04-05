@@ -496,12 +496,12 @@ class LocallyConnected3DFlipout(_DenseVariational):
 
 		seed_stream = tfp_seed.SeedStream(self.seed, salt='LocallyConnected3DFlipout')
 
-		sign_input = tfp_random.rademacher(
+		sign_input = tfp.random.rademacher(
 				tf.concat([batch_shape,
 									 tf.expand_dims(channels, 0)], 0),
 				dtype=inputs.dtype,
 				seed=seed_stream())
-		sign_output = tfp_random.rademacher(
+		sign_output = tfp.random.rademacher(
 				tf.concat([batch_shape,
 									 tf.expand_dims(self.filters, 0)], 0),
 				dtype=inputs.dtype,
