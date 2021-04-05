@@ -516,6 +516,12 @@ class LocallyConnected3DFlipout(_DenseVariational):
 				sign_input = tf.expand_dims(sign_input, 1)	# 2D ex: (B, 1, 1, C)
 				sign_output = tf.expand_dims(sign_output, 1)
 
+		print(sign_input.shape)
+		print(sign_output.shape)
+		print(inputs.shape)
+		print(self.kernel_posterior_affine_tensor.shape)
+		print(self.kernel_posterior.distribution.loc)
+
 		perturbed_inputs = tf.matmul(
 				inputs * sign_input, self.kernel_posterior_affine_tensor) * sign_output
 
