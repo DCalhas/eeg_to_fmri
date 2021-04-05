@@ -198,7 +198,6 @@ class _DenseVariational(tf.keras.layers.Layer):
 	"""
 	def __init__(
 			self,
-			units,
 			activation=None,
 			activity_regularizer=None,
 			kernel_posterior_fn=tfp.layers.util.default_mean_field_normal_fn(),
@@ -220,9 +219,7 @@ class _DenseVariational(tf.keras.layers.Layer):
 		super(_DenseVariational, self).__init__(
 				activity_regularizer=activity_regularizer,
 				**kwargs)
-		self.units = units
 		self.activation = tf.keras.activations.get(activation)
-		self.input_spec = tf.keras.layers.InputSpec(min_ndim=2)
 		self.kernel_posterior_fn = kernel_posterior_fn
 		self.kernel_posterior_tensor_fn = kernel_posterior_tensor_fn
 		self.kernel_prior_fn = kernel_prior_fn
@@ -394,7 +391,6 @@ class LocallyConnected3DFlipout(_DenseVariational):
 							'(only "valid" is supported if implementation is 1): ' +
 							padding)
 		self.data_format = conv_utils.normalize_data_format(data_format)
-		self.activation = tf.keras.activations.get(activation)
 		self.implementation = implementation
 		self.input_spec = tf.keras.layers.InputSpec(ndim=5)
 
