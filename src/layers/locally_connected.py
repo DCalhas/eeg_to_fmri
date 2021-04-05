@@ -328,12 +328,12 @@ class _DenseVariational(tf.keras.layers.Layer):
 			if self.rank == 1:
 				# tf.nn.bias_add does not accept a 1D input tensor.
 				bias = tf.reshape(self.bias_posterior_tensor,
-													[1, self.filters, 1])
+								[1, self.filters, 1])
 				outputs += bias
 			if self.rank == 2:
 				outputs = tf.nn.bias_add(outputs,
-																 self.bias_posterior_tensor,
-																 data_format='NCHW')
+										 self.bias_posterior_tensor,
+										 data_format='NCHW')
 			if self.rank == 3:
 				# As of Mar 2017, direct addition is significantly slower than
 				# bias_add when computing gradients. To use bias_add, we collapse Z
@@ -351,8 +351,8 @@ class _DenseVariational(tf.keras.layers.Layer):
 			print(outputs.shape)
 			print(self.bias_posterior_tensor.shape)
 			outputs = tf.nn.bias_add(outputs,
-															 self.bias_posterior_tensor,
-															 data_format='NHWC')
+									 self.bias_posterior_tensor,
+									 data_format='NHWZC')
 		return outputs
 
 	def _apply_divergence(self, divergence_fn, posterior, prior,
