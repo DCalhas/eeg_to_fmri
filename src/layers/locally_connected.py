@@ -360,6 +360,7 @@ class LocallyConnected3DFlipout(_DenseVariational):
 				bias_prior_fn=None,
 				bias_divergence_fn=lambda q, p, ignore: tfp.distributions.kullback_leibler.kl_divergence(q, p),
 				implementation=3,
+				seed=None,
 				**kwargs):
 		super(LocallyConnected3DFlipout, self).__init__(**kwargs)
 		self.filters = filters
@@ -373,6 +374,7 @@ class LocallyConnected3DFlipout(_DenseVariational):
 		self.data_format = conv_utils.normalize_data_format(data_format)
 		self.implementation = implementation
 		self.input_spec = tf.keras.layers.InputSpec(ndim=5)
+		self.seed=seed
 
 	def build(self, input_shape):
 		if self.data_format == 'channels_last':
