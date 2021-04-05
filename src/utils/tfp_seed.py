@@ -161,11 +161,12 @@ class SeedStream(object):
 			return None
 		composite = str((self._seed, self._counter, self._salt)).encode('utf-8')
 		return int(hashlib.sha512(composite).hexdigest(), 16)
-
+	
 	def _call_jax(self):
 		"""A __call__ impl for JAX `PRNGKey`s."""
 		self._counter += 1
 		if self._seed is None:
+			raise ValueError('Must provide a PRNGKey for JAX SeedStream.')
 		composite = str((self._salt, self._counter)).encode('utf-8')
 		import jax.random as jaxrand	# pylint: disable=g-import-not-at-top
 		return jaxrand.fold_in(
