@@ -250,25 +250,6 @@ class _DenseVariational(tf.keras.layers.Layer):
 				name='divergence_bias')
 		return outputs
 
-	def compute_output_shape(self, input_shape):
-		"""Computes the output shape of the layer.
-		Args:
-			input_shape: Shape tuple (tuple of integers) or list of shape tuples
-				(one per output tensor of the layer). Shape tuples can include None for
-				free dimensions, instead of an integer.
-		Returns:
-			output_shape: A tuple representing the output shape.
-		Raises:
-			ValueError: If innermost dimension of `input_shape` is not defined.
-		"""
-		input_shape = tf.TensorShape(input_shape)
-		input_shape = input_shape.with_rank_at_least(2)
-		if tf.compat.dimension_value(input_shape[-1]) is None:
-			raise ValueError(
-					'The innermost dimension of `input_shape` must be defined, '
-					'but saw: {}'.format(input_shape))
-		return input_shape[:-1].concatenate(self.units)
-
 	def get_config(self):
 		"""Returns the config of the layer.
 		A layer config is a Python dictionary (serializable) containing the
@@ -279,7 +260,6 @@ class _DenseVariational(tf.keras.layers.Layer):
 				serialized values.
 		"""
 		config = {
-				'units': self.units,
 				'activation': (tf.keras.activations.serialize(self.activation)
 											 if self.activation else None),
 				'activity_regularizer':
