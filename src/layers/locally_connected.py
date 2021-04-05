@@ -181,7 +181,229 @@ class LocallyConnected3D(tf.keras.layers.Layer):
 		return output
 
 
-class LocallyConnected3DFlipout(tfp.layers._DenseVariational):
+
+class _DenseVariational(tf.keras.layers.Layer):
+	"""Abstract densely-connected class (private, used as implementation base).
+	This layer implements the Bayesian variational inference analogue to
+	a dense layer by assuming the `kernel` and/or the `bias` are drawn
+	from distributions. By default, the layer implements a stochastic
+	forward pass via sampling from the kernel and bias posteriors,
+	```none
+	kernel, bias ~ posterior
+	outputs = activation(matmul(inputs, kernel) + bias)
+	```
+	The arguments permit separate specification of the surrogate posterior
+	(`q(W|x)`), prior (`p(W)`), and divergence for both the `kernel` and `bias`
+	distributions.
+	"""
+
+	@docstring_util.expand_docstring(args=doc_args)
+	def __init__(
+			self,
+			units,
+			activation=None,
+			activity_regularizer=None,
+			kernel_posterior_fn=tfp_layers_util.default_mean_field_normal_fn(),
+			kernel_posterior_tensor_fn=lambda d: d.sample(),
+			kernel_prior_fn=tfp_layers_util.default_multivariate_normal_fn,
+			kernel_divergence_fn=lambda q, p, ignore: kl_lib.kl_divergence(q, p),
+			bias_posterior_fn=tfp_layers_util.default_mean_field_normal_fn(
+					is_singular=True),
+			bias_posterior_tensor_fn=lambda d: d.sample(),
+			bias_prior_fn=None,
+			bias_divergence_fn=lambda q, p, ignore: kl_lib.kl_divergence(q, p),
+			**kwargs):
+		# pylint: disable=g-doc-args
+		"""Construct layer.
+		Args:
+			${args}
+		"""
+		# pylint: enable=g-doc-args
+		super(_DenseVariational, self).__init__(
+				activity_regularizer=activity_regularizer,
+				**kwargs)
+		self.units = units
+		self.activation = tf.keras.activations.get(activation)
+		self.input_spec = tf.keras.layers.InputSpec(min_ndim=2)
+		self.kernel_posterior_fn = kernel_posterior_fn
+		self.kernel_posterior_tensor_fn = kernel_posterior_tensor_fn
+		self.kernel_prior_fn = kernel_prior_fn
+		self.kernel_divergence_fn = kernel_divergence_fn
+		self.bias_posterior_fn = bias_posterior_fn
+		self.bias_posterior_tensor_fn = bias_posterior_tensor_fn
+		self.bias_prior_fn = bias_prior_fn
+		self.bias_divergence_fn = bias_divergence_fn
+
+	def build(self, input_shape):
+		input_shape = tf.TensorShape(input_shape)
+		in_size = tf.compat.dimension_value(input_shape.with_rank_at_least(2)[-1])
+		if in_size is None:
+			raise ValueError('The last dimension of the inputs to `Dense` '
+											 'should be defined. Found `None`.')
+		self._input_spec = tf.keras.layers.InputSpec(min_ndim=2, axes={-1: in_size})
+
+		# If self.dtype is None, build weights using the default dtype.
+		dtype = tf.as_dtype(self.dtype or tf.keras.backend.floatx())
+
+		# Must have a posterior kernel.
+		self.kernel_posterior = self.kernel_posterior_fn(
+				dtype, [in_size, self.units], 'kernel_posterior',
+				self.trainable, self.add_variable)
+
+		if self.kernel_prior_fn is None:
+			self.kernel_prior = None
+		else:
+			self.kernel_prior = self.kernel_prior_fn(
+					dtype, [in_size, self.units], 'kernel_prior',
+					self.trainable, self.add_variable)
+
+		if self.bias_posterior_fn is None:
+			self.bias_posterior = None
+		else:
+			self.bias_posterior = self.bias_posterior_fn(
+					dtype, [self.units], 'bias_posterior',
+					self.trainable, self.add_variable)
+
+		if self.bias_prior_fn is None:
+			self.bias_prior = None
+		else:
+			self.bias_prior = self.bias_prior_fn(
+					dtype, [self.units], 'bias_prior',
+					self.trainable, self.add_variable)
+
+		self.built = True
+
+	def call(self, inputs):
+		inputs = tf.convert_to_tensor(value=inputs, dtype=self.dtype)
+
+		outputs = self._apply_variational_kernel(inputs)
+		outputs = self._apply_variational_bias(outputs)
+		if self.activation is not None:
+			outputs = self.activation(outputs)	# pylint: disable=not-callable
+		self._apply_divergence(
+				self.kernel_divergence_fn,
+				self.kernel_posterior,
+				self.kernel_prior,
+				self.kernel_posterior_tensor,
+				name='divergence_kernel')
+		self._apply_divergence(
+				self.bias_divergence_fn,
+				self.bias_posterior,
+				self.bias_prior,
+				self.bias_posterior_tensor,
+				name='divergence_bias')
+		return outputs
+
+	def compute_output_shape(self, input_shape):
+		"""Computes the output shape of the layer.
+		Args:
+			input_shape: Shape tuple (tuple of integers) or list of shape tuples
+				(one per output tensor of the layer). Shape tuples can include None for
+				free dimensions, instead of an integer.
+		Returns:
+			output_shape: A tuple representing the output shape.
+		Raises:
+			ValueError: If innermost dimension of `input_shape` is not defined.
+		"""
+		input_shape = tf.TensorShape(input_shape)
+		input_shape = input_shape.with_rank_at_least(2)
+		if tf.compat.dimension_value(input_shape[-1]) is None:
+			raise ValueError(
+					'The innermost dimension of `input_shape` must be defined, '
+					'but saw: {}'.format(input_shape))
+		return input_shape[:-1].concatenate(self.units)
+
+	def get_config(self):
+		"""Returns the config of the layer.
+		A layer config is a Python dictionary (serializable) containing the
+		configuration of a layer. The same layer can be reinstantiated later
+		(without its trained weights) from this configuration.
+		Returns:
+			config: A Python dictionary of class keyword arguments and their
+				serialized values.
+		"""
+		config = {
+				'units': self.units,
+				'activation': (tf.keras.activations.serialize(self.activation)
+											 if self.activation else None),
+				'activity_regularizer':
+						tf.keras.initializers.serialize(self.activity_regularizer),
+		}
+		function_keys = [
+				'kernel_posterior_fn',
+				'kernel_posterior_tensor_fn',
+				'kernel_prior_fn',
+				'kernel_divergence_fn',
+				'bias_posterior_fn',
+				'bias_posterior_tensor_fn',
+				'bias_prior_fn',
+				'bias_divergence_fn',
+		]
+		for function_key in function_keys:
+			function = getattr(self, function_key)
+			if function is None:
+				function_name = None
+				function_type = None
+			else:
+				function_name, function_type = tfp_layers_util.serialize_function(
+						function)
+			config[function_key] = function_name
+			config[function_key + '_type'] = function_type
+		base_config = super(_DenseVariational, self).get_config()
+		return dict(list(base_config.items()) + list(config.items()))
+
+	@classmethod
+	def from_config(cls, config):
+		"""Creates a layer from its config.
+		This method is the reverse of `get_config`, capable of instantiating the
+		same layer from the config dictionary.
+		Args:
+			config: A Python dictionary, typically the output of `get_config`.
+		Returns:
+			layer: A layer instance.
+		"""
+		config = config.copy()
+		function_keys = [
+				'kernel_posterior_fn',
+				'kernel_posterior_tensor_fn',
+				'kernel_prior_fn',
+				'kernel_divergence_fn',
+				'bias_posterior_fn',
+				'bias_posterior_tensor_fn',
+				'bias_prior_fn',
+				'bias_divergence_fn',
+		]
+		for function_key in function_keys:
+			serial = config[function_key]
+			function_type = config.pop(function_key + '_type')
+			if serial is not None:
+				config[function_key] = tfp_layers_util.deserialize_function(
+						serial,
+						function_type=function_type)
+		return cls(**config)
+
+	def _apply_variational_bias(self, inputs):
+		if self.bias_posterior is None:
+			self.bias_posterior_tensor = None
+			return inputs
+		self.bias_posterior_tensor = self.bias_posterior_tensor_fn(
+				self.bias_posterior)
+		return tf.nn.bias_add(inputs, self.bias_posterior_tensor)
+
+	def _apply_divergence(self, divergence_fn, posterior, prior,
+												posterior_tensor, name):
+		if (divergence_fn is None or
+				posterior is None or
+				prior is None):
+			divergence = None
+			return
+		divergence = tf.identity(
+				divergence_fn(
+						posterior, prior, posterior_tensor),
+				name=name)
+		self.add_loss(divergence)
+
+class LocallyConnected3DFlipout(_DenseVariational):
 
 	def __init__(self,
 				filters,
