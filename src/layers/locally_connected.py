@@ -357,19 +357,11 @@ class _DenseVariational(tf.keras.layers.Layer):
 				# As of Mar 2017, direct addition is significantly slower than
 				# bias_add when computing gradients. To use bias_add, we collapse Z
 				# and Y into a single dimension to obtain a 4D input tensor.
-				outputs_shape = tf.shape(outputs)
-				print(outputs_4d)
-				print(outputs_shape)
-				outputs_4d = tf.reshape(outputs,
-										(outputs_shape[0], outputs_shape[1] * outputs_shape[2] * outputs_shape[3],
-										 outputs_shape[4]))
-				outputs_4d = tf.keras.backend.bias_add(outputs,
+				
+				return tf.keras.backend.bias_add(outputs,
 											self.bias_posterior_tensor,
 											data_format=self.data_format)
-				print(outputs_4d)
-				print(outputs_shape)
-				outputs = tf.reshape(outputs_4d, outputs_shape)
-
+				
 		return outputs
 
 	def _apply_divergence(self, divergence_fn, posterior, prior,
