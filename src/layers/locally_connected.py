@@ -348,17 +348,12 @@ class _DenseVariational(tf.keras.layers.Layer):
 											data_format='NCHW')
 				outputs = tf.reshape(outputs_4d, outputs_shape)
 		else:
-			print(outputs.shape)
-			print(self.bias_posterior_tensor.shape)
-			print(self.data_format)
-
 
 			if self.rank == 3:
 				# As of Mar 2017, direct addition is significantly slower than
 				# bias_add when computing gradients. To use bias_add, we collapse Z
 				# and Y into a single dimension to obtain a 4D input tensor.
-				
-				return tf.keras.backend.bias_add(outputs,
+				outputs = tf.keras.backend.bias_add(outputs,
 											self.bias_posterior_tensor,
 											data_format=self.data_format)
 				
