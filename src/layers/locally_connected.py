@@ -350,6 +350,7 @@ class _DenseVariational(tf.keras.layers.Layer):
 		else:
 			print(outputs.shape)
 			print(self.bias_posterior_tensor.shape)
+			print(self.data_format)
 			outputs = tf.nn.bias_add(outputs,
 									 self.bias_posterior_tensor,
 									 data_format='NHWZC')
