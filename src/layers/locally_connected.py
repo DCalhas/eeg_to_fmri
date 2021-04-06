@@ -365,8 +365,11 @@ class _DenseVariational(tf.keras.layers.Layer):
 				outputs_4d = tf.nn.bias_add(outputs_4d,
 											self.bias_posterior_tensor,
 											data_format='NHWC')
+
+				print(outputs_4d)
+				print(outputs_shape)
 				outputs = tf.reshape(outputs_4d, outputs_shape)
-				
+
 		return outputs
 
 	def _apply_divergence(self, divergence_fn, posterior, prior,
