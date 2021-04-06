@@ -351,9 +351,22 @@ class _DenseVariational(tf.keras.layers.Layer):
 			print(outputs.shape)
 			print(self.bias_posterior_tensor.shape)
 			print(self.data_format)
-			outputs = tf.nn.bias_add(outputs,
-									 self.bias_posterior_tensor,
-									 data_format='NHWZC')
+
+
+			if self.rank == 3:
+				# As of Mar 2017, direct addition is significantly slower than
+				# bias_add when computing gradients. To use bias_add, we collapse Z
+				# and Y into a single dimension to obtain a 4D input tensor.
+				outputs_shape = outputs.shape.as_list()
+				outputs_4d = tf.reshape(outputs,
+										[outputs_shape[0], outputs_shape[1],
+										 outputs_shape[2] * outputs_shape[3],
+										 outputs_shape[4]])
+				outputs_4d = tf.nn.bias_add(outputs_4d,
+											self.bias_posterior_tensor,
+											data_format='NHWC')
+				outputs = tf.reshape(outputs_4d, outputs_shape)
+				
 		return outputs
 
 	def _apply_divergence(self, divergence_fn, posterior, prior,
@@ -545,12 +558,6 @@ class LocallyConnected3DFlipout(_DenseVariational):
 			for _ in range(self.rank):
 				sign_input = tf.expand_dims(sign_input, 1)	# 2D ex: (B, 1, 1, C)
 				sign_output = tf.expand_dims(sign_output, 1)
-
-		print(sign_input.shape)
-		print(sign_output.shape)
-		print(inputs.shape)
-		print(self.kernel_posterior_affine_tensor.shape)
-		print(self.kernel_posterior.distribution.loc)
 
 		outputs = local_conv_sparse_matmul(inputs, self.kernel_posterior.distribution.loc, self.kernel_idxs,
 										self.kernel_shape,
