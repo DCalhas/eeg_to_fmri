@@ -358,6 +358,8 @@ class _DenseVariational(tf.keras.layers.Layer):
 				# bias_add when computing gradients. To use bias_add, we collapse Z
 				# and Y into a single dimension to obtain a 4D input tensor.
 				outputs_shape = outputs.shape.as_list()
+				print(outputs)
+				print(outputs_shape)
 				outputs_4d = tf.reshape(outputs,
 										[outputs_shape[0], outputs_shape[1],
 										 outputs_shape[2] * outputs_shape[3],
