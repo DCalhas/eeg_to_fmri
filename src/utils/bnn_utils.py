@@ -53,16 +53,16 @@ def combined_abs_balanced_loss(y_true, y_pred):
 class extended_balance:
 	def __init__(self, K):
 		self.K = K
-		
+
 	def combined_abs_non_balanced_loss(self, y_true, y_pred):
-		variance = tf.math.abs(y_pred[1])
+		variance = tf.math.abs(self.K*y_pred[1])
 		
-		return tf.reduce_mean(((self.K*variance-variance**2)*(y_pred[0] - y_true)**2)/2 + (variance**2)/2, axis=(1,2,3))
+		return tf.reduce_mean(((variance-variance**2)*(y_pred[0] - y_true)**2)/2 + (variance**2)/2, axis=(1,2,3))
 
 	def combined_abs_balanced_loss(self, y_true, y_pred):
-		variance = tf.math.abs(y_pred[1])
+		variance = tf.math.abs(self.K*y_pred[1])
 		
-		return tf.reduce_mean(((self.K*variance-variance**2)*(y_pred[0] - y_true)**2)/2 + (variance**2-self.K*variance)/2, axis=(1,2,3))
+		return tf.reduce_mean(((variance-variance**2)*(y_pred[0] - y_true)**2)/2 + (variance**2-variance)/2, axis=(1,2,3))
 
 
 
