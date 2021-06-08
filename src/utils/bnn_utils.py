@@ -54,6 +54,21 @@ def combined_abs_balanced_loss(y_true, y_pred):
 	
 	return tf.reduce_mean(((variance-variance**2)*(y_pred[0] - y_true)**2)/2 + (variance**2-variance)/2, axis=(1,2,3))
 
+def epistemic_log_loss(y_true, y_pred):
+	#compute variance
+	variance = tf.math.sqrt(tf.reduce_mean(y_pred**2, axis=(1,2,3))-tf.reduce_mean(y_pred, axis=(1,2,3))**2)+1e-9
+	
+	return tf.reduce_mean((tf.exp(-tf.math.log(variance))*(y_pred - y_true)**2)/2 + (tf.math.log(variance))/2, axis=(1,2,3))
+
+def epistemic_original_loss(y_true, y_pred):
+	variance = tf.math.sqrt(tf.reduce_mean(y_pred**2, axis=(1,2,3))-tf.reduce_mean(y_pred, axis=(1,2,3))**2)+1e-9
+	
+	return tf.reduce_mean(((1/variance)*(y_pred - y_true)**2)/2 + (tf.math.log(variance))/2, axis=(1,2,3))
+
+def epistemic_abs_diff_loss(y_true, y_pred):
+	variance = tf.math.sqrt(tf.reduce_mean(y_pred**2, axis=(1,2,3))-tf.reduce_mean(y_pred, axis=(1,2,3))**2)+1e-9
+	
+	return tf.reduce_mean((-variance*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
 
 class extended_balance:
 	def __init__(self, K):

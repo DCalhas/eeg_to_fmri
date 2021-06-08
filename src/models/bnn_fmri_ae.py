@@ -55,7 +55,7 @@ class BNN_fMRI_AE(tf.keras.Model):
     
     def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, skip_connections=False,
-                        n_stacks=2, local=True, local_attention=False, outfilter=0):
+                        n_stacks=2, local=True, local_attention=False, MAP=False, outfilter=0):
         
         
         super(BNN_fMRI_AE, self).__init__()
@@ -64,7 +64,7 @@ class BNN_fMRI_AE(tf.keras.Model):
                         maxpool=maxpool, batch_norm=batch_norm, skip_connections=skip_connections,
                         n_stacks=n_stacks, local=local, local_attention=local_attention)
 
-        self.build_decoder(outfilter=outfilter)
+        self.build_decoder(outfilter=outfilter, MAP=MAP)
     
     def build_encoder(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, skip_connections=False,
@@ -108,7 +108,7 @@ class BNN_fMRI_AE(tf.keras.Model):
         
         self.output_encoder = x
 
-    def build_decoder(self, outfilter=0):
+    def build_decoder(self, outfilter=0, MAP=False):
 
         x = tf.keras.layers.Flatten()(self.output_encoder)
 
@@ -124,10 +124,17 @@ class BNN_fMRI_AE(tf.keras.Model):
             x = LocallyConnected3DFlipout(filters=1, kernel_size=1, strides=1, implementation=3)(x)
         
 
-        #variance computation along with regression
-        variance = tf.keras.layers.Dense(1)(x)
+        estimates = []
+        if(MAP):
+            #alpha gamma computation along with regression
+            estimates += [tf.keras.layers.Dense(1)(x)]
+            #beta gamma computation along with regression
+            estimates += [tf.keras.layers.Dense(1)(x)]
+        else:
+            #variance computation along with regression
+            estimates += [tf.keras.layers.Dense(1)(x)]
 
-        self.model = tf.keras.Model(inputs=self._input_tensor, outputs=[x,variance])
+        self.model = tf.keras.Model(inputs=self._input_tensor, outputs=[x]+estimates)
 
     
     def call(self, X, training=True, T=10):

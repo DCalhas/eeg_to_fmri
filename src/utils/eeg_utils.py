@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 
 from scipy.fft import fft
 from scipy.io import loadmat
+from scipy.signal import cwt, ricker
+from scipy import signal as scipy_signal
+
 import numpy as np
 
 import os
@@ -152,6 +155,27 @@ def stft(eeg, channel=0, window_size=2, fs=250, start_time=None, stop_time=None)
 		seconds += window_size
 
 	return f[1:], np.transpose(np.array(Z)), t
+
+
+def dwt(eeg, channel=0, windows=30, fs=2.0, start_time=None, stop_time=None):
+
+	signal = eeg[channel][:]
+	if(type(signal) is tuple):
+		signal, _ = signal
+		signal = signal.reshape((signal.shape[1]))
+	else:
+		signal = signal.reshape((signal.shape[0]))
+
+
+	if(start_time == None):
+		start_time = 0
+	if(stop_time == None):
+		stop_time = len(signal)
+	signal = signal[start_time:stop_time]
+
+
+	return cwt(signal, scipy_signal.morlet2, np.arange(1, windows))
+
 
 def mutate_stft_to_bands(Zxx, frequencies, timesteps):
 	#frequency first dimension, time is second dimension
