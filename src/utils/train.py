@@ -35,7 +35,7 @@ def evaluate(X, model, loss_fn):
     return loss/n_batches
 
 
-def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=None, verbose=False):
+def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=None, verbose=False, verbose_batch=False):
     val_loss = []
     train_loss = []
 
@@ -45,9 +45,12 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=N
         n_batches = 0
         
         for batch_set in train_set.repeat(1):
-            loss += train_step(model, batch_set, opt, loss_fn).numpy()
+            batch_loss = train_step(model, batch_set, opt, loss_fn).numpy()
+            loss += batch_loss
             n_batches += 1
             gc.collect()
+
+            print_utils.print_message("Batch ... with loss: " + str(batch_loss), file_output=file_output, verbose=verbose_batch)
 
         if(val_set is not None):
             val_loss.append(evaluate(val_set, model, loss_fn))
