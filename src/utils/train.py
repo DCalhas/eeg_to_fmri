@@ -91,9 +91,9 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=N
             val_loss.append(evaluate(val_set, model, loss_fn))
             parameters_history.append(evaluate_parameters(val_set, model))
             l2loss_history.append(evaluate_l2loss(val_set, model))
-            
+
         train_loss.append(loss/n_batches)
 
         print_utils.print_message("Epoch " + str(epoch+1) + " with loss: " + str(train_loss[-1]), file_output=file_output, verbose=verbose)
 
-    return train_loss, val_loss
+    return train_loss, val_loss, parameters_history, l2loss_history
