@@ -60,11 +60,11 @@ def evaluate_l2loss(X, model):
         else:
             prediction = model(batch_x, training=False)
         
-        l2loss[0] += tf.reduce_mean((batch_x - prediction[0])**2).numpy()
+        l2loss += tf.reduce_mean((batch_x - prediction[0])**2).numpy()
         
         n_batches += 1
     
-    return (l2loss[0]/n_batches, l2loss[1]/n_batches)
+    return l2loss[0]/n_batches
 
 
 def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=None, verbose=False, verbose_batch=False):
