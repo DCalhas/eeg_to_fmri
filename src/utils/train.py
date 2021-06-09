@@ -43,16 +43,16 @@ def evaluate_parameters(X, model):
         else:
             prediction = model(batch_x, training=False)
         
-        loss[0] += tf.reduce_mean(prediction[1]).numpy()
+        parameters[0] += tf.reduce_mean(prediction[1]).numpy()
         if(len(prediction) > 2):
-            loss[1] += tf.reduce_mean(prediction[2]).numpy()
+            parameters[1] += tf.reduce_mean(prediction[2]).numpy()
 
         n_batches += 1
     
-    return (loss[0]/n_batches, loss[1]/n_batches)
+    return (parameters[0]/n_batches, parameters[1]/n_batches)
 
 def evaluate_l2loss(X, model):
-    parameters = 0.0
+    l2loss = 0.0
     n_batches = 0
     for batch_x in X.repeat(1):
         if(type(batch_x) is tuple):
@@ -60,11 +60,11 @@ def evaluate_l2loss(X, model):
         else:
             prediction = model(batch_x, training=False)
         
-        loss[0] += tf.reduce_mean((batch_x - prediction[0])**2).numpy()
+        l2loss[0] += tf.reduce_mean((batch_x - prediction[0])**2).numpy()
         
         n_batches += 1
     
-    return (loss[0]/n_batches, loss[1]/n_batches)
+    return (l2loss[0]/n_batches, l2loss[1]/n_batches)
 
 
 def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=None, verbose=False, verbose_batch=False):
