@@ -64,7 +64,7 @@ def evaluate_l2loss(X, model):
         
         n_batches += 1
     
-    return l2loss[0]/n_batches
+    return l2loss/n_batches
 
 
 def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=None, verbose=False, verbose_batch=False):
