@@ -34,10 +34,45 @@ def evaluate(X, model, loss_fn):
     
     return loss/n_batches
 
+def evaluate_parameters(X, model):
+    parameters = [0.0, 0.0]
+    n_batches = 0
+    for batch_x in X.repeat(1):
+        if(type(batch_x) is tuple):
+            prediction = model(batch_x[0], training=False)
+        else:
+            prediction = model(batch_x, training=False)
+        
+        loss[0] += tf.reduce_mean(prediction[1]).numpy()
+        if(len(prediction) > 2):
+            loss[1] += tf.reduce_mean(prediction[2]).numpy()
+
+        n_batches += 1
+    
+    return (loss[0]/n_batches, loss[1]/n_batches)
+
+def evaluate_l2loss(X, model):
+    parameters = 0.0
+    n_batches = 0
+    for batch_x in X.repeat(1):
+        if(type(batch_x) is tuple):
+            prediction = model(batch_x[0], training=False)
+        else:
+            prediction = model(batch_x, training=False)
+        
+        loss[0] += tf.reduce_mean((batch_x - prediction[0])**2).numpy()
+        
+        n_batches += 1
+    
+    return (loss[0]/n_batches, loss[1]/n_batches)
+
 
 def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=None, verbose=False, verbose_batch=False):
     val_loss = []
     train_loss = []
+
+    parameters_history = []
+    l2loss_history = []
 
     for epoch in range(epochs):
 
@@ -54,6 +89,9 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, file_output=N
 
         if(val_set is not None):
             val_loss.append(evaluate(val_set, model, loss_fn))
+            parameters_history.append(evaluate_parameters(val_set, model))
+            l2loss_history.append(evaluate_l2loss(val_set, model))
+            
         train_loss.append(loss/n_batches)
 
         print_utils.print_message("Epoch " + str(epoch+1) + " with loss: " + str(train_loss[-1]), file_output=file_output, verbose=verbose)
