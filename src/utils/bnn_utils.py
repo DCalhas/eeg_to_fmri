@@ -1,6 +1,8 @@
 import tensorflow as tf
 import tensorflow_probability as tfp
 
+from numpy.random import gamma
+
 """
 Loss combinating aleatoric and epistemic_uncertainty
 """
@@ -70,6 +72,11 @@ def epistemic_abs_diff_loss(y_true, y_pred):
 	
 	return tf.reduce_mean((-variance*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
 
+def epistemic_abs_diff_loss(y_true, y_pred):
+	variance = tf.math.sqrt(tf.reduce_mean(y_pred**2, axis=(1,2,3))-tf.reduce_mean(y_pred, axis=(1,2,3))**2)+1e-9
+	
+	return tf.reduce_mean((-variance*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
+
 class extended_balance:
 	def __init__(self, K):
 		self.K = K
@@ -86,6 +93,19 @@ class extended_balance:
 
 
 
+
+"""
+Computing the prior of lambda = 1/sigma^2 using a gamma distribution parametrized by alpha and beta
+for the estimation of the true parameter sigma^2 
+"""
+def MC_posterior_Gamma(alpha, beta):
+	#alpha, beta > 0
+	alpha = np.abs(alpha)+1e-9
+	beta = np.abs(beta)+1e-9
+	
+	return gamma(alpha, 1/beta)
+
+
 """
 Computing \sigma_{i}^{2}
 """
@@ -95,7 +115,10 @@ def aleatoric_uncertainty(model, X, T=10):
 	
 	for i in range(T):
 		y_t = model(X, training=False, T=T)
-		y_std = y_std + tf.math.square(y_t[1])
+		if(len(y_t) == 1):
+			y_std = y_std + tf.math.square(y_t[1])
+		else:
+			y_std = y_std + MC_posterior_Gamma(y_t[1], y_t[2])
 		
 	return y_std/T
 
@@ -103,23 +126,26 @@ def aleatoric_uncertainty(model, X, T=10):
 Computing Var(y*)
 """
 def epistemic_uncertainty(model, X, T=10):
-    
-    y_square = tf.zeros(X.shape)
-    
-    for i in range(T):
-        y_t = model(X, training=False, T=T)
-        
-        y_square = y_square + y_t[0]
-        
-    y_square = - tf.math.square((1/T)*y_square)
-    
-    y_hat = tf.zeros(X.shape)
-    
-    for i in range(T):
-        y_t = model(X, training=False, T=T)
-        
-        y_hat = y_hat + tf.math.square(y_t[0]) + tf.math.square(y_t[1])
-        
-    y_hat = y_square + (1/T)*y_hat
-        
-    return y_hat
+	
+	y_square = tf.zeros(X.shape)
+	
+	for i in range(T):
+		y_t = model(X, training=False, T=T)
+		
+		y_square = y_square + y_t[0]
+		
+	y_square = - tf.math.square((1/T)*y_square)
+	
+	y_hat = tf.zeros(X.shape)
+	
+	for i in range(T):
+		y_t = model(X, training=False, T=T)
+		
+		if(len(y_t) == 1):
+			y_hat = y_hat + tf.math.square(y_t[0]) + tf.math.square(y_t[1])
+		else:
+			y_hat = y_hat + tf.math.square(y_t[0]) + MC_posterior_Gamma(y_t[1], y_t[2])
+		
+	y_hat = y_square + (1/T)*y_hat
+		
+	return y_hat
