@@ -3,6 +3,7 @@ import tensorflow_probability as tfp
 
 from numpy.random import gamma
 
+import numpy as np
 """
 Loss combinating aleatoric and epistemic_uncertainty
 """
