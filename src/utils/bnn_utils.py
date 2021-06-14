@@ -119,6 +119,7 @@ def aleatoric_uncertainty(model, X, T=10):
 	
 	for i in range(T):
 		y_t = model(X, training=False, T=T)
+		print(len(y_t))
 		if(len(y_t) < 3):
 			y_std = y_std + tf.math.square(y_t[1])
 		else:
