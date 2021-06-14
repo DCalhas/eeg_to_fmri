@@ -82,8 +82,8 @@ def evaluate_additional(X, model, additional_losses):
             
             losses[i] += tf.reduce_mean(loss_fn(batch_x, prediction[0])).numpy()
             
-            n_batches += 1
             i +=1
+        n_batches += 1
         
     return (losses/n_batches).tolist()
 
