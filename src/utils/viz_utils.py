@@ -393,6 +393,7 @@ def plot_epistemic_aleatoric_uncertainty(setting, model, array_set, volume, xsli
 
 def gamma_epoch_plot(setting, parameters_history, epochs=10):
     save_file=gamma_plots_directory+setting+"/"
+    pathlib.Path(save_file).mkdir(parents=True, exist_ok=True) 
 
     plt.style.use("default")
 
