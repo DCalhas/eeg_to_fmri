@@ -408,3 +408,7 @@ def gamma_epoch_plot(setting, parameters_history, epochs=10):
         plt.tight_layout()
         
         plt.savefig(save_file+"epoch_"+str(epoch)+".pdf", format="pdf")
+
+
+def uncertainty_losses_plot(setting, losses_history):
+    raise NotImplementedError
