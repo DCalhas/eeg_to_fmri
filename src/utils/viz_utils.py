@@ -4,6 +4,8 @@ import numpy as np
 
 import utils.losses_utils as losses
 
+from utils import bnn_utils
+
 import matplotlib.pyplot as plt
 
 from scipy import spatial
