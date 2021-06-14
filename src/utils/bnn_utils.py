@@ -73,7 +73,7 @@ def epistemic_original_loss(y_true, y_pred):
 def epistemic_abs_diff_loss(y_true, y_pred):
 	variance = tf.math.sqrt(tf.reduce_mean(y_pred**2, axis=(1,2,3))-tf.reduce_mean(y_pred, axis=(1,2,3))**2)+1e-9
 	
-	return tf.reduce_mean((-variance*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
+	return tf.reduce_mean((variance*(y_pred[0] - y_true)**2)/2 - variance/2, axis=(1,2,3))
 
 def gamma_prior_loss(y_true, y_pred):
     l2_dist = ((y_pred[0] - y_true)**2)/2
@@ -119,7 +119,7 @@ def aleatoric_uncertainty(model, X, T=10):
 	
 	for i in range(T):
 		y_t = model(X, training=False, T=T)
-		if(len(y_t) == 1):
+		if(len(y_t) < 3):
 			y_std = y_std + tf.math.square(y_t[1])
 		else:
 			y_std = y_std + MC_posterior_Gamma(y_t[1], y_t[2])
@@ -145,7 +145,7 @@ def epistemic_uncertainty(model, X, T=10):
 	for i in range(T):
 		y_t = model(X, training=False, T=T)
 		
-		if(len(y_t) == 1):
+		if(len(y_t) < 3):
 			y_hat = y_hat + tf.math.square(y_t[0]) + tf.math.square(y_t[1])
 		else:
 			y_hat = y_hat + tf.math.square(y_t[0]) + MC_posterior_Gamma(y_t[1], y_t[2])
