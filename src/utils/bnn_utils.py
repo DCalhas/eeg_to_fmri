@@ -73,7 +73,7 @@ def epistemic_original_loss(y_true, y_pred):
 def epistemic_abs_diff_loss(y_true, y_pred):
 	variance = tf.math.sqrt(tf.reduce_mean(y_pred**2, axis=(1,2,3))-tf.reduce_mean(y_pred, axis=(1,2,3))**2)+1e-9
 	
-	return tf.reduce_mean((variance*(y_pred[0] - y_true)**2)/2 - variance/2, axis=(1,2,3))
+	return tf.reduce_mean((-variance*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
 
 def gamma_prior_loss(y_true, y_pred):
     l2_dist = ((y_pred[0] - y_true)**2)/2
