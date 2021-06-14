@@ -93,7 +93,7 @@ tf_config.set_seed(seed=seed)
 tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
 
 
-print("Loading data...")
+print("I: Loading data...")
 """
 Load data
 """
@@ -110,8 +110,8 @@ with tf.device('/CPU:0'):
     train_x = train_x.astype('float32')
     val_x = val_x.astype('float32')
 
-print("Finished loading data")
-print("Starting IQR Preprocesing...")
+print("I: Finished loading data")
+print("I: Starting IQR Preprocesing...")
 
 """
 IQR preprocessing of outliers
@@ -121,7 +121,7 @@ if(iqr):
     iqr.fit(train_x)
     train_x = iqr.transform(train_x, channels_last=False)
 
-print("Finished IQR Preprocesing")
+print("I: Finished IQR Preprocesing")
 
 """
 Specification of data
@@ -139,7 +139,7 @@ model = bnn_fmri_ae.create_bayesian_model(train_x.shape[1:], train_x.shape[1:], 
                     skip_connections=skip_connections, n_stacks=n_stacks, 
                     local=local, local_attention=local_attention, MAP=MAP, outfilter=outfilter)
 
-print("Starting training session...")
+print("I: Starting training session...")
 """
 Training session
 """
@@ -148,8 +148,8 @@ train_loss, val_loss, parameters_history, l2loss_history, additional_losses_hist
                                                            val_set=dev_set, additional_losses=[bnn_utils.epistemic_log_loss, bnn_utils.epistemic_original_loss],
                                                            verbose=True, verbose_batch=False)
 
-print("Training session finished")
-print("Gathering epistemic and aleatoric uncertainty plots...")
+print("I: Training session finished")
+print("I: Gathering epistemic and aleatoric uncertainty plots...")
 
 """
 Save plots of epistemic and aleatoric uncertainty
