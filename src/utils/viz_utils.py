@@ -20,6 +20,8 @@ from pathlib import Path
 
 import pathlib
 
+from scipy.stats import gamma
+
 uncertainty_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/uncertainty/"
 uncertainty_losses_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/uncertainty_losses/"
 gamma_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/gamma/"
@@ -387,3 +389,22 @@ def plot_epistemic_aleatoric_uncertainty(setting, model, array_set, volume, xsli
 
     plt.tight_layout()
     plt.savefig(save_file, format="pdf")
+
+
+def gamma_epoch_plot(setting, parameters_history, epochs=10):
+    save_file=gamma_plots_directory+setting+"/"
+
+    plt.style.use("default")
+
+    for epoch in range(epochs):
+        plt.figure()
+        distribution = gamma.pdf(np.linspace (0, 100, 200), 
+                                  a=np.abs(parameters_history[epoch][0])+1e-9, 
+                                  scale=1/(np.abs(parameters_history[epoch][1])+1e-9))
+        plt.plot(np.linspace (0, 1, 200), distribution)
+        plt.title("$\\lambda = \\frac{1}{\\sigma^2} \\sim $Ga($\\alpha$,$\\beta$)", size=12)
+        plt.ylabel("$f_{\\lambda} = f_{\\frac{1}{\\sigma^2}}$", size=15)
+        plt.rc('font', family='serif')
+        plt.tight_layout()
+        
+        plt.savefig(save_file+"epoch_"+str(epoch)+".pdf", format="pdf")

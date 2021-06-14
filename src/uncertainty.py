@@ -154,3 +154,14 @@ Save plots of epistemic and aleatoric uncertainty
 """
 for volume in range(val_x.shape[0])
     viz_utils.plot_epistemic_aleatoric_uncertainty(setting, model, val_x, volume, xslice, yslice, zslice, T=10)
+
+
+"""
+Plot gamma function evolution
+"""
+if(MAP):
+    viz_utils.gamma_epoch_plot(setting, parameters_history, epochs=epochs)
+
+"""
+Original loss convergence
+"""
