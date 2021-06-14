@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, KFold
 
 losses=["combined_original_loss", "combined_log_loss", 
-        "epistemic_abs_diff_loss", "combined_abs_non_balanced_loss", 
+        "combined_abs_diff_loss", "combined_abs_non_balanced_loss", 
         "combined_abs_balanced_loss", "gamma_prior_loss"]
 parser = argparse.ArgumentParser()
 parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
