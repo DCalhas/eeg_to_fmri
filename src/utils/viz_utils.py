@@ -18,6 +18,8 @@ from scipy.ndimage import rotate
 
 from pathlib import Path
 
+import pathlib
+
 uncertainty_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/uncertainty/"
 uncertainty_losses_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/uncertainty_losses/"
 gamma_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/gamma/"
@@ -337,8 +339,10 @@ def heat_map(real_bold_set, synth_bold_set, individual=8, timestep=0, normalize=
     
     plt.show()
 
-def plot_epistemic_aleatoric_uncertainty(model, array_set, volume, xslice, yslice, zslice, T=10):
-    save_file=uncertainty_plots_directory+"v_"+ str(volume)+"_x_"+str(xslice)+"_y_"+str(yslice)+"_z_"+str(zslice)+".pdf"
+def plot_epistemic_aleatoric_uncertainty(setting, model, array_set, volume, xslice, yslice, zslice, T=10):
+    save_file=uncertainty_plots_directory+setting+"/"+"v_"+ str(volume)+"_x_"+str(xslice)+"_y_"+str(yslice)+"_z_"+str(zslice)+".pdf"
+
+    pathlib.Path(uncertainty_plots_directory+setting).mkdir(parents=True, exist_ok=True) 
 
     plt.style.use("dark_background")
     fig, axes = plt.subplots(3, 4, figsize=(15,6))

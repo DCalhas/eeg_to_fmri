@@ -73,6 +73,20 @@ seed = opt.seed
 iqr = opt.iqr
 out_file = opt.out_file
 
+"""
+Define setting to create directory
+"""
+if(MAP):
+    if(iqr):
+        setting=dataset+"_"+loss_fn.__name__+"_lr_"+str(learning_rate)+"_MAP_"+"_local_attention_"+str(int(local_attention))+"_local_"+str(int(local))+"_outfilter_"+str(int(outfilter))+"_iqr"
+    else:
+        setting=dataset+"_"+loss_fn.__name__+"_lr_"+str(learning_rate)+"_MAP_"+"_local_attention_"+str(int(local_attention))+"_local_"+str(int(local))+"_outfilter_"+str(int(outfilter))
+else:
+    if(iqr):
+        setting=dataset+"_"+loss_fn.__name__+"_lr_"+str(learning_rate)+"_local_attention_"+str(int(local_attention))+"_local_"+str(int(local))+"_outfilter_"+str(int(outfilter))+"_iqr"
+    else:
+        setting=dataset+"_"+loss_fn.__name__+"_lr_"+str(learning_rate)+"_local_attention_"+str(int(local_attention))+"_local_"+str(int(local))+"_outfilter_"+str(int(outfilter))
+
 tf_config.set_seed(seed=seed)
 tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
 
@@ -139,4 +153,4 @@ print("Gathering epistemic and aleatoric uncertainty plots...")
 Save plots of epistemic and aleatoric uncertainty
 """
 for volume in range(val_x.shape[0])
-    viz_utils.plot_epistemic_aleatoric_uncertainty(model, val_x, volume, xslice, yslice, zslice, T=10)
+    viz_utils.plot_epistemic_aleatoric_uncertainty(setting, model, val_x, volume, xslice, yslice, zslice, T=10)
