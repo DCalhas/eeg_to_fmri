@@ -8,7 +8,7 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 import numpy as np
 
-from utils import tf_config, preprocess_data, search_algorithms, train, bnn_utils, outlier_utils
+from utils import tf_config, preprocess_data, search_algorithms, train, bnn_utils, outlier_utils, viz_utils
 from models import fmri_ae, eeg_to_fmri, uniconv_fmri, bnn_fmri_ae
 from layers import locally_connected
 
@@ -138,3 +138,5 @@ print("Gathering epistemic and aleatoric uncertainty plots...")
 """
 Save plots of epistemic and aleatoric uncertainty
 """
+for volume in range(val_x.shape[0])
+    viz_utils.plot_epistemic_aleatoric_uncertainty(model, val_x, volume, xslice, yslice, zslice, T=10)
