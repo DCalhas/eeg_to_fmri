@@ -69,7 +69,7 @@ def evaluate_l2loss(X, model):
     return l2loss/n_batches
 
 
-def evaluate_additional(val_set, model, additional_losses):
+def evaluate_additional(X, model, additional_losses):
     losses = np.zeros(len(additional_losses))
     n_batches = 0
     for batch_x in X.repeat(1):

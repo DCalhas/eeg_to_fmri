@@ -11,3 +11,4 @@ notebooks/nilearn_cache/
 src/notebooks/nilearn_cache/
 src/utils/__pycache__/
 utils/__pycache__/
+src/results_log
