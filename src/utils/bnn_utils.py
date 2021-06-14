@@ -3,6 +3,8 @@ import tensorflow_probability as tfp
 
 from numpy.random import gamma
 
+import math
+
 import numpy as np
 """
 Loss combinating aleatoric and epistemic_uncertainty
@@ -73,10 +75,13 @@ def epistemic_abs_diff_loss(y_true, y_pred):
 	
 	return tf.reduce_mean((-variance*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
 
-def epistemic_abs_diff_loss(y_true, y_pred):
-	variance = tf.math.sqrt(tf.reduce_mean(y_pred**2, axis=(1,2,3))-tf.reduce_mean(y_pred, axis=(1,2,3))**2)+1e-9
-	
-	return tf.reduce_mean((-variance*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
+def gamma_prior_loss(y_true, y_pred):
+    l2_dist = ((y_pred[0] - y_true)**2)/2
+    beta = tf.math.abs(y_pred[2])+1e-9#y_pred[2]
+    alpha = tf.math.abs(y_pred[1])+1e-9#y_pred[1]
+    
+    #return tf.reduce_mean((beta+l2_dist)*y_true - (alpha+1)*tf.math.log((beta+l2_dist)*y_true), axis=(1,2,3)) + tf.norm(alpha) + tf.norm(beta)
+    return tf.reduce_mean(-tf.math.cos(beta+l2_dist)*y_true - alpha*(tf.math.sin(beta+l2_dist)*y_true), axis=(1,2,3)) + tf.norm(alpha) + tf.norm(beta)
 
 class extended_balance:
 	def __init__(self, K):
@@ -91,8 +96,6 @@ class extended_balance:
 		variance = tf.math.abs(self.K*y_pred[1])
 		
 		return tf.reduce_mean(((variance-variance**2)*(y_pred[0] - y_true)**2)/2 + (variance**2-variance)/4, axis=(1,2,3))
-
-
 
 
 """

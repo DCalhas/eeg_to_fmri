@@ -153,3 +153,24 @@ class BNN_fMRI_AE(tf.keras.Model):
             y_hat = y_hat + self.model(X)[0]
 
         return y_hat/T
+
+
+
+"""
+Create the bayesian model
+"""
+def create_bayesian_model(input_shape, output_shape, latent_shape, kernel_size, stride_size, n_channels,
+                        maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
+                        n_stacks=3, local=True, local_attention=False, MAP=False, outfilter=1):
+    
+    model = BNN_fMRI_AE(latent_shape, output_shape, 
+                    kernel_size, stride_size, n_channels,
+                    maxpool=maxpool, batch_norm=batch_norm,
+                    skip_connections=skip_connections, n_stacks=n_stacks, 
+                    local=local, local_attention=local_attention, MAP=MAP, outfilter=outfilter)
+    
+    
+    
+    model.build(input_shape=(None,)+input_shape)
+    
+    return model
