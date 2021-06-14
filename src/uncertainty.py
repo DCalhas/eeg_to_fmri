@@ -154,7 +154,7 @@ print("Gathering epistemic and aleatoric uncertainty plots...")
 """
 Save plots of epistemic and aleatoric uncertainty
 """
-for volume in range(val_x.shape[0])
+for volume in range(val_x.shape[0]):
     viz_utils.plot_epistemic_aleatoric_uncertainty(setting, model, val_x, volume, xslice, yslice, zslice, T=10)
 
 
