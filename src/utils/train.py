@@ -73,6 +73,7 @@ def evaluate_additional(X, model, additional_losses):
     losses = np.zeros(len(additional_losses))
     n_batches = 0
     for batch_x in X.repeat(1):
+        i = 0
         for loss_fn in additional_losses:
             if(type(batch_x) is tuple):
                 prediction = model(batch_x[0], training=False)
@@ -82,6 +83,7 @@ def evaluate_additional(X, model, additional_losses):
             losses[i] += tf.reduce_mean(loss_fn(batch_x, prediction[0])).numpy()
             
             n_batches += 1
+            i +=1
         
     return (losses/n_batches).tolist()
 
