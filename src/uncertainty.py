@@ -16,11 +16,12 @@ import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split, KFold
 
+losses=["combined_original_loss", "combined_log_loss", 
+        "epistemic_abs_diff_loss", "combined_abs_non_balanced_loss", 
+        "combined_abs_balanced_loss", "gamma_prior_loss"]
 parser = argparse.ArgumentParser()
 parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
-parser.add_argument('loss_fn', choices=["combined_log_loss", "combined_original_loss", 
-                                        "gamma_prior_loss", "epistemic_abs_diff_loss", 
-                                        "combined_abs_non_balanced_loss", "combined_abs_balanced_loss"], 
+parser.add_argument('loss_fn', choices=losses, 
                                 help="Which loss function to use in training session.")
 parser.add_argument('-gpu_mem', default=4000, type=int, help="GPU memory limit")
 parser.add_argument('-batch_size', default=1, type=int, help="Batch size to use in training.")
@@ -51,6 +52,7 @@ opt = parser.parse_args()
 
 dataset = opt.dataset
 loss_fn = getattr(bnn_utils, opt.loss_fn)
+loss_index=losses.index(opt.loss_fn)
 gpu_mem = opt.gpu_mem
 batch_size = opt.batch_size
 learning_rate = opt.learning_rate
@@ -141,7 +143,7 @@ print("Starting training session...")
 """
 Training session
 """
-train_loss, val_loss, parameters_history, l2loss_history = train.train(train_set, model, optimizer, 
+train_loss, val_loss, parameters_history, l2loss_history, additional_losses_history = train.train(train_set, model, optimizer, 
                                                            loss_fn, epochs=epochs, 
                                                            val_set=dev_set, additional_losses=[bnn_utils.epistemic_log_loss, bnn_utils.epistemic_original_loss],
                                                            verbose=True, verbose_batch=False)
@@ -165,3 +167,9 @@ if(MAP):
 """
 Original loss convergence
 """
+losses_history=np.zeros((10,4))
+losses_history[:,0]= np.array(val_loss)
+losses_history[:,1]= additional_losses_history[:,0]
+losses_history[:,2]= additional_losses_history[:,1]
+losses_history[:,3]= np.array(l2loss_history)
+viz_utils.uncertainty_losses_plot(setting, losses_history, loss_index, epochs=epochs)

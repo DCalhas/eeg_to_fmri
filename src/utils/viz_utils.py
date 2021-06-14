@@ -411,5 +411,40 @@ def gamma_epoch_plot(setting, parameters_history, epochs=10):
         plt.savefig(save_file+"epoch_"+str(epoch)+".pdf", format="pdf")
 
 
-def uncertainty_losses_plot(setting, losses_history):
-    raise NotImplementedError
+def uncertainty_losses_plot(setting, losses_history, loss_i, epochs=10):
+    save_file=uncertainty_losses_plots_directory+setting+"/"
+    pathlib.Path(save_file).mkdir(parents=True, exist_ok=True) 
+
+    plt.style.use("default")
+
+    plt.figure()
+    fig, axes = plt.subplots(1,4,figsize=(30,6))
+
+    axes[0].plot(losses_history[:,0], color="black")
+    axes[0].grid(True)
+    axes[0].set_xlabel("Epoch")
+    axes[0].set_ylabel("$\mathcal{L}_"+str(loss_i)+"$", size=18)
+    axes[0].set_xticks(range(0,epochs))
+    axes[0].set_xticklabels(range(1,epochs+1))
+    axes[1].plot(losses_history[:,1], color="blue")
+    axes[1].grid(True)
+    axes[1].set_xlabel("Epoch")
+    axes[1].set_ylabel("$\mathcal{L}_"+str(2)+"$", size=18)
+    axes[1].set_xticks(range(0,epochs))
+    axes[1].set_xticklabels(range(1,epochs+1))
+    axes[2].plot(losses_history[:,2], color="orange")
+    axes[2].grid(True)
+    axes[2].set_xlabel("Epoch")
+    axes[2].set_ylabel("$\mathcal{L}_"+str(1)+"$", size=18)
+    axes[2].set_xticks(range(0,epochs))
+    axes[2].set_xticklabels(range(1,epochs+1))
+    axes[3].plot(losses_history[:,3], color="green")
+    axes[3].grid(True)
+    axes[3].set_xlabel("Epoch")
+    axes[3].set_ylabel("$||y_i-f^{W}(x_i)||_2^2$", size=18)
+    axes[3].set_xticks(range(0,epochs))
+    axes[3].set_xticklabels(range(1,epochs+1))
+
+    plt.rc('font', family='serif', size=15)
+    plt.tight_layout()
+    plt.savefig(save_file+"losses_convergence_val.pdf", format="pdf")
