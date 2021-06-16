@@ -146,7 +146,7 @@ Training session
 train_loss, val_loss, parameters_history, l2loss_history, additional_losses_history = train.train(train_set, model, optimizer, 
                                                            loss_fn, epochs=epochs, 
                                                            val_set=dev_set, additional_losses=[bnn_utils.epistemic_log_loss, bnn_utils.epistemic_original_loss],
-                                                           verbose=True, verbose_batch=False)
+                                                           verbose=True, verbose_batch=True)
 
 print("I: Training session finished")
 print("I: Gathering epistemic and aleatoric uncertainty plots...")
