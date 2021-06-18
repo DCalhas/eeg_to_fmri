@@ -146,7 +146,7 @@ Training session
 train_loss, val_loss, parameters_history, l2loss_history, additional_losses_history = train.train(train_set, model, optimizer, 
                                                            loss_fn, epochs=epochs, 
                                                            val_set=dev_set, additional_losses=[bnn_utils.epistemic_log_loss, bnn_utils.epistemic_original_loss],
-                                                           verbose=True, verbose_batch=False)
+                                                           verbose=True, verbose_batch=Fal)
 
 print("I: Training session finished")
 print("I: Gathering epistemic and aleatoric uncertainty plots...")
@@ -155,7 +155,7 @@ print("I: Gathering epistemic and aleatoric uncertainty plots...")
 Save plots of epistemic and aleatoric uncertainty
 """
 for volume in range(val_x.shape[0]):
-    viz_utils.plot_epistemic_aleatoric_uncertainty(setting, model, val_x, volume, xslice, yslice, zslice, T=10)
+    viz_utils.plot_epistemic_aleatoric_uncertainty(setting, model, val_x, volume, 30, 30, 15, T=10)
 
 
 """
