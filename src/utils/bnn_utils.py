@@ -79,10 +79,10 @@ def gamma_prior_loss(y_true, y_pred):
     l2_dist = ((y_pred[0] - y_true)**2)/2
     beta = tf.math.abs(y_pred[2])+1e-9#y_pred[2]
     alpha = tf.math.abs(y_pred[1])+1e-9#y_pred[1]
+    abs_y_true = tf.math.abs(y_true)#y true can be negative and log of negative is not defined
     
-    #return tf.reduce_mean((beta+l2_dist)*y_true - (alpha+1)*tf.math.log((beta+l2_dist)*y_true), axis=(1,2,3)) + tf.norm(alpha) + tf.norm(beta)
-    return tf.reduce_mean(-tf.math.cos(beta+l2_dist)*y_true - alpha*(tf.math.sin(beta+l2_dist)*y_true), axis=(1,2,3)) + tf.norm(alpha) + tf.norm(beta)
-
+    return tf.reduce_mean((beta+l2_dist)*abs_y_true + (alpha+1)*tf.math.log((beta+l2_dist)*abs_y_true), axis=(1,2,3)) + tf.norm(alpha) + tf.norm(beta)
+    
 class extended_balance:
 	def __init__(self, K):
 		self.K = K
