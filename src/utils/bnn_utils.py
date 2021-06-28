@@ -42,7 +42,7 @@ def combined_abs_diff_log_loss(y_true, y_pred):
 def combined_abs_diff_loss(y_true, y_pred):
 	variance = tf.math.abs(y_pred[1])
 	
-	return tf.reduce_mean((variance*(y_pred[0] - y_true)**2)/2 - variance/2, axis=(1,2,3))
+	return tf.reduce_mean((variance*(y_pred[0] - y_true)**2)/2 + variance/2, axis=(1,2,3))
 
 def combined_abs_diff_sym_loss(y_true, y_pred):
 	variance = tf.math.abs(y_pred[1])
@@ -81,7 +81,7 @@ def gamma_prior_loss(y_true, y_pred):
     alpha = tf.math.abs(y_pred[1])+1e-9#y_pred[1]
     abs_y_true = tf.math.abs(y_true)#y true can be negative and log of negative is not defined
     
-    return tf.reduce_mean((beta+l2_dist)*abs_y_true + (alpha+1)*tf.math.log((beta+l2_dist)*abs_y_true), axis=(1,2,3)) + tf.norm(alpha) + tf.norm(beta)
+    return tf.reduce_mean((beta+l2_dist)*abs_y_true + (alpha+1)*tf.math.log((beta+l2_dist)*abs_y_true), axis=(1,2,3))
     
 class extended_balance:
 	def __init__(self, K):
