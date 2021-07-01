@@ -168,7 +168,7 @@ if(MAP):
 Original loss convergence
 """
 additional_losses_history=np.array(additional_losses_history)
-losses_history=np.zeros((10,4))
+losses_history=np.zeros((epochs,4))
 losses_history[:,0]= np.array(val_loss)
 losses_history[:,1]= additional_losses_history[:,0]
 losses_history[:,2]= additional_losses_history[:,1]
