@@ -225,7 +225,7 @@ def create_eeg_bold_pairs(eeg, bold, interval_eeg=2, n_volumes=300, n_individual
     print(eeg.shape)
     print(bold.shape)
     for individual in range(n_individuals):
-        for index_volume in range(individual*(n_volumes), individual*(n_volumes)+n_volumes-interval_eeg):
+        for index_volume in range(individual*(n_volumes), individual*(n_volumes)+n_volumes-interval_eeg-1):
             
             x_eeg[index_volume] = np.transpose(eeg[index_volume:index_volume+interval_eeg], (1,2,0))
             x_bold[index_volume] = bold[index_volume+interval_eeg]
