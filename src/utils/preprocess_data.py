@@ -31,7 +31,7 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, stand
 	elif(dataset=="02"):
 		n_individuals_train = 8
 		n_individuals_val = 2
-		n_volumes = 300-3#?
+		n_volumes = 170-3#?
 
 	eeg_val = eeg_train[n_individuals_train*n_volumes:(n_individuals_train+n_individuals_val)*n_volumes]
 	fmri_val = fmri_train[n_individuals_train*n_volumes:(n_individuals_train+n_individuals_val)*n_volumes]
