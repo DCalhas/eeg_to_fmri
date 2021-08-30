@@ -18,6 +18,8 @@ home = str(Path.home())
 
 dataset_path = home + '/eeg_to_fmri'
 
+channels_02=["FP1","FP2","AF3","AF4","F7","F3","FZ","F4","F8","FC5","FC1","FC2","FC6","T7","C3","CZ","C4","T8","CP5","CP1","CP2","CP6","P7","P3","PZ","P4","P8","PO7","PO3","PO4","PO8","O1","OZ","O2"]
+
 media_directory="/media/david/datasets/"
 dataset_03="ds002158"
 
@@ -64,7 +66,7 @@ def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=Tr
 
     eeg_file = loadmat(path)
     
-    return eeg_file['data_noGA']
+    return eeg_file['data_noGA'][:43,:]
 
 
 def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run="main_run-001", preprocessed=True):
@@ -219,7 +221,7 @@ def plot_fft(eeg, channel=0, max_freq=30000, start_time=None, stop_time=None):
 	fft1 = compute_fft(y[start_time:stop_time], fs=fs)
 	
 	N = int(len(y[start_time:stop_time])/2)
-	f = np.linspace (0, fs, N/2)
+	f = np.linspace (0, fs, N//2)
 	
 	plt.figure(1)
 	plt.plot (f[1:max_freq], abs (fft1)[1:max_freq])
@@ -228,7 +230,7 @@ def plot_fft(eeg, channel=0, max_freq=30000, start_time=None, stop_time=None):
 	plt.show()
 
 
-def plot_stft(eeg, channel=2, window_size=2, min_freq=None, max_freq=None):
+def plot_stft(eeg, channel=2, window_size=2, min_freq=None, max_freq=None, colorbar=True):
 	f, Zxx, t = stft(eeg, channel=channel, fs=eeg.info['sfreq'], window_size=window_size)
 	
 	if(min_freq == None):
@@ -241,7 +243,13 @@ def plot_stft(eeg, channel=2, window_size=2, min_freq=None, max_freq=None):
 
 	amplitude = np.max(Zxx)
 
-	im = plt.pcolormesh(t, f, abs(Zxx), vmin=0, vmax=amplitude)
+	fig, axes = plt.subplots(1,1)
 
-	plt.colorbar(im)
-	plt.show()
+	im = axes.pcolormesh(t, f, abs(Zxx), vmin=0, vmax=amplitude)
+
+	if(colorbar):
+		fig.colorbar(im)
+
+	fig.show()
+
+	return fig, axes
