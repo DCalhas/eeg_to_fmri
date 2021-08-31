@@ -20,6 +20,11 @@ dataset_path = home + '/eeg_to_fmri'
 
 channels_02=["C3-T7","T7-LM","LM-CP5","CP5-P7","P7-PO7","PO7-PO3","PO3-O1","O1-Oz","PO3-P3","P3-CP1","Pz-CP1","CP1-C3","Cz-C3","Fp2-Fp1","Fp1-AF3","AF4-Fp2","AF3-F3","F4-AF4","F3-F7","F8-F4","FC1-F3","F4-FC2","F7-FC5","FC6-F8","FC5-T7","T8-FC6","Cz-Fz","Fz-FC1","FC2-Fz","T8-C4","RM-T8","CP6-RM","P8-CP6","PO8-P8","PO4-PO8","O2-PO4","Oz-O2","P4-PO4","CP2-P4","CP2-Pz","C4-CP2","C4-Cz","Pz-Oz"]
 
+#frequency samples of each EEG dataset
+fs_01=250
+fs_02=None
+fs_03=None
+
 media_directory="/media/david/datasets/"
 dataset_03="ds002158"
 
@@ -120,6 +125,16 @@ def compute_fft(channel, fs=128):
 	fft1 = fft(channel)
 
 	return fft1[range(int(N/2))]
+
+def raw_eeg(eeg, channel=0, fs=250):
+	signal = eeg[channel][:]
+	if(type(signal) is tuple):
+		signal, _ = signal
+		signal = signal.reshape((signal.shape[1]))
+	else:
+		signal = signal.reshape((signal.shape[0]))
+
+	return signal
 
 def stft(eeg, channel=0, window_size=2, fs=250, start_time=None, stop_time=None):
 	signal = eeg[channel][:]

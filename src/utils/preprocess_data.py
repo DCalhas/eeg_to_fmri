@@ -1,10 +1,12 @@
 import tensorflow as tf
 
-from utils import data_utils
+from utils import data_utils, eeg_utils
+
+import sys
 
 import numpy as np
 
-def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
+def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_eeg=False, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
 
 	if(verbose):
 		if(file_output == None):
@@ -12,16 +14,17 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, stand
 		else:
 			print("I: Starting to Load Data", file=file_output)
 
-	eeg_train, fmri_train, scalers = data_utils.load_data(list(range(n_individuals)),n_voxels=None, 
+	#TR of fmri and window size of STFT
+	f_resample=2.160
+
+	eeg_train, fmri_train, scalers = data_utils.load_data(list(range(n_individuals)), raw_eeg=raw_eeg, n_voxels=None, 
 															bold_shift=3, n_partitions=25, 
 															mutate_bands=False,
 															by_partitions=False, partition_length=14, 
-															f_resample=2.160, fmri_resolution_factor=1, 
+															f_resample=f_resample, fmri_resolution_factor=1, 
 															standardize_eeg=standardize_eeg, standardize_fmri=standardize_fmri,
 															ind_volume_fit=ind_volume_fit, iqr_outlier=iqr,
 															dataset=dataset)
-
-	frequency_resolution=eeg_train.shape[2]
 	eeg_channels=eeg_train.shape[1]
 
 	if(dataset=="01"):
@@ -33,9 +36,14 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, stand
 		n_individuals_val = 2
 		n_volumes = 170-3#?
 
-	eeg_val = eeg_train[n_individuals_train*n_volumes:(n_individuals_train+n_individuals_val)*n_volumes]
+	if(raw_eeg):
+		eeg_val = eeg_train[n_individuals_train*(n_volumes)*int(f_resample*getattr(eeg_utils, "fs_"+dataset)):(n_individuals_train+n_individuals_val)*n_volumes*int(f_resample*getattr(eeg_utils, "fs_"+dataset))]
+		eeg_train = eeg_train[:n_individuals_train*n_volumes*int(f_resample*getattr(eeg_utils, "fs_"+dataset))]
+	else:
+		eeg_val = eeg_train[n_individuals_train*n_volumes:(n_individuals_train+n_individuals_val)*n_volumes]
+		eeg_train = eeg_train[:n_individuals_train*n_volumes]
+
 	fmri_val = fmri_train[n_individuals_train*n_volumes:(n_individuals_train+n_individuals_val)*n_volumes]
-	eeg_train = eeg_train[:n_individuals_train*n_volumes]
 	fmri_train = fmri_train[:n_individuals_train*n_volumes]
 
 	if(verbose):
@@ -45,11 +53,17 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, stand
 			print("I: Finished Loading Data", file=file_output)
 
 	eeg_train, fmri_train = data_utils.create_eeg_bold_pairs(eeg_train, fmri_train, 
+															raw_eeg=raw_eeg,
+															fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),
+															fs_sample_fmri=f_resample,
 															interval_eeg=interval_eeg, 
 															n_volumes=n_volumes, 
 															n_individuals=n_individuals_train,
 															instances_per_individual=25)
 	eeg_val, fmri_val = data_utils.create_eeg_bold_pairs(eeg_val, fmri_val, 
+															raw_eeg=raw_eeg,
+															fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),
+															fs_sample_fmri=f_resample,
 															interval_eeg=interval_eeg, 
 															n_volumes=n_volumes, 
 															n_individuals=n_individuals_val,

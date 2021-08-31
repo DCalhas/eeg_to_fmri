@@ -32,10 +32,11 @@ n_epochs = 20
 #
 #############################################################################################################
 
-def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, roi=None, roi_ica_components=None, dataset="01"):
+def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, roi=None, roi_ica_components=None, dataset="01"):
 
     #Load Data
     eeg, bold, scalers = get_data(instances,
+                                    raw_eeg=raw_eeg,
                                     n_voxels=n_voxels, bold_shift=bold_shift, n_partitions=n_partitions, 
                                     by_partitions=by_partitions, partition_length=partition_length,
                                     f_resample=f_resample, mutate_bands=mutate_bands,
@@ -51,7 +52,7 @@ def load_data(instances, n_voxels=None, bold_shift=3, n_partitions=16, by_partit
 """
 """
 
-def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
+def get_data(individuals, raw_eeg=False, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
     TR = 1/TR
 
     X = []
@@ -108,7 +109,8 @@ def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_part
        
     for individual in individuals:
         eeg = getattr(eeg_utils, "get_eeg_instance_"+dataset)(individual)
-        
+        fs_sample = eeg.info['sfreq']
+
         if(dataset!="01"):
             len_channels=len(eeg)
         else:
@@ -117,10 +119,14 @@ def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_part
         x_instance = []
         #eeg
         for channel in range(len_channels):
-            f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample)
-            if(mutate_bands):
-                Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
-            x_instance += [Zxx]
+            if(raw_eeg):
+                x = eeg_utils.raw_eeg(eeg, channel=channel)
+                x_instance += [x]
+            else:
+                f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample)
+                if(mutate_bands):
+                    Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
+                x_instance += [Zxx]
             
         if(standardize_eeg):
             x_instance = zscore(np.array(x_instance))
@@ -128,9 +134,15 @@ def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_part
             x_instance = np.array(x_instance)
 
         if(not type(individuals_eegs) is np.ndarray):
-            individuals_eegs = np.empty((0,) + (x_instance.shape[0], x_instance.shape[1]))
-        
-        individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[:recording_time]))
+            if(raw_eeg):
+                individuals_eegs = np.empty((0,) +(x_instance.shape[0],))
+            else:
+                individuals_eegs = np.empty((0,) + (x_instance.shape[0], x_instance.shape[1]))
+
+        if(raw_eeg):
+            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,int(((bold_shift))*fs_sample*f_resample):int(((recording_time+bold_shift))*fs_sample*f_resample)], (1,0))))
+        else:
+            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[bold_shift:recording_time+bold_shift]))
 
     #return individuals_eegs, individuals_imgs, mask, fmri_scalers
     return individuals_eegs, individuals_imgs, fmri_scalers
@@ -141,7 +153,7 @@ def get_data(individuals, start_cutoff=3, bold_shift=3, n_partitions=16, by_part
 #16 - corresponds to a 20 second length signal with 10 time points
 #32 - corresponds to a 10 second length signal with 5 time points
 #individuals is a list of indexes until the maximum number of individuals
-def get_data_roi(individuals, masker=None, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, f_resample=2, roi=None, roi_ica_components=None):
+def get_data_roi(individuals, raw_eeg=False, masker=None, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, f_resample=2, roi=None, roi_ica_components=None):
     TR = 1/2.160
 
     X = []
@@ -157,6 +169,7 @@ def get_data_roi(individuals, masker=None, start_cutoff=3, bold_shift=3, n_parti
     for individual in individuals:
         eeg = eeg_utils.get_eeg_instance(individual)
         x_instance = []
+
         #eeg
         for channel in range(len(eeg.ch_names)):
             f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample) 
@@ -218,15 +231,20 @@ def get_data_roi(individuals, masker=None, start_cutoff=3, bold_shift=3, n_parti
 
     return X, y
 
-def create_eeg_bold_pairs(eeg, bold, interval_eeg=2, n_volumes=300, n_individuals=10, instances_per_individual=16):
-    x_eeg = np.empty((n_individuals*(n_volumes)-interval_eeg,)+eeg.shape[1:]+(interval_eeg,))
-    x_bold = np.empty((n_individuals*(n_volumes)-interval_eeg,)+bold.shape[1:])
+def create_eeg_bold_pairs(eeg, bold, raw_eeg=False, fs_sample_eeg=250, fs_sample_fmri=2, interval_eeg=2, n_volumes=300, n_individuals=10, instances_per_individual=16):
+    if(raw_eeg):
+        x_eeg = np.empty((n_individuals*(n_volumes-interval_eeg),)+(eeg.shape[1],int(interval_eeg*fs_sample_eeg*fs_sample_fmri)))
+    else:
+        x_eeg = np.empty((n_individuals*(n_volumes-interval_eeg),)+eeg.shape[1:]+(interval_eeg,))
+    x_bold = np.empty((n_individuals*(n_volumes-interval_eeg),)+bold.shape[1:])
 
     for individual in range(n_individuals):
-        for index_volume in range(individual*(n_volumes)+interval_eeg, individual*(n_volumes)+n_volumes-interval_eeg):
-            
-            x_eeg[index_volume] = np.transpose(eeg[index_volume:index_volume+interval_eeg], (1,2,0))
-            x_bold[index_volume] = bold[index_volume+interval_eeg]
+        for index_volume in range(individual*(n_volumes), individual*(n_volumes)+n_volumes-interval_eeg):#the last observation is missing?
+            if(raw_eeg):
+                x_eeg[index_volume-individual*interval_eeg] = np.transpose(eeg[int((index_volume)*fs_sample_eeg*fs_sample_fmri):int((index_volume+interval_eeg)*fs_sample_eeg*fs_sample_fmri)], (1,0))
+            else:
+                x_eeg[index_volume-individual*interval_eeg] = np.transpose(eeg[index_volume:index_volume+interval_eeg], (1,2,0))
+            x_bold[index_volume-individual*interval_eeg] = bold[index_volume+interval_eeg]
         
     return x_eeg, x_bold
 
