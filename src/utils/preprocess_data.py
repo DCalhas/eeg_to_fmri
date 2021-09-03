@@ -28,22 +28,22 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 	eeg_channels=eeg_train.shape[1]
 
 	if(dataset=="01"):
-		n_individuals_train = 6
-		n_individuals_val = 2
+		n_individuals_train = 8
+		n_individuals_test = 2
 		n_volumes = 300-3
 	elif(dataset=="02"):
 		n_individuals_train = 8
-		n_individuals_val = 2
+		n_individuals_test = 2
 		n_volumes = 170-3#?
 
 	if(raw_eeg):
-		eeg_val = eeg_train[n_individuals_train*(n_volumes)*int(f_resample*getattr(eeg_utils, "fs_"+dataset)):(n_individuals_train+n_individuals_val)*n_volumes*int(f_resample*getattr(eeg_utils, "fs_"+dataset))]
+		eeg_test = eeg_train[n_individuals_train*(n_volumes)*int(f_resample*getattr(eeg_utils, "fs_"+dataset)):(n_individuals_train+n_individuals_test)*n_volumes*int(f_resample*getattr(eeg_utils, "fs_"+dataset))]
 		eeg_train = eeg_train[:n_individuals_train*n_volumes*int(f_resample*getattr(eeg_utils, "fs_"+dataset))]
 	else:
-		eeg_val = eeg_train[n_individuals_train*n_volumes:(n_individuals_train+n_individuals_val)*n_volumes]
+		eeg_test = eeg_train[n_individuals_train*n_volumes:(n_individuals_train+n_individuals_test)*n_volumes]
 		eeg_train = eeg_train[:n_individuals_train*n_volumes]
 
-	fmri_val = fmri_train[n_individuals_train*n_volumes:(n_individuals_train+n_individuals_val)*n_volumes]
+	fmri_test = fmri_train[n_individuals_train*n_volumes:(n_individuals_train+n_individuals_test)*n_volumes]
 	fmri_train = fmri_train[:n_individuals_train*n_volumes]
 
 	if(verbose):
@@ -60,24 +60,24 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 															n_volumes=n_volumes, 
 															n_individuals=n_individuals_train,
 															instances_per_individual=25)
-	eeg_val, fmri_val = data_utils.create_eeg_bold_pairs(eeg_val, fmri_val, 
+	eeg_test, fmri_test = data_utils.create_eeg_bold_pairs(eeg_test, fmri_test, 
 															raw_eeg=raw_eeg,
 															fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),
 															fs_sample_fmri=f_resample,
 															interval_eeg=interval_eeg, 
 															n_volumes=n_volumes, 
-															n_individuals=n_individuals_val,
+															n_individuals=n_individuals_test,
 															instances_per_individual=25)
 
 	eeg_train = np.expand_dims(eeg_train, axis=-1)
 	fmri_train = np.expand_dims(fmri_train, axis=-1)
-	eeg_val = np.expand_dims(eeg_val, axis=-1)
-	fmri_val = np.expand_dims(fmri_val, axis=-1)
+	eeg_test = np.expand_dims(eeg_test, axis=-1)
+	fmri_test = np.expand_dims(fmri_test, axis=-1)
 
 	eeg_train = eeg_train.astype('float32')
 	fmri_train = fmri_train.astype('float32')
-	eeg_val = eeg_val.astype('float32')
-	fmri_val = fmri_val.astype('float32')
+	eeg_test = eeg_test.astype('float32')
+	fmri_test = fmri_test.astype('float32')
 
 	if(verbose):
 		if(file_output == None):
@@ -85,4 +85,4 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 		else:
 			print("I: Pairs Created", file=file_output)
 
-	return (eeg_train, fmri_train), (eeg_val, fmri_val)
+	return (eeg_train, fmri_train), (eeg_test, fmri_test)
