@@ -110,9 +110,10 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, additional_lo
 
         if(val_set is not None):
             val_loss.append(evaluate(val_set, model, loss_fn))
-            parameters_history.append(evaluate_parameters(val_set, model))
-            l2loss_history.append(evaluate_l2loss(val_set, model))
-            additional_losses_history.append(evaluate_additional(val_set, model, additional_losses))
+            #used for BNN version
+            #parameters_history.append(evaluate_parameters(val_set, model))
+            #l2loss_history.append(evaluate_l2loss(val_set, model))
+            #additional_losses_history.append(evaluate_additional(val_set, model, additional_losses))
 
         train_loss.append(loss/n_batches)
 
