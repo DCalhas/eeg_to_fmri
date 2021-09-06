@@ -67,6 +67,10 @@ def latent_fmri(theta):
 
     process_utils.launch_process(getattr(process_utils, "cross_validation_"+setup), (score,) + cross_val_args+load_data_args)
 
+    print(cross_val_args)
+    print("Validation loss: ", score.value)
+    print("\n\n\n\n\n\n")
+
     return score.value
 
 
