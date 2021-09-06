@@ -5,7 +5,7 @@ def process_setup_tensorflow(memory_limit):
 	from utils import tf_config
 
 	tf_config.set_seed(seed=42)
-	tf_config.setup_tensorflow(device="CPU", memory_limit=memory_limit)
+	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
 
 def launch_process(function, args):
 	p = Process(target=function, args=args)
@@ -18,9 +18,7 @@ def theta_latent_fmri():
 	return [{'name': 'learning_rate', 'type': 'continuous',
 			'domain': (1e-7, 1e-2)},
 			{'name': 'weight_decay', 'type': 'continuous',
-			'domain': (1e-5, 1e-1)},
-			{'name': 'loss_coefficient', 'type': 'continuous',
-			'domain': (0.25, 0.75)},
+			'domain': (1e-5, 1e-1)}
 			{'name': 'batch_size', 'type': 'discrete',
 			'domain': (16, 32, 64, 128)},
 			{'name': 'latent', 'type': 'discrete',
@@ -60,8 +58,7 @@ def load_data_latent_fmri(dataset, n_individuals, n_individuals_train, n_volumes
 
 def cross_validation_latent_fmri(score, learning_rate, weight_decay, 
 						kernel_size, stride_size,
-						loss_coefficient, batch_size, 
-						latent_dimension, n_channels, 
+						batch_size, latent_dimension, n_channels, 
 						max_pool, batch_norm, skip_connections, 
 						n_stacks, outfilter, dataset, n_individuals, 
 						n_individuals_train, n_volumes, 

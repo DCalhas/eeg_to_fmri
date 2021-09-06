@@ -38,15 +38,14 @@ def latent_fmri(theta):
     #unroll hyperparameters
     learning_rate=float(theta[:, 0])
     weight_decay = float(theta[:, 1])
-    loss_coefficient=float(theta[:, 2])
-    batch_size=int(theta[:, 3])
-    latent_dimension=(int(theta[:, 4]),int(theta[:, 4]),int(theta[:, 4]))
-    n_channels=int(theta[:, 5])
-    max_pool=bool(theta[:, 6])
-    batch_norm=bool(theta[:, 7])
-    skip_connections=bool(theta[:, 8])
-    n_stacks=int(theta[:, 9])
-    outfilter=int(theta[:, 10])
+    batch_size=int(theta[:, 2])
+    latent_dimension=(int(theta[:, 3]),int(theta[:, 3]),int(theta[:, 3]))
+    n_channels=int(theta[:, 4])
+    max_pool=bool(theta[:, 5])
+    batch_norm=bool(theta[:, 6])
+    skip_connections=bool(theta[:, 7])
+    n_stacks=int(theta[:, 8])
+    outfilter=int(theta[:, 9])
     
     n_stacks=3
     #n_channels=16
@@ -59,11 +58,10 @@ def latent_fmri(theta):
 
     cross_val_args = (learning_rate, weight_decay, 
                         kernel_size, stride_size,
-                        loss_coefficient, batch_size, 
-                        latent_dimension, n_channels,
-                        max_pool, batch_norm, 
-                        skip_connections, n_stacks,
-                        outfilter)
+                        batch_size, latent_dimension,
+                        n_channels, max_pool, 
+                        batch_norm, skip_connections, 
+                        n_stacks,outfilter)
 
     process_utils.launch_process(getattr(process_utils, "cross_validation_"+setup), (score,) + cross_val_args+load_data_args)
 
