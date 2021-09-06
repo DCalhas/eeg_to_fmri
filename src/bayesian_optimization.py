@@ -12,21 +12,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('setup', choices=['latent_fmri'], help="Which setuo to run")
     parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
+    parser.add_argument('-iterations', default=100, type=int, help="Bayesian Optimization iterations")
     parser.add_argument('-gpu_mem', default=4000, type=int, help="GPU memory limit")
     opt = parser.parse_args()
 
     setup=opt.setup
     memory_limit=opt.gpu_mem
     dataset=opt.dataset
+    iterations=opt.iterations
 
 raw_eeg=False#time or frequency features? raw-time nonraw-frequency
 resampling=False
 if(dataset=="01"):
     n_volumes=300-3
+    n_individuals=10
+    n_individuals_train=8
 if(dataset=="02"):
     n_volumes=170-3
-n_individuals=10
-n_individuals_train=8
 #parametrize the interval eeg?
 interval_eeg=6
 
@@ -78,7 +80,7 @@ if __name__ == "__main__":
                                                     acquisition_type="EI_MCMC")
 
     print("Started Optimization Process")
-    optimizer.run_optimization(max_iter=1)
+    optimizer.run_optimization(max_iter=iterations)
 
-    print(optimizer.fx_opt)
-    optimized_hyperparameters = optimizer.x_opt
+    print("Best value: ", optimizer.fx_opt)
+    print("Best hyperparameters: \n", optimizer.x_opt)

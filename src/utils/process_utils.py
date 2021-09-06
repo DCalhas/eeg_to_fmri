@@ -90,8 +90,6 @@ def cross_validation_latent_fmri(score, learning_rate, weight_decay,
 			train_set = tf.data.Dataset.from_tensor_slices((x_train, x_train)).batch(batch_size)
 			dev_set = tf.data.Dataset.from_tensor_slices((x_val, x_val)).batch(1)
 		
-		print(batch_size)
-		print("Start training")
 		train.train(train_set, model, optimizer, 
 								loss_fn, epochs=10, 
 								val_set=None, verbose=True)
