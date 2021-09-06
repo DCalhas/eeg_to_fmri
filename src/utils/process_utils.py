@@ -18,7 +18,7 @@ def theta_latent_fmri():
 	return [{'name': 'learning_rate', 'type': 'continuous',
 			'domain': (1e-7, 1e-2)},
 			{'name': 'weight_decay', 'type': 'continuous',
-			'domain': (1e-5, 1e-1)}
+			'domain': (1e-5, 1e-1)},
 			{'name': 'batch_size', 'type': 'discrete',
 			'domain': (16, 32, 64, 128)},
 			{'name': 'latent', 'type': 'discrete',
