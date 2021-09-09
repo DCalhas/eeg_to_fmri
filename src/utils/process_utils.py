@@ -97,4 +97,4 @@ def cross_validation_latent_fmri(score, learning_rate, weight_decay,
 		#evaluate
 		score.value += train.evaluate(dev_set, model, loss_fn)
 
-	score.value /= n_folds
+	score.value = (score.value-1.0)/n_folds

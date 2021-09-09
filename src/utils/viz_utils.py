@@ -8,6 +8,12 @@ from utils import bnn_utils
 
 import matplotlib.pyplot as plt
 
+from matplotlib import cm
+
+from matplotlib.ticker import LinearLocator
+
+from matplotlib.gridspec import GridSpec
+
 from scipy import spatial
 
 from numpy.linalg import norm
@@ -448,3 +454,89 @@ def uncertainty_losses_plot(setting, losses_history, loss_i, epochs=10):
     plt.rc('font', family='serif', size=15)
     plt.tight_layout()
     plt.savefig(save_file+"losses_convergence_val.pdf", format="pdf")
+
+
+
+##########################################################################################################
+#
+#                                                3 Dimensinoal plot with 2d slices
+#
+##########################################################################################################
+"""
+    
+Inputs:
+    instance: Numpy.ndarray - of shape (X,Y,Z,1)
+    factor: float - that resamples the Z axis slices
+    h_resolution: int - resolution in the horizontal dimension
+    v_resolution: int - resolution in the vertical dimension
+    save: bool - whether to save the figure
+    save_path: str - path to save the figure, save has to be True
+Returns:
+    matplotlib.Figure - The figure to plot, no saving option implemented
+"""
+def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, save=False):
+    label = "$Z_{"
+    
+    fig = plt.figure(figsize=(25,7))
+    gs = GridSpec(2, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
+
+    axes = fig.add_subplot(gs[:,0:2], projection='3d', proj_type='ortho')
+    
+    cmap = plt.get_cmap(plt.cm.nipy_spectral)
+    cmap.set_over("w")
+    
+    x, y = np.mgrid[0:instance[:,:,0].shape[0], 0:instance[:,:,0].shape[1]]
+    
+
+    for axis in range((instance[:,:,:].shape[2])//factor):
+        img = (instance[:,:,axis*factor,0]-np.amin(instance[:,:,axis*factor,0]))/(np.amax(instance[:,:,axis*factor,0])-np.amin(instance[:,:,axis*factor,0]))
+
+        img[np.where(img < 0.37)]= 1.001
+        #renormalization
+        img[np.where(img <=1.0)] = (img[np.where(img <=1.0)]-np.amin(img[np.where(img <=1.0)]))/(np.amax(img[np.where(img <=1.0)])-np.amin(img[np.where(img <=1.0)]))
+
+        img = rotate(img, 90)
+
+        ax = axes.plot_surface(x,y,np.ones(x.shape)+5*(axis),
+                                facecolors=cmap(img), cmap=cmap, 
+                                shade=False, antialiased=True, zorder=0,
+                                cstride=v_resolution, rstride=h_resolution)
+
+        axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=13, zorder=100)
+
+    #axes.text(60, 60, 20+5*(instance[:,:,:].shape[2])//factor, "3-Dimensional sliced representation", size=13, zorder=100)
+    cbaxes = fig.add_axes([0.13, 0.15, 0.01, 0.7])  # This is the position for the colorbar
+    cb = plt.colorbar(ax, cax = cbaxes)
+
+    axes.axis("off")
+    axes.view_init(elev=5.5, azim=7)#(100,150)
+    axes.dist = 5
+    
+    #plot each slice in 2 Dimensional plot
+    row = 1
+    col = 6
+    for axis in range((instance[:,:,:].shape[2])//factor):
+        axes = fig.add_subplot(gs[row,col])
+        
+        img = (instance[:,:,axis*factor,0]-np.amin(instance[:,:,axis*factor,0]))/(np.amax(instance[:,:,axis*factor,0])-np.amin(instance[:,:,axis*factor,0]))
+        img[np.where(img < 0.37)]= 1.001
+        img[np.where(img <=1.0)] = (img[np.where(img <=1.0)]-np.amin(img[np.where(img <=1.0)]))/(np.amax(img[np.where(img <=1.0)])-np.amin(img[np.where(img <=1.0)]))
+        img = rotate(img, 90)
+        
+        axes.imshow(cmap(img))
+        axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
+             va="baseline", ha="left", multialignment="left",)
+
+        axes.axis("off")
+
+        col -= 1
+        if(col == 1):
+            col=6
+            row-=1
+
+    plt.rcParams["font.family"] = "Times New Roman"
+
+    if(save):
+        raise NotImplementedError
+
+    return fig
