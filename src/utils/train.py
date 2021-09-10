@@ -13,7 +13,7 @@ def apply_gradient(model, optimizer, loss_fn, x, y):
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     return tf.reduce_mean(loss)
 
-def train_step(model, x, optimizer, loss_fn):
+def train_step(model, x, optimizer, loss_fn, u_architecture=False):
     """Executes one training step and returns the loss.
 
     This function computes the loss and gradients, and uses the latter to
@@ -21,6 +21,8 @@ def train_step(model, x, optimizer, loss_fn):
     """
     if(tf.is_tensor(x)):
         return apply_gradient(model, optimizer, loss_fn, x, x)
+    elif(u_architecture):
+        return apply_gradient(model, optimizer, loss_fn, x, x[1])
     else:
         return apply_gradient(model, optimizer, loss_fn, *x)
 
@@ -87,7 +89,7 @@ def evaluate_additional(X, model, additional_losses):
         
     return (losses/n_batches).tolist()
 
-def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, additional_losses=[], file_output=None, verbose=False, verbose_batch=False):
+def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architecture=False, additional_losses=[], file_output=None, verbose=False, verbose_batch=False):
     val_loss = []
     train_loss = []
 
@@ -101,7 +103,7 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, additional_lo
         n_batches = 0
         
         for batch_set in train_set.repeat(1):
-            batch_loss = train_step(model, batch_set, opt, loss_fn).numpy()
+            batch_loss = train_step(model, batch_set, opt, loss_fn, u_architecture=u_architecture).numpy()
             loss += batch_loss
             n_batches += 1
             gc.collect()
