@@ -474,7 +474,7 @@ Inputs:
 Returns:
     matplotlib.Figure - The figure to plot, no saving option implemented
 """
-def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, save=False):
+def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, save=False, save_path=None):
     label = "$Z_{"
     
     fig = plt.figure(figsize=(25,7))
@@ -487,15 +487,14 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
     
     x, y = np.mgrid[0:instance[:,:,0].shape[0], 0:instance[:,:,0].shape[1]]
     
+    #normalization
+    instance = (instance[:,:,:,:]-np.amin(instance[:,:,:,:]))/(np.amax(instance[:,:,:,:])-np.amin(instance[:,:,:,:]))
+    instance[np.where(instance < 0.37)]= 1.001
+    #renormalization
+    instance[np.where(instance <=1.0)] = (instance[np.where(instance <=1.0)]-np.amin(instance[np.where(instance <=1.0)]))/(np.amax(instance[np.where(instance <=1.0)])-np.amin(instance[np.where(instance <=1.0)]))
 
     for axis in range((instance[:,:,:].shape[2])//factor):
-        img = (instance[:,:,axis*factor,0]-np.amin(instance[:,:,axis*factor,0]))/(np.amax(instance[:,:,axis*factor,0])-np.amin(instance[:,:,axis*factor,0]))
-
-        img[np.where(img < 0.37)]= 1.001
-        #renormalization
-        img[np.where(img <=1.0)] = (img[np.where(img <=1.0)]-np.amin(img[np.where(img <=1.0)]))/(np.amax(img[np.where(img <=1.0)])-np.amin(img[np.where(img <=1.0)]))
-
-        img = rotate(img, 90)
+        img = rotate(instance[:,:,axis*factor,0], 90)
 
         ax = axes.plot_surface(x,y,np.ones(x.shape)+5*(axis),
                                 facecolors=cmap(img), cmap=cmap, 
@@ -518,10 +517,7 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
     for axis in range((instance[:,:,:].shape[2])//factor):
         axes = fig.add_subplot(gs[row,col])
         
-        img = (instance[:,:,axis*factor,0]-np.amin(instance[:,:,axis*factor,0]))/(np.amax(instance[:,:,axis*factor,0])-np.amin(instance[:,:,axis*factor,0]))
-        img[np.where(img < 0.37)]= 1.001
-        img[np.where(img <=1.0)] = (img[np.where(img <=1.0)]-np.amin(img[np.where(img <=1.0)]))/(np.amax(img[np.where(img <=1.0)])-np.amin(img[np.where(img <=1.0)]))
-        img = rotate(img, 90)
+        img = rotate(instance[:,:,axis*factor,0], 90)
         
         axes.imshow(cmap(img))
         axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
