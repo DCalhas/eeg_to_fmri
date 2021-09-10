@@ -16,13 +16,13 @@ def launch_process(function, args):
 
 def theta_latent_fmri():
 	return [{'name': 'learning_rate', 'type': 'continuous',
-			'domain': (1e-7, 1e-2)},
+			'domain': (1e-10, 1e-2)},
 			{'name': 'weight_decay', 'type': 'continuous',
-			'domain': (1e-5, 1e-1)},
+			'domain': (1e-10, 1e-1)},
 			{'name': 'batch_size', 'type': 'discrete',
-			'domain': (16, 32, 64, 128)},
+			'domain': (1,2,4,8,16)},
 			{'name': 'latent', 'type': 'discrete',
-			'domain': (4,5,6,7)},
+			'domain': (4,5,6)},
 			{'name': 'channels', 'type': 'discrete',
 			'domain': (2,4,8,16)},
 			{'name': 'max_pool', 'type': 'discrete',
@@ -31,8 +31,8 @@ def theta_latent_fmri():
 			'domain': (0,1)},
 			{'name': 'skip', 'type': 'discrete',
 			'domain': (0,1)},
-			{'name': 'stacks', 'type': 'discrete',
-			'domain': (1,2,3)},
+			{'name': 'dropout', 'type': 'discrete',
+			'domain': (0,1)},
 			{'name': 'out_filter', 'type': 'discrete',
 			'domain': (0,1,2)}]
 
@@ -44,22 +44,20 @@ def load_data_latent_fmri(dataset, n_individuals, n_individuals_train, n_volumes
 	process_setup_tensorflow(memory_limit)
 
 	with tf.device('/CPU:0'):
-		train_data, _ = preprocess_data.dataset(dataset, n_individuals=n_individuals, 
+		train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals, 
 												interval_eeg=interval_eeg, 
 												ind_volume_fit=False,
 												standardize_fmri=True,
 												iqr=False,
 												verbose=True)
 	
-	return train_data[1][:n_individuals_train*n_volumes]
-
-
+	return train_data[1]
 
 
 def cross_validation_latent_fmri(score, learning_rate, weight_decay, 
 						kernel_size, stride_size,
 						batch_size, latent_dimension, n_channels, 
-						max_pool, batch_norm, skip_connections, 
+						max_pool, batch_norm, skip_connections, dropout,
 						n_stacks, outfilter, dataset, n_individuals, 
 						n_individuals_train, n_volumes, 
 						interval_eeg, memory_limit):
@@ -80,7 +78,7 @@ def cross_validation_latent_fmri(score, learning_rate, weight_decay,
 			#build model
 			model = fmri_ae.fMRI_AE(latent_dimension, x_train.shape[1:], kernel_size, stride_size, n_channels,
 								maxpool=max_pool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
-								n_stacks=n_stacks, local=True, local_attention=False, outfilter=outfilter)
+								n_stacks=n_stacks, local=True, local_attention=False, outfilter=outfilter dropout = dropout)
 			model.build(input_shape=x_train.shape)
 
 			#train model

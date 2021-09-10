@@ -100,20 +100,20 @@ class fMRI_AE(tf.keras.Model):
     
     def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
-                        n_stacks=2, local=True, local_attention=False, outfilter=0, seed=None):
+                        n_stacks=2, local=True, local_attention=False, outfilter=0, dropout=False, seed=None):
         
         
         super(fMRI_AE, self).__init__()
         
         self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
-                        n_stacks=n_stacks, local=local, local_attention=local_attention, seed=seed)
+                        n_stacks=n_stacks, local=local, local_attention=local_attention, dropout=dropout, seed=seed)
 
         self.build_decoder(outfilter=outfilter, seed=seed)
     
     def build_encoder(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
-                        n_stacks=2, local=True, local_attention=False, seed=None):
+                        n_stacks=2, local=True, local_attention=False, dropout=False, seed=None):
 
         self.latent_shape = latent_shape
         self.in_shape = input_shape
@@ -142,6 +142,8 @@ class fMRI_AE(tf.keras.Model):
         x = tf.keras.layers.Flatten()(x)
         x = tf.keras.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2], 
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+        if(dropout):
+            x = tf.keras.layers.Dropout(0.5)(x)
         x = tf.keras.layers.Reshape(self.latent_shape)(x)
 
         if(local_attention):

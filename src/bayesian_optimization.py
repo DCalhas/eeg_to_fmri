@@ -35,7 +35,7 @@ interval_eeg=6
 load_data_args = (dataset, n_individuals, n_individuals_train, n_volumes, interval_eeg, memory_limit)
 
 def latent_fmri(theta):
-    score = multiprocessing.Value('d', 0)
+    score = multiprocessing.Value('d', 1.0)
 
     #unroll hyperparameters
     learning_rate=float(theta[:, 0])
@@ -46,7 +46,7 @@ def latent_fmri(theta):
     max_pool=bool(theta[:, 5])
     batch_norm=bool(theta[:, 6])
     skip_connections=bool(theta[:, 7])
-    n_stacks=int(theta[:, 8])
+    dropout=bool(theta[:, 8])
     outfilter=int(theta[:, 9])
     
     n_stacks=3
@@ -62,7 +62,7 @@ def latent_fmri(theta):
                         kernel_size, stride_size,
                         batch_size, latent_dimension,
                         n_channels, max_pool, 
-                        batch_norm, skip_connections, 
+                        batch_norm, skip_connections, dropout, 
                         n_stacks,outfilter)
 
     process_utils.launch_process(getattr(process_utils, "cross_validation_"+setup), (score,) + cross_val_args+load_data_args)
