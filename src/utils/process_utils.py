@@ -78,7 +78,7 @@ def cross_validation_latent_fmri(score, learning_rate, weight_decay,
 			#build model
 			model = fmri_ae.fMRI_AE(latent_dimension, x_train.shape[1:], kernel_size, stride_size, n_channels,
 								maxpool=max_pool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
-								n_stacks=n_stacks, local=True, local_attention=False, outfilter=outfilter dropout = dropout)
+								n_stacks=n_stacks, local=True, local_attention=False, outfilter=outfilter, dropout=dropout)
 			model.build(input_shape=x_train.shape)
 
 			#train model
