@@ -42,6 +42,21 @@ call: encode and decode
 
 class EEG_to_fMRI(tf.keras.Model):
     
+
+    """
+    	NA_specification - tuple - (list1, list2, bool, tuple1, tuple2)
+    								* list1 - kernel sizes
+    								* list2 - stride sizes
+    								* bool - maxpool
+    								* tuple1 - kernel size of maxpool
+    								* tuple2 - stride size of maxpool
+    								Example:
+    								na = ([(2,2,2), (2,2,2)], [(1,1,1), (1,1,1)], True, (2,2,2), (1,1,1))
+    								na is a neural architecture with 2 layers, kernel of size 2 for all 3 dimensions
+    								stride of size 1 for all dimensions, between each layer a max pooling operation 
+    								is applied with kernel size 2 for all dimensions and stride size 1 for all dimensions
+
+    """
     def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                 maxpool=True, weight_decay=0.000, 
                 skip_connections=False, batch_norm=True,
@@ -77,11 +92,6 @@ class EEG_to_fMRI(tf.keras.Model):
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
                         skip_connections=skip_connections, seed=seed)
             previous_block_x=x
-
-        if(local):
-            operation=tf.keras.layers.Conv3D
-        else:
-            operation=LocallyConnected3D
 
         x = tf.keras.layers.Flatten()(x)
         x = tf.keras.layers.experimental.RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
