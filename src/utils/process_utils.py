@@ -20,7 +20,7 @@ def theta_latent_fmri():
 			{'name': 'weight_decay', 'type': 'continuous',
 			'domain': (1e-10, 1e-1)},
 			{'name': 'batch_size', 'type': 'discrete',
-			'domain': (16,)},
+			'domain': (128,)},
 			{'name': 'latent', 'type': 'discrete',
 			'domain': (4,5,6,7,8,9,10,15,20)},
 			{'name': 'channels', 'type': 'discrete',
