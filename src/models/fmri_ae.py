@@ -58,7 +58,7 @@ def block(x, operation, kernel_size, stride_size, n_channels,
 def skip_block(x, skip_x, operation, kernel_size, stride_size, n_channels,
                 maxpool=True, batch_norm=True, weight_decay=0.000,
                 seed=None):
-
+    
     skip_x = operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size,
                     kernel_regularizer=tf.keras.regularizers.L2(weight_decay),
                     bias_regularizer=tf.keras.regularizers.L2(weight_decay),
@@ -132,7 +132,7 @@ class fMRI_AE(tf.keras.Model):
             previous_block_x=x
 
         if(local):
-            operation=tfp.layers.Convolution3DFlipout
+            operation=tf.keras.layers.Conv3D
         else:
             operation=LocallyConnected3D
 
