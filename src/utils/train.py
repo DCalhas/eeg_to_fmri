@@ -26,11 +26,13 @@ def train_step(model, x, optimizer, loss_fn, u_architecture=False):
     else:
         return apply_gradient(model, optimizer, loss_fn, *x)
 
-def evaluate(X, model, loss_fn):
+def evaluate(X, model, loss_fn, u_architecture):
     loss = 0.0
     n_batches = 0
     for batch_x in X.repeat(1):
-        if(type(batch_x) is tuple):
+        if(u_architecture):
+            loss += tf.reduce_mean(loss_fn(batch_x[1], model(batch_x, training=True))).numpy()
+        elif(type(batch_x) is tuple):
             loss += tf.reduce_mean(loss_fn(batch_x[1], model(batch_x[0], training=False))).numpy()
         else:
             loss += tf.reduce_mean(loss_fn(batch_x, model(batch_x, training=False))).numpy()
@@ -38,11 +40,14 @@ def evaluate(X, model, loss_fn):
     
     return loss/n_batches
 
-def evaluate_parameters(X, model):
+def evaluate_parameters(X, model, u_architecture=False):
     parameters = [0.0, 0.0]
     n_batches = 0
     for batch_x in X.repeat(1):
-        if(type(batch_x) is tuple):
+        if(u_architecture):
+            prediction = model(batch_x, training=True)
+            batch_x=batch_x[1]
+        elif(type(batch_x) is tuple):
             prediction = model(batch_x[0], training=False)
         else:
             prediction = model(batch_x, training=False)
@@ -55,11 +60,14 @@ def evaluate_parameters(X, model):
     
     return (parameters[0]/n_batches, parameters[1]/n_batches)
 
-def evaluate_l2loss(X, model):
+def evaluate_l2loss(X, model, u_architecture=False):
     l2loss = 0.0
     n_batches = 0
     for batch_x in X.repeat(1):
-        if(type(batch_x) is tuple):
+        if(u_architecture):
+            prediction = model(batch_x, training=True)
+            batch_x=batch_x[1]
+        elif(type(batch_x) is tuple):
             prediction = model(batch_x[0], training=False)
         else:
             prediction = model(batch_x, training=False)
@@ -111,14 +119,15 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architectur
             print_utils.print_message("Batch ... with loss: " + str(batch_loss), file_output=file_output, verbose=verbose_batch)
 
         if(val_set is not None):
-            val_loss.append(evaluate(val_set, model, loss_fn))
+            val_loss.append(evaluate(val_set, model, loss_fn, u_architecture=u_architecture))
             #used for BNN version
             #parameters_history.append(evaluate_parameters(val_set, model))
-            #l2loss_history.append(evaluate_l2loss(val_set, model))
+            l2loss_history.append(evaluate_l2loss(val_set, model, u_architecture=u_architecture))
             #additional_losses_history.append(evaluate_additional(val_set, model, additional_losses))
 
         train_loss.append(loss/n_batches)
 
         print_utils.print_message("Epoch " + str(epoch+1) + " with loss: " + str(train_loss[-1]), file_output=file_output, verbose=verbose)
+        print_utils.print_message("Epoch " + str(epoch+1) + " with l2loss: " + str(l2loss_history[-1]), file_output=file_output, verbose=verbose)
 
     return train_loss, val_loss, parameters_history, l2loss_history, additional_losses_history

@@ -372,3 +372,61 @@ def cca_loss(outdim_size, use_all_singular_values):
             return -corr
 
     return inner_cca_objective
+
+
+"""
+mse_cosine:
+    Inputs:
+        * y_true - Tensor with the ground truth
+        * y_pred - List containing Tensors, y_pred[0] predicted, y_pred[1] latent z_1, y_pred[2] latent z_2
+    Returns:
+        * Tensor
+
+Being implemented, used in the eeg and fmri architecture
+"""
+def mse_cosine(y_true, y_pred):
+    return tf.reduce_mean(((y_pred[0] - y_true)**2)/2, axis=(1,2,3)) + cosine(y_pred[1], y_pred[2])
+
+"""
+mae_cosine:
+    Inputs:
+        * y_true - Tensor with the ground truth
+        * y_pred - List containing Tensors, y_pred[0] predicted, y_pred[1] latent z_1, y_pred[2] latent z_2
+    Returns:
+        * Tensor
+"""
+def mae_cosine(y_true, y_pred):
+    return tf.reduce_mean(tf.math.abs(y_pred[0] - y_true), axis=(1,2,3)) + cosine(y_pred[1], y_pred[2])
+
+"""
+mse:
+    Inputs:
+        * x1 - Tensor
+        * x2 - Tensor
+    Returns:
+        * Tensor
+"""
+def mse(x1, x2):
+    return tf.reduce_mean(((x1 - x2)**2)/2)
+
+"""
+mae:
+    Inputs:
+        * x1 - Tensor
+        * x2 - Tensor
+    Returns:
+        * Tensor
+"""
+def mae(x1, x2):
+    return tf.reduce_mean(tf.math.abs(x1 - x2))
+
+"""
+cosine:
+    Inputs:
+        * x1 - Tensor
+        * x2 - Tensor
+    Returns:
+        * Tensor
+"""
+def cosine(x1, x2):
+    return 1.0 - tf.tensordot(x1,x2, [[1,2,3],[3,2,1]])/(tf.norm(x1, ord=2)*tf.norm(x2, ord=2))

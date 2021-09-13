@@ -13,3 +13,4 @@ src/utils/__pycache__/
 utils/__pycache__/
 src/results_log
 src/results_plots
+plots/

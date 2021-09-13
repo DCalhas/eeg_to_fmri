@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+from models import fmri_ae
+
 
 search_space = [{'name': 'learning_rate', 'type': 'continuous',
 					'domain': (1e-5, 1e-2)},
@@ -37,20 +39,78 @@ decode: architecture that maps the encoded representation to the fMRI space repr
 call: encode and decode
 
 """
+
 class EEG_to_fMRI(tf.keras.Model):
+    
+    def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
+                maxpool=True, weight_decay=0.000, 
+                skip_connections=False, batch_norm=True,
+                dropout=False, n_stacks=2, local=True, 
+                seed=None, fmri_args=None):
+        super(EEG_to_fMRI, self).__init__()
+        
+        self.fmri_ae = fmri_ae.fMRI_AE(*fmri_args)
+        
+        self.build_encoder(latent_shape, input_shape, kernel_size, 
+                            stride_size, n_channels, 
+                            maxpool=maxpool, dropout=dropout,
+                            weight_decay=weight_decay, skip_connections=skip_connections,
+                            n_stacks=n_stacks, local=local, 
+                            batch_norm=batch_norm, seed=seed)
+        self.build_decoder()
+        
+    def build_encoder(self, latent_shape, input_shape, kernel_size, 
+                            stride_size, n_channels, 
+                            maxpool=True, dropout=False,
+                            weight_decay=0.000, skip_connections=False,
+                            batch_norm=True, n_stacks=2, 
+                            local=True, seed=None):
+        
+        input_shape = tf.keras.layers.Input(shape=input_shape)
+        
+        x = input_shape
+        previous_block_x = input_shape
 
+        for i in range(n_stacks):
+            x = fmri_ae.stack(x, previous_block_x, tf.keras.layers.Conv3D, 
+                        kernel_size, stride_size, n_channels,
+                        maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+                        skip_connections=skip_connections, seed=seed)
+            previous_block_x=x
 
-	def __init__(self, encoder, decoder):
-		super(EEG_to_fMRI, self).__init__()
+        if(local):
+            operation=tf.keras.layers.Conv3D
+        else:
+            operation=LocallyConnected3D
 
-		self.encoder = encoder
-		self.decoder = decoder
-
-	def encode(self, X):
-		return self.encoder(X)
-	
-	def decode(self, Z):
-		return self.decoder(Z)
-
-	def call(self, X):
-		return self.decode(self.encode(X))
+        x = tf.keras.layers.Flatten()(x)
+        x = tf.keras.layers.experimental.RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                              trainable=True)(x)
+        
+        if(dropout):
+            x = tf.keras.layers.Dropout(0.5)(x)
+        x = tf.keras.layers.Reshape(latent_shape)(x)
+        
+        self.eeg_encoder = tf.keras.Model(input_shape, x)
+        self.fmri_encoder = self.fmri_ae.encoder
+        
+    def build_decoder(self):
+        self.decoder = self.fmri_ae.decoder
+        
+    def build(self, input_shape1, input_shape2):
+        self.eeg_encoder.build(input_shape=input_shape1)
+        
+        self.fmri_ae.build(input_shape=input_shape2)        
+        self.fmri_encoder.build(input_shape=input_shape2)
+        
+        self.built=True
+    
+    def call(self, X, training=True):
+        x1, x2 = X
+        
+        z1 = self.eeg_encoder(x1)
+        z2 = self.fmri_encoder(x2)
+        
+        if(training):
+            return [self.decoder(z1), z1, z2]
+        return self.decoder(z1)
