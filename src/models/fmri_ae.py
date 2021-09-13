@@ -131,6 +131,11 @@ class fMRI_AE(tf.keras.Model):
                         skip_connections=skip_connections, seed=seed)
             previous_block_x=x
 
+        if(local):
+            operation=tfp.layers.Convolution3DFlipout
+        else:
+            operation=LocallyConnected3D
+
         x = block(x, operation, (7,7,7), stride_size, n_channels,
                 maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, seed=seed)
 
