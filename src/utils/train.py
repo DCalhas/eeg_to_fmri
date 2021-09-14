@@ -26,7 +26,7 @@ def train_step(model, x, optimizer, loss_fn, u_architecture=False):
     else:
         return apply_gradient(model, optimizer, loss_fn, *x)
 
-def evaluate(X, model, loss_fn, u_architecture):
+def evaluate(X, model, loss_fn, u_architecture=False):
     loss = 0.0
     n_batches = 0
     for batch_x in X.repeat(1):
