@@ -179,9 +179,9 @@ class EEG_to_fMRI(tf.keras.Model):
         self.fmri_encoder.build(input_shape=input_shape2)
 
         self.built=True
-        print(self.fmri_encoder.trainable_variables)
-        print(self.decoder.trainable_variables)
-        self.trainable_variables = self.trainable_variables.append(self.fmri_encoder.trainable_variables).append(self.decoder.trainable_variables)
+        
+        self.trainable_variables.append(self.fmri_encoder.trainable_variables)
+        self.trainable_variables.append(self.decoder.trainable_variables)
 
     def call(self, X, training=True):
         x1, x2 = X
