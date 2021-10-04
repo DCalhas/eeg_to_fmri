@@ -11,7 +11,7 @@ def apply_gradient(model, optimizer, loss_fn, x, y):
         loss = loss_fn(y, model(x))
     gradients = tape.gradient(loss, model.trainable_variables)
     print(gradients)
-    return gradients,model.trainable_variables
+    return zip(gradients, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     return tf.reduce_mean(loss)
 
