@@ -407,7 +407,7 @@ mse:
         * Tensor
 """
 def mse(x1, x2):
-    return tf.reduce_mean(((x1 - x2)**2)/2)
+    return tf.reduce_mean(((x1 - x2)**2)/2, axis=(1,2,3))
 
 """
 mae:
