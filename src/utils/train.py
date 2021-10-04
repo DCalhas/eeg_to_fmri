@@ -10,8 +10,6 @@ def apply_gradient(model, optimizer, loss_fn, x, y):
     with tf.GradientTape() as tape:
         loss = loss_fn(y, model(x))
     gradients = tape.gradient(loss, model.trainable_variables)
-    print(gradients)
-    return zip(gradients, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     return tf.reduce_mean(loss)
 
@@ -113,7 +111,6 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architectur
         n_batches = 0
         
         for batch_set in train_set.repeat(1):
-            return train_step(model, batch_set, opt, loss_fn, u_architecture=u_architecture)
             batch_loss = train_step(model, batch_set, opt, loss_fn, u_architecture=u_architecture).numpy()
             loss += batch_loss
             n_batches += 1
