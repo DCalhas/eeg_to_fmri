@@ -385,7 +385,7 @@ mse_cosine:
 Being implemented, used in the eeg and fmri architecture
 """
 def mse_cosine(y_true, y_pred):
-    return tf.reduce_mean(((y_pred[0] - y_true)**2)/2, axis=(1,2,3)) + cosine(y_pred[1], y_pred[2])
+    return cosine(y_pred[1], y_pred[2])#tf.reduce_mean(((y_pred[0] - y_true)**2)/2, axis=(1,2,3)) + cosine(y_pred[1], y_pred[2])
 
 """
 mae_cosine:

@@ -29,9 +29,6 @@ def build(*kwargs):
 	return EEG_to_fMRI()
 
 
-
-
-
 def block(x, operation, kernel_size, stride_size, n_channels,
             maxpool=True, batch_norm=True, weight_decay=0.000,  padding="valid",
             maxpool_k=None, maxpool_s=None,
@@ -161,6 +158,7 @@ class EEG_to_fMRI(tf.keras.Model):
             previous_block_x=x
 
         x = tf.keras.layers.Flatten()(x)
+
         x = tf.keras.layers.experimental.RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                               trainable=True)(x)
 
