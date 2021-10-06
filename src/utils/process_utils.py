@@ -118,7 +118,8 @@ def load_batch(tensorflow, batch_path, batch, dtype):
 def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, network, na_path, batch_size, learning_rate, memory_limit, seed):
 	#imports
 	import tensorflow as tf
-	from utils import train, losses_utils
+	from utils import train, losses_utils, state_utils
+	from layers.fourier_features import RandomFourierFeatures
 	from models import fmri_ae, eeg_to_fmri
 
 	#load batch
@@ -140,7 +141,6 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 	n_stacks=int(theta[11])
 	outfilter=int(theta[12])
 	local=True
-
 	#alter this
 	na_specification = ([(10,20,2),(10,20,2)], 
 						[(1,1,1),(1,1,1)],
@@ -156,6 +156,7 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 		loss_fn = losses_utils.mse_cosine
 
 		if(batch == 1 and epoch == 0):
+			#TODO: correct me to load right model specification
 			optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 			#kernels, strides = parse_conv.cnn_to_tuple(tf.keras.models.load_model(na_path + method + "/architecture_" + str(network+1), compile=False))
 			model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg.shape[1:], na_specification, 4, weight_decay=0.000, skip_connections=True,
@@ -165,10 +166,13 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 			model.build(eeg.shape, fmri.shape)
 			model.compile(optimizer=optimizer)
 		else:
-			#optimizer = state_utils.setup_state(tf, optimizer, na_path + method + "/architecture_" + str(network+1) + "_training/opt_config", 
-			model = tf.keras.models.load_model(na_path + "/architecture_" + str(network+1) + "_training", compile=True)
-			#setup_state(tf, model.optimizer, na_path  + "/architecture_" + str(network+1) + "_training/opt_config", 
-			#									na_path + "/architecture_" + str(network+1) + "_training/gen_config")
+			#load model and optimizer at previous state
+			#model = eeg_to_fmri.load_eeg_fmri(na_path + "/architecture_" + str(network) + "_training")
+			#print(model.optimizer)
+			model = tf.keras.models.load_model(na_path + "/architecture_" + str(network) + "_training", compile=True)
+			print(model.trainable_variables)
+			state_utils.setup_state(tf, model.optimizer, na_path  + "/architecture_" + str(network) + "_training/opt_config", 
+												na_path + "/architecture_" + str(network) + "_training/gen_config")
 
 	loss, batch_preds = train.train_step(model, [eeg, fmri], model.optimizer, loss_fn, u_architecture=True, return_logits=True)
 	loss=loss.numpy()
@@ -177,16 +181,72 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 	for i in range(flattened_batch_preds.shape[0]):
 		shared_flattened_predictions[i] = flattened_batch_preds[i]
 
-	return
+	print("NA", network, " at epoch", epoch+1, " and batch", batch, "with loss:", loss)
+
+	print(model.trainable_variables)
+	print(model.optimizer)
+
 	#save model
-	#model.save(na_path + "/architecture_" + str(network+1) + "_training", save_format="tf")
+	model.save(na_path + "/architecture_" + str(network) + "_training", save_format="tf", save_traces=False)
 	#save state
-	#state_utils.save_state(tf, model.optimizer, na_path + "/architecture_" + str(network+1) + "_training/opt_config", 
-	#						na_path + "/architecture_" + str(network+1) + "_training/gen_config")
+	state_utils.save_state(tf, model.optimizer, na_path + "/architecture_" + str(network) + "_training/opt_config", 
+							na_path + "/architecture_" + str(network) + "_training/gen_config")
 
-	raise NotImplementedError
+	model = tf.keras.models.load_model(na_path + "/architecture_" + str(network) + "_training", compile=True, 
+										custom_objects={"eeg_to_f_mri": eeg_to_fmri.EEG_to_fMRI,
+														"RandomFourierFeatures": RandomFourierFeatures})
+
+	state_utils.setup_state(tf, model.optimizer, na_path  + "/architecture_" + str(network) + "_training/opt_config", 
+										na_path + "/architecture_" + str(network) + "_training/gen_config")
+	print(model.trainable_variables)
+	print(model.optimizer)
+	exit(1)
+
+def continuous_training(o_predictions, batch_path, batch, learning_rate, epoch, na_path, gpu_mem, seed):
+	import tensorflow as tf
+	import numpy as np
+	from utils import state_utils, losses_utils, tf_config, train
+	from models import softmax
+
+	tf_config.setup_tensorflow(memory_limit=gpu_mem)
+	tf.random.set_seed(seed)
+
+	loss_fn = losses_utils.mse
+
+	if(batch==1 and epoch == 0):
+		opt = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+		model=softmax.Softmax((o_predictions.shape[0],))
+		model.build(input_shape=o_predictions.shape)
+		model.compile(optimizer=opt)
+	else:
+		model=tf.keras.models.load_model(na_path + "/softmax_training", compile=True)
+		#opt = state_utils.setup_state(tf, opt, na_path + method + "/softmax_training/opt_config", 
+		state_utils.setup_state(tf, model.optimizer, na_path + "/softmax_training/opt_config", 
+							na_path + "/softmax_training/gen_config")
+	
+	#load batch
+	_, fmri = load_batch(tf, batch_path, batch, tf.float32)
+
+	#training step to update weights with batch
+	loss = train.train_step(model, (o_predictions,fmri), model.optimizer, loss_fn).numpy()
+	
+	print("Softmax epoch loss: ", loss)
+	print(model.trainable_variables[0].numpy())
+
+	model.save(na_path + "/softmax_training", save_format="tf")
+	#save state
+	state_utils.save_state(tf, model.optimizer, na_path + "/softmax_training/opt_config", 
+							na_path + "/softmax_training/gen_config")
 
 
+
+def save_weights(epoch, na_path, save_weights_path): 
+	import tensorflow as tf
+	import numpy as np
+
+	model=tf.keras.models.load_model(na_path + "/softmax_training", compile=False)
+
+	np.save(save_weights_path+"/epoch_"+str(epoch), model.trainable_variables[0].numpy())
 
 
 def cross_validation_latent_fmri(score, learning_rate, weight_decay, 

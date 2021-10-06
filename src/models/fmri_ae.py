@@ -167,6 +167,22 @@ class fMRI_AE(tf.keras.Model):
         
         super(fMRI_AE, self).__init__()
         
+        self.latent_shape=latent_shape
+        self._input_shape=input_shape
+        self.kernel_size=kernel_size
+        self.stride_size=stride_size
+        self.n_channels=n_channels
+        self.maxpool=maxpool
+        self.batch_norm=batch_norm
+        self.weight_decay=weight_decay
+        self.skip_connections=skip_connections
+        self.n_stacks=n_stacks
+        self.local=local
+        self.local_attention=local_attention
+        self.outfilter=outfilter
+        self.dropout=dropout
+        self.seed=seed
+
         self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
                         n_stacks=n_stacks, local=local, local_attention=local_attention, dropout=dropout, seed=seed)
@@ -248,7 +264,26 @@ class fMRI_AE(tf.keras.Model):
 
         return self.decode(self.encode(X))
 
+    def get_config(self):
+        return {"latent_shape": self.latent_shape,
+                "input_shape": self._input_shape,
+                "kernel_size": self.kernel_size,
+                "stride_size": self.stride_size,
+                "n_channels": self.n_channels,
+                "maxpool": self.maxpool,
+                "batch_norm": self.batch_norm,
+                "weight_decay": self.weight_decay,
+                "skip_connections": self.skip_connections,
+                "n_stacks": self.n_stacks,
+                "local": self.local,
+                "local_attention": self.local_attention,
+                "outfilter": self.outfilter,
+                "dropout": self.dropout,
+                "seed": self.seed}
 
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
 
 
 class BNN_fMRI_AE(tf.keras.Model):

@@ -2,6 +2,14 @@ import tensorflow as tf
 
 from models import fmri_ae
 
+from utils import state_utils
+
+from layers.fourier_features import RandomFourierFeatures
+
+from pathlib import Path
+import shutil
+import os
+import pickle
 
 search_space = [{'name': 'learning_rate', 'type': 'continuous',
 					'domain': (1e-5, 1e-2)},
@@ -131,6 +139,18 @@ class EEG_to_fMRI(tf.keras.Model):
                 dropout=False, local=True, seed=None, fmri_args=None):
         super(EEG_to_fMRI, self).__init__()
 
+        self.latent_shape=latent_shape
+        self._input_shape=input_shape
+        self.na_spec=na_spec
+        self.n_channels=n_channels
+        self.weight_decay=weight_decay
+        self.skip_connections=skip_connections
+        self.batch_norm=batch_norm
+        self.dropout=dropout
+        self.local=local
+        self.seed=seed
+        self.fmri_args=fmri_args
+
         self.fmri_ae = fmri_ae.fMRI_AE(*fmri_args)
 
         self.build_encoder(latent_shape, input_shape, na_spec, n_channels, 
@@ -159,8 +179,9 @@ class EEG_to_fMRI(tf.keras.Model):
 
         x = tf.keras.layers.Flatten()(x)
 
-        x = tf.keras.layers.experimental.RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                              trainable=True)(x)
+        self.random_features = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                              trainable=True, name="random_fourier_features")
+        x = self.random_features(x)
 
         if(dropout):
             x = tf.keras.layers.Dropout(0.5)(x)
@@ -192,3 +213,22 @@ class EEG_to_fMRI(tf.keras.Model):
         if(training):
             return [self.decoder(z1), z1, z2]
         return self.decoder(z1)
+
+    def get_config(self):
+
+        return {"latent_shape": self.latent_shape,
+                "input_shape": self._input_shape,
+                "na_spec": self.na_spec,
+                "n_channels": self.n_channels,
+                "weight_decay": self.weight_decay,
+                "skip_connections": self.skip_connections,
+                "batch_norm": self.batch_norm,
+                "dropout": self.dropout,
+                "local": self.local,
+                "seed": self.seed,
+                "fmri_args": self.fmri_args,
+                "random_fourier_features": tf.keras.layers.serialize(self.random_features)}
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)

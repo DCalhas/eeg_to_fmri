@@ -1,5 +1,3 @@
-from utils import import_utils
-
 def save_state(tf, opt_instance, opt_config_path, gen_config_path):
 	import pickle
 
@@ -45,7 +43,7 @@ def optimizer_write(pickle, file_path, opt):
 	pickle.dump(dict_class, opt_file)
 	opt_file.close()
 
-def optimizer_read(tf, pickle, file_path, opt):
+def optimizer_read(pickle, file_path, opt):
 	dict_class = opt.__dict__
 
 	#remove clip lambda functions
