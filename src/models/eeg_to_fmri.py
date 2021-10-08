@@ -139,6 +139,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 dropout=False, local=True, seed=None, fmri_args=None):
         super(EEG_to_fMRI, self).__init__()
 
+        self.training=True
         self.latent_shape=latent_shape
         self._input_shape=input_shape
         self.na_spec=na_spec
@@ -204,14 +205,14 @@ class EEG_to_fMRI(tf.keras.Model):
         self.trainable_variables.append(self.fmri_encoder.trainable_variables)
         self.trainable_variables.append(self.decoder.trainable_variables)
 
-    def call(self, X, training=True):
-        x1, x2 = X
-
+    @tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
+    def call(self, x1, x2):
         z1 = self.eeg_encoder(x1)
-        z2 = self.fmri_encoder(x2)
-
-        if(training):
+        
+        if(self.training):
+            z2 = self.fmri_encoder(x2)
             return [self.decoder(z1), z1, z2]
+
         return self.decoder(z1)
 
     def get_config(self):
@@ -226,8 +227,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 "dropout": self.dropout,
                 "local": self.local,
                 "seed": self.seed,
-                "fmri_args": self.fmri_args,
-                "random_fourier_features": tf.keras.layers.serialize(self.random_features)}
+                "fmri_args": self.fmri_args}
 
     @classmethod
     def from_config(cls, config):

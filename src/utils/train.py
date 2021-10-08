@@ -8,7 +8,10 @@ from utils import print_utils
 
 def apply_gradient(model, optimizer, loss_fn, x, y, return_logits=False):
     with tf.GradientTape() as tape:
-        logits=model(x)
+        if(type(x) is tuple):
+            logits=model(*x)
+        else:
+            logits=model(x)
         loss = loss_fn(y, logits)
     gradients = tape.gradient(loss, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
