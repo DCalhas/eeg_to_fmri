@@ -6,31 +6,37 @@ import numpy as np
 
 from utils import print_utils
 
-def apply_gradient(model, optimizer, loss_fn, x, y, return_logits=False):
+def apply_gradient(model, optimizer, loss_fn, x, y, return_logits=False, call_fn=None):
     with tf.GradientTape() as tape:
         if(type(x) is tuple):
-            logits=model(*x)
+            if(call_fn is None):
+                logits=model(*x)
+            else:
+                logits=call_fn(model, *x)
         else:
-            logits=model(x)
+            if(call_fn is None):
+                logits=model(x)
+            else:
+                raise NotImplementedError
         loss = loss_fn(y, logits)
     gradients = tape.gradient(loss, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     if(return_logits):
-        return tf.reduce_mean(loss), logits[0]    
+        return tf.reduce_mean(loss), logits[0]
     return tf.reduce_mean(loss)
 
-def train_step(model, x, optimizer, loss_fn, u_architecture=False, return_logits=False):
+def train_step(model, x, optimizer, loss_fn, u_architecture=False, return_logits=False, call_fn=None):
     """Executes one training step and returns the loss.
 
     This function computes the loss and gradients, and uses the latter to
     update the model's parameters.
     """
     if(tf.is_tensor(x)):
-        return apply_gradient(model, optimizer, loss_fn, x, x, return_logits=return_logits)
+        return apply_gradient(model, optimizer, loss_fn, x, x, return_logits=return_logits, call_fn=call_fn)
     elif(u_architecture):
-        return apply_gradient(model, optimizer, loss_fn, x, x[1], return_logits=return_logits)
+        return apply_gradient(model, optimizer, loss_fn, x, x[1], return_logits=return_logits, call_fn=call_fn)
     else:
-        return apply_gradient(model, optimizer, loss_fn, *x, return_logits=return_logits)
+        return apply_gradient(model, optimizer, loss_fn, *x, return_logits=return_logits, call_fn=call_fn)
 
 def evaluate(X, model, loss_fn, u_architecture=False):
     loss = 0.0

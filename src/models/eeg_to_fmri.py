@@ -33,6 +33,13 @@ search_space = [{'name': 'learning_rate', 'type': 'continuous',
 					'domain': (2, 4, 8, 16, 32)}]
 
 
+@tf.function
+def call(obj, x1, x2):
+    z1 = obj.eeg_encoder(x1)
+
+    z2 = obj.fmri_encoder(x2)
+    return [obj.decoder(z1), z1, z2]
+
 def build(*kwargs):
 	return EEG_to_fMRI()
 
@@ -80,7 +87,7 @@ def stack(x, previous_block_x, operation, kernel_size, stride_size, n_channels,
                         weight_decay=0.000, skip_connections=False,
                         maxpool_k=None, maxpool_s=None,
                         seed=None):
-    #downsampling block    
+    #downsampling block 
     x = block(x, operation, kernel_size, stride_size, n_channels,
             maxpool=maxpool, batch_norm=batch_norm, 
             maxpool_k=maxpool_k, maxpool_s=maxpool_s,
@@ -193,7 +200,7 @@ class EEG_to_fMRI(tf.keras.Model):
 
     def build_decoder(self):
         self.decoder = self.fmri_ae.decoder
-
+    
     def build(self, input_shape1, input_shape2):
         self.eeg_encoder.build(input_shape=input_shape1)
 
@@ -204,9 +211,18 @@ class EEG_to_fMRI(tf.keras.Model):
         
         self.trainable_variables.append(self.fmri_encoder.trainable_variables)
         self.trainable_variables.append(self.decoder.trainable_variables)
-
+    
     @tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
     def call(self, x1, x2):
+        z1 = self.eeg_encoder(x1)
+        
+        if(self.training):
+            z2 = self.fmri_encoder(x2)
+            return [self.decoder(z1), z1, z2]
+
+        return self.decoder(z1)
+
+    def saved_call(self, x1, x2):
         z1 = self.eeg_encoder(x1)
         
         if(self.training):

@@ -118,10 +118,14 @@ def load_batch(tensorflow, batch_path, batch, dtype):
 def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, network, na_path, batch_size, learning_rate, memory_limit, seed):
 	#imports
 	import tensorflow as tf
-	from utils import train, losses_utils, state_utils
+	from utils import train, losses_utils, state_utils, tf_config
 	from layers.fourier_features import RandomFourierFeatures
-	from models.eeg_to_fmri import EEG_to_fMRI
+	from models.eeg_to_fmri import EEG_to_fMRI, call
 	from models.fmri_ae import fMRI_AE
+
+	tf_config.setup_tensorflow(memory_limit=memory_limit)
+	tf.random.set_seed(seed)
+
 	#load batch
 	eeg, fmri = load_batch(tf, batch_path, batch, tf.float32)
 
@@ -150,9 +154,6 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 
 	#load or build model
 	with tf.device('/CPU:0'):
-		
-		
-		
 		loss_fn = losses_utils.mse_cosine
 
 		if(batch == 1 and epoch == 0):
@@ -173,16 +174,17 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 														"RandomFourierFeatures": RandomFourierFeatures})
 			state_utils.setup_state(tf, model.optimizer, na_path  + "/architecture_" + str(network) + "_training/opt_config", 
 												na_path + "/architecture_" + str(network) + "_training/gen_config")
+			
 
-	loss, batch_preds = train.train_step(model, (eeg, fmri), model.optimizer, loss_fn, u_architecture=True, return_logits=True)
+	loss, batch_preds = train.train_step(model, (eeg, fmri), model.optimizer, loss_fn, u_architecture=True, return_logits=True, call_fn=call)
 	loss=loss.numpy()
 
 	flattened_batch_preds=batch_preds.numpy().flatten()
 	for i in range(flattened_batch_preds.shape[0]):
 		shared_flattened_predictions[i] = flattened_batch_preds[i]
 
-	print("NA", network, " at epoch", epoch+1, " and batch", batch, "with loss:", loss, end="\n\n\n\n\n")
-
+	print("NA", network, " at epoch", epoch+1, " and batch", batch, "with loss:", loss, end="\n")
+	
 	#save model
 	model.save(na_path + "/architecture_" + str(network) + "_training", save_format="tf", save_traces=False)
 	#save state
@@ -194,7 +196,7 @@ def continuous_training(o_predictions, batch_path, batch, learning_rate, epoch, 
 	import numpy as np
 	from utils import state_utils, losses_utils, tf_config, train
 	from models import softmax
-
+	
 	tf_config.setup_tensorflow(memory_limit=gpu_mem)
 	tf.random.set_seed(seed)
 
@@ -217,7 +219,7 @@ def continuous_training(o_predictions, batch_path, batch, learning_rate, epoch, 
 	#training step to update weights with batch
 	loss = train.train_step(model, (o_predictions,fmri), model.optimizer, loss_fn).numpy()
 	
-	print("Softmax epoch loss: ", loss, end="\n\n\n\n\n")
+	print("Softmax epoch loss: ", loss, end="\n\n\n")
 	print(model.trainable_variables[0].numpy())
 
 	model.save(na_path + "/softmax_training", save_format="tf")
