@@ -40,6 +40,8 @@ if __name__ == "__main__":
 	batch_size=opt.batch_size
 	batch_path=opt.batch_path
 	networks=opt.networks
+	save_weights=opt.save_weights
+	save_weights_path=opt.save_weights_path
 	na_path=opt.na_path
 	seed=opt.seed
 	
@@ -61,9 +63,9 @@ if(dataset=="02"):
 #parametrize the interval eeg?
 interval_eeg=10
 
-#process_utils.launch_process(process_utils.make_dir_batches, (dataset, n_individuals, n_individuals_train, 
-#															n_individuals_val, n_volumes, interval_eeg, 
-#															memory_limit, batch_size, batch_path))
+process_utils.launch_process(process_utils.make_dir_batches, (dataset, n_individuals, n_individuals_train, 
+															n_individuals_val, n_volumes, interval_eeg, 
+															memory_limit, batch_size, batch_path))
 
 
 n_batches = int(len(os.listdir(batch_path))/2)
@@ -86,7 +88,7 @@ for epoch in range(epochs):
 		for network in range(networks):
 			process_utils.launch_process(process_utils.batch_prediction, 
 										(flattened_predictions, batch_path, batch, epoch, network, na_path, batch_size, learning_rate, memory_limit, seed))
-			
+
 			o_predictions[network]=np.array(flattened_predictions).reshape((batch_size,x_dim,y_dim,z_dim,1))
 
 
@@ -100,4 +102,4 @@ for epoch in range(epochs):
 			
 
 #removing batch directory
-#shutil.rmtree(batch_path)
+shutil.rmtree(batch_path)

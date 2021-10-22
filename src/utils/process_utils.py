@@ -122,6 +122,7 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 	from layers.fourier_features import RandomFourierFeatures
 	from models.eeg_to_fmri import EEG_to_fMRI, call
 	from models.fmri_ae import fMRI_AE
+	import pickle
 
 	tf_config.setup_tensorflow(memory_limit=memory_limit)
 	tf.random.set_seed(seed)
@@ -146,11 +147,13 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 	outfilter=int(theta[12])
 	local=True
 	#alter this
-	na_specification = ([(10,20,2),(10,20,2)], 
-						[(1,1,1),(1,1,1)],
-						True,
-						(2,2,1),
-						(1,1,1))
+	with open("na_specification_"+str(network), "rb") as f:
+		na_specification = pickle.load(f)
+	#na_specification = ([(10,20,2),(10,20,2)], 
+	#					[(1,1,1),(1,1,1)],
+	#					True,
+	#					(2,2,1),
+	#					(1,1,1))
 
 	#load or build model
 	with tf.device('/CPU:0'):
