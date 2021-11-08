@@ -114,7 +114,23 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		base_config = super(RandomFourierFeatures, self).get_config()
 		return dict(list(base_config.items()) + list(config.items()))
 
+	"""
+	x - is the input of the layer
+	y - contains the so far computed relevances
+	"""
+	def lrp(self, x, y):
 
+		with tf.GradientTape(watch_accessed_variables=False) as tape:
+			tape.watch(x)
+			
+			z = self.call(x)+1e-9
+			s = y/tf.reshape(z, y.shape)
+			s = tf.reshape(s, z.shape)
+
+			c = tape.gradient(tf.reduce_sum(z*s), x)
+			R = x*c
+
+		return R
 
 _get_default_scale
 
