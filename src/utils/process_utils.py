@@ -147,7 +147,6 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 	n_stacks=int(theta[11])
 	outfilter=int(theta[12])
 	local=True
-	alter this
 	with open(na_path + "/na_specification_"+str(network+1), "rb") as f:
 		na_specification = pickle.load(f)
 	#na_specification = ([(10,20,2),(10,20,2)], 
