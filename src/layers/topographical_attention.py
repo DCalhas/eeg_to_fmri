@@ -44,15 +44,35 @@ class Topographical_Attention(tf.keras.layers.Layer):
 
 
 	def lrp(self, x, y):
+		#store attention scores
+		self.call(x)
 
 		with tf.GradientTape(watch_accessed_variables=False) as tape:
 			tape.watch(x)
 			
-			z = self.call(x)+1e-9
+			z = tf.einsum('NMF,NCM->NCF', x, self.attention_scores)+1e-9
+
 			s = y/tf.reshape(z, y.shape)
 			s = tf.reshape(s, z.shape)
-
+			
 			c = tape.gradient(tf.reduce_sum(z*s), x)
 			R = x*c
+
+		return R
+
+	def lrp_attention(self, x, y):
+		#store attention scores
+		self.call(x)
+
+		with tf.GradientTape(watch_accessed_variables=False) as tape:
+			tape.watch(self.attention_scores)
+			
+			z = tf.einsum('NMF,NCM->NCF', x, self.attention_scores)+1e-9
+
+			s = y/tf.reshape(z, y.shape)
+			s = tf.reshape(s, z.shape)
+			
+			c = tape.gradient(tf.reduce_sum(z*s), self.attention_scores)
+			R = self.attention_scores*c
 
 		return R

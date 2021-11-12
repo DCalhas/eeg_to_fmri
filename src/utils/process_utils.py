@@ -54,7 +54,7 @@ def load_data_latent_fmri(dataset, n_individuals, n_individuals_train, n_volumes
 
 	return train_data[1]
 
-def load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, memory_limit):
+def load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, memory_limit, return_test=False):
 	from utils import preprocess_data
 	import tensorflow as tf
 
@@ -67,7 +67,8 @@ def load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, memory_l
 												standardize_fmri=True,
 												iqr=False,
 												verbose=True)
-
+	if(return_test):
+		return train_data, test_data
 	return train_data
 
 
@@ -146,9 +147,9 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 	n_stacks=int(theta[11])
 	outfilter=int(theta[12])
 	local=True
-	#alter this
-	#with open(na_path + "/na_specification_"+str(network+1), "rb") as f:
-	#	na_specification = pickle.load(f)
+	alter this
+	with open(na_path + "/na_specification_"+str(network+1), "rb") as f:
+		na_specification = pickle.load(f)
 	na_specification = ([(10,20,2),(10,20,2)], 
 						[(1,1,1),(1,1,1)],
 						True,
