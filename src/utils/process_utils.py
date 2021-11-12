@@ -150,11 +150,11 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 	alter this
 	with open(na_path + "/na_specification_"+str(network+1), "rb") as f:
 		na_specification = pickle.load(f)
-	na_specification = ([(10,20,2),(10,20,2)], 
-						[(1,1,1),(1,1,1)],
-						True,
-						(2,2,1),
-						(1,1,1))
+	#na_specification = ([(10,20,2),(10,20,2)], 
+	#					[(1,1,1),(1,1,1)],
+	#					True,
+	#					(2,2,1),
+	#					(1,1,1))
 
 	#load or build model
 	with tf.device('/CPU:0'):

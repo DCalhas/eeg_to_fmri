@@ -10,9 +10,12 @@ ssim:
 		* data - tf.data.DataLoader
 		* model - tf.keras.Model
 		* factor - int default factor=3
+	Outputs:
+		* SSIM values - list
+		* SSIM mean - float
 """
 def ssim(data, model, factor=3):
-	ssim = 0.0
+	ssim = []
 	n_instances=0
 
 	for instance_x, instance_y in data.repeat(1):
@@ -28,7 +31,28 @@ def ssim(data, model, factor=3):
 
 			ssim_img+=tf.image.ssim(im1, im2, max_val=max_val).numpy()[0]
 
-		ssim += (ssim_img/((instance_y[:,:,:,:].shape[3])//factor))
+		ssim += [ssim_img/((instance_y[:,:,:,:].shape[3])//factor)]
 		n_instances+=1
 
-	return ssim/n_instances
+	return ssim, sum(ssim)/n_instances
+
+"""
+rmse:
+	Inputs:
+		* data - tf.data.DataLoader
+		* model - tf.keras.Model
+	Outputs:
+		* RMSE values - list
+		* RMSE mean - float
+"""
+def rmse(data, model):
+	rmse = []
+	n_instances=0
+
+	for instance_x, instance_y in data.repeat(1):
+		y_pred = model([instance_x, instance_y])[0]
+
+		ssim += [(tf.reduce_mean((y_pred-instance_y)**2))**(1/2)]
+		n_instances+=1
+
+	return ssim, sum(ssim)/n_instances
