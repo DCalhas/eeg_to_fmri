@@ -15,7 +15,7 @@ ssim:
 		* SSIM mean - float
 """
 def ssim(data, model, factor=3):
-	ssim = []
+	_ssim = []
 
 	for instance_x, instance_y in data.repeat(1):
 		y_pred = model(instance_x, instance_y)[0]
@@ -30,9 +30,9 @@ def ssim(data, model, factor=3):
 
 			ssim_img+=tf.image.ssim(im1, im2, max_val=max_val).numpy()[0]
 
-		ssim += [ssim_img/((instance_y[:,:,:,:].shape[3])//factor)]
+		_ssim += [ssim_img/((instance_y[:,:,:,:].shape[3])//factor)]
 
-	return ssim
+	return _ssim
 
 """
 rmse:
@@ -44,12 +44,12 @@ rmse:
 		* RMSE mean - float
 """
 def rmse(data, model):
-	rmse = []
+	_rmse = []
 
 	for instance_x, instance_y in data.repeat(1):
 		y_pred = model(instance_x, instance_y)[0]
 
-		ssim += [(tf.reduce_mean((y_pred-instance_y)**2))**(1/2)]
+		_rmse += [(tf.reduce_mean((y_pred-instance_y)**2))**(1/2)]
 		n_instances+=1
 
-	return ssim
+	return _rmse
