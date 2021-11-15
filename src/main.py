@@ -14,6 +14,8 @@ import tensorflow as tf
 
 from pathlib import Path
 
+from scipy.stats import ttest_ind
+
 parser = argparse.ArgumentParser()
 parser.add_argument('mode',
 					choices=['metrics', 'quality'],
@@ -128,6 +130,7 @@ if(mode=="metrics"):
 			np.save(f, rmse_pop)
 		with open(metrics_path+"/ssim"+setting+".npy", 'wb') as f:
 			np.save(f, ssim_pop)
+			
 elif(mode=="residues"):
 	for eeg, fmri in test_set.repeat(1):
 		viz_utils.plot_3D_representation_projected_slices(fmri_train[1]-np.random.normal(0,1,size=fmri_train[1].shape),
