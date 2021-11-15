@@ -50,6 +50,5 @@ def rmse(data, model):
 		y_pred = model(instance_x, instance_y)[0]
 
 		_rmse += [(tf.reduce_mean((y_pred-instance_y)**2))**(1/2)]
-		n_instances+=1
 
 	return _rmse
