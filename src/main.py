@@ -98,8 +98,8 @@ local=True
 with open(na_path, "rb") as f:
 	na_specification = pickle.load(f)
 optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification, 4, weight_decay=0.000, skip_connections=True,
-							batch_norm=True, local=True, fourier_features=fourier_features, 
+model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
+							batch_norm=batch_norm, local=local, fourier_features=fourier_features, 
 							topographical_attention=topographical_attention, seed=None, fmri_args = (latent_dimension, fmri_shape[1:], 
 							kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
 							n_stacks, True, False, outfilter, dropout))
@@ -119,16 +119,16 @@ if(mode=="metrics"):
 	#compute p values against saved metrics
 	for f in os.listdir(metrics_path):
 		if("rmse" in f):
-			other_pop_rmse = np.load(f, allow_pickle=True)
+			other_pop_rmse = np.load(metrics_path+"/"+f, allow_pickle=True)
 			print("p-value against", f.split("/")[-1][:-4], ttest_ind(rmse_pop, other_pop_rmse).pvalue)
 		if("ssim" in f):
-			other_pop_ssim = np.load(f, allow_pickle=True)
+			other_pop_ssim = np.load(metrics_path+"/"+f, allow_pickle=True)
 			print("p-value against", f.split("/")[-1][:-4], ttest_ind(ssim_pop, other_pop_ssim).pvalue)
 
 	if(save_metrics):
-		with open(metrics_path+"/rmse"+setting+".npy", 'wb') as f:
+		with open(metrics_path+"/rmse_"+setting+".npy", 'wb') as f:
 			np.save(f, rmse_pop)
-		with open(metrics_path+"/ssim"+setting+".npy", 'wb') as f:
+		with open(metrics_path+"/ssim_"+setting+".npy", 'wb') as f:
 			np.save(f, ssim_pop)
 
 elif(mode=="residues"):
