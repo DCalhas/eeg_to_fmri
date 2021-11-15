@@ -160,6 +160,7 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 			optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 			#kernels, strides = parse_conv.cnn_to_tuple(tf.keras.models.load_model(na_path + method + "/architecture_" + str(network+1), compile=False))
 			model = EEG_to_fMRI(latent_dimension, eeg.shape[1:], na_specification, 4, weight_decay=0.000, skip_connections=True,
+											fourier_features=True, topographical_attention=False,
 											batch_norm=True, local=True, seed=None, fmri_args = (latent_dimension, fmri.shape[1:], 
 											kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
 											n_stacks, True, False, outfilter, dropout))
