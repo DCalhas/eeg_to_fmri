@@ -181,15 +181,17 @@ class EEG_to_fMRI(tf.keras.Model):
         input_shape = tf.keras.layers.Input(shape=input_shape)
 
         if(topographical_attention):
+            x = input_shape
             #reshape to flattened features to apply attention mechanism
-            layers += [tf.keras.layers.Reshape((self._input_shape[1],self._input_shape[2]*self._input_shape[3]))]
+            x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
             #topographical attention
-            layers += [Topographical_Attention(self._input_shape[1], self._input_shape[2]*self._input_shape[3])]
+            x = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2])(x)
             #reshape back to original shape
-            layers += [tf.keras.layers.Reshape(self._input_shape[1:])]
-
-        x = input_shape
-        previous_block_x = input_shape
+            x = tf.keras.layers.Reshape(self._input_shape)(x)
+            previous_block_x = x
+        else:
+            x = input_shape
+            previous_block_x = input_shape
 
         for i in range(len(na_spec[0])):
             x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
