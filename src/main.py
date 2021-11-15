@@ -18,7 +18,7 @@ from scipy.stats import ttest_ind
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mode',
-					choices=['metrics', 'quality'],
+					choices=['metrics', 'residues'],
 					help="What to compute")
 parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
 parser.add_argument('-topographical_attention', action="store_true", help="Verbose")
@@ -132,8 +132,11 @@ if(mode=="metrics"):
 			np.save(f, ssim_pop)
 
 elif(mode=="residues"):
+	instance=0
 	for eeg, fmri in test_set.repeat(1):
-		viz_utils.plot_3D_representation_projected_slices(fmri_train[1]-np.random.normal(0,1,size=fmri_train[1].shape),
+		viz_utils.plot_3D_representation_projected_slices(fmri.numpy()[0]-model(eeg, fmri).numpy()[0],
 															cmap=plt.cm.gray,
-															res_img=fmri,
-															slice_label=False)
+															res_img=fmri.numpy()[0],
+															slice_label=False,
+															save=True, save_path=metrics_path+str(instance)+"_instance.pdf")
+		instance+=1
