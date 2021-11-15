@@ -81,6 +81,7 @@ test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
 #load model
 #unroll hyperparameters
 theta = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1)
+learning_rate=0.002980911194116198
 weight_decay = float(theta[1])
 kernel_size = theta[2]
 stride_size = theta[3]
