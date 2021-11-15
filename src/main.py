@@ -108,7 +108,7 @@ model.compile(optimizer=optimizer)
 loss_fn = losses_utils.mse_cosine
 
 #train model
-#history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
+history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 if(mode=="metrics"):
 	rmse_pop = metrics.rmse(test_set, model)
@@ -130,7 +130,7 @@ if(mode=="metrics"):
 			np.save(f, rmse_pop)
 		with open(metrics_path+"/ssim"+setting+".npy", 'wb') as f:
 			np.save(f, ssim_pop)
-			
+
 elif(mode=="residues"):
 	for eeg, fmri in test_set.repeat(1):
 		viz_utils.plot_3D_representation_projected_slices(fmri_train[1]-np.random.normal(0,1,size=fmri_train[1].shape),
