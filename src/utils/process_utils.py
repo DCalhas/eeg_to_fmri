@@ -2,10 +2,10 @@ from multiprocessing import Process
 
 import os
 
-def process_setup_tensorflow(memory_limit):
+def process_setup_tensorflow(memory_limit, seed=42):
 	from utils import tf_config
 
-	tf_config.set_seed(seed=42)
+	tf_config.set_seed(seed=seed)
 	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
 
 def launch_process(function, args):
@@ -54,11 +54,12 @@ def load_data_latent_fmri(dataset, n_individuals, n_individuals_train, n_volumes
 
 	return train_data[1]
 
-def load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, memory_limit, return_test=False):
+def load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, memory_limit, return_test=False, setup_tf=True):
 	from utils import preprocess_data
 	import tensorflow as tf
 
-	process_setup_tensorflow(memory_limit)
+	if(setup_tf):
+		process_setup_tensorflow(memory_limit)
 
 	with tf.device('/CPU:0'):
 		train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals, 

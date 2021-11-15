@@ -5,6 +5,7 @@ from models import fmri_ae
 from utils import state_utils
 
 from layers.fourier_features import RandomFourierFeatures
+from layers.topographical_attention import Topographical_Attention
 
 from pathlib import Path
 import shutil
@@ -143,7 +144,8 @@ class EEG_to_fMRI(tf.keras.Model):
     """
     def __init__(self, latent_shape, input_shape, na_spec, n_channels,
                 weight_decay=0.000, skip_connections=False, batch_norm=True,
-                dropout=False, local=True, seed=None, fmri_args=None):
+                dropout=False, local=True, fourier_features=False, 
+                topographical_attention=False, seed=None, fmri_args=None):
         super(EEG_to_fMRI, self).__init__()
 
         self.training=True
@@ -164,15 +166,27 @@ class EEG_to_fMRI(tf.keras.Model):
         self.build_encoder(latent_shape, input_shape, na_spec, n_channels, 
                             dropout=dropout, weight_decay=weight_decay, 
                             skip_connections=skip_connections, local=local, 
-                            batch_norm=batch_norm, seed=seed)
+                            batch_norm=batch_norm, fourier_features=fourier_features,
+                            topographical_attention=topographical_attention,
+                            seed=seed)
         self.build_decoder()
 
     def build_encoder(self, latent_shape, input_shape, na_spec, n_channels, 
                             dropout=False, weight_decay=0.000, 
                             skip_connections=False, batch_norm=True, 
-                            local=True, seed=None):
+                            local=True, fourier_features=False, 
+                            topographical_attention=False,
+                            seed=None):
 
         input_shape = tf.keras.layers.Input(shape=input_shape)
+
+        if(topographical_attention):
+            #reshape to flattened features to apply attention mechanism
+            layers += [tf.keras.layers.Reshape((self._input_shape[1],self._input_shape[2]*self._input_shape[3]))]
+            #topographical attention
+            layers += [Topographical_Attention(self._input_shape[1], self._input_shape[2]*self._input_shape[3])]
+            #reshape back to original shape
+            layers += [tf.keras.layers.Reshape(self._input_shape[1:])]
 
         x = input_shape
         previous_block_x = input_shape
@@ -187,9 +201,13 @@ class EEG_to_fMRI(tf.keras.Model):
 
         x = tf.keras.layers.Flatten()(x)
 
-        self.random_features = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
+        if(fourier_features):
+            self.latent_resolution = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                               trainable=True, name="random_fourier_features")
-        x = self.random_features(x)
+        else:
+            self.latent_resolution = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                                name="dense")
+        x = self.latent_resolution(x)
 
         if(dropout):
             x = tf.keras.layers.Dropout(0.5)(x)

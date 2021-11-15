@@ -474,22 +474,30 @@ Inputs:
 Returns:
     matplotlib.Figure - The figure to plot, no saving option implemented
 """
-def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, save=False, save_path=None):
+def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, cmap=plt.cm.nipy_spectral, res_img=None, legend_colorbar="redidues", slice_label=True, save=False, save_path=None, save_format="pdf"):
     label = "$Z_{"
+
+    #this is a placeholder for the residues plot
+    if(res_img is None):
+        res_img=instance
+        res_img_none=False
+    else:
+        res_img_none=True
     
     fig = plt.figure(figsize=(25,7))
     gs = GridSpec(2, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
 
     axes = fig.add_subplot(gs[:,0:2], projection='3d', proj_type='ortho')
     
-    cmap = plt.get_cmap(plt.cm.nipy_spectral)
+    cmap = plt.get_cmap(cmap)
     cmap.set_over("w")
     
     x, y = np.mgrid[0:instance[:,:,0].shape[0], 0:instance[:,:,0].shape[1]]
     
     #normalization
     instance = (instance[:,:,:,:]-np.amin(instance[:,:,:,:]))/(np.amax(instance[:,:,:,:])-np.amin(instance[:,:,:,:]))
-    instance[np.where(instance < 0.37)]= 1.001
+    res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+    instance[np.where(res_img < 0.37)]= 1.001
     #renormalization
     instance[np.where(instance <=1.0)] = (instance[np.where(instance <=1.0)]-np.amin(instance[np.where(instance <=1.0)]))/(np.amax(instance[np.where(instance <=1.0)])-np.amin(instance[np.where(instance <=1.0)]))
 
@@ -500,12 +508,25 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
                                 facecolors=cmap(img), cmap=cmap, 
                                 shade=False, antialiased=True, zorder=0,
                                 cstride=v_resolution, rstride=h_resolution)
-
-        axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=13, zorder=100)
+        if(slice_label):
+            axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=13, zorder=100)
 
     #axes.text(60, 60, 20+5*(instance[:,:,:].shape[2])//factor, "3-Dimensional sliced representation", size=13, zorder=100)
-    cbaxes = fig.add_axes([0.13, 0.15, 0.01, 0.7])  # This is the position for the colorbar
+    if(slice_label):
+        pos=[0.13, 0.15, 0.01, 0.7]
+    elif(not slice_label and res_img_none):
+        pos=[0.12, 0.15, 0.01, 0.7]
+    else:
+        pos=[0.09, 0.15, 0.01, 0.7]
+    cbaxes = fig.add_axes(pos)  # This is the position for the colorbar
     cb = plt.colorbar(ax, cax = cbaxes)
+    if(not slice_label):
+        text_legend = fig.add_axes([pos[0]-0.007]+pos[1:])
+        text_legend.axis("off")
+        text_legend.text(-0.25,0.45, legend_colorbar, size=17, rotation=90)  # This is the position for the colorbar
+        cb.ax.get_yaxis().set_ticks([0,1])
+        cb.ax.get_yaxis().set_ticklabels(["Good","Bad"], size=17)
+
 
     axes.axis("off")
     axes.view_init(elev=5.5, azim=7)#(100,150)
@@ -520,8 +541,9 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
         img = rotate(instance[:,:,axis*factor,0], 90)
         
         axes.imshow(cmap(img))
-        axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
-             va="baseline", ha="left", multialignment="left",)
+        if(slice_label):
+            axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
+                 va="baseline", ha="left", multialignment="left",)
 
         axes.axis("off")
 
@@ -533,6 +555,6 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
     plt.rcParams["font.family"] = "Times New Roman"
 
     if(save):
-        raise NotImplementedError
+        fig.savefig(save_path, format=save_format)
 
     return fig
