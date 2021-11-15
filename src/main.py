@@ -137,5 +137,5 @@ elif(mode=="residues"):
 															cmap=plt.cm.gray,
 															res_img=fmri.numpy()[0],
 															slice_label=False,
-															save=True, save_path=metrics_path+str(instance)+"_instance.pdf")
+															save=True, save_path=metrics_path+"/"+ setting + "_" + str(instance)+"_instance.pdf")
 		instance+=1
