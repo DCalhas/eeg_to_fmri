@@ -110,7 +110,7 @@ model.compile(optimizer=optimizer)
 loss_fn = losses_utils.mse_cosine
 
 #train model
-#history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
+history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 if(mode=="metrics"):
 	rmse_pop = metrics.rmse(test_set, model)
