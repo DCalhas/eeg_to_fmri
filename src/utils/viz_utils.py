@@ -6,12 +6,10 @@ import utils.losses_utils as losses
 
 from utils import bnn_utils
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-
 from matplotlib import cm
-
 from matplotlib.ticker import LinearLocator
-
 from matplotlib.gridspec import GridSpec
 
 from scipy import spatial
@@ -474,7 +472,7 @@ Inputs:
 Returns:
     matplotlib.Figure - The figure to plot, no saving option implemented
 """
-def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, cmap=plt.cm.nipy_spectral, res_img=None, legend_colorbar="redidues", slice_label=True, save=False, save_path=None, save_format="pdf"):
+def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, cmap=plt.cm.nipy_spectral, res_img=None, legend_colorbar="redidues", normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
     label = "$Z_{"
 
     #this is a placeholder for the residues plot
@@ -495,11 +493,15 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
     x, y = np.mgrid[0:instance[:,:,0].shape[0], 0:instance[:,:,0].shape[1]]
     
     #normalization
-    instance = (instance[:,:,:,:]-np.amin(instance[:,:,:,:]))/(np.amax(instance[:,:,:,:])-np.amin(instance[:,:,:,:]))
-    res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
-    instance[np.where(res_img < 0.37)]= 1.001
-    #renormalization
-    instance[np.where(instance <=1.0)] = (instance[np.where(instance <=1.0)]-np.amin(instance[np.where(instance <=1.0)]))/(np.amax(instance[np.where(instance <=1.0)])-np.amin(instance[np.where(instance <=1.0)]))
+    if(not normalize_residues):
+        instance = (instance[:,:,:,:]-np.amin(instance[:,:,:,:]))/(np.amax(instance[:,:,:,:])-np.amin(instance[:,:,:,:]))
+        res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+        instance[np.where(res_img < 0.37)]= 1.001
+        #renormalization
+        instance[np.where(instance <=1.0)] = (instance[np.where(instance <=1.0)]-np.amin(instance[np.where(instance <=1.0)]))/(np.amax(instance[np.where(instance <=1.0)])-np.amin(instance[np.where(instance <=1.0)]))
+    else:
+        res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+        instance[np.where(res_img < 0.37)]= 1.001
 
     for axis in range((instance[:,:,:].shape[2])//factor):
         img = rotate(instance[:,:,axis*factor,0], 90)
@@ -519,7 +521,13 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
     else:
         pos=[0.09, 0.15, 0.01, 0.7]
     cbaxes = fig.add_axes(pos)  # This is the position for the colorbar
-    cb = plt.colorbar(ax, cax = cbaxes)
+    #to give a normalized bar that goes from 0.0 to 1.0
+    if(normalize_residues):
+        norm=mpl.colors.Normalize(vmin=0.0, vmax=1.0)
+        cb = plt.colorbar(ax, cax = cbaxes, norm=norm)
+    else:
+        cb = plt.colorbar(ax, cax = cbaxes)
+
     if(not slice_label):
         text_legend = fig.add_axes([pos[0]-0.007]+pos[1:])
         text_legend.axis("off")

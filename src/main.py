@@ -20,7 +20,7 @@ from scipy.stats import ttest_ind
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mode',
-					choices=['metrics', 'residues'],
+					choices=['metrics', 'residues', 'mean_residues'],
 					help="What to compute")
 parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
 parser.add_argument('-topographical_attention', action="store_true", help="Verbose")
@@ -142,3 +142,17 @@ elif(mode=="residues"):
 															slice_label=False,
 															save=True, save_path=metrics_path+"/"+ setting + "_" + str(instance)+"_instance.pdf")
 		instance+=1
+elif(mode=="mean_residues"):
+	instance=0
+	mean_fmri = tf.zeros((1,)+fmri_shape[1:])
+	mean_synth_fmri = tf.zeros((1,)+fmri_shape[1:])
+	for eeg, fmri in test_set.repeat(1):
+		mean_fmri = mean_fmri + fmri
+		mean_synth_fmri = mean_synth_fmri + model(eeg, fmri)[0]
+		instance+=1
+	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())/instance),
+															cmap=plt.cm.gray,
+															res_img=mean_fmri.numpy()/instance,
+															slice_label=False,
+															normalize_residues=True,
+															save=True, save_path=metrics_path+"/"+ setting + "_mean_residues.pdf")
