@@ -14,6 +14,8 @@ import tensorflow as tf
 
 from pathlib import Path
 
+import matplotlib.pyplot as plt
+
 from scipy.stats import ttest_ind
 
 parser = argparse.ArgumentParser()
