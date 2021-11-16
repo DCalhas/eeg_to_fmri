@@ -153,16 +153,10 @@ elif(mode=="mean_residues"):
 	instance=0
 	mean_fmri = tf.zeros((1,)+fmri_shape[1:])
 	mean_synth_fmri = tf.zeros((1,)+fmri_shape[1:])
-	print(mean_fmri.shape)
-	print(mean_synth_fmri.shape)
 	for eeg, fmri in test_set.repeat(1):
-		print(fmri.shape)
-		print(model(eeg, fmri)[0].shape)
 		mean_fmri = mean_fmri + fmri
 		mean_synth_fmri = mean_synth_fmri + model(eeg, fmri)[0]
 		instance+=1
-	print(mean_fmri.shape)
-	print(mean_synth_fmri.shape)
 	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())[0]/instance),
 															cmap=plt.cm.gray,
 															res_img=mean_fmri.numpy()[0]/instance,
