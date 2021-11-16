@@ -156,3 +156,9 @@ elif(mode=="mean_residues"):
 															slice_label=False,
 															normalize_residues=True,
 															save=True, save_path=metrics_path+"/"+ setting + "_mean_residues.pdf")
+	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())/instance),
+															cmap=plt.cm.gray,
+															res_img=mean_fmri.numpy()/instance,
+															slice_label=False,
+															normalize_residues=False,
+															save=True, save_path=metrics_path+"/"+ setting + "_mean_normalized_residues.pdf")
