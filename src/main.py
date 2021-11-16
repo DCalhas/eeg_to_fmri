@@ -20,7 +20,7 @@ from scipy.stats import ttest_ind
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mode',
-					choices=['metrics', 'residues', 'mean_residues'],
+					choices=['metrics', 'residues', 'mean_residues', 'quality'],
 					help="What to compute")
 parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
 parser.add_argument('-topographical_attention', action="store_true", help="Verbose")
@@ -141,6 +141,13 @@ elif(mode=="residues"):
 															res_img=fmri.numpy()[0],
 															slice_label=False,
 															save=True, save_path=metrics_path+"/"+ setting + "_" + str(instance)+"_instance.pdf")
+		instance+=1
+elif(mode=="quality"):
+	instance=0
+	for eeg, fmri in test_set.repeat(1):
+		viz_utils.plot_3D_representation_projected_slices(model(eeg, fmri)[0].numpy()[0],
+															res_img=fmri.numpy()[0],
+															save=True, save_path=metrics_path+"/"+ setting + "_" + mode +"_" + str(instance)+"_instance.pdf")
 		instance+=1
 elif(mode=="mean_residues"):
 	instance=0
