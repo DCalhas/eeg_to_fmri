@@ -134,7 +134,7 @@ if(mode=="metrics"):
 elif(mode=="residues"):
 	instance=0
 	for eeg, fmri in test_set.repeat(1):
-		viz_utils.plot_3D_representation_projected_slices(fmri.numpy()[0]-model(eeg, fmri).numpy()[0],
+		viz_utils.plot_3D_representation_projected_slices(fmri.numpy()[0]-model(eeg, fmri)[0].numpy()[0],
 															cmap=plt.cm.gray,
 															res_img=fmri.numpy()[0],
 															slice_label=False,
