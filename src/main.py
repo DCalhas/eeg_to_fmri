@@ -20,7 +20,7 @@ from scipy.stats import ttest_ind
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mode',
-					choices=['metrics', 'residues', 'mean_residues', 'quality'],
+					choices=['metrics', 'residues', 'mean_residues', 'quality', 'attention_graph', 'mean_attention_graph'],
 					help="What to compute")
 parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
 parser.add_argument('-topographical_attention', action="store_true", help="Verbose")
@@ -169,3 +169,5 @@ elif(mode=="mean_residues"):
 															slice_label=False,
 															normalize_residues=False,
 															save=True, save_path=metrics_path+"/"+ setting + "_mean_normalized_residues.pdf")
+else:
+	raise NotImplementedError

@@ -52,7 +52,7 @@ def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partition
 """
 """
 
-def get_data(individuals, raw_eeg=False, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
+def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.160, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
     TR = 1/TR
 
     X = []
@@ -121,6 +121,8 @@ def get_data(individuals, raw_eeg=False, start_cutoff=3, bold_shift=3, n_partiti
         for channel in range(len_channels):
             if(raw_eeg):
                 x = eeg_utils.raw_eeg(eeg, channel=channel)
+                if(raw_eeg_resample):
+                    x = resample(x, int((len(x)*(1/eeg_resample))/fs_sample))
                 x_instance += [x]
             else:
                 f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample)
@@ -139,6 +141,9 @@ def get_data(individuals, raw_eeg=False, start_cutoff=3, bold_shift=3, n_partiti
             else:
                 individuals_eegs = np.empty((0,) + (x_instance.shape[0], x_instance.shape[1]))
 
+        if(raw_eeg_resample):#placeholder because eeg was already resampled
+            fs_sample=1
+            f_resample=1
         if(raw_eeg):
             individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,int(((bold_shift))*fs_sample*f_resample):int(((recording_time+bold_shift))*fs_sample*f_resample)], (1,0))))
         else:
