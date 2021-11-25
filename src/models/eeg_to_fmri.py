@@ -4,7 +4,7 @@ from models import fmri_ae
 
 from utils import state_utils
 
-from layers.fourier_features import RandomFourierFeatures
+from layers.fourier_features import RandomFourierFeatures, FourierFeatures
 from layers.topographical_attention import Topographical_Attention
 
 from pathlib import Path
@@ -145,7 +145,7 @@ class EEG_to_fMRI(tf.keras.Model):
     def __init__(self, latent_shape, input_shape, na_spec, n_channels,
                 weight_decay=0.000, skip_connections=False, batch_norm=True,
                 dropout=False, local=True, fourier_features=False, 
-                conditional_attention_style=False,
+                conditional_attention_style=False, random_fourier=False,
                 topographical_attention=False, seed=None, fmri_args=None):
         super(EEG_to_fMRI, self).__init__()
 
@@ -170,6 +170,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             batch_norm=batch_norm, fourier_features=fourier_features,
                             topographical_attention=topographical_attention,
                             conditional_attention_style=conditional_attention_style,
+                            random_fourier=random_fourier,
                             seed=seed)
         self.build_decoder()
 
@@ -179,6 +180,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             local=True, fourier_features=False, 
                             topographical_attention=False,
                             conditional_attention_style=False,
+                            random_fourier=False,
                             seed=None):
 
         input_shape = tf.keras.layers.Input(shape=input_shape)
@@ -207,8 +209,12 @@ class EEG_to_fMRI(tf.keras.Model):
         x = tf.keras.layers.Flatten()(x)
 
         if(fourier_features):
-            self.latent_resolution = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                              trainable=True, name="random_fourier_features")
+            if(random_fourier):
+                self.latent_resolution = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                                  trainable=True, name="random_fourier_features")
+            else:
+                self.latent_resolution = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
+                                                                    trainable=True, name="random_fourier_features")
             if(conditional_attention_style):
                 self.latent_resolution = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2])(attention_scores)*self.latent_resolution
         else:

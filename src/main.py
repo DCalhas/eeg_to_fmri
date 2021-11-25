@@ -26,6 +26,7 @@ parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load
 parser.add_argument('-topographical_attention', action="store_true", help="Verbose")
 parser.add_argument('-conditional_attention_style', action="store_true", help="Verbose")
 parser.add_argument('-fourier_features', action="store_true", help="Verbose")
+parser.add_argument('-random_fourier', action="store_true", help="Verbose")
 parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 parser.add_argument('-batch_size', default=4, type=int, help="Batch size")
 parser.add_argument('-learning_rate', default=0.001, type=float, help="Learning rate")#to remove
@@ -41,6 +42,7 @@ mode=opt.mode
 dataset=opt.dataset
 topographical_attention=opt.topographical_attention
 fourier_features=opt.fourier_features
+random_fourier=opt.random_fourier
 conditional_attention_style=opt.conditional_attention_style
 epochs=opt.epochs
 batch_size=opt.batch_size
@@ -103,7 +105,8 @@ with open(na_path, "rb") as f:
 	na_specification = pickle.load(f)
 optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
-							batch_norm=batch_norm, local=local, fourier_features=fourier_features, conditional_attention_style=conditional_attention_style,
+							batch_norm=batch_norm, local=local, fourier_features=fourier_features,
+							random_fourier=random_fourier, conditional_attention_style=conditional_attention_style,
 							topographical_attention=topographical_attention, seed=None, fmri_args = (latent_dimension, fmri_shape[1:], 
 							kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
 							n_stacks, True, False, outfilter, dropout))
