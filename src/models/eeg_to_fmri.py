@@ -145,6 +145,7 @@ class EEG_to_fMRI(tf.keras.Model):
     def __init__(self, latent_shape, input_shape, na_spec, n_channels,
                 weight_decay=0.000, skip_connections=False, batch_norm=True,
                 dropout=False, local=True, fourier_features=False, 
+                conditional_attention_style=False,
                 topographical_attention=False, seed=None, fmri_args=None):
         super(EEG_to_fMRI, self).__init__()
 
@@ -168,6 +169,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             skip_connections=skip_connections, local=local, 
                             batch_norm=batch_norm, fourier_features=fourier_features,
                             topographical_attention=topographical_attention,
+                            conditional_attention_style=conditional_attention_style,
                             seed=seed)
         self.build_decoder()
 
@@ -176,6 +178,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             skip_connections=False, batch_norm=True, 
                             local=True, fourier_features=False, 
                             topographical_attention=False,
+                            conditional_attention_style=False,
                             seed=None):
 
         input_shape = tf.keras.layers.Input(shape=input_shape)
