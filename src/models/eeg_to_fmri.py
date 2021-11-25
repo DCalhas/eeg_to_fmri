@@ -216,11 +216,13 @@ class EEG_to_fMRI(tf.keras.Model):
                 self.latent_resolution = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
                                                                     trainable=True, name="random_fourier_features")
             if(conditional_attention_style):
-                self.latent_resolution = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2])(attention_scores)*self.latent_resolution
+                self.latent_style = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2])(attention_scores)
         else:
             self.latent_resolution = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                                 name="dense")
         x = self.latent_resolution(x)
+        if(conditional_attention_style):
+            x = x*self.latent_style
 
         if(dropout):
             x = tf.keras.layers.Dropout(0.5)(x)

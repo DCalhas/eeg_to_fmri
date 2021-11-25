@@ -54,11 +54,18 @@ save_metrics=opt.save_metrics
 metrics_path=opt.metrics_path
 seed=opt.seed
 
+#assertion
 setting=dataset
 if(topographical_attention):
 	setting+="_topographical_attention"
+if(random_fourier):
+	assert fourier_features, "To run random_fourier, fourier_features need to be active"
+	setting+="_random"
 if(fourier_features):
 	setting+="_fourier_features"
+if(conditional_attention_style):
+	assert topographical_attention, "To run conditional_attention_style, topographical_attention needs to be active"
+	setting+="_attention_style"
 
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
