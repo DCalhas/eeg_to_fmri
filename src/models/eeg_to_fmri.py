@@ -185,7 +185,7 @@ class EEG_to_fMRI(tf.keras.Model):
             #reshape to flattened features to apply attention mechanism
             x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
             #topographical attention
-            x = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2])(x)
+            x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2])(x)
             #reshape back to original shape
             x = tf.keras.layers.Reshape(self._input_shape)(x)
             previous_block_x = x
@@ -206,6 +206,8 @@ class EEG_to_fMRI(tf.keras.Model):
         if(fourier_features):
             self.latent_resolution = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                               trainable=True, name="random_fourier_features")
+            if(conditional_attention_style):
+                self.latent_resolution = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2])(attention_scores)*self.latent_resolution
         else:
             self.latent_resolution = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                                 name="dense")

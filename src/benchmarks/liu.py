@@ -128,3 +128,9 @@ class Liu_et_al(tf.keras.Model):
 		fmri_test = fmri_test.astype('float32')
 
 		return tf.data.Dataset.from_tensor_slices((eeg_train, fmri_train)).batch(batch_size), tf.data.Dataset.from_tensor_slices((eeg_test, fmri_test)).batch(1)
+
+	def __train__(self, train_set, loss_fn, opt):
+		raise NotImplementedError
+
+	def __evaluate__(self, test_set, metric_fn):
+		raise NotImplementedError

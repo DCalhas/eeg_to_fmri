@@ -132,6 +132,89 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 
 		return R
 
+
+class FourierFeatures(tf.keras.layers.Layer):
+
+	def __init__(self, output_dim, trainable=False, name=None, **kwargs):
+		if output_dim <= 0:
+			raise ValueError(
+			'`output_dim` should be a positive integer. Given: {}.'.format(
+			output_dim))
+		super(FourierFeatures, self).__init__(name=name)
+		self.output_dim = output_dim
+		super(FourierFeatures, self).__init__(trainable=trainable, **kwargs)
+
+	def build(self, input_shape):
+		input_shape = tf.TensorShape(input_shape)
+		# TODO(pmol): Allow higher dimension inputs. Currently the input is expected
+		# to have shape [batch_size, dimension].
+		if input_shape.rank != 2:
+			raise ValueError(
+			'The rank of the input tensor should be 2. Got {} instead.'.format(
+			input_shape.ndims))
+		if input_shape.dims[1].value is None:
+			raise ValueError(
+			'The last dimension of the inputs to `FourierFeatures` '
+			'should be defined. Found `None`.')
+		input_dim = input_shape.dims[1].value
+
+		kernel_initializer = []
+		for j in range(input_dim):
+			proj = []
+			for i in range(self.output_dim//2):
+				proj.append(2**i)
+			kernel_initializer.append(proj)
+		kernel_initializer = np.array(kernel_initializer)
+
+		self.kernel = self.add_weight(name='kernel',
+											shape=(input_dim, self.output_dim//2),dtype=tf.float32,
+											initializer=tf.compat.v1.constant_initializer(kernel_initializer),trainable=False)
+
+		super(FourierFeatures, self).build(input_shape)
+
+	def call(self, inputs):
+		inputs = tf.convert_to_tensor(inputs, dtype=self.dtype)
+		inputs = tf.cast(inputs, tf.float32)
+		outputs = tf.raw_ops.MatMul(a=inputs, b=self.kernel)
+		return tf.concat([tf.cos(outputs),tf.sin(outputs)], axis=-1)
+
+	def compute_output_shape(self, input_shape):
+		input_shape = tf.TensorShape(input_shape)
+		input_shape = input_shape.with_rank(2)
+		if input_shape.dims[-1].value is None:
+			raise ValueError(
+				'The innermost dimension of input shape must be defined. Given: %s' %
+				input_shape)
+		return input_shape[:-1].concatenate(self.output_dim)
+
+	def get_config(self):
+		config = {
+			'output_dim': self.output_dim
+		}
+		base_config = super(FourierFeatures, self).get_config()
+		return dict(list(base_config.items()) + list(config.items()))
+
+	"""
+	x - is the input of the layer
+	y - contains the so far computed relevances
+	"""
+	def lrp(self, x, y):
+
+		with tf.GradientTape(watch_accessed_variables=False) as tape:
+			tape.watch(x)
+			
+			z = self.call(x)+1e-9
+			s = y/tf.reshape(z, y.shape)
+			s = tf.reshape(s, z.shape)
+
+			c = tape.gradient(tf.reduce_sum(z*s), x)
+			R = x*c
+
+		return R
+
+
+
+
 _get_default_scale
 
 _get_random_features_initializer
