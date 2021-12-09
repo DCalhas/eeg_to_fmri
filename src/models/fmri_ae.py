@@ -162,7 +162,7 @@ class fMRI_AE(tf.keras.Model):
     
     def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
-                        n_stacks=2, local=True, local_attention=False, outfilter=0, dropout=False, seed=None):
+                        n_stacks=2, local=True, local_attention=False, outfilter=0, dropout=False, seed=None, _build_decoder=True):
         
         
         super(fMRI_AE, self).__init__()
@@ -182,19 +182,18 @@ class fMRI_AE(tf.keras.Model):
         self.outfilter=outfilter
         self.dropout=dropout
         self.seed=seed
-
+        self.latent_shape = latent_shape
+        self.in_shape = input_shape
+        
         self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
                         n_stacks=n_stacks, local=local, local_attention=local_attention, dropout=dropout, seed=seed)
-
-        self.build_decoder(outfilter=outfilter, seed=seed)
+        if(_build_decoder):
+            self.build_decoder(outfilter=outfilter, seed=seed)
     
     def build_encoder(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
                         n_stacks=2, local=True, local_attention=False, dropout=False, seed=None):
-
-        self.latent_shape = latent_shape
-        self.in_shape = input_shape
 
         input_shape = tf.keras.layers.Input(shape=input_shape)
         
