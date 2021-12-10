@@ -52,3 +52,54 @@ def rmse(data, model):
 		_rmse += [(tf.reduce_mean((y_pred-instance_y)**2))**(1/2)]
 
 	return _rmse
+
+
+"""
+fid:
+	Inputs:
+		* data - tf.data.DataLoader
+		* model - tf.keras.Model
+	Outputs:
+		* fid values - list
+		* fid mean - float
+
+Stands for Frechet inception distance
+"""
+def fid(data, model):
+	mu_truth = None
+	sigma_truth = None
+	mu_pred = None
+	sigma_pred = None
+
+	instances = 0
+	for instance_x, instance_y in data.repeat(1):
+		y_pred,_,latent_ground_truth = model(instance_x, instance_y)
+		latent_pred = model(instance_x, y_pred)[-1]
+
+		if(mu_truth is None and mu_pred is None):
+			mu_truth = latent_ground_truth
+			mu_pred = latent_pred
+		else:
+			mu_truth = mu_truth + latent_ground_truth
+			mu_pred = mu_pred + latent_pred
+
+		instances+=1
+
+	mu_truth = mu_truth/instances
+	mu_pred = mu_pred/instances
+
+	for instance_x, instance_y in data.repeat(1):
+		y_pred,_,latent_ground_truth = model(instance_x, instance_y)
+		latent_pred = model(instance_x, y_pred)[-1]
+
+		if(sigma_truth is None and sigma_pred is None):
+			sigma_truth = (mu_truth-latent_ground_truth)**2
+			sigma_pred = (mu_pred-latent_pred)**2
+		else:
+			sigma_truth = sigma_truth + (mu_truth-latent_ground_truth)**2
+			sigma_pred = sigma_pred + (mu_pred-latent_pred)**2
+
+	sigma_truth = tf.reshape(sigma_truth/(instances-1), (sigma_truth.shape[1]*sigma_truth.shape[2], sigma_truth.shape[3]))
+	sigma_pred = tf.reshape(sigma_pred/(instances-1), (sigma_pred.shape[1]*sigma_pred.shape[2], sigma_pred.shape[3]))
+
+	return (tf.norm(mu_truth-mu_pred, ord=2)+tf.linalg.trace(sigma_truth+sigma_pred-2*(sigma_pred*sigma_truth)**(1/2))).numpy()

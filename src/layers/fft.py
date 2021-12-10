@@ -188,6 +188,9 @@ class ir3DFT(tf.keras.layers.Layer):
 									dtype=tf.float32,
 									trainable=True)
 			self.normal1 = tfp.distributions.Normal(loc=self.mu1, scale=self.sigma1)
+			
+			self.add_loss(lambda: 0.001*tf.norm(self.mu1, ord=1))
+			self.add_loss(lambda: 0.001*tf.norm(self.sigma1, ord=2))
 		if(out2 > N2):
 			self.mu2=self.add_weight('mu2',
 									shape=[self._out2],
@@ -201,6 +204,8 @@ class ir3DFT(tf.keras.layers.Layer):
 									dtype=tf.float32,
 									trainable=True)
 			self.normal2 = tfp.distributions.Normal(loc=self.mu2, scale=self.sigma2)
+			self.add_loss(lambda: 0.001*tf.norm(self.mu2, ord=1))
+			self.add_loss(lambda: 0.001*tf.norm(self.sigma2, ord=2))
 		if(out3 > N3):
 			self.mu3=self.add_weight('mu3',
 									shape=[self._out3],
@@ -214,7 +219,9 @@ class ir3DFT(tf.keras.layers.Layer):
 									dtype=tf.float32,
 									trainable=True)
 			self.normal3 = tfp.distributions.Normal(loc=self.mu3, scale=self.sigma3)
-		
+			self.add_loss(lambda: 0.001*tf.norm(self.mu3, ord=1))
+			self.add_loss(lambda: 0.001*tf.norm(self.sigma3, ord=2))
+
 		self.N1 = self.add_weight('N1',
 								shape=[1],
 								initializer=tf.constant_initializer(out1),

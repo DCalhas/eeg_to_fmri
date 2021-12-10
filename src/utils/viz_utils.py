@@ -497,8 +497,6 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
         instance = (instance[:,:,:,:]-np.amin(instance[:,:,:,:]))/(np.amax(instance[:,:,:,:])-np.amin(instance[:,:,:,:]))
         res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
         instance[np.where(res_img < 0.37)]= 1.001
-        #renormalization
-        instance[np.where(instance <=1.0)] = (instance[np.where(instance <=1.0)]-np.amin(instance[np.where(instance <=1.0)]))/(np.amax(instance[np.where(instance <=1.0)])-np.amin(instance[np.where(instance <=1.0)]))
     else:
         res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
         instance[np.where(res_img < 0.37)]= 1.001
