@@ -5,7 +5,7 @@ from models import fmri_ae
 from utils import state_utils
 
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures
-from layers.fft import irDFT, ir3DFT
+from layers.fft import ir3DFT, r3DFT
 from layers.topographical_attention import Topographical_Attention
 
 from pathlib import Path
@@ -147,7 +147,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 weight_decay=0.000, skip_connections=False, batch_norm=True,
                 dropout=False, local=True, fourier_features=False, 
                 conditional_attention_style=False, random_fourier=False,
-                inverse_DFT=False,
+                inverse_DFT=False, DFT=False,
                 topographical_attention=False, seed=None, fmri_args=None):
         super(EEG_to_fMRI, self).__init__()
 
@@ -174,7 +174,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             conditional_attention_style=conditional_attention_style,
                             random_fourier=random_fourier,
                             seed=seed)
-        self.build_decoder(latent_shape, inverse_DFT=inverse_DFT, 
+        self.build_decoder(latent_shape, inverse_DFT=inverse_DFT, DFT=DFT, 
                             outfilter=self.fmri_ae.outfilter, seed=seed)
 
     def build_encoder(self, latent_shape, input_shape, na_spec, n_channels, 
@@ -235,15 +235,16 @@ class EEG_to_fMRI(tf.keras.Model):
         self.eeg_encoder = tf.keras.Model(input_shape, x)
         self.fmri_encoder = self.fmri_ae.encoder
 
-    def build_decoder(self, latent_shape, inverse_DFT=False, outfilter=0, seed=None):
+    def build_decoder(self, latent_shape, inverse_DFT=False, DFT=False, outfilter=0, seed=None):
         input_shape = tf.keras.layers.Input(shape=latent_shape)
 
+        x = input_shape
+
+        if(DFT):
+            x = r3DFT(latent_shape[0], latent_shape[1], latent_shape[2])(x)
         if(inverse_DFT):
-            #x = irDFT(self.fmri_ae.latent_shape[0]*self.fmri_ae.latent_shape[1]*self.fmri_ae.latent_shape[2], 
-                        #out=self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2])(x)
-            
             x = ir3DFT(latent_shape[0], latent_shape[1], latent_shape[2],
-                        out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(input_shape)
+                        out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(x)
         else:
             x = tf.keras.layers.Flatten()(input_shape)
             #upsampling
