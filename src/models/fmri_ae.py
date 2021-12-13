@@ -234,7 +234,9 @@ class fMRI_AE(tf.keras.Model):
                 "local_attention": self.local_attention,
                 "outfilter": self.outfilter,
                 "dropout": self.dropout,
-                "seed": self.seed}
+                "seed": self.seed,
+                "na_spec": self.na_spec,
+                "_build_decoder": self._build_decoder}
 
     @classmethod
     def from_config(cls, config):

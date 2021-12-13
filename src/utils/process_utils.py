@@ -172,7 +172,7 @@ def batch_prediction(shared_flattened_predictions, setup, batch_path, batch, epo
 											fourier_features=True, random_fourier=True, topographical_attention=False,
 											batch_norm=True, local=True, seed=None, fmri_args = (latent_dimension, fmri.shape[1:], 
 											kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
-											n_stacks, True, False, outfilter, dropout, None, True, na_specification_fmri))
+											n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
 			model.build(eeg.shape, fmri.shape)
 			model.compile(optimizer=optimizer)
 		else:
@@ -192,7 +192,8 @@ def batch_prediction(shared_flattened_predictions, setup, batch_path, batch, epo
 	#	shared_flattened_predictions[i] = flattened_batch_preds[i]
 
 	#print("NA", network, " at epoch", epoch+1, " and batch", batch, "with loss:", loss, end="\n")
-	
+	print(model.eeg_encoder.summary())
+	print(model.fmri_encoder.summary())
 	#save model
 	model.save(na_path + "/architecture_" + str(network) + "_training", save_format="tf", save_traces=False)
 	#save state
