@@ -45,6 +45,7 @@ if __name__ == "__main__":
 	save_weights_path=opt.save_weights_path
 	na_path=opt.na_path
 	seed=opt.seed
+	best_eeg_path=opt.best_eeg_path
 	
 	if(dataset=="01"):
 		x_dim=64
