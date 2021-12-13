@@ -113,7 +113,6 @@ class fMRI_AE(tf.keras.Model):
                         n_stacks=2, local=True, local_attention=False, outfilter=0, dropout=False, seed=None, _build_decoder=True,
                         na_spec=None):
         
-        
         super(fMRI_AE, self).__init__()
         
         self.latent_shape=latent_shape
@@ -134,6 +133,7 @@ class fMRI_AE(tf.keras.Model):
         self.latent_shape = latent_shape
         self.in_shape = input_shape
         
+        print(na_spec)
         self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
                         n_stacks=n_stacks, local=local, local_attention=local_attention, dropout=dropout, na_spec=na_spec, seed=seed)
@@ -165,7 +165,7 @@ class fMRI_AE(tf.keras.Model):
             operation=tf.keras.layers.Conv3D
         else:
             operation=LocallyConnected3D
-            
+
         x = tf.keras.layers.Flatten()(x)
         x = tf.keras.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2], 
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
