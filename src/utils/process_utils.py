@@ -184,14 +184,14 @@ def batch_prediction(shared_flattened_predictions, setup, batch_path, batch, epo
 			state_utils.setup_state(tf, model.optimizer, na_path  + "/architecture_" + str(network) + "_training/opt_config", 
 												na_path + "/architecture_" + str(network) + "_training/gen_config")
 
-	loss, batch_preds = train.train_step(model, (eeg, fmri), model.optimizer, loss_fn, u_architecture=True, return_logits=True, call_fn=call)
-	loss=loss.numpy()
+	#loss, batch_preds = train.train_step(model, (eeg, fmri), model.optimizer, loss_fn, u_architecture=True, return_logits=True, call_fn=call)
+	#loss=loss.numpy()
 
-	flattened_batch_preds=batch_preds.numpy().flatten()
-	for i in range(flattened_batch_preds.shape[0]):
-		shared_flattened_predictions[i] = flattened_batch_preds[i]
+	#flattened_batch_preds=batch_preds.numpy().flatten()
+	#for i in range(flattened_batch_preds.shape[0]):
+	#	shared_flattened_predictions[i] = flattened_batch_preds[i]
 
-	print("NA", network, " at epoch", epoch+1, " and batch", batch, "with loss:", loss, end="\n")
+	#print("NA", network, " at epoch", epoch+1, " and batch", batch, "with loss:", loss, end="\n")
 	
 	#save model
 	model.save(na_path + "/architecture_" + str(network) + "_training", save_format="tf", save_traces=False)
