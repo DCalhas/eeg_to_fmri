@@ -132,6 +132,8 @@ class fMRI_AE(tf.keras.Model):
         self.seed=seed
         self.latent_shape = latent_shape
         self.in_shape = input_shape
+        self._build_decoder=_build_decoder
+        self.na_spec=na_spec
         
         self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
@@ -235,8 +237,8 @@ class fMRI_AE(tf.keras.Model):
                 "outfilter": self.outfilter,
                 "dropout": self.dropout,
                 "seed": self.seed,
-                "na_spec": self.na_spec,
-                "_build_decoder": self._build_decoder}
+                "_build_decoder": self._build_decoder,
+                "na_spec": self.na_spec}
 
     @classmethod
     def from_config(cls, config):
