@@ -164,7 +164,10 @@ class EEG_to_fMRI(tf.keras.Model):
         self.seed=seed
         self.fmri_args=fmri_args
 
-        self.fmri_ae = fmri_ae.fMRI_AE(*fmri_args+(False,))
+        if(len(fmri_args)==18):#needs to be update if 
+            self.fmri_ae = fmri_ae.fMRI_AE(*fmri_args)
+        else:
+            raise NotImplementedError
 
         self.build_encoder(latent_shape, input_shape, na_spec, n_channels, 
                             dropout=dropout, weight_decay=weight_decay, 
