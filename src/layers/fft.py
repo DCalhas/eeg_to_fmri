@@ -208,3 +208,49 @@ class iDCT3D(tf.keras.layers.Layer):
 										  axes=[[1], [1]])
 		
 		return tf.transpose(z1, [1,0,2,3])
+
+
+
+"""
+DCT3D - real Discrete Cosine Transform
+
+Performs the discrete cosine transform
+
+Example usage:
+>>> import numpy as np
+>>> import tensorflow as tf
+>>> import tensorflow_probability as tfp
+>>>
+>>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
+>>> N = x.shape[1]
+>>> irdft = irDFT(N, out=N*2)
+>>> irdft(x)
+"""
+class padded_iDCT3D(tf.keras.layers.Layer):
+
+	def __init__(self, in1, in2, in3, out1, out2, out3):
+
+		super(padded_iDCT3D, self).__init__()
+		
+		assert out1 is not None
+		assert out3 is not None
+		assert out3 is not None
+		
+		self.in1 = in1
+		self.in2 = in2
+		self.in3 = in3
+		
+		self.out1 = out1
+		self.out2 = out2
+		self.out3 = out3
+		
+		self.idct3 = iDCT3D(out1, out2, out3)
+		
+	def call(self, x):
+		
+		paddings = [[0,0],
+					[0, self.out1-self.in1],
+				   [0, self.out2-self.in2],
+				   [0, self.out3-self.in3]]
+		
+		return self.idct3(tf.pad(x, paddings))
