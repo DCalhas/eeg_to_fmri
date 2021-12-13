@@ -151,13 +151,24 @@ class fMRI_AE(tf.keras.Model):
 
         if(na_spec is not None):
             n_stacks=len(na_spec[0])
+
+        print(n_stacks)
         for i in range(n_stacks):
             #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
-            if(na_spec is None):
+            if(na_spec is not None):
+                print("Entering the right one")
                 x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
                         na_spec[0][i], na_spec[1][i], n_channels,
                         maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],
+                        skip_connections=skip_connections, seed=seed)
+                previous_block_x=x
+            else:
+                print("Entering the wrong one")
+                x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
+                        kernel_size, stride_size, n_channels,
+                        maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+                        maxpool_k=(2,2,1), maxpool_s=(1,1,1),
                         skip_connections=skip_connections, seed=seed)
                 previous_block_x=x
 
