@@ -117,7 +117,7 @@ def load_batch(tensorflow, batch_path, batch, dtype):
 			tensorflow.convert_to_tensor(batch_y, dtype=dtype))
 
 
-def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, network, na_path, batch_size, learning_rate, memory_limit, seed):
+def batch_prediction(shared_flattened_predictions, setup, batch_path, batch, epoch, network, na_path, batch_size, learning_rate, memory_limit, best_eeg, seed):
 	#imports
 	import tensorflow as tf
 	from utils import train, losses_utils, state_utils, tf_config
@@ -148,8 +148,17 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 	n_stacks=int(theta[11])
 	outfilter=int(theta[12])
 	local=True
-	with open(na_path + "/na_specification_"+str(network+1), "rb") as f:
-		na_specification = pickle.load(f)
+	
+	if(setup=="fmri"):
+		with open(best_eeg, "rb") as f:
+			na_specification_eeg = pickle.load(f)
+		with open(na_path + "/na_specification_"+str(network+1), "rb") as f:
+			na_specification_fmri = pickle.load(f)
+	elif(setup=="eeg"):
+		with open(na_path + "/na_specification_"+str(network+1), "rb") as f:
+			na_specification_eeg = pickle.load(f)
+	else:
+		raise NotImplementedError
 
 	#load or build model
 	with tf.device('/CPU:0'):
@@ -159,13 +168,15 @@ def batch_prediction(shared_flattened_predictions, batch_path, batch, epoch, net
 			#TODO: correct me to load right model specification
 			optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 			#kernels, strides = parse_conv.cnn_to_tuple(tf.keras.models.load_model(na_path + method + "/architecture_" + str(network+1), compile=False))
-			model = EEG_to_fMRI(latent_dimension, eeg.shape[1:], na_specification, 4, weight_decay=0.000, skip_connections=True,
-											fourier_features=True, topographical_attention=False,
+			model = EEG_to_fMRI(latent_dimension, eeg.shape[1:], na_specification_eeg, 4, weight_decay=0.000, skip_connections=True,
+											fourier_features=True, random_fourier=True, topographical_attention=False,
 											batch_norm=True, local=True, seed=None, fmri_args = (latent_dimension, fmri.shape[1:], 
 											kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
-											n_stacks, True, False, outfilter, dropout))
+											n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
 			model.build(eeg.shape, fmri.shape)
 			model.compile(optimizer=optimizer)
+			print(model.fmri_encoder.summary())
+			exit(1)
 		else:
 			#load model and optimizer at previous state
 			model = tf.keras.models.load_model(na_path + "/architecture_" + str(network) + "_training", compile=True, 

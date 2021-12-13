@@ -18,7 +18,7 @@ import numpy as np
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
-	parser.add_argument('setup', choices=['eeg_fmri'], help="Which setup to run")
+	parser.add_argument('setup', choices=['eeg', 'fmri'], help="Which setup to run")
 	parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
 	parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 	parser.add_argument('-lr', default=0.01, type=float, help="Learning rate")
@@ -29,6 +29,7 @@ if __name__ == "__main__":
 	parser.add_argument('-na_path', default=str(Path.home())+"/eeg_to_fmri/na_models", type=str, help="Neural architectures path.")
 	parser.add_argument('-save_weights', action="store_true", help="Save weights of softmax continuous technique.")
 	parser.add_argument('-save_weights_path', default=str(Path.home())+"/eeg_to_fmri/softmax_weights", type=str, help="Path of directory to save save weights.")
+	parser.add_argument('-best_eeg_path', default=str(Path.home())+"/eeg_to_fmri/na_models_eeg", type=str, help="Path of directory to save save weights.")
 	parser.add_argument('-seed', default=42, type=int, help="Seed for random state")
 	opt = parser.parse_args()
 
@@ -87,7 +88,8 @@ for epoch in range(epochs):
 
 		for network in range(networks):
 			process_utils.launch_process(process_utils.batch_prediction, 
-										(flattened_predictions, batch_path, batch, epoch, network, na_path, batch_size, learning_rate, memory_limit, seed))
+										(flattened_predictions, setup, batch_path, batch, epoch, network, na_path, 
+											batch_size, learning_rate, memory_limit, best_eeg_path, seed))
 
 			o_predictions[network]=np.array(flattened_predictions).reshape((batch_size,x_dim,y_dim,z_dim,1))
 
