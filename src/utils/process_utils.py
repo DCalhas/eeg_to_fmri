@@ -183,10 +183,6 @@ def batch_prediction(shared_flattened_predictions, setup, batch_path, batch, epo
 														"RandomFourierFeatures": RandomFourierFeatures})
 			state_utils.setup_state(tf, model.optimizer, na_path  + "/architecture_" + str(network) + "_training/opt_config", 
 												na_path + "/architecture_" + str(network) + "_training/gen_config")
-		
-		print(model.fmri_encoder.summary())
-		print(model.eeg_encoder.summary())
-		exit(1)
 
 	loss, batch_preds = train.train_step(model, (eeg, fmri), model.optimizer, loss_fn, u_architecture=True, return_logits=True, call_fn=call)
 	loss=loss.numpy()
