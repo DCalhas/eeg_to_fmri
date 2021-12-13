@@ -91,9 +91,8 @@ for epoch in range(epochs):
 			process_utils.launch_process(process_utils.batch_prediction, 
 										(flattened_predictions, setup, batch_path, batch, epoch, network, na_path, 
 											batch_size, learning_rate, memory_limit, best_eeg_path, seed))
-
-			o_predictions[network]=np.array(flattened_predictions).reshape((batch_size,x_dim,y_dim,z_dim,1))
 			continue
+			o_predictions[network]=np.array(flattened_predictions).reshape((batch_size,x_dim,y_dim,z_dim,1))
 
 		#train weights that allow continuous representation of the neural networks
 		process_utils.launch_process(process_utils.continuous_training, 

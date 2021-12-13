@@ -133,7 +133,6 @@ class fMRI_AE(tf.keras.Model):
         self.latent_shape = latent_shape
         self.in_shape = input_shape
         
-        print(na_spec)
         self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
                         n_stacks=n_stacks, local=local, local_attention=local_attention, dropout=dropout, na_spec=na_spec, seed=seed)
@@ -152,11 +151,9 @@ class fMRI_AE(tf.keras.Model):
         if(na_spec is not None):
             n_stacks=len(na_spec[0])
 
-        print(n_stacks)
         for i in range(n_stacks):
             #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
             if(na_spec is not None):
-                print("Entering the right one")
                 x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
                         na_spec[0][i], na_spec[1][i], n_channels,
                         maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
@@ -164,7 +161,6 @@ class fMRI_AE(tf.keras.Model):
                         skip_connections=skip_connections, seed=seed)
                 previous_block_x=x
             else:
-                print("Entering the wrong one")
                 x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
                         kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
