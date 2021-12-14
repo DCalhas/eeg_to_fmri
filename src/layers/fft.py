@@ -254,3 +254,68 @@ class padded_iDCT3D(tf.keras.layers.Layer):
 				   [0, self.out3-self.in3]]
 		
 		return self.idct3(tf.pad(x, paddings))
+
+
+
+"""
+DCT3D - real Discrete Cosine Transform
+
+Performs the discrete cosine transform
+
+Example usage:
+>>> import numpy as np
+>>> import tensorflow as tf
+>>> import tensorflow_probability as tfp
+>>>
+>>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
+>>> N = x.shape[1]
+>>> irdft = irDFT(N, out=N*2)
+>>> irdft(x)
+"""
+class variational_iDCT3D(tf.keras.layers.Layer):
+
+    def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3):
+
+        super(variational_iDCT3D, self).__init__()
+
+        assert out1 is not None
+        assert out3 is not None
+        assert out3 is not None
+
+        self.in1 = in1
+        self.in2 = in2
+        self.in3 = in3
+
+        self.rand1 = rand1
+        self.rand2 = rand2
+        self.rand3 = rand3
+
+        self.padded_idct3 = padded_iDCT3D(in1+rand1, in2+rand2, in3+rand3, out1, out2, out3)
+
+        self.mu=self.add_weight('mu',
+                                shape=[self.rand1, self.rand2, self.rand3],
+                                initializer=tf.constant_initializer(np.zeros((self.rand1, self.rand2, self.rand3))),
+                                dtype=tf.float32,
+                                trainable=True)
+        self.sigma=self.add_weight('sigma',
+                                shape=[self.rand1, self.rand2, self.rand3],
+                                initializer=tf.constant_initializer(np.ones((self.rand1, self.rand2, self.rand3))),
+                                constraint=tf.keras.constraints.NonNeg(),
+                                dtype=tf.float32,
+                                trainable=True)
+        self.normal = tfp.distributions.Normal(loc=self.mu, scale=self.sigma)
+        
+    def call(self, x):
+
+        rand_paddings = [[0,0],
+                    [0, self.rand1],
+                   [0, self.rand2],
+                   [0, self.rand3]]
+
+        in_paddings = [[self.in1, 0],
+                   [self.in2, 0],
+                   [self.in3, 0]]
+        
+        rand_coefs = self.normal.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+
+        return self.padded_idct3(tf.pad(x, rand_paddings) + tf.pad(rand_coefs, in_paddings))
