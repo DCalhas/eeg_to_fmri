@@ -118,7 +118,7 @@ def aleatoric_uncertainty(model, X, T=10):
 	y_std = tf.zeros(X.shape)
 	
 	for i in range(T):
-		y_t = model(X, training=False, T=T)
+		y_t = model(X)
 		if(len(y_t) < 3):
 			y_std = y_std + tf.math.square(y_t[1])
 		else:
@@ -130,26 +130,14 @@ def aleatoric_uncertainty(model, X, T=10):
 Computing Var(y*)
 """
 def epistemic_uncertainty(model, X, T=10):
+
+	assert type(X) is tuple
 	
-	y_square = tf.zeros(X.shape)
-	
-	for i in range(T):
-		y_t = model(X, training=False, T=T)
-		
-		y_square = y_square + y_t[0]
-		
-	y_square = - tf.math.square((1/T)*y_square)
-	
-	y_hat = tf.zeros(X.shape)
+	y_hat = tf.zeros(X[1].shape)
 	
 	for i in range(T):
-		y_t = model(X, training=False, T=T)
+		y_t = model(*X)
+
+		y_hat = y_hat + tf.math.square(y_t[0])
 		
-		if(len(y_t) < 3):
-			y_hat = y_hat + tf.math.square(y_t[0]) + tf.math.square(y_t[1])
-		else:
-			y_hat = y_hat + tf.math.square(y_t[0]) + MC_posterior_Gamma(y_t[1], y_t[2])
-		
-	y_hat = y_square + (1/T)*y_hat
-		
-	return y_hat
+	return y_hat*(1/T) - tf.math.square(X[1][0])#missing empirical variance \sigma

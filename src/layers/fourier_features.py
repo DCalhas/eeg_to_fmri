@@ -127,7 +127,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			s = y/tf.reshape(z, y.shape)
 			s = tf.reshape(s, z.shape)
 
-			c = tape.gradient(tf.reduce_sum(z*s), x)
+			c = tape.gradient(tf.reduce_sum(z*s.numpy()), x)
 			R = x*c
 
 		return R
@@ -206,8 +206,7 @@ class FourierFeatures(tf.keras.layers.Layer):
 			z = self.call(x)+1e-9
 			s = y/tf.reshape(z, y.shape)
 			s = tf.reshape(s, z.shape)
-
-			c = tape.gradient(tf.reduce_sum(z*s), x)
+			c = tape.gradient(tf.reduce_sum(z*s.numpy()), x)
 			R = x*c
 
 		return R

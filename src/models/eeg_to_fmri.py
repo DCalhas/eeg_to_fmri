@@ -7,6 +7,7 @@ from utils import state_utils
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D
 from layers.topographical_attention import Topographical_Attention
+from layers.resnet_block import ResBlock
 
 from pathlib import Path
 import shutil
@@ -221,12 +222,18 @@ class EEG_to_fMRI(tf.keras.Model):
             previous_block_x = input_shape
 
         for i in range(len(na_spec[0])):
-            x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
+
+            x = ResBlock(tf.keras.layers.Conv3D, 
                         na_spec[0][i], na_spec[1][i], n_channels,
                         maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],
-                        skip_connections=skip_connections, seed=seed)
-            previous_block_x=x
+                        skip_connections=skip_connections, seed=seed)(x)
+            #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
+            #            na_spec[0][i], na_spec[1][i], n_channels,
+            #            maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
+            #            maxpool_k=na_spec[3], maxpool_s=na_spec[4],
+            #            skip_connections=skip_connections, seed=seed)
+            #previous_block_x=x
 
         x = tf.keras.layers.Flatten()(x)
 

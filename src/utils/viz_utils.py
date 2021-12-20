@@ -26,6 +26,8 @@ import pathlib
 
 from scipy.stats import gamma
 
+import copy
+
 uncertainty_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/uncertainty/"
 uncertainty_losses_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/uncertainty_losses/"
 gamma_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/gamma/"
@@ -472,7 +474,7 @@ Inputs:
 Returns:
     matplotlib.Figure - The figure to plot, no saving option implemented
 """
-def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, cmap=plt.cm.nipy_spectral, res_img=None, legend_colorbar="redidues", normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
+def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, cmap=plt.cm.nipy_spectral, uncertainty=False, res_img=None, legend_colorbar="redidues", max_min_legend=["Good","Bad"], normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
     label = "$Z_{"
 
     #this is a placeholder for the residues plot
@@ -496,9 +498,13 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
     if(not normalize_residues):
         instance = (instance[:,:,:,:]-np.amin(instance[:,:,:,:]))/(np.amax(instance[:,:,:,:])-np.amin(instance[:,:,:,:]))
         res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+        if(uncertainty):
+            _instance=copy.deepcopy(instance)
         instance[np.where(res_img < 0.37)]= 1.001
     else:
         res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+        if(uncertainty):
+            _instance=copy.deepcopy(instance)
         instance[np.where(res_img < 0.37)]= 1.001
 
     for axis in range((instance[:,:,:].shape[2])//factor):
@@ -510,6 +516,9 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
                                 cstride=v_resolution, rstride=h_resolution)
         if(slice_label):
             axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=13, zorder=100)
+
+    if(uncertainty):
+        instance=_instance
 
     #axes.text(60, 60, 20+5*(instance[:,:,:].shape[2])//factor, "3-Dimensional sliced representation", size=13, zorder=100)
     if(slice_label):
@@ -531,7 +540,7 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
         text_legend.axis("off")
         text_legend.text(-0.25,0.45, legend_colorbar, size=17, rotation=90)  # This is the position for the colorbar
         cb.ax.get_yaxis().set_ticks([0,1])
-        cb.ax.get_yaxis().set_ticklabels(["Good","Bad"], size=17)
+        cb.ax.get_yaxis().set_ticklabels(max_min_legend, size=17)
 
 
     axes.axis("off")

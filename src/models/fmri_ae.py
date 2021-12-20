@@ -2,6 +2,7 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 
 from layers.locally_connected import LocallyConnected3D
+from layers.resnet_block import ResBlock
 
 search_space = [{'name': 'learning_rate', 'type': 'continuous',
                     'domain': (1e-5, 1e-2)},
@@ -156,19 +157,29 @@ class fMRI_AE(tf.keras.Model):
         for i in range(n_stacks):
             #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
             if(na_spec is not None):
-                x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
+                #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
+                #        na_spec[0][i], na_spec[1][i], n_channels,
+                #        maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
+                #        maxpool_k=na_spec[3], maxpool_s=na_spec[4],
+                #        skip_connections=skip_connections, seed=seed)
+                #previous_block_x=x
+                x = ResBlock(tf.keras.layers.Conv3D, 
                         na_spec[0][i], na_spec[1][i], n_channels,
                         maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],
-                        skip_connections=skip_connections, seed=seed)
-                previous_block_x=x
+                        skip_connections=skip_connections, seed=seed)(x)
             else:
-                x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
+                #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
+                #        kernel_size, stride_size, n_channels,
+                #        maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+                #        maxpool_k=(2,2,1), maxpool_s=(1,1,1),
+                #        skip_connections=skip_connections, seed=seed)
+                #previous_block_x=x
+                x = ResBlock(tf.keras.layers.Conv3D, 
                         kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=(2,2,1), maxpool_s=(1,1,1),
-                        skip_connections=skip_connections, seed=seed)
-                previous_block_x=x
+                        skip_connections=skip_connections, seed=seed)(x)
 
         if(local):
             operation=tf.keras.layers.Conv3D
@@ -276,11 +287,16 @@ class BNN_fMRI_AE(tf.keras.Model):
         previous_block_x = input_shape
 
         for i in range(n_stacks):
-            x = stack(x, previous_block_x, tfp.layers.Convolution3DFlipout, 
+            #x = stack(x, previous_block_x, tfp.layers.Convolution3DFlipout, 
+            #            kernel_size, stride_size, n_channels,
+            #            maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+            #            skip_connections=skip_connections, seed=seed)
+            #previous_block_x=x
+            x = ResBlock(tf.keras.layers.Convolution3DFlipout, 
                         kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
-                        skip_connections=skip_connections, seed=seed)
-            previous_block_x=x
+                        maxpool_k=(2,2,1), maxpool_s=(1,1,1),
+                        skip_connections=skip_connections, seed=seed)(x)
 
         if(local):
             operation=tfp.layers.Convolution3DFlipout
