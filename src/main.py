@@ -140,9 +140,9 @@ if(mode=="metrics"):
 			print("p-value against", f.split("/")[-1][:-4], ttest_ind(ssim_pop, other_pop_ssim).pvalue)
 
 	if(save_metrics):
-		with open(metrics_path+"/rmse_"+setting+".npy", 'wb') as f:
+		with open(metrics_path+"/rmse_"+setting+"_seed_"+str(seed)+".npy", 'wb') as f:
 			np.save(f, rmse_pop)
-		with open(metrics_path+"/ssim_"+setting+".npy", 'wb') as f:
+		with open(metrics_path+"/ssim_"+setting+"_seed_"+str(seed)+".npy", 'wb') as f:
 			np.save(f, ssim_pop)
 
 elif(mode=="residues"):
@@ -152,7 +152,7 @@ elif(mode=="residues"):
 															cmap=plt.cm.gray,
 															res_img=fmri.numpy()[0],
 															slice_label=False,
-															save=True, save_path=metrics_path+"/"+ setting + "_" + str(instance)+"_instance.pdf")
+															save=True, save_path=metrics_path+"/"+ setting + "_" + str(instance)+"_instance_seed_"+str(seed)+".pdf")
 		instance+=1
 elif(mode=="quality"):
 	instance=0
@@ -174,12 +174,12 @@ elif(mode=="mean_residues"):
 															res_img=mean_fmri.numpy()[0]/instance,
 															slice_label=False,
 															normalize_residues=True,
-															save=True, save_path=metrics_path+"/"+ setting + "_mean_residues.pdf")
+															save=True, save_path=metrics_path+"/"+ setting + "_seed_"+str(seed)+"_mean_residues.pdf")
 	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())[0]/instance),
 															cmap=plt.cm.gray,
 															res_img=mean_fmri.numpy()[0]/instance,
 															slice_label=False,
 															normalize_residues=False,
-															save=True, save_path=metrics_path+"/"+ setting + "_mean_normalized_residues.pdf")
+															save=True, save_path=metrics_path+"/"+ setting + "_seed_"+str(seed)+"_mean_normalized_residues.pdf")
 else:
 	raise NotImplementedError
