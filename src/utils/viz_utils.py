@@ -625,9 +625,9 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
         elif(pvalue>0.05):
             pvalue=np.clip(pvalue, a_min=1e-9, a_max=0.2)
             return (pvalue,pvalue,pvalue)
-        elif(res1>res2):
-            return (1+1e-9-res1, 0.0001, pvalue*res2)
-        return (pvalue*res1, 0.0001, 1+1e-9-res2)
+        if(res1<res2):
+            return (1+1e-30-res1, 0.0001, pvalue+1e-9)
+        return (pvalue+1e-9, 0.0001, 1+1e-30-res2)
 
     for voxel1 in range(instance.shape[0]):
         for voxel2 in range(instance.shape[1]):
