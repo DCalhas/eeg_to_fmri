@@ -157,7 +157,7 @@ model1 = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_ch
 							random_fourier=random_fourier1, conditional_attention_style=conditional_attention_style1,
 							topographical_attention=topographical_attention1, seed=None, fmri_args = (latent_dimension, fmri_shape[1:], 
 							kernel_size1, stride_size1, n_channels1, max_pool1, batch_norm1, weight_decay1, skip_connections1,
-							n_stacks1, True, False, outfilter1, dropout1))
+							n_stacks1, True, False, outfilter1, dropout1, None, False, na_specification_fmri))
 model1.build(eeg_shape, fmri_shape)
 model1.compile(optimizer=optimizer1)
 loss_fn = losses_utils.mae_cosine
@@ -169,12 +169,12 @@ train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architectur
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
 
 optimizer2 = tf.keras.optimizers.Adam(learning_rate=learning_rate2)
-model2 = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification2, n_channels2, weight_decay=weight_decay2, skip_connections=skip_connections2,
+model2 = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels2, weight_decay=weight_decay2, skip_connections=skip_connections2,
 							batch_norm=batch_norm2, local=local2, fourier_features=fourier_features2,
 							random_fourier=random_fourier2, conditional_attention_style=conditional_attention_style2,
 							topographical_attention=topographical_attention2, seed=None, fmri_args = (latent_dimension, fmri_shape[2:], 
 							kernel_size2, stride_size2, n_channels2, max_pool2, batch_norm2, weight_decay2, skip_connections2,
-							n_stacks2, True, False, outfilter2, dropout2))
+							n_stacks2, True, False, outfilter2, dropout2, None, False, na_specification_fmri))
 model2.build(eeg_shape, fmri_shape)
 model2.compile(optimizer=optimizer2)
 loss_fn = losses_utils.mae_cosine
