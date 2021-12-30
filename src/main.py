@@ -30,7 +30,8 @@ parser.add_argument('-random_fourier', action="store_true", help="Verbose")
 parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 parser.add_argument('-batch_size', default=4, type=int, help="Batch size")
 parser.add_argument('-learning_rate', default=0.001, type=float, help="Learning rate")#to remove
-parser.add_argument('-na_path', default=str(Path.home())+"/eeg_to_fmri/na_models", type=str, help="Neural architectures path.")
+parser.add_argument('-na_path_eeg', default=str(Path.home())+"/eeg_to_fmri/na_models_eeg", type=str, help="Neural architectures path for the EEG encoder.")
+parser.add_argument('-na_path_fmri', default=str(Path.home())+"/eeg_to_fmri/na_models_fmri", type=str, help="Neural architectures path for the fMRI encoder.")
 parser.add_argument('-gpu_mem', default=4000, type=int, help="GPU memory limit")
 parser.add_argument('-verbose', action="store_true", help="Verbose")
 parser.add_argument('-save_metrics', action="store_true", help="save metrics to compare afterwards")
@@ -47,7 +48,8 @@ conditional_attention_style=opt.conditional_attention_style
 epochs=opt.epochs
 batch_size=opt.batch_size
 learning_rate=opt.learning_rate
-na_path=opt.na_path
+na_path_eeg=opt.na_path_eeg
+na_path_fmri=opt.na_path_fmri
 gpu_mem=opt.gpu_mem
 verbose=opt.verbose
 save_metrics=opt.save_metrics
@@ -108,18 +110,20 @@ dropout=bool(theta[10])
 n_stacks=int(theta[11])
 outfilter=int(theta[12])
 local=True
-with open(na_path, "rb") as f:
-	na_specification = pickle.load(f)
+with open(na_path_eeg, "rb") as f:
+	na_specification_eeg = pickle.load(f)
+with open(na_path_fmri, "rb") as f:
+	na_specification_fmri = pickle.load(f)
 optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
+model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
 							batch_norm=batch_norm, local=local, fourier_features=fourier_features,
 							random_fourier=random_fourier, conditional_attention_style=conditional_attention_style,
 							topographical_attention=topographical_attention, seed=None, fmri_args = (latent_dimension, fmri_shape[1:], 
 							kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
-							n_stacks, True, False, outfilter, dropout))
+							n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
 model.build(eeg_shape, fmri_shape)
 model.compile(optimizer=optimizer)
-loss_fn = losses_utils.mse_cosine
+loss_fn = losses_utils.mae_cosine
 
 #train model
 history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
