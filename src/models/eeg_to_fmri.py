@@ -43,77 +43,21 @@ def call(obj, x1, x2):
     z2 = obj.fmri_encoder(x2)
     return [obj.decoder(z1), z1, z2]
 
+"""
+    Random behaviour of GPU with tf functions does not reproduce the same results
+    Call this function when getting results
+"""
+def _call(self, x1, x2):
+    z1 = self.eeg_encoder(x1)
+
+    if(self.training):
+        z2 = self.fmri_encoder(x2)
+        return [self.decoder(z1), z1, z2]
+
+    return self.decoder(z1)
+
 def build(*kwargs):
 	return EEG_to_fMRI()
-
-
-def block(x, operation, kernel_size, stride_size, n_channels,
-            maxpool=True, batch_norm=True, weight_decay=0.000,  padding="valid",
-            maxpool_k=None, maxpool_s=None,
-            seed=None):
-
-    x = operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size,
-                    kernel_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    bias_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                    padding=padding)(x)
-    if(maxpool):
-        x = tf.keras.layers.MaxPool3D(pool_size=maxpool_k, strides=maxpool_s)(x)
-    if(batch_norm):
-        x = tf.keras.layers.BatchNormalization()(x)
-
-    return tf.keras.layers.ReLU()(x)
-
-
-def skip_block(x, skip_x, operation, kernel_size, stride_size, n_channels,
-                maxpool=True, batch_norm=True, weight_decay=0.000, padding="valid",
-                maxpool_k=None, maxpool_s=None,
-                seed=None):
-
-    skip_x = operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size,
-                    kernel_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    bias_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                    padding=padding)(skip_x)
-
-    if(maxpool):
-        skip_x = tf.keras.layers.MaxPool3D(pool_size=maxpool_k, strides=maxpool_s)(skip_x)
-    if(batch_norm):
-        skip_x = tf.keras.layers.BatchNormalization()(skip_x)
-
-    x = tf.keras.layers.Add()([x, skip_x])
-
-    return tf.keras.layers.ReLU()(x)
-
-def stack(x, previous_block_x, operation, kernel_size, stride_size, n_channels,
-                        maxpool=True, batch_norm=True, 
-                        weight_decay=0.000, skip_connections=False,
-                        maxpool_k=None, maxpool_s=None,
-                        seed=None):
-    #downsampling block 
-    x = block(x, operation, kernel_size, stride_size, n_channels,
-            maxpool=maxpool, batch_norm=batch_norm, 
-            maxpool_k=maxpool_k, maxpool_s=maxpool_s,
-            weight_decay=weight_decay, padding="valid",
-            seed=seed)
-
-    #non downsampling block
-    x = block(x, operation, 3, 1, n_channels,
-            maxpool=False, batch_norm=batch_norm, 
-            weight_decay=weight_decay, padding="same",
-            seed=seed)
-
-    #skip connection
-    if(skip_connections):
-        x = skip_block(x, previous_block_x, operation, 
-                        kernel_size, stride_size, n_channels,
-                        maxpool=maxpool, batch_norm=batch_norm,
-                        maxpool_k=maxpool_k, maxpool_s=maxpool_s,
-                        weight_decay=weight_decay, padding="valid",
-                        seed=seed)
-
-    return x
-
 
 
 """
@@ -182,15 +126,17 @@ class EEG_to_fMRI(tf.keras.Model):
         else:
             raise NotImplementedError
 
-        self.build_encoder(latent_shape, input_shape, na_spec, n_channels, 
+        attention_scores = self.build_encoder(latent_shape, input_shape, na_spec, n_channels, 
                             dropout=dropout, weight_decay=weight_decay, 
                             skip_connections=skip_connections, local=local, 
-                            batch_norm=batch_norm, fourier_features=fourier_features,
+                            batch_norm=batch_norm, 
                             topographical_attention=topographical_attention,
+                            seed=seed)
+        self.build_decoder(latent_shape, inverse_DFT=inverse_DFT, DFT=DFT,
+                            attention_scores=attention_scores, 
                             conditional_attention_style=conditional_attention_style,
                             random_fourier=random_fourier,
-                            seed=seed)
-        self.build_decoder(latent_shape, inverse_DFT=inverse_DFT, DFT=DFT, 
+                            fourier_features=fourier_features,
                             resolution_decoder=resolution_decoder,
                             low_resolution_decoder=low_resolution_decoder,
                             variational_iDFT=variational_iDFT, 
@@ -200,11 +146,10 @@ class EEG_to_fMRI(tf.keras.Model):
     def build_encoder(self, latent_shape, input_shape, na_spec, n_channels, 
                             dropout=False, weight_decay=0.000, 
                             skip_connections=False, batch_norm=True, 
-                            local=True, fourier_features=False, 
-                            topographical_attention=False,
-                            conditional_attention_style=False,
-                            random_fourier=False,
+                            local=True, topographical_attention=False,
                             seed=None):
+
+        attention_scores=None
 
         input_shape = tf.keras.layers.Input(shape=input_shape)
 
@@ -222,33 +167,47 @@ class EEG_to_fMRI(tf.keras.Model):
             previous_block_x = input_shape
 
         for i in range(len(na_spec[0])):
-
             x = ResBlock(tf.keras.layers.Conv3D, 
                         na_spec[0][i], na_spec[1][i], n_channels,
                         maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],
                         skip_connections=skip_connections, seed=seed)(x)
-            #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
-            #            na_spec[0][i], na_spec[1][i], n_channels,
-            #            maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
-            #            maxpool_k=na_spec[3], maxpool_s=na_spec[4],
-            #            skip_connections=skip_connections, seed=seed)
-            #previous_block_x=x
-
+        
         x = tf.keras.layers.Flatten()(x)
+        x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)#placeholder
+        x = tf.keras.layers.Reshape(latent_shape)(x)
+
+        self.eeg_encoder = tf.keras.Model(input_shape, x)
+        self.fmri_encoder = self.fmri_ae.encoder
+
+        return attention_scores
+
+    def build_decoder(self, latent_shape, fourier_features=False, random_fourier=False, 
+                            attention_scores=None, conditional_attention_style=False, 
+                            inverse_DFT=False, DFT=False, 
+                            low_resolution_decoder=False, resolution_decoder=None, 
+                            variational_iDFT=False, variational_coefs=None, 
+                            dropout=False, outfilter=0, seed=None):
+
+        input_shape = tf.keras.layers.Input(shape=latent_shape)
+
+        x = tf.keras.layers.Flatten()(input_shape)
 
         if(fourier_features):
             if(random_fourier):
                 self.latent_resolution = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                                  trainable=True, name="random_fourier_features")
+                                                                  trainable=True, seed=seed, name="random_fourier_features")
             else:
                 self.latent_resolution = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
                                                                     trainable=True, name="fourier_features")
             if(conditional_attention_style):
-                self.latent_style = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2])(attention_scores)
+                self.latent_style = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(attention_scores)
         else:
             self.latent_resolution = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                                name="dense")
+                                                            kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
+                                                            name="dense")
         x = self.latent_resolution(x)
         
         if(conditional_attention_style):
@@ -258,20 +217,12 @@ class EEG_to_fMRI(tf.keras.Model):
             x = tf.keras.layers.Dropout(0.5)(x)
         x = tf.keras.layers.Reshape(latent_shape)(x)
 
-        self.eeg_encoder = tf.keras.Model(input_shape, x)
-        self.fmri_encoder = self.fmri_ae.encoder
-
-    def build_decoder(self, latent_shape, inverse_DFT=False, DFT=False, low_resolution_decoder=False, resolution_decoder=None, variational_iDFT=False, variational_coefs=None, outfilter=0, seed=None):
-        input_shape = tf.keras.layers.Input(shape=latent_shape)
-
         #placeholder
         if(resolution_decoder is None):
             resolution_decoder=latent_shape
 
-        x = input_shape
-
         if(low_resolution_decoder):
-            x = tf.keras.layers.Flatten()(input_shape)
+            x = tf.keras.layers.Flatten()(x)
 
             assert type(resolution_decoder) is tuple and len(resolution_decoder) == 3
             latent_shape = resolution_decoder
@@ -291,7 +242,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 x = padded_iDCT3D(latent_shape[0], latent_shape[1], latent_shape[2],
                             out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(x)
         else:
-            x = tf.keras.layers.Flatten()(input_shape)
+            x = tf.keras.layers.Flatten()(x)
             #upsampling
             x = tf.keras.layers.Dense(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2],
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
@@ -305,7 +256,7 @@ class EEG_to_fMRI(tf.keras.Model):
             x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3,
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
 
-        self.decoder = tf.keras.Model(input_shape, x)    
+        self.decoder = tf.keras.Model(input_shape, x)   
 
     def build(self, input_shape1, input_shape2):
         self.eeg_encoder.build(input_shape=input_shape1)
@@ -318,8 +269,11 @@ class EEG_to_fMRI(tf.keras.Model):
         self.trainable_variables.append(self.fmri_encoder.trainable_variables)
 
 
-    
-    @tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
+    """
+        Random behaviour of GPU with tf functions does not reproduce the same results
+        Call this function when getting results
+    """
+    #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
     def call(self, x1, x2):
         z1 = self.eeg_encoder(x1)
 

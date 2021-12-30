@@ -39,73 +39,6 @@ def build(*kwargs):
 
     return fMRI_AE((latent_dimension,)*3, input_shape, kernel_size, stride_size, n_channels)
 
-def block(x, operation, kernel_size, stride_size, n_channels,
-            maxpool=True, batch_norm=True, weight_decay=0.000,  padding="valid",
-            maxpool_k=None, maxpool_s=None,
-            seed=None):
-
-    x = operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size,
-                    kernel_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    bias_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                    padding=padding)(x)
-    if(maxpool):
-        x = tf.keras.layers.MaxPool3D(pool_size=maxpool_k, strides=maxpool_s)(x)
-    if(batch_norm):
-        x = tf.keras.layers.BatchNormalization()(x)
-
-    return tf.keras.layers.ReLU()(x)
-
-
-def skip_block(x, skip_x, operation, kernel_size, stride_size, n_channels,
-                maxpool=True, batch_norm=True, weight_decay=0.000, padding="valid",
-                maxpool_k=None, maxpool_s=None,
-                seed=None):
-
-    skip_x = operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size,
-                    kernel_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    bias_regularizer=tf.keras.regularizers.L2(weight_decay),
-                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                    padding=padding)(skip_x)
-
-    if(maxpool):
-        skip_x = tf.keras.layers.MaxPool3D(pool_size=maxpool_k, strides=maxpool_s)(skip_x)
-    if(batch_norm):
-        skip_x = tf.keras.layers.BatchNormalization()(skip_x)
-
-    x = tf.keras.layers.Add()([x, skip_x])
-
-    return tf.keras.layers.ReLU()(x)
-
-def stack(x, previous_block_x, operation, kernel_size, stride_size, n_channels,
-                        maxpool=True, batch_norm=True, 
-                        weight_decay=0.000, skip_connections=False,
-                        maxpool_k=None, maxpool_s=None,
-                        seed=None):
-    #downsampling block 
-    x = block(x, operation, kernel_size, stride_size, n_channels,
-            maxpool=maxpool, batch_norm=batch_norm, 
-            maxpool_k=maxpool_k, maxpool_s=maxpool_s,
-            weight_decay=weight_decay, padding="valid",
-            seed=seed)
-
-    #non downsampling block
-    x = block(x, operation, 3, 1, n_channels,
-            maxpool=False, batch_norm=batch_norm, 
-            weight_decay=weight_decay, padding="same",
-            seed=seed)
-
-    #skip connection
-    if(skip_connections):
-        x = skip_block(x, previous_block_x, operation, 
-                        kernel_size, stride_size, n_channels,
-                        maxpool=maxpool, batch_norm=batch_norm,
-                        maxpool_k=maxpool_k, maxpool_s=maxpool_s,
-                        weight_decay=weight_decay, padding="valid",
-                        seed=seed)
-
-    return x
-
 
 class fMRI_AE(tf.keras.Model):
     
@@ -155,26 +88,13 @@ class fMRI_AE(tf.keras.Model):
             n_stacks=len(na_spec[0])
 
         for i in range(n_stacks):
-            #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
             if(na_spec is not None):
-                #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
-                #        na_spec[0][i], na_spec[1][i], n_channels,
-                #        maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
-                #        maxpool_k=na_spec[3], maxpool_s=na_spec[4],
-                #        skip_connections=skip_connections, seed=seed)
-                #previous_block_x=x
                 x = ResBlock(tf.keras.layers.Conv3D, 
                         na_spec[0][i], na_spec[1][i], n_channels,
                         maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],
                         skip_connections=skip_connections, seed=seed)(x)
             else:
-                #x = stack(x, previous_block_x, tf.keras.layers.Conv3D, 
-                #        kernel_size, stride_size, n_channels,
-                #        maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
-                #        maxpool_k=(2,2,1), maxpool_s=(1,1,1),
-                #        skip_connections=skip_connections, seed=seed)
-                #previous_block_x=x
                 x = ResBlock(tf.keras.layers.Conv3D, 
                         kernel_size, stride_size, n_channels,
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 

@@ -9,7 +9,7 @@ Topographical_Attention:
 """
 class Topographical_Attention(tf.keras.layers.Layer):
 
-	def __init__(self, channels, features):
+	def __init__(self, channels, features, seed=None):
 
 		super(Topographical_Attention, self).__init__()
 
@@ -19,7 +19,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		
 		self.A = self.add_weight('A',
 								shape=[self.channels,self.channels,self.features],
-								initializer=tf.initializers.GlorotUniform(),
+								initializer=tf.initializers.GlorotUniform(seed=seed),
 								dtype=tf.float32,
 								trainable=True)
 
