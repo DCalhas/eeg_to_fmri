@@ -2,9 +2,14 @@ import tensorflow as tf
 
 import numpy as np
 
+from layers.topographical_attention import Topographical_Attention
 
-def explain(explainer, dataset, eeg=True, fmri=False, verbose=False):
+
+def explain(explainer, dataset, eeg=True, eeg_attention=False, fmri=False, verbose=False):
 	R = None
+
+	if(eeg_attention):
+		explainer.eeg_attention=eeg_attention
 
 	if(eeg and not fmri):
 		index=0
@@ -73,6 +78,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 		super(LRP_EEG, self).__init__()
 		
 		self.model = model
+		self.eeg_attention = False
 		
 	"""
 		Inputs:
@@ -111,6 +117,8 @@ class LRP_EEG(tf.keras.layers.Layer):
 				R = model.layers[layer].lrp(activations[layer-1], R)
 			else:
 				if(layer-1 >= 0):
+					if(self.eeg_attention and type(model.layers[layer]) is Topographical_Attention):
+						return model.layers[layer].lrp_attention(activations[layer-1], R)
 					R = lrp(activations[layer-1], R, model.layers[layer])
 				else:
 					R = lrp(X, R, model.layers[layer])
@@ -140,6 +148,9 @@ class LRP_EEG(tf.keras.layers.Layer):
 		
 		y = self.forward(X)
 		
+		if(self.eeg_attention):
+			assert type(self.model.eeg_encoder.layers) is Topographical_Attention
+			return self.backward(X, y)
 		return self.backward(X, y)
 
 	

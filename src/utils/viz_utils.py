@@ -1275,20 +1275,31 @@ Plot EEG cap 10-20 system
 
 Good for attention scores and check which channels are related
 """
-def plot_eeg_channels(dataset="01", plot_names=False):
+def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, edge_width=3., dataset="01", plot_names=False):
     #circle1 = plt.Circle((0, 0), 0.2, color='r')
     #circle2 = plt.Circle((0.5, 0.5), 0.2, color='blue')
     head = plt.Circle((0.5,0.5), 0.47, linestyle='-',edgecolor='black',fill=False, zorder=5)
     nose = plt.Polygon(np.array([[0.5,1.0], [0.48, 0.97], [0.52,0.97]]), linestyle='-', fill=False, zorder=0)
 
     channel_circle=[]
-    channel_names=[]
-    for channel in eeg_utils.channels_01:
+    channel_names=getattr(eeg_utils, "channels_"+dataset)
+    for channel in channel_names:
         if(not channel in eeg_utils.channels_coords_10_20.keys()):
             continue
-        channel_circle+=[plt.Circle(eeg_utils.channels_coords_10_20[channel], 0.02, 
+        if(colors is None):
+            facecolor="white"
+        else:
+            facecolor=colors[channel]
+
+        linewidth=1.
+        if(np.any(edges[channel_names.index(channel),:]>edge_threshold) or \
+            np.any(edges[:,channel_names.index(channel)]>edge_threshold)):
+            linewidth=3.
+
+        channel_circle+=[plt.Circle(eeg_utils.channels_coords_10_20[channel], 0.025, 
                                     linestyle='-',edgecolor='black',
-                                    fill=True,facecolor='white', zorder=5)]
+                                    linewidth=linewidth,
+                                    fill=True,facecolor=facecolor, zorder=5)]
 
 
 
@@ -1303,13 +1314,62 @@ def plot_eeg_channels(dataset="01", plot_names=False):
     
     
     if(plot_names):
-        for channel in eeg_utils.channels_01:
+        for channel in channel_names:
             if(not channel in eeg_utils.channels_coords_10_20.keys()):
                 continue
+
+            color="black"
+            if(scores is None):
+                color="black"
+            else:
+                if(scores[channel] > 0.5):
+                    color="white"
+
             axes.text(eeg_utils.channels_coords_10_20[channel][0]-0.012,
                       eeg_utils.channels_coords_10_20[channel][1]-0.006, 
-                        channel, size=8, zorder=6)
+                        channel, color=color, size=8, zorder=6)
+
+    #attention scores lines
+    for channel1 in range(len(channel_names)):
+        for channel2 in range(len(channel_names)):
+            if(channel1 == channel2 or not channel_names[channel1] in eeg_utils.channels_coords_10_20.keys() or not channel_names[channel2] in eeg_utils.channels_coords_10_20.keys()):
+                continue
+
+            if(edges[channel1,channel2] > edge_threshold):
+
+                axes.plot([eeg_utils.channels_coords_10_20[channel_names[channel1]][0], eeg_utils.channels_coords_10_20[channel_names[channel2]][0]], 
+                            [eeg_utils.channels_coords_10_20[channel_names[channel1]][1], eeg_utils.channels_coords_10_20[channel_names[channel2]][1]], 
+                            linewidth=edge_width,
+                            color="black",
+                            zorder=3)
+
+
+
 
     axes.axis('off')
+
+    return fig
+
+
+
+def plot_attention_eeg(attention, dataset="01", cmap=mpl.cm.Blues, edge_threshold=3., plot_names=False, save=False, save_path=None, save_format="pdf"):
+
+    channels_names=getattr(eeg_utils, "channels_"+dataset)
+    edges=attention
+
+    channel_scores=np.mean(edges, axis=1)
+    channel_scores=(channel_scores-np.amin(channel_scores))/(np.amax(channel_scores)-np.amin(channel_scores))
+
+    channel_colors=dict(zip(channels_names, cmap(channel_scores)))
+    channel_scores=dict(zip(channels_names, channel_scores))
+
+    fig=plot_eeg_channels(colors=channel_colors,
+                            scores=channel_scores,
+                            edges=edges,
+                            edge_threshold=edge_threshold, 
+                            dataset=dataset, plot_names=plot_names)
+
+    if(save):
+        fig.savefig(save_path, format=save_format)
 
     return fig

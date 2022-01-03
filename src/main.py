@@ -6,7 +6,7 @@ import numpy as np
 
 import pickle
 
-from utils import metrics, process_utils, train, losses_utils, viz_utils
+from utils import metrics, process_utils, train, losses_utils, viz_utils, lrp
 
 from models.eeg_to_fmri import EEG_to_fMRI
 
@@ -20,7 +20,7 @@ from scipy.stats import ttest_ind
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mode',
-					choices=['metrics', 'residues', 'mean_residues', 'quality', 'attention_graph', 'mean_attention_graph'],
+					choices=['metrics', 'residues', 'mean_residues', 'quality', 'attention_graph', 'mean_attention_graph', 'lrp_eeg_channels'],
 					help="What to compute")
 parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
 parser.add_argument('-topographical_attention', action="store_true", help="Verbose")
@@ -185,5 +185,19 @@ elif(mode=="mean_residues"):
 															slice_label=False,
 															normalize_residues=False,
 															save=True, save_path=metrics_path+"/"+ setting + "_seed_"+str(seed)+"_mean_normalized_residues.pdf")
+elif(mode=='lrp_eeg_channels'):
+	#explain and then get the relevances
+	if(topographical_attention):
+		explainer = lrp.LRP_EEG(model)
+		R=lrp.explain(explainer, dev_set, eeg=True, fmri=False, verbose=True)
+		
+		#placeholder
+		attention_scores = np.random.randn(len(getattr(eeg_utils, "channels_"+dataset)), 
+												   len(getattr(eeg_utils, "channels_"+dataset)))
+
+		viz_utils.plot_attention_eeg(attention_scores,
+									dataset="01",
+									plot_names=True,
+									edge_threshold=np.percentile(attention_scores, 99.9))
 else:
 	raise NotImplementedError
