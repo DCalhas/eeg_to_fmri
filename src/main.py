@@ -189,8 +189,8 @@ elif(mode=='lrp_eeg_channels'):
 	#explain and then get the relevances
 	if(topographical_attention):
 		explainer = lrp.LRP_EEG(model)
-		R=lrp.explain(explainer, dev_set, eeg=True, fmri=False, verbose=True)
-		
+		R=lrp.explain(explainer, dev_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
+
 		#placeholder
 		attention_scores = np.random.randn(len(getattr(eeg_utils, "channels_"+dataset)), 
 												   len(getattr(eeg_utils, "channels_"+dataset)))
