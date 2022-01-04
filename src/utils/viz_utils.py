@@ -1278,8 +1278,15 @@ Good for attention scores and check which channels are related
 def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, edge_width=3., dataset="01", plot_names=False):
     #circle1 = plt.Circle((0, 0), 0.2, color='r')
     #circle2 = plt.Circle((0.5, 0.5), 0.2, color='blue')
-    head = plt.Circle((0.5,0.5), 0.47, linestyle='-',edgecolor='black',fill=False, zorder=5)
-    nose = plt.Polygon(np.array([[0.5,1.0], [0.48, 0.97], [0.52,0.97]]), linestyle='-', fill=False, zorder=0)
+    head = plt.Circle((0.5,0.5), 0.47, linestyle='-',edgecolor='black',fill=True, facecolor="white", zorder=0)
+
+    nose1 = plt.Circle((0.5,1.0), 0.025, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-3)
+    nose2 = plt.Circle((0.48, 0.97), 0.025, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-2)
+    nose3 = plt.Circle((0.52,0.97), 0.025, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-2)
+    nose = plt.Polygon(np.array([[0.473,1.], [0.527,1.0], [0.473,0.9], [0.527,0.9]]), linestyle='-', fill=True, facecolor="white", zorder=-1)
+
+    lear = plt.Circle((0.1,0.5), 0.1, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-1)
+    rear = plt.Circle((0.9,0.5), 0.1, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-1)
 
     channel_circle=[]
     channel_names=getattr(eeg_utils, "channels_"+dataset)
@@ -1308,6 +1315,11 @@ def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, 
 
     axes.add_patch(head)
     axes.add_patch(nose)
+    axes.add_patch(nose1)
+    axes.add_patch(nose2)
+    axes.add_patch(nose3)
+    axes.add_patch(lear)
+    axes.add_patch(rear)
     #channels
     for channel in channel_circle:
         axes.add_patch(channel)

@@ -8,3 +8,4 @@ cython==0.29.21
 tensorflow_probability==0.12.2
 jax==0.2.12
 jaxlib==0.1.64
+tensorflow-determinism==0.3.0
