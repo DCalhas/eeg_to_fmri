@@ -182,8 +182,6 @@ loss_fn = losses_utils.mae_cosine
 #train model
 train.train(train_set, model2, optimizer2, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
-
-
 res1=np.empty((0,)+fmri_shape[1:])
 res2=np.empty((0,)+fmri_shape[1:])
 for eeg, fmri in test_set.repeat(1):
@@ -191,7 +189,12 @@ for eeg, fmri in test_set.repeat(1):
 	res2=np.append(res2, (fmri-model2(eeg,fmri)[0]).numpy(), axis=0)
 pvalues=ttest_ind(res1, res2, axis=0).pvalue
 
+#create dir setting if not exists
+if(not os.path.exists(metrics_path+"/comparison")):
+	os.makedirs(metrics_path+"/comparison")
+
+
 fig=viz_utils.comparison_plot_3D_representation_projected_slices(np.mean(res1,axis=0), np.mean(res2, axis=0), pvalues, 
 																	np.mean(test_data[1], axis=0),
 																	model1=name1, model2=name2,
-																	save=True, save_path=metrics_path+"/"+dataset+"_"+name1+"_vs_"+name2+"_seed_"+str(seed)+".pdf")
+																	save=True, save_path=metrics_path+"/comparison/"+dataset+"_"+name1+"_vs_"+name2+"_seed_"+str(seed)+".pdf")
