@@ -490,7 +490,7 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
 
     axes = fig.add_subplot(gs[:,0:2], projection='3d', proj_type='ortho')
     
-    cmap = plt.get_cmap(cmap)
+    cmap = copy.copy(mpl.cm.get_cmap(cmap))
     cmap.set_over("w")
     
     x, y = np.mgrid[0:instance[:,:,0].shape[0], 0:instance[:,:,0].shape[1]]
