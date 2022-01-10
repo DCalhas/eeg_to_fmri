@@ -66,6 +66,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 	def lrp_attention(self, x, y):
 		#store attention scores
 		self.call(x)
+		print("HERE")
 
 		with tf.GradientTape(watch_accessed_variables=False) as tape:
 			tape.watch(self.attention_scores)
