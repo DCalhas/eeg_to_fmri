@@ -1,5 +1,10 @@
 import tensorflow as tf
 
+import sys
+
+sys.path.append("..")
+
+from utils import lrp
 
 """
 Resnet-18 block that has implemented 
@@ -58,7 +63,7 @@ class ResBlock(tf.keras.layers.Layer):
 			self.left_layers += [tf.keras.layers.MaxPool3D(pool_size=maxpool_k, strides=maxpool_s)]
 		if(batch_norm):
 			self.left_layers += [tf.keras.layers.BatchNormalization()]
-		self.left_layers += [tf.keras.layers.Dense(1)]
+		self.left_layers += [tf.keras.layers.ReLU()]
 
 		self.left_layers += [operation(filters=n_channels, kernel_size=3, strides=1,
 										kernel_regularizer=tf.keras.regularizers.L2(weight_decay),
@@ -67,7 +72,7 @@ class ResBlock(tf.keras.layers.Layer):
 										padding="same")]
 		if(batch_norm):
 			self.left_layers += [tf.keras.layers.BatchNormalization()]
-		self.left_layers += [tf.keras.layers.Dense(1)]
+		self.left_layers += [tf.keras.layers.ReLU()]
 
 
 		self.right_layers += [operation(filters=n_channels, kernel_size=kernel_size, strides=stride_size,
@@ -81,7 +86,7 @@ class ResBlock(tf.keras.layers.Layer):
 			self.right_layers += [tf.keras.layers.BatchNormalization()]
 		
 		self.join_layers += [tf.keras.layers.Add()]
-		self.join_layers += [tf.keras.layers.Dense(1)]
+		self.join_layers += [tf.keras.layers.ReLU()]
 
 
 	def call(self, x):
@@ -119,76 +124,40 @@ class ResBlock(tf.keras.layers.Layer):
 		R_right = [None]*(len(self.right_layers))
 
 		#begin with join block
-		for layer in range(len(self.join_layers)-1)[::-1]:
-			with tf.GradientTape(watch_accessed_variables=False) as tape:
-				tape.watch(self.join_activations[layer])
-				z = self.join_layers[layer+1](self.join_activations[layer])+1e-9
+		for layer in range(len(self.join_layers))[::-1]:
+			if("batch" in self.join_layers[layer].name):
+				R_join[layer] = R_join[layer+1]
+				continue
+			elif("add" in self.join_layers[layer].name):
+				R = lrp.lrp([self.left_activations[-1], self.right_activations[-1]], R_join[layer], self.join_layers[layer])
+				R_left[-1] = R
+				R_right[-1] = R
+				continue
+			if(layer-1 >= 0):
+				R_join[layer-1] = lrp.lrp(self.join_activations[layer-1], R_join[layer], self.join_layers[layer])
+			else:
+				raise NotImplementedError
 				
-				if(z.shape != R_join[layer+1].shape):
-					z = tf.flatten(z)
-
-				s = R_join[layer+1]/z
-				s = tf.reshape(s, z.shape)
-				c = tape.gradient(tf.reduce_sum(z*s), self.join_activations[layer])
-				R_join[layer] = self.join_activations[layer]*c
-
-		R_left[-1] = R_join[0]
-		R_right[-1] = R_join[0]
 		
-		#begin with join block
-		for layer in range(1, len(self.left_layers)-1)[::-1]:
+		#left block
+		for layer in range(len(self.left_layers))[::-1]:
 			if("batch" in self.left_layers[layer].name):
-				R_left[layer] = R_left[layer+1]
+				R_left[layer-1] = R_left[layer]
 				continue
-			with tf.GradientTape(watch_accessed_variables=False) as tape:
-				tape.watch(self.left_activations[layer])
-				z = self.left_layers[layer+1](self.left_activations[layer])+1e-9
-				
-				if(z.shape != R_left[layer+1].shape):
-					z = tf.flatten(z)
-
-				s = R_left[layer+1]/z
-				s = tf.reshape(s, z.shape)
-				c = tape.gradient(tf.reduce_sum(z*s), self.left_activations[layer])
-				R_left[layer] = self.left_activations[layer]*c
-
-		#begin with join block
-		for layer in range(1, len(self.right_layers)-1)[::-1]:
+			if(layer-1 >= 0):
+				R_left[layer-1] = lrp.lrp(self.left_activations[layer-1], R_left[layer], self.left_layers[layer])
+			else:
+				R_left_ = lrp.lrp(x, R_left[layer], self.left_layers[layer])
+			
+		#right block
+		for layer in range(len(self.right_layers))[::-1]:
 			if("batch" in self.right_layers[layer].name):
-				R_left[layer] = R_left[layer+1]
+				R_right[layer-1] = R_right[layer]
 				continue
-			with tf.GradientTape(watch_accessed_variables=False) as tape:
-				tape.watch(self.right_activations[layer])
-				z = self.right_layers[layer+1](self.right_activations[layer])+1e-9
+			if(layer-1 >= 0):
+				R_right[layer-1] = lrp.lrp(self.right_activations[layer-1], R_right[layer], self.right_layers[layer])
+			else:
+				R_right_ = lrp.lrp(x, R_right[layer], self.right_layers[layer])
 				
-				if(z.shape != R_right[layer+1].shape):
-					z = tf.flatten(z)
-
-				s = R_right[layer+1]/z
-				s = tf.reshape(s, z.shape)
-				c = tape.gradient(tf.reduce_sum(z*s), self.right_activations[layer])
-				R_right[layer] = self.right_activations[layer]*c
-		
-		with tf.GradientTape(watch_accessed_variables=False) as tape:
-			tape.watch(x)
-			
-			z = self.left_layers[0](x)+1e-9
-			s = R_left[1]/tf.reshape(z, R_left[1].shape)
-			s = tf.reshape(s, z.shape)
-
-			c = tape.gradient(tf.reduce_sum(z*s), x)
-			R_left[0] = x*c
-
-		with tf.GradientTape(watch_accessed_variables=False) as tape:
-			tape.watch(x)
-			
-			z = self.right_layers[0](x)+1e-9
-			s = R_right[1]/tf.reshape(z, R_right[1].shape)
-			s = tf.reshape(s, z.shape)
-
-			c = tape.gradient(tf.reduce_sum(z*s), x)
-			R_right[0] = x*c
-
-		
 		#sum of the modulos, this breaks negative feature importance
-		return R_left[0]+R_right[0]
+		return R_left_+R_right_

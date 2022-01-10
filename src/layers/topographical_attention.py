@@ -9,7 +9,7 @@ Topographical_Attention:
 """
 class Topographical_Attention(tf.keras.layers.Layer):
 
-	def __init__(self, channels, features):
+	def __init__(self, channels, features, seed=None):
 
 		super(Topographical_Attention, self).__init__()
 
@@ -19,7 +19,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		
 		self.A = self.add_weight('A',
 								shape=[self.channels,self.channels,self.features],
-								initializer=tf.initializers.GlorotUniform(),
+								initializer=tf.initializers.GlorotUniform(seed=seed),
 								dtype=tf.float32,
 								trainable=True)
 
@@ -33,6 +33,8 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		the F refers to the feature dimension that is reduced
 	"""
 	def call(self, X):
+
+		#c = tf.tensordot(X, self.A, axes=[[2], [2]])
 		
 		c = tf.einsum('NCF,CMF->NCM', X, self.A)
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
@@ -40,8 +42,8 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		self.attention_scores = W
 		
 		#sum over M all M channels are multiplied by the attention scores over axis M that is normalized 
+		#return tf.tensordot(X, W, axes=[[1], [2]]), self.attention_scores
 		return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
-
 
 	def lrp(self, x, y):
 		#store attention scores
@@ -55,7 +57,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 			s = y/tf.reshape(z, y.shape)
 			s = tf.reshape(s, z.shape)
 			
-			c = tape.gradient(tf.reduce_sum(z*s), x)
+			c = tape.gradient(tf.reduce_sum(z*s.numpy()), x)
 			R = x*c
 
 		return R
@@ -72,7 +74,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 			s = y/tf.reshape(z, y.shape)
 			s = tf.reshape(s, z.shape)
 			
-			c = tape.gradient(tf.reduce_sum(z*s), self.attention_scores)
+			c = tape.gradient(tf.reduce_sum(z*s.numpy()), self.attention_scores)
 			R = self.attention_scores*c
 
 		return R

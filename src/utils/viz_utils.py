@@ -4,13 +4,14 @@ import numpy as np
 
 import utils.losses_utils as losses
 
-from utils import bnn_utils
+from utils import bnn_utils, metrics, eeg_utils
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator
 from matplotlib.gridspec import GridSpec
+from matplotlib.colors import ListedColormap
 
 from scipy import spatial
 
@@ -24,7 +25,9 @@ from pathlib import Path
 
 import pathlib
 
-from scipy.stats import gamma
+from scipy.stats import gamma, ttest_ind, ttest_1samp
+
+import copy
 
 uncertainty_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/uncertainty/"
 uncertainty_losses_plots_directory = str(Path.home())+"/eeg_to_fmri/src/results_plots/uncertainty_losses/"
@@ -472,7 +475,7 @@ Inputs:
 Returns:
     matplotlib.Figure - The figure to plot, no saving option implemented
 """
-def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, cmap=plt.cm.nipy_spectral, res_img=None, legend_colorbar="redidues", normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
+def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, threshold=0.37, cmap=plt.cm.nipy_spectral, uncertainty=False, res_img=None, legend_colorbar="redidues", max_min_legend=["Good","Bad"], normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
     label = "$Z_{"
 
     #this is a placeholder for the residues plot
@@ -496,10 +499,14 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
     if(not normalize_residues):
         instance = (instance[:,:,:,:]-np.amin(instance[:,:,:,:]))/(np.amax(instance[:,:,:,:])-np.amin(instance[:,:,:,:]))
         res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
-        instance[np.where(res_img < 0.37)]= 1.001
+        if(uncertainty):
+            _instance=copy.deepcopy(instance)
+        instance[np.where(res_img < threshold)]= 1.001
     else:
         res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
-        instance[np.where(res_img < 0.37)]= 1.001
+        if(uncertainty):
+            _instance=copy.deepcopy(instance)
+        instance[np.where(res_img < threshold)]= 1.001
 
     for axis in range((instance[:,:,:].shape[2])//factor):
         img = rotate(instance[:,:,axis*factor,0], 90)
@@ -510,6 +517,9 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
                                 cstride=v_resolution, rstride=h_resolution)
         if(slice_label):
             axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=13, zorder=100)
+
+    if(uncertainty):
+        instance=_instance
 
     #axes.text(60, 60, 20+5*(instance[:,:,:].shape[2])//factor, "3-Dimensional sliced representation", size=13, zorder=100)
     if(slice_label):
@@ -531,7 +541,7 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
         text_legend.axis("off")
         text_legend.text(-0.25,0.45, legend_colorbar, size=17, rotation=90)  # This is the position for the colorbar
         cb.ax.get_yaxis().set_ticks([0,1])
-        cb.ax.get_yaxis().set_ticklabels(["Good","Bad"], size=17)
+        cb.ax.get_yaxis().set_ticklabels(max_min_legend, size=17)
 
 
     axes.axis("off")
@@ -559,6 +569,817 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
             row-=1
 
     plt.rcParams["font.family"] = "Times New Roman"
+
+    if(save):
+        fig.savefig(save_path, format=save_format)
+
+    return fig
+
+
+
+"""
+    
+Inputs:
+    res1: Numpy.ndarray - of shape (X,Y,Z,1)
+    res2: Numpy.ndarray - of shape (X,Y,Z,1)
+    pvalues: Numpy.ndarray - of shape (X,Y,Z,1)
+    res_img: Numpy.ndarray - of shape (X,Y,Z,1)
+    factor: float - that resamples the Z axis slices
+    h_resolution: int - resolution in the horizontal dimension
+    v_resolution: int - resolution in the vertical dimension
+    save: bool - whether to save the figure
+    save_path: str - path to save the figure, save has to be True
+Returns:
+    matplotlib.Figure - The figure to plot, no saving option implemented
+"""
+def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_img, model1="Model1", model2="Model2", factor=3, h_resolution=1, v_resolution=1, threshold=0.37, slice_label=True, save=False, save_path=None, save_format="pdf"):
+    label = "$Z_{"
+
+    #colormap definition
+    cp1 = np.linspace(0,1)
+    cp2 = np.linspace(0,1)
+    Cp1, Cp2 = np.meshgrid(cp1,cp2)
+    C0 = np.full_like(Cp1, Cp1*Cp2*((Cp1)+(Cp2))/2)
+    p_values_range=Cp2#place holder that can stay to emulate pvalues
+    Legend = np.dstack((np.concatenate((Cp2, p_values_range*Cp1[:,::-1], ), axis=1)[:,::-1],
+                        np.concatenate((C0,C0[:,::-1]), axis=1),
+                        np.concatenate((p_values_range*Cp1, Cp2), axis=1)[:,::-1]))
+    cmap=ListedColormap(Legend)
+
+
+    #normalization
+    res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+    res_img[np.where(res_img < threshold)]= -1
+
+
+    #assign colors
+    instance =np.zeros(res1[:,:,:,0].shape+(3,))
+    res1=np.abs(res1)
+    res2=np.abs(res2)
+    res1[np.where(res1>1.0)]=1.0
+    res2[np.where(res2>1.0)]=1.0
+
+    def _cmap_(res1, res2, voxel, pvalue=0.0):
+        if(voxel==-1):
+            return (0.999,0.999,0.999)
+        elif(pvalue>0.05):
+            pvalue=np.clip(pvalue, a_min=1e-9, a_max=0.2)
+            return (pvalue,pvalue,pvalue)
+        if(res1<res2):
+            return (1+1e-30-res1, 0.0001, pvalue+1e-9)
+        return (pvalue+1e-9, 0.0001, 1+1e-30-res2)
+
+    for voxel1 in range(instance.shape[0]):
+        for voxel2 in range(instance.shape[1]):
+            for voxel3 in range(instance.shape[2]):
+                instance[voxel1,voxel2,voxel3] = np.array(list(_cmap_(res1[voxel1,voxel2,voxel3,0], res2[voxel1,voxel2,voxel3,0], 
+                                                                res_img[voxel1,voxel2,voxel3,0],
+                                                                pvalue=pvalues[voxel1,voxel2,voxel3,0])))
+                
+    fig = plt.figure(figsize=(25,17))
+    gs = GridSpec(41, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
+
+    axes = fig.add_subplot(gs[:41,0:2], projection='3d', proj_type='ortho')
+    x, y = np.mgrid[0:res_img[:,:,0].shape[0], 0:res_img[:,:,0].shape[1]]
+
+    for axis in range((instance[:,:,:].shape[2])//factor):
+        img = rotate(instance[:,:,axis*factor,:], 90)
+        
+        ax = axes.plot_surface(x,y,np.ones(x.shape)+5*(axis),
+                                facecolors=img,
+                                shade=False, antialiased=True, zorder=0,
+                                cstride=v_resolution, rstride=h_resolution)
+        if(slice_label):
+            axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=13, zorder=100)
+    axes.axis("off")
+    axes.view_init(elev=5.5, azim=7)#(100,150)
+    axes.dist = 5
+
+    #colorbar
+    cax = fig.add_subplot(gs[30:33,3:5])
+    cax.imshow(Legend, extent=[0,100,0,100], aspect="auto")
+    cax.set_xticks([])
+    cax.set_yticks([5,95])
+    cax.annotate('', xy=(0, -0.5), xycoords='axes fraction', xytext=(1, -0.5), 
+                arrowprops=dict(arrowstyle="<->, head_width=0.4", color='black'))
+    cax.annotate(model1, xy=(0, -0.56), xycoords='axes fraction', xytext=(-0.1, -0.56), size=20, color="blue")
+    cax.annotate(model2, xy=(0, -0.56), xycoords='axes fraction', xytext=(1.03, -0.56), size=20, color="red")
+    cax.set_yticklabels([r"$p=0.0$",r"$p=1.0$"], size=20)
+    
+
+    #plot each slice in 2 Dimensional plot
+    row = 1
+    col = 6
+    for axis in range((instance[:,:,:].shape[2])//factor):
+        if(row==1):
+            _row=20
+        else:
+            _row=10
+        axes = fig.add_subplot(gs[_row:_row+10,col])
+        img = rotate(instance[:,:,axis*factor,:], 90)
+        axes.imshow(img)
+        if(slice_label):
+            axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
+                 va="baseline", ha="left", multialignment="left",)
+        axes.axis("off")
+        col -= 1
+        if(col == 1):
+            col=6
+            row-=1
+
+    plt.rcParams["font.family"] = "Times New Roman"
+
+    if(save):
+        fig.savefig(save_path, format=save_format)
+
+    return fig
+
+
+
+
+##########################################################################################################
+#
+#                                         LRP - Plotting Relevances
+#
+##########################################################################################################
+
+
+"""
+
+Inputs:
+    * R - np.ndarray
+    * X - np.ndarray
+"""
+def R_channels(R, X, ch_names=None, save=False, save_path=None, save_format="pdf"):
+    if(ch_names is None):
+        ch_names=list(range(X.shape[1]))
+
+    fig = plt.figure(figsize=(27,45))
+
+    n=16
+    m=8
+
+    gs = GridSpec(n, m, figure=fig, wspace=0.1, hspace=0.01)
+
+    R_channels = np.mean(R, axis=0)[:,:,:,0]
+    norm_R_channels = (R_channels)
+    instances = np.mean(X, axis=0)[:,:,:,0]
+
+    i=0
+    j=0
+
+    for channel in range(R_channels.shape[0]):
+
+
+        axes = fig.add_subplot(gs[i,j])
+        axes.imshow(R_channels[channel,:,:], 
+                    cmap=plt.cm.inferno,
+                    vmin=np.amin(R_channels),
+                    vmax=np.amax(R_channels),
+                    aspect=0.05)
+        axes.set_title(ch_names[channel]+" : "+r"$\frac{\sum_i R_{iC}}{\sum_i \sum_c R_{ic}} = $"+\
+                               str(np.sum(norm_R_channels[channel,:,:])/np.sum(norm_R_channels[:,:,:])), size=8)
+        axes.set_xticks([])
+        axes.set_yticks([])
+
+        axes = fig.add_subplot(gs[i,j+1])
+        axes.imshow(instances[channel,:,:],
+                    aspect=0.05,
+                    vmin=np.amin(instances),
+                    vmax=np.amax(instances))
+        axes.set_title(ch_names[channel])
+        axes.set_xticks([])
+        axes.set_yticks([])
+
+        j+=2
+        if(j >= m):
+            i+=1
+            j=0
+        if(i >= n):
+            break
+        continue
+
+    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.size"] =9
+    fig.tight_layout()
+    if(save):
+        fig.savefig(save_path, format=save_format)
+    else:
+        fig.show()
+        
+        
+
+"""
+
+Inputs:
+    * R - np.ndarray
+    * channels - int32
+"""
+def R_analysis_channels(R, channels, ch_names=None, save=False, save_path=None, save_format="pdf"):
+    if(ch_names is None):
+        ch_names=list(range(channels))
+
+    pop_channels = np.sum(np.sum(R[:,:,:,:,0], axis=3), axis=2)
+
+    pvalues=np.zeros((pop_channels.shape[1], pop_channels.shape[1]))
+    for channel1 in range(pop_channels.shape[1]):
+        for channel2 in range(pop_channels.shape[1]):
+            if(channel1 == channel2):
+                continue
+            pvalues[channel1,channel2] = ttest_ind(pop_channels[:,channel1], pop_channels[:,channel2]).pvalue
+
+
+    fig = plt.figure(figsize=(25,20))
+    gs = GridSpec(channels, channels+6, figure=fig, wspace=0.1, hspace=0.001)
+
+    #plot variance
+    axes = fig.add_subplot(gs[0,:])
+    axes.imshow(np.std(pop_channels,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks(list(range(channels)))
+    axes.set_xticklabels(ch_names)
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$Var[R]$"])
+    axes.xaxis.tick_top()
+
+    #plot max relevance
+    axes = fig.add_subplot(gs[1,:])
+    axes.imshow(np.amax(pop_channels,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$max(R)$"])
+    axes.xaxis.tick_top()
+
+    #plot min relevance
+    axes = fig.add_subplot(gs[2,:])
+    axes.imshow(np.amin(pop_channels,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues_r,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$min(R)$"])
+    axes.xaxis.tick_top()
+
+    #plot pvalues
+    axes = fig.add_subplot(gs[3:,:])
+    stat_sign = (pvalues >= 0.05).astype("float32")
+    stat_sign[np.where(stat_sign == 0)] = pvalues[np.where(stat_sign == 0)]
+    stat_sign[np.where(stat_sign == 1)] = 0.05
+    axes.imshow(stat_sign,
+               cmap=plt.cm.Greens_r,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks(list(range(channels)))
+    axes.set_yticklabels(ch_names)
+    axes.set_ylabel("Electrodes")
+
+    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.size"] = 12
+    fig.tight_layout()
+    
+    if(save):
+        fig.savefig(save_path, format=save_format)
+    else:
+        fig.show()
+
+
+
+
+"""
+
+Inputs:
+    * R - np.ndarray
+    * freqs - int32
+"""
+def R_analysis_freqs(R, freqs, save=False, save_path=None, save_format="pdf"):
+    pop_freqs = np.sum(np.sum(R[:,:,:,:,0], axis=3), axis=1)
+
+    pvalues=np.zeros((pop_freqs.shape[1], pop_freqs.shape[1]))
+    for freq1 in range(pop_freqs.shape[1]):
+        for freq2 in range(pop_freqs.shape[1]):
+            if(freq1 == freq2):
+                continue
+            pvalues[freq1,freq2] = ttest_ind(pop_freqs[:,freq1], pop_freqs[:,freq2]).pvalue
+
+    fig = plt.figure(figsize=(25,20))
+    gs = GridSpec(freqs-50, freqs+6, figure=fig, wspace=0.1, hspace=0.001)
+
+    #plot variance
+    axes = fig.add_subplot(gs[0,:])
+    axes.imshow(np.std(pop_freqs,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks(list(range(5,freqs,5)))
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$Var[R]$"])
+    axes.xaxis.tick_top()
+
+    #plot max relevance
+    axes = fig.add_subplot(gs[1,:])
+    axes.imshow(np.amax(pop_freqs,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$max(R)$"])
+    axes.xaxis.tick_top()
+
+    #plot min relevance
+    axes = fig.add_subplot(gs[2,:])
+    axes.imshow(np.amin(pop_freqs,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues_r,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$min(R)$"])
+    axes.xaxis.tick_top()
+
+    #plot pvalues
+    axes = fig.add_subplot(gs[3:,:])
+    stat_sign = (pvalues >= 0.05).astype("float32")
+    stat_sign[np.where(stat_sign == 0)] = pvalues[np.where(stat_sign == 0)]
+    stat_sign[np.where(stat_sign == 1)] = 0.05
+    axes.imshow(stat_sign,
+               cmap=plt.cm.Greens_r,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks(list(range(5,freqs,5)))
+    axes.set_ylabel("Hz")
+
+    plt.rcParams["font.family"] = "Times New Roman"
+    fig.tight_layout()
+    if(save):
+        fig.savefig(save_path, format=save_format)
+    else:
+        fig.show()
+
+        
+"""
+
+Inputs:
+    * R - np.ndarray
+    * times - int32
+"""
+def R_analysis_times(R, times, save=False, save_path=None, save_format="pdf"):
+    
+
+    pop_times = np.sum(np.sum(R[:,:,:,:,0], axis=2), axis=1)
+
+    pvalues=np.zeros((pop_times.shape[1], pop_times.shape[1]))
+    for time1 in range(pop_times.shape[1]):
+        for time2 in range(pop_times.shape[1]):
+            if(time1 == time2):
+                continue
+            pvalues[time1,time2] = ttest_ind(pop_times[:,time1], pop_times[:,time2]).pvalue
+
+    fig = plt.figure(figsize=(25,20))
+    gs = GridSpec(3*times, times, figure=fig, wspace=0.1, hspace=0.001)
+
+    #plot variance
+    axes = fig.add_subplot(gs[0,:])
+    axes.imshow(np.std(pop_times,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks(list(range(times)))
+    axes.set_xticklabels(list(range(0,2*times,2)))
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$Var[R]$"])
+    axes.xaxis.tick_top()
+
+    #plot max relevance
+    axes = fig.add_subplot(gs[1,:])
+    axes.imshow(np.amax(pop_times,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$max(R)$"])
+    axes.xaxis.tick_top()
+
+    #plot min relevance
+    axes = fig.add_subplot(gs[2,:])
+    axes.imshow(np.amin(pop_times,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues_r,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$min(R)$"])
+    axes.xaxis.tick_top()
+
+    #plot pvalues
+    axes = fig.add_subplot(gs[3:,:])
+    stat_sign = (pvalues >= 0.05).astype("float32")
+    stat_sign[np.where(stat_sign == 0)] = pvalues[np.where(stat_sign == 0)]
+    stat_sign[np.where(stat_sign == 1)] = 0.05
+    axes.imshow(stat_sign,
+               cmap=plt.cm.Greens_r,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks(list(range(0,times,1)))
+    axes.set_yticklabels(list(range(0,2*times,2)))
+    axes.set_ylabel("Seconds")
+
+    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.size"] = 22
+    fig.tight_layout()
+    if(save):
+        fig.savefig(save_path, format=save_format)
+    else:
+        fig.show()
+        
+
+"""
+Inputs:
+    * R - np.ndarray
+"""
+
+def R_analysis_dimensions(R, ch_names=None, save=False, save_path=None, save_format="pdf"):
+
+    pop_channels = np.sum(np.sum(R[:,:,:,:,0], axis=3), axis=2)
+    pop_freqs = np.sum(np.sum(R[:,:,:,:,0], axis=3), axis=1)
+    pop_times = np.sum(np.sum(R[:,:,:,:,0], axis=2), axis=1)
+
+    channels=pop_channels.shape[1]
+    freqs=pop_freqs.shape[1]
+    times=pop_times.shape[1]
+
+    if(ch_names is None):
+        ch_names=list(range(channels))
+
+    fig = plt.figure(figsize=(25,10))
+    gs = GridSpec(23, 128, figure=fig, wspace=0.1, hspace=0.001)
+
+    axes = fig.add_subplot(gs[0:4,:])
+    axes.text(0.5, 0.5, "Channels",ha="center", va="center", size=22)
+    axes.axis('off')
+
+    #plot variance
+    axes = fig.add_subplot(gs[4,:])
+    axes.imshow(ttest_1samp(pop_channels, np.mean(pop_channels),axis=0).pvalue.reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks(list(range(channels)))
+    axes.set_xticklabels(ch_names,size=10)
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$p$-value"])
+    axes.xaxis.tick_top()
+
+    #plot variance
+    axes = fig.add_subplot(gs[5,:])
+    axes.imshow(np.std(pop_channels,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$Var[R]$"])
+    axes.xaxis.tick_top()
+
+    #plot max relevance
+    axes = fig.add_subplot(gs[6,:])
+    axes.imshow(np.amax(pop_channels,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$max(R)$"])
+    axes.xaxis.tick_top()
+
+    #plot min relevance
+    axes = fig.add_subplot(gs[7,:])
+    axes.imshow(np.amin(pop_channels,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues_r,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$min(R)$"])
+    axes.xaxis.tick_top()
+
+
+
+    axes = fig.add_subplot(gs[8:11,:])
+    axes.text(0.5, 0.5, "Frequencies",ha="center", va="center", size=22)
+    axes.axis('off')
+
+    axes = fig.add_subplot(gs[11,:])
+    axes.imshow(ttest_1samp(pop_freqs, np.mean(pop_freqs),axis=0).pvalue.reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks(list(range(0, freqs, 5)))
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$p$-value"])
+    axes.xaxis.tick_top()
+
+    #plot variance
+    axes = fig.add_subplot(gs[12,:])
+    axes.imshow(np.std(pop_freqs,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$Var[R]$"])
+    axes.xaxis.tick_top()
+
+    #plot max relevance
+    axes = fig.add_subplot(gs[13,:])
+    axes.imshow(np.amax(pop_freqs,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$max(R)$"])
+    axes.xaxis.tick_top()
+
+    #plot min relevance
+    axes = fig.add_subplot(gs[14,:])
+    axes.imshow(np.amin(pop_freqs,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues_r,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$min(R)$"])
+    axes.xaxis.tick_top()
+
+
+
+    axes = fig.add_subplot(gs[15:18,:])
+    axes.text(0.5, 0.5, "Times",ha="center", va="center", size=22)
+    axes.axis('off')
+
+    axes = fig.add_subplot(gs[18,:])
+    axes.imshow(ttest_1samp(pop_times, np.mean(pop_times),axis=0).pvalue.reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks(list(range(times)))
+    axes.set_xticklabels(list(range(6,2*times+6,2)))
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$p$-value"])
+    axes.xaxis.tick_top()
+
+    #plot variance
+    axes = fig.add_subplot(gs[19,:])
+    axes.imshow(np.std(pop_times,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$Var[R]$"])
+    axes.xaxis.tick_top()
+
+    #plot max relevance
+    axes = fig.add_subplot(gs[20,:])
+    axes.imshow(np.amax(pop_times,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$max(R)$"])
+    axes.xaxis.tick_top()
+
+    #plot min relevance
+    axes = fig.add_subplot(gs[21,:])
+    axes.imshow(np.amin(pop_times,axis=0).reshape(1,-1),
+               cmap=plt.cm.Blues_r,
+               aspect="auto")
+    axes.set_xticks([])
+    axes.set_yticks([0])
+    axes.set_yticklabels([r"$min(R)$"])
+    axes.xaxis.tick_top()
+
+    plt.rcParams["font.family"] = "Times New Roman"
+    fig.tight_layout()
+    if(save):
+        fig.savefig(save_path, format=save_format)
+    else:
+        fig.show()
+
+"""
+Inputs:
+    * R - np.ndarray
+    * times - int32
+    * freqs - int32
+"""
+def R_analysis_times_freqs(R, times, freqs, func=np.std, save=False, save_path=None, save_format="pdf"):
+    pop = (np.sum(R[:,:,:,:,0], axis=1),)
+
+    if(func is metrics.ttest_1samp_r):
+        pop = pop+(np.mean(pop),)
+    
+    fig = plt.figure(figsize=(25,20))
+    gs = GridSpec(freqs-50, freqs+6, figure=fig, wspace=0.1, hspace=0.001)
+
+    #plot variance
+    axes = fig.add_subplot(gs[:,:])
+    axes.imshow(func(*pop,axis=0),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_yticks(list(range(5,freqs,5)))
+    axes.set_xticks(list(range(times)))
+    axes.set_xticklabels(list(range(6,2*times+6,2)))
+    axes.set_ylabel(r"$Hz$")
+    axes.set_xlabel("Seconds")
+    axes.invert_yaxis()
+    
+    plt.rcParams["font.family"] = "Times New Roman"
+    fig.tight_layout()
+    if(save):
+        fig.savefig(save_path, format=save_format)
+    else:
+        fig.show()
+
+"""
+Inputs:
+    * R - np.ndarray
+    * times - int32
+    * freqs - int32
+"""
+def R_analysis_channels_freqs(R, channels, freqs, func=np.std, ch_names=None, save=False, save_path=None, save_format="pdf"):
+    pop = (np.sum(R[:,:,:,:,0], axis=3),)
+
+    if(func is metrics.ttest_1samp_r):
+        pop = pop+(np.mean(pop),)
+    
+    if(ch_names is None):
+        ch_names=list(range(channels))
+        
+    fig = plt.figure(figsize=(25,20))
+    gs = GridSpec(freqs-50, freqs+6, figure=fig, wspace=0.1, hspace=0.001)
+
+    #plot variance
+    axes = fig.add_subplot(gs[:,:])
+    axes.imshow(func(*pop,axis=0).T,
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_yticks(list(range(5,freqs,5)))
+    axes.set_xticks(list(range(channels)))
+    axes.set_xticklabels(ch_names,size=8)
+    axes.set_ylabel(r"$Hz$")
+    axes.set_xlabel("Electrodes")
+    axes.invert_yaxis()
+    
+    plt.rcParams["font.family"] = "Times New Roman"
+    fig.tight_layout()
+    if(save):
+        fig.savefig(save_path, format=save_format)
+    else:
+        fig.show()
+
+
+"""
+Inputs:
+    * R - np.ndarray
+    * times - int32
+    * channels - int32
+"""
+def R_analysis_times_channels(R, times, channels, func=np.std, ch_names=None, save=False, save_path=None, save_format="pdf"):
+    pop = (np.sum(R[:,:,:,:,0], axis=2),)
+    
+    if(func is metrics.ttest_1samp_r):
+        pop = pop+(np.mean(pop),)
+
+    if(ch_names is None):
+        ch_names=list(range(channels))
+        
+    fig = plt.figure(figsize=(25,20))
+    gs = GridSpec(channels-50, channels+6, figure=fig, wspace=0.1, hspace=0.001)
+
+    #plot variance
+    axes = fig.add_subplot(gs[:,:])
+    axes.imshow(func(*pop,axis=0),
+               cmap=plt.cm.Blues,
+               aspect="auto")
+    axes.set_xticks(list(range(times)))
+    axes.set_xticklabels(list(range(6, 2*times+6,2)))
+    axes.set_yticks(list(range(channels)))
+    axes.set_yticklabels(ch_names,size=8)
+    axes.set_ylabel(r"$Hz$")
+    axes.set_xlabel("Electrodes")
+    axes.invert_yaxis()
+    
+    plt.rcParams["font.family"] = "Times New Roman"
+    fig.tight_layout()
+    if(save):
+        fig.savefig(save_path, format=save_format)
+    else:
+        fig.show()
+
+
+
+
+
+"""
+Plot EEG cap 10-20 system
+
+
+Good for attention scores and check which channels are related
+"""
+def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, edge_width=3., dataset="01", plot_names=False):
+    #circle1 = plt.Circle((0, 0), 0.2, color='r')
+    #circle2 = plt.Circle((0.5, 0.5), 0.2, color='blue')
+    head = plt.Circle((0.5,0.5), 0.47, linestyle='-',edgecolor='black',fill=True, facecolor="white", zorder=0)
+
+    nose1 = plt.Circle((0.5,1.0), 0.025, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-3)
+    nose2 = plt.Circle((0.48, 0.97), 0.025, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-2)
+    nose3 = plt.Circle((0.52,0.97), 0.025, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-2)
+    nose = plt.Polygon(np.array([[0.473,1.], [0.527,1.0], [0.473,0.9], [0.527,0.9]]), linestyle='-', fill=True, facecolor="white", zorder=-1)
+
+    lear = plt.Circle((0.1,0.5), 0.1, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-1)
+    rear = plt.Circle((0.9,0.5), 0.1, linestyle='-',edgecolor='black', linewidth=1., fill=True,facecolor="white", zorder=-1)
+
+    channel_circle=[]
+    channel_names=getattr(eeg_utils, "channels_"+dataset)
+    for channel in channel_names:
+        if(not channel in eeg_utils.channels_coords_10_20.keys()):
+            continue
+        if(colors is None):
+            facecolor="white"
+        else:
+            facecolor=colors[channel]
+
+        linewidth=1.
+        if(np.any(edges[channel_names.index(channel),:]>edge_threshold) or \
+            np.any(edges[:,channel_names.index(channel)]>edge_threshold)):
+            linewidth=3.
+
+        channel_circle+=[plt.Circle(eeg_utils.channels_coords_10_20[channel], 0.025, 
+                                    linestyle='-',edgecolor='black',
+                                    linewidth=linewidth,
+                                    fill=True,facecolor=facecolor, zorder=5)]
+
+
+
+
+    fig,axes=plt.subplots(figsize=(10,10))
+
+    axes.add_patch(head)
+    axes.add_patch(nose)
+    axes.add_patch(nose1)
+    axes.add_patch(nose2)
+    axes.add_patch(nose3)
+    axes.add_patch(lear)
+    axes.add_patch(rear)
+    #channels
+    for channel in channel_circle:
+        axes.add_patch(channel)
+    
+    
+    if(plot_names):
+        for channel in channel_names:
+            if(not channel in eeg_utils.channels_coords_10_20.keys()):
+                continue
+
+            color="black"
+            if(scores is None):
+                color="black"
+            else:
+                if(scores[channel] > 0.5):
+                    color="white"
+
+            axes.text(eeg_utils.channels_coords_10_20[channel][0]-0.012,
+                      eeg_utils.channels_coords_10_20[channel][1]-0.006, 
+                        channel, color=color, size=8, zorder=6)
+
+    #attention scores lines
+    for channel1 in range(len(channel_names)):
+        for channel2 in range(len(channel_names)):
+            if(channel1 == channel2 or not channel_names[channel1] in eeg_utils.channels_coords_10_20.keys() or not channel_names[channel2] in eeg_utils.channels_coords_10_20.keys()):
+                continue
+
+            if(edges[channel1,channel2] > edge_threshold):
+
+                axes.plot([eeg_utils.channels_coords_10_20[channel_names[channel1]][0], eeg_utils.channels_coords_10_20[channel_names[channel2]][0]], 
+                            [eeg_utils.channels_coords_10_20[channel_names[channel1]][1], eeg_utils.channels_coords_10_20[channel_names[channel2]][1]], 
+                            linewidth=edge_width,
+                            color="black",
+                            zorder=3)
+
+
+
+
+    axes.axis('off')
+
+    return fig
+
+
+
+def plot_attention_eeg(attention, dataset="01", cmap=mpl.cm.Blues, edge_threshold=3., plot_names=False, save=False, save_path=None, save_format="pdf"):
+
+    channels_names=getattr(eeg_utils, "channels_"+dataset)
+    edges=attention
+
+    channel_scores=np.mean(edges, axis=1)
+    channel_scores=(channel_scores-np.amin(channel_scores))/(np.amax(channel_scores)-np.amin(channel_scores))
+
+    channel_colors=dict(zip(channels_names, cmap(channel_scores)))
+    channel_scores=dict(zip(channels_names, channel_scores))
+
+    fig=plot_eeg_channels(colors=channel_colors,
+                            scores=channel_scores,
+                            edges=edges,
+                            edge_threshold=edge_threshold, 
+                            dataset=dataset, plot_names=plot_names)
 
     if(save):
         fig.savefig(save_path, format=save_format)

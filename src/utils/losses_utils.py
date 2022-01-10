@@ -398,6 +398,19 @@ mae_cosine:
 def mae_cosine(y_true, y_pred):
     return tf.reduce_mean(tf.math.abs(y_pred[0] - y_true), axis=(1,2,3)) + cosine(y_pred[1], y_pred[2])
 
+
+"""
+mae_mae:
+    Inputs:
+        * y_true - Tensor with the ground truth
+        * y_pred - List containing Tensors, y_pred[0] predicted, y_pred[1] latent z_1, y_pred[2] latent z_2
+    Returns:
+        * Tensor
+"""
+def mae_mae(y_true, y_pred):
+    return mae(y_pred[0], y_true) + mae(y_pred[1], y_pred[2])
+
+
 """
 mse:
     Inputs:

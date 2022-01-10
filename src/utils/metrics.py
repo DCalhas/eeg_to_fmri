@@ -2,6 +2,7 @@ import numpy as np
 
 import tensorflow as tf
 
+from scipy.stats import ttest_1samp
 
 
 """
@@ -103,3 +104,11 @@ def fid(data, model):
 	sigma_pred = tf.reshape(sigma_pred/(instances-1), (sigma_pred.shape[1]*sigma_pred.shape[2], sigma_pred.shape[3]))
 
 	return (tf.norm(mu_truth-mu_pred, ord=2)+tf.linalg.trace(sigma_truth+sigma_pred-2*(sigma_pred*sigma_truth)**(1/2))).numpy()
+
+
+
+"""
+"""
+def ttest_1samp_r(a, m, axis=0, **kwargs):
+
+	return 1-ttest_1samp(a, m, axis=axis, **kwargs).pvalue
