@@ -89,7 +89,7 @@ if(name2 is None):
 	name2=name2[1:]
 
 #set seed and configuration of memory
-process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
+process_utils.process_setup_tensorflow(gpu_mem, seed=None)
 
 #load data
 raw_eeg=False#time or frequency features? raw-time nonraw-frequency
@@ -149,6 +149,9 @@ with open(na_path_eeg, "rb") as f:
 with open(na_path_fmri, "rb") as f:
 	na_specification_fmri = pickle.load(f)
 
+#set seed and configuration of memory
+process_utils.set_seed(seed=seed)
+
 train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size1)
 optimizer1 = tf.keras.optimizers.Adam(learning_rate=learning_rate1)
 model1 = EEG_to_fMRI(latent_dimension1, eeg_shape[1:], na_specification_eeg, n_channels1, weight_decay=weight_decay1, skip_connections=skip_connections1,
@@ -165,7 +168,7 @@ loss_fn = losses_utils.mae_cosine
 train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 #set seed and configuration of memory
-process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
+process_utils.set_seed(seed=seed)
 
 train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size2)
 optimizer2 = tf.keras.optimizers.Adam(learning_rate=learning_rate2)
