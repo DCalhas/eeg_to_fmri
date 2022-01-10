@@ -165,7 +165,7 @@ model1.compile(optimizer=optimizer1)
 loss_fn = losses_utils.mae_cosine
 
 #train model
-train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
+#train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 #set seed and configuration of memory
 tf_config.set_seed(seed=seed)
