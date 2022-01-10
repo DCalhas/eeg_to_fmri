@@ -214,7 +214,7 @@ elif(mode=='lrp_eeg_channels'):
 			os.makedirs(metrics_path+"/"+ setting+"/explainability")
 
 		explainer = lrp.LRP_EEG(model)
-		R=lrp.explain(explainer, dev_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
+		R=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 
 		#placeholder
 		attention_scores = np.random.randn(len(getattr(eeg_utils, "channels_"+dataset)), 
