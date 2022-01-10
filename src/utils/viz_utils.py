@@ -761,7 +761,7 @@ def R_channels(R, X, ch_names=None, save=False, save_path=None, save_format="pdf
 
     plt.rcParams["font.family"] = "serif"
     plt.rcParams["font.size"] =9
-    fig.tight_layout()
+    
     if(save):
         fig.savefig(save_path, format=save_format)
     else:
@@ -838,7 +838,6 @@ def R_analysis_channels(R, channels, ch_names=None, save=False, save_path=None, 
 
     plt.rcParams["font.family"] = "serif"
     plt.rcParams["font.size"] = 12
-    fig.tight_layout()
     
     if(save):
         fig.savefig(save_path, format=save_format)
@@ -910,7 +909,7 @@ def R_analysis_freqs(R, freqs, save=False, save_path=None, save_format="pdf"):
     axes.set_ylabel("Hz")
 
     plt.rcParams["font.family"] = "serif"
-    fig.tight_layout()
+    
     if(save):
         fig.savefig(save_path, format=save_format)
     else:
@@ -984,7 +983,7 @@ def R_analysis_times(R, times, save=False, save_path=None, save_format="pdf"):
 
     plt.rcParams["font.family"] = "serif"
     plt.rcParams["font.size"] = 22
-    fig.tight_layout()
+    
     if(save):
         fig.savefig(save_path, format=save_format)
     else:
@@ -1149,7 +1148,7 @@ def R_analysis_dimensions(R, ch_names=None, save=False, save_path=None, save_for
     axes.xaxis.tick_top()
 
     plt.rcParams["font.family"] = "serif"
-    fig.tight_layout()
+    
     if(save):
         fig.savefig(save_path, format=save_format)
     else:
@@ -1183,7 +1182,7 @@ def R_analysis_times_freqs(R, times, freqs, func=np.std, save=False, save_path=N
     axes.invert_yaxis()
     
     plt.rcParams["font.family"] = "serif"
-    fig.tight_layout()
+    
     if(save):
         fig.savefig(save_path, format=save_format)
     else:
@@ -1220,7 +1219,7 @@ def R_analysis_channels_freqs(R, channels, freqs, func=np.std, ch_names=None, sa
     axes.invert_yaxis()
     
     plt.rcParams["font.family"] = "serif"
-    fig.tight_layout()
+    
     if(save):
         fig.savefig(save_path, format=save_format)
     else:
@@ -1259,7 +1258,7 @@ def R_analysis_times_channels(R, times, channels, func=np.std, ch_names=None, sa
     axes.invert_yaxis()
     
     plt.rcParams["font.family"] = "serif"
-    fig.tight_layout()
+    
     if(save):
         fig.savefig(save_path, format=save_format)
     else:
@@ -1361,7 +1360,6 @@ def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, 
     axes.axis('off')
 
     plt.rcParams["font.family"] = "serif"
-    fig.tight_layout()
 
     return fig
 
