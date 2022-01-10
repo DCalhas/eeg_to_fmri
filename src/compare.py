@@ -8,7 +8,7 @@ import numpy as np
 
 import pickle
 
-from utils import process_utils, train, losses_utils, viz_utils
+from utils import process_utils, train, losses_utils, viz_utils, tf_config
 
 from models.eeg_to_fmri import EEG_to_fMRI
 
@@ -150,7 +150,7 @@ with open(na_path_fmri, "rb") as f:
 	na_specification_fmri = pickle.load(f)
 
 #set seed and configuration of memory
-process_utils.set_seed(seed=seed)
+tf_config.set_seed(seed=seed)
 
 train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size1)
 optimizer1 = tf.keras.optimizers.Adam(learning_rate=learning_rate1)
@@ -168,7 +168,7 @@ loss_fn = losses_utils.mae_cosine
 train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 #set seed and configuration of memory
-process_utils.set_seed(seed=seed)
+tf_config.set_seed(seed=seed)
 
 train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size2)
 optimizer2 = tf.keras.optimizers.Adam(learning_rate=learning_rate2)
