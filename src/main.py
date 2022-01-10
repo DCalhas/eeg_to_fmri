@@ -214,16 +214,14 @@ elif(mode=='lrp_eeg_channels'):
 			os.makedirs(metrics_path+"/"+ setting+"/explainability")
 
 		explainer = lrp.LRP_EEG(model)
-		R=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
+		attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 
-		#placeholder
-		attention_scores = np.random.randn(len(getattr(eeg_utils, "channels_"+dataset)), 
-												   len(getattr(eeg_utils, "channels_"+dataset)))
 
-		viz_utils.plot_attention_eeg(attention_scores,
-									dataset="01",
-									plot_names=True,
-									edge_threshold=np.percentile(attention_scores, 99.9),
-									save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+"_channels_attention_" + "seed_"+str(seed)+".pdf")
+		for percentile in [98, 99, 99.9]:
+			viz_utils.plot_attention_eeg(np.mean(attention_scores, axis=0),
+										dataset="01",
+										plot_names=True,
+										edge_threshold=np.percentile(attention_scores, percentile),
+										save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+str(percentile)+"_channels_attention_" + "seed_"+str(seed)+".pdf")
 else:
 	raise NotImplementedError
