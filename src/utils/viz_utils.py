@@ -1297,6 +1297,7 @@ def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, 
             facecolor="white"
         else:
             facecolor=colors[channel]
+            print(facecolor)
 
         linewidth=1.
         if(np.any(edges[channel_names.index(channel),:]>edge_threshold) or \
