@@ -94,7 +94,10 @@ class LRP_EEG(tf.keras.layers.Layer):
 		z = X
 		#forward pass
 		for layer in self.model.eeg_encoder.layers:
-			z = layer(z)
+			if("topo" in layer.name):
+				z,_=layer(z)
+			else:
+				z = layer(z)
 			self.encoder_activations += [z]
 		for layer in self.model.decoder.layers:
 			z = layer(z)
