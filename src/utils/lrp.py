@@ -116,7 +116,9 @@ class LRP_EEG(tf.keras.layers.Layer):
 	"""
 	def propagate(self, X, R, model, activations):
 		for layer in range(len(model.layers))[::-1]:
-			if(hasattr(model.layers[layer], "lrp")):
+			if(self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
+				return model.layers[layer].lrp(activations[layer-1], R)
+			elif(hasattr(model.layers[layer], "lrp")):
 				R = model.layers[layer].lrp(activations[layer-1], R)
 			else:
 				if(layer-1 >= 0):
