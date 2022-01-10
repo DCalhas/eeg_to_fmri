@@ -227,27 +227,27 @@ elif(mode=='lrp_eeg_fmri'):
 	#create dir setting if not exists
 	if(not os.path.exists(metrics_path+"/"+ setting+"/explainability")):
 		os.makedirs(metrics_path+"/"+ setting+"/explainability")
-		
+
 	#explain eeg
 	explainer = lrp.LRP_EEG(model)
 	R=lrp.explain(explainer, test_set, eeg=True, fmri=False, verbose=True)
 
-	viz_utils.R_channels(R, test_data[0], ch_names=eeg_utils.channels_01, save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/channels_" + "seed_"+str(seed)+".pdf")
-	viz_utils.R_analysis_channels(R, test_data[0].shape[1], ch_names=getattr(eeg_utils, "channels_"+dataset), save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/channels_relevance_" + "seed_"+str(seed)+".pdf")
-	viz_utils.R_analysis_freqs(R, test_data[0].shape[2], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/freq_relevance_" + "seed_"+str(seed)+".pdf")
-	viz_utils.R_analysis_times(R, test_data[0].shape[3], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/time_relevance_" + "seed_"+str(seed)+".pdf")
-	viz_utils.R_analysis_dimensions(R, ch_names=getattr(eeg_utils, "channels_"+dataset), save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/relevance_" + "seed_"+str(seed)+".pdf")
-	viz_utils.R_analysis_times_freqs(R, R.shape[3], R.shape[2], func=metrics.ttest_1samp_r, save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/relevance_time_freq_" + "seed_"+str(seed)+".pdf")
-	viz_utils.R_analysis_channels_freqs(R, R.shape[1], R.shape[2], func=metrics.ttest_1samp_r, ch_names=getattr(eeg_utils, "channels_"+dataset), save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/relevance_channel_freq_" + "seed_"+str(seed)+".pdf")
-	viz_utils.R_analysis_times_channels(R, R.shape[3], R.shape[1], func=metrics.ttest_1samp_r, ch_names=getattr(eeg_utils, "channels_"+dataset), save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/relevance_time_channel_" + "seed_"+str(seed)+".pdf")
+	viz_utils.R_channels(R, test_data[0], ch_names=eeg_utils.channels_01, save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/eeg_channels_" + "seed_"+str(seed)+".pdf")
+	viz_utils.R_analysis_channels(R, test_data[0].shape[1], ch_names=getattr(eeg_utils, "channels_"+dataset), save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/eeg_channels_relevance_" + "seed_"+str(seed)+".pdf")
+	viz_utils.R_analysis_freqs(R, test_data[0].shape[2], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/eeg_freq_relevance_" + "seed_"+str(seed)+".pdf")
+	viz_utils.R_analysis_times(R, test_data[0].shape[3], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/eeg_time_relevance_" + "seed_"+str(seed)+".pdf")
+	viz_utils.R_analysis_dimensions(R, ch_names=getattr(eeg_utils, "channels_"+dataset), save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/eeg_relevance_report_" + "seed_"+str(seed)+".pdf")
+	viz_utils.R_analysis_times_freqs(R, R.shape[3], R.shape[2], func=metrics.ttest_1samp_r, save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/eeg_relevance_time_freq_" + "seed_"+str(seed)+".pdf")
+	viz_utils.R_analysis_channels_freqs(R, R.shape[1], R.shape[2], func=metrics.ttest_1samp_r, ch_names=getattr(eeg_utils, "channels_"+dataset), save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/eeg_relevance_channel_freq_" + "seed_"+str(seed)+".pdf")
+	viz_utils.R_analysis_times_channels(R, R.shape[3], R.shape[1], func=metrics.ttest_1samp_r, ch_names=getattr(eeg_utils, "channels_"+dataset), save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/eeg_relevance_time_channel_" + "seed_"+str(seed)+".pdf")
 
 	#explain fmri
 	explainer = lrp.LRP(model.fmri_encoder)
-	R=lrp.explain(explainer, dev_set, eeg=False, fmri=True, verbose=True)
+	R=lrp.explain(explainer, test_set, eeg=False, fmri=True, verbose=True)
 
 	fig = viz_utils.plot_3D_representation_projected_slices(np.std(R, axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues,legend_colorbar=r"$Var[R]$",max_min_legend=["",""], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_Var_R_" + "seed_"+str(seed)+".pdf")
-	fig = viz_utils.plot_3D_representation_projected_slices(np.amax(R, axis=0),res_img=np.mean(fmri_train,axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues,legend_colorbar=r"$max(R)$",max_min_legend=["Non Relevant","Relevant"],save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_max_R_" + "seed_"+str(seed)+".pdf")
-	fig = viz_utils.plot_3D_representation_projected_slices(np.amin(R, axis=0),res_img=np.mean(fmri_train,axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues_r,legend_colorbar=r"$min(R)$",max_min_legend=["Neg Relevant","Non Relevant"],save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_min_R_" + "seed_"+str(seed)+".pdf")
-	fig = viz_utils.plot_3D_representation_projected_slices(metrics.ttest_1samp_r(R, np.mean(R), axis=0),res_img=np.mean(fmri_train,axis=0),slice_label=False,uncertainty=True, cmap=plt.cm.Blues, legend_colorbar=r"$p-value$", max_min_legend=[r"$p=1.0$",r"$p=0.0$"], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_pvalues_R_" + "seed_"+str(seed)+".pdf")
+	fig = viz_utils.plot_3D_representation_projected_slices(np.amax(R, axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues,legend_colorbar=r"$max(R)$",max_min_legend=["Non Relevant","Relevant"],save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_max_R_" + "seed_"+str(seed)+".pdf")
+	fig = viz_utils.plot_3D_representation_projected_slices(np.amin(R, axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues_r,legend_colorbar=r"$min(R)$",max_min_legend=["Neg Relevant","Non Relevant"],save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_min_R_" + "seed_"+str(seed)+".pdf")
+	fig = viz_utils.plot_3D_representation_projected_slices(metrics.ttest_1samp_r(R, np.mean(R), axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True, cmap=plt.cm.Blues, legend_colorbar=r"$p-value$", max_min_legend=[r"$p=1.0$",r"$p=0.0$"], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_pvalues_R_" + "seed_"+str(seed)+".pdf")
 else:
 	raise NotImplementedError
