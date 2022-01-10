@@ -154,9 +154,9 @@ if(mode=="metrics"):
 			print("p-value against", f.split("/")[-1][:-4], ttest_ind(ssim_pop, other_pop_ssim).pvalue)
 
 	if(save_metrics):
-		with open(metrics_path+"/"+setting+"/metrics"+"/rmse_"+"_seed_"+str(seed)+".npy", 'wb') as f:
+		with open(metrics_path+"/"+setting+"/metrics"+"/rmse_"+"seed_"+str(seed)+".npy", 'wb') as f:
 			np.save(f, rmse_pop)
-		with open(metrics_path+"/"+setting+"/metrics"+"/ssim_"+"_seed_"+str(seed)+".npy", 'wb') as f:
+		with open(metrics_path+"/"+setting+"/metrics"+"/ssim_"+"seed_"+str(seed)+".npy", 'wb') as f:
 			np.save(f, ssim_pop)
 
 elif(mode=="residues"):
