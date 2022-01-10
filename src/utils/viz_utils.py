@@ -568,7 +568,7 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
             col=6
             row-=1
 
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
 
     if(save):
         fig.savefig(save_path, format=save_format)
@@ -687,7 +687,7 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
             col=6
             row-=1
 
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
 
     if(save):
         fig.savefig(save_path, format=save_format)
@@ -759,7 +759,7 @@ def R_channels(R, X, ch_names=None, save=False, save_path=None, save_format="pdf
             break
         continue
 
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
     plt.rcParams["font.size"] =9
     fig.tight_layout()
     if(save):
@@ -836,7 +836,7 @@ def R_analysis_channels(R, channels, ch_names=None, save=False, save_path=None, 
     axes.set_yticklabels(ch_names)
     axes.set_ylabel("Electrodes")
 
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
     plt.rcParams["font.size"] = 12
     fig.tight_layout()
     
@@ -909,7 +909,7 @@ def R_analysis_freqs(R, freqs, save=False, save_path=None, save_format="pdf"):
     axes.set_yticks(list(range(5,freqs,5)))
     axes.set_ylabel("Hz")
 
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
     fig.tight_layout()
     if(save):
         fig.savefig(save_path, format=save_format)
@@ -982,7 +982,7 @@ def R_analysis_times(R, times, save=False, save_path=None, save_format="pdf"):
     axes.set_yticklabels(list(range(0,2*times,2)))
     axes.set_ylabel("Seconds")
 
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
     plt.rcParams["font.size"] = 22
     fig.tight_layout()
     if(save):
@@ -1148,7 +1148,7 @@ def R_analysis_dimensions(R, ch_names=None, save=False, save_path=None, save_for
     axes.set_yticklabels([r"$min(R)$"])
     axes.xaxis.tick_top()
 
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
     fig.tight_layout()
     if(save):
         fig.savefig(save_path, format=save_format)
@@ -1182,7 +1182,7 @@ def R_analysis_times_freqs(R, times, freqs, func=np.std, save=False, save_path=N
     axes.set_xlabel("Seconds")
     axes.invert_yaxis()
     
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
     fig.tight_layout()
     if(save):
         fig.savefig(save_path, format=save_format)
@@ -1219,7 +1219,7 @@ def R_analysis_channels_freqs(R, channels, freqs, func=np.std, ch_names=None, sa
     axes.set_xlabel("Electrodes")
     axes.invert_yaxis()
     
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
     fig.tight_layout()
     if(save):
         fig.savefig(save_path, format=save_format)
@@ -1258,7 +1258,7 @@ def R_analysis_times_channels(R, times, channels, func=np.std, ch_names=None, sa
     axes.set_xlabel("Electrodes")
     axes.invert_yaxis()
     
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
     fig.tight_layout()
     if(save):
         fig.savefig(save_path, format=save_format)
@@ -1360,7 +1360,7 @@ def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, 
 
     axes.axis('off')
 
-    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.family"] = "serif"
     fig.tight_layout()
 
     return fig
@@ -1374,7 +1374,7 @@ def plot_attention_eeg(attention, dataset="01", cmap=mpl.cm.Blues, edge_threshol
 
     channel_scores=np.mean(edges, axis=1)
     channel_scores=(channel_scores-np.amin(channel_scores))/(np.amax(channel_scores)-np.amin(channel_scores))
-    
+
     channel_colors=dict(zip(channels_names, cmap(channel_scores)))
     channel_scores=dict(zip(channels_names, channel_scores))
 
