@@ -165,7 +165,7 @@ model1.compile(optimizer=optimizer1)
 loss_fn = losses_utils.mae_cosine
 
 #train model
-#train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
+train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 #set seed and configuration of memory
 tf_config.set_seed(seed=seed)
@@ -175,7 +175,7 @@ optimizer2 = tf.keras.optimizers.Adam(learning_rate=learning_rate2)
 model2 = EEG_to_fMRI(latent_dimension2, eeg_shape[1:], na_specification_eeg, n_channels2, weight_decay=weight_decay2, skip_connections=skip_connections2,
 							batch_norm=batch_norm2, local=local2, fourier_features=fourier_features2,
 							random_fourier=random_fourier2, conditional_attention_style=conditional_attention_style2,
-							topographical_attention=topographical_attention2, seed=None, fmri_args = (latent_dimension2, fmri_shape[2:], 
+							topographical_attention=topographical_attention2, seed=None, fmri_args = (latent_dimension2, fmri_shape[1:], 
 							kernel_size2, stride_size2, n_channels2, max_pool2, batch_norm2, weight_decay2, skip_connections2,
 							n_stacks2, True, False, outfilter2, dropout2, None, False, na_specification_fmri))
 model2.build(eeg_shape, fmri_shape)
