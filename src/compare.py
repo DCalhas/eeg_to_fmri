@@ -106,10 +106,8 @@ interval_eeg=10
 #return_test returns the test set, this is not active when running validation optimization
 #setup_tf sets the tensorflow memory growth on GPU, this should not be done when already set, which is the case
 train_data, test_data = process_utils.load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, gpu_mem, return_test=True, setup_tf=False)
-
 #setup shapes and data loaders
 eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]
-train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size)
 test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
 
 #load model
@@ -151,6 +149,8 @@ with open(na_path_eeg, "rb") as f:
 with open(na_path_fmri, "rb") as f:
 	na_specification_fmri = pickle.load(f)
 
+
+train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size1)
 optimizer1 = tf.keras.optimizers.Adam(learning_rate=learning_rate1)
 model1 = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels1, weight_decay=weight_decay1, skip_connections=skip_connections1,
 							batch_norm=batch_norm1, local=local1, fourier_features=fourier_features1,
@@ -168,6 +168,7 @@ train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architectur
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
 
+train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size2)
 optimizer2 = tf.keras.optimizers.Adam(learning_rate=learning_rate2)
 model2 = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels2, weight_decay=weight_decay2, skip_connections=skip_connections2,
 							batch_norm=batch_norm2, local=local2, fourier_features=fourier_features2,
