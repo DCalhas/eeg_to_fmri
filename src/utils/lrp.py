@@ -152,7 +152,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 		y = self.forward(X)
 		
 		if(self.eeg_attention):
-			assert type(self.model.eeg_encoder.layers) is Topographical_Attention
+			assert type(self.model.eeg_encoder.layers[2]) is Topographical_Attention
 			return self.backward(X, y)
 		return self.backward(X, y)
 
