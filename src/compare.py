@@ -114,41 +114,40 @@ test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
 #unroll hyperparameters
 theta1=(0.002980911194116198,0.0004396489214334123,(9,9,4),(1,1,1),4,(7,7,7),4,True,True,True,True,3,1)
 learning_rate1=0.002980911194116198
-weight_decay1=float(theta[1])
-kernel_size1=theta[2]
-stride_size1=theta[3]
-batch_size1=int(theta[4])
-latent_dimension1=theta[5]
-n_channels1=int(theta[6])
-max_pool1=bool(theta[7])
-batch_norm1=bool(theta[8])
-skip_connections1=bool(theta[9])
-dropout1=bool(theta[10])
-n_stacks1=int(theta[11])
-outfilter1=int(theta[12])
+weight_decay1=float(theta1[1])
+kernel_size1=theta1[2]
+stride_size1=theta1[3]
+batch_size1=int(theta1[4])
+latent_dimension1=theta1[5]
+n_channels1=int(theta1[6])
+max_pool1=bool(theta1[7])
+batch_norm1=bool(theta1[8])
+skip_connections1=bool(theta1[9])
+dropout1=bool(theta1[10])
+n_stacks1=int(theta1[11])
+outfilter1=int(theta1[12])
 local1=True
 #for second model
 theta2=(0.002980911194116198,0.0004396489214334123,(9,9,4),(1,1,1),4,(7,7,7),4,True,True,True,True,3,1)
 learning_rate2=0.002980911194116198
-weight_decay2=float(theta[1])
-kernel_size2=theta[2]
-stride_size2=theta[3]
-batch_size2=int(theta[4])
-latent_dimension2=theta[5]
-n_channels2=int(theta[6])
-max_pool2=bool(theta[7])
-batch_norm2=bool(theta[8])
-skip_connections2=bool(theta[9])
-dropout2=bool(theta[10])
-n_stacks2=int(theta[11])
-outfilter2=int(theta[12])
+weight_decay1=float(theta2[1])
+kernel_size1=theta2[2]
+stride_size1=theta2[3]
+batch_size1=int(theta2[4])
+latent_dimension1=theta2[5]
+n_channels1=int(theta2[6])
+max_pool1=bool(theta2[7])
+batch_norm1=bool(theta2[8])
+skip_connections1=bool(theta2[9])
+dropout1=bool(theta2[10])
+n_stacks1=int(theta2[11])
+outfilter1=int(theta2[12])
 local2=True
 
 with open(na_path_eeg, "rb") as f:
 	na_specification_eeg = pickle.load(f)
 with open(na_path_fmri, "rb") as f:
 	na_specification_fmri = pickle.load(f)
-
 
 train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size1)
 optimizer1 = tf.keras.optimizers.Adam(learning_rate=learning_rate1)
