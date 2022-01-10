@@ -37,11 +37,9 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		#c = tf.tensordot(X, self.A, axes=[[2], [2]])
 		
 		c = tf.einsum('NCF,CMF->NCM', X, self.A)
-		print(c.shape)
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
-		print(W.shape)
 		self.attention_scores = W
-		print(self.attention_scores.shape)
+		
 		#sum over M all M channels are multiplied by the attention scores over axis M that is normalized 
 		#return tf.tensordot(X, W, axes=[[1], [2]]), self.attention_scores
 		return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
@@ -66,7 +64,6 @@ class Topographical_Attention(tf.keras.layers.Layer):
 	def lrp_attention(self, x, y):
 		#store attention scores
 		self.call(x)
-		print("HERE")
 
 		with tf.GradientTape(watch_accessed_variables=False) as tape:
 			tape.watch(self.attention_scores)
