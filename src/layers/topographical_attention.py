@@ -76,5 +76,4 @@ class Topographical_Attention(tf.keras.layers.Layer):
 			c = tape.gradient(tf.reduce_sum(z*s.numpy()), self.attention_scores)
 			R = self.attention_scores*c
 
-		print(R.shape)
 		return R

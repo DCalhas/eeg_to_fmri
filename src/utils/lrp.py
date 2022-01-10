@@ -74,11 +74,11 @@ class LRP_EEG(tf.keras.layers.Layer):
 		Inputs:
 			* model: models.eeg_to_fmri.EEG_to_fMRI
 	"""
-	def __init__(self, model):
+	def __init__(self, model, attention=False):
 		super(LRP_EEG, self).__init__()
 		
 		self.model = model
-		self.eeg_attention = False
+		self.eeg_attention = attention
 		
 	"""
 		Inputs:
