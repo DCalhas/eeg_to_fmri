@@ -1339,7 +1339,7 @@ def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, 
 
             axes.text(eeg_utils.channels_coords_10_20[channel][0]-0.012,
                       eeg_utils.channels_coords_10_20[channel][1]-0.006, 
-                        channel, color=color, size=8, zorder=6)
+                        channel, color=color, size=10, zorder=6)
 
     #attention scores lines
     for channel1 in range(len(channel_names)):
@@ -1359,6 +1359,9 @@ def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, 
 
 
     axes.axis('off')
+
+    plt.rcParams["font.family"] = "Times New Roman"
+    fig.tight_layout()
 
     return fig
 
