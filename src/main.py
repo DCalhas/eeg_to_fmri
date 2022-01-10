@@ -224,6 +224,6 @@ elif(mode=='lrp_eeg_channels'):
 									dataset="01",
 									plot_names=True,
 									edge_threshold=np.percentile(attention_scores, 99.9),
-									save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+ "seed_"+str(seed)+"_channels_attention.pdf"))
+									save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+ "seed_"+str(seed)+"_channels_attention.pdf")
 else:
 	raise NotImplementedError
