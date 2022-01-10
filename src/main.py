@@ -199,13 +199,13 @@ elif(mode=="mean_residues"):
 															res_img=mean_fmri.numpy()[0]/instance,
 															slice_label=False,
 															normalize_residues=True,
-															save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+ "seed_"+str(seed)+"_mean_residues.pdf")
+															save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+"_mean_residues"+"_seed_"+str(seed)+".pdf")
 	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())[0]/instance),
 															cmap=plt.cm.gray,
 															res_img=mean_fmri.numpy()[0]/instance,
 															slice_label=False,
 															normalize_residues=False,
-															save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+ "seed_"+str(seed)+"_mean_normalized_residues.pdf")
+															save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+"_mean_normalized_residues"+"_seed_"+str(seed)+".pdf")
 elif(mode=='lrp_eeg_channels'):
 	#explain and then get the relevances
 	if(topographical_attention):
@@ -224,6 +224,6 @@ elif(mode=='lrp_eeg_channels'):
 									dataset="01",
 									plot_names=True,
 									edge_threshold=np.percentile(attention_scores, 99.9),
-									save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+ "seed_"+str(seed)+"_channels_attention.pdf")
+									save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+"_channels_attention_" + "seed_"+str(seed)+".pdf")
 else:
 	raise NotImplementedError
