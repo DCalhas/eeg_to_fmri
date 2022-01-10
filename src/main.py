@@ -72,6 +72,11 @@ if(conditional_attention_style):
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
 
+#create dir setting if not exists
+if(not os.path.exists(metrics_path+"/"+ setting)):
+	os.makedirs(metrics_path+"/"+ setting)
+
+
 #load data
 raw_eeg=False#time or frequency features? raw-time nonraw-frequency
 resampling=False
@@ -129,6 +134,11 @@ loss_fn = losses_utils.mae_cosine
 history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 if(mode=="metrics"):
+
+	#create dir setting if not exists
+	if(not os.path.exists(metrics_path+"/"+ setting+"/metrics")):
+		os.makedirs(metrics_path+"/"+ setting+"/metrics")
+
 	rmse_pop = metrics.rmse(test_set, model)
 	ssim_pop = metrics.ssim(test_set, model)
 	print("RMSE: ", np.mean(rmse_pop), "\pm", np.std(rmse_pop))
@@ -144,28 +154,39 @@ if(mode=="metrics"):
 			print("p-value against", f.split("/")[-1][:-4], ttest_ind(ssim_pop, other_pop_ssim).pvalue)
 
 	if(save_metrics):
-		with open(metrics_path+"/rmse_"+setting+"_seed_"+str(seed)+".npy", 'wb') as f:
+		with open(metrics_path+"/"+setting+"/metrics"+"/rmse_"+"_seed_"+str(seed)+".npy", 'wb') as f:
 			np.save(f, rmse_pop)
-		with open(metrics_path+"/ssim_"+setting+"_seed_"+str(seed)+".npy", 'wb') as f:
+		with open(metrics_path+"/"+setting+"/metrics"+"/ssim_"+"_seed_"+str(seed)+".npy", 'wb') as f:
 			np.save(f, ssim_pop)
 
 elif(mode=="residues"):
+	#create dir setting if not exists
+	if(not os.path.exists(metrics_path+"/"+ setting+"/residues")):
+		os.makedirs(metrics_path+"/"+ setting+"/residues")
 	instance=0
 	for eeg, fmri in test_set.repeat(1):
 		viz_utils.plot_3D_representation_projected_slices(fmri.numpy()[0]-model(eeg, fmri)[0].numpy()[0],
 															cmap=plt.cm.gray,
 															res_img=fmri.numpy()[0],
 															slice_label=False,
-															save=True, save_path=metrics_path+"/"+ setting + "_" + str(instance)+"_instance_seed_"+str(seed)+".pdf")
+															save=True, save_path=metrics_path+"/"+setting+"/residues"+"/"+ str(instance)+"_instance_seed_"+str(seed)+".pdf")
 		instance+=1
 elif(mode=="quality"):
+	#create dir setting if not exists
+	if(not os.path.exists(metrics_path+"/"+ setting+"/quality")):
+		os.makedirs(metrics_path+"/"+ setting+"/quality")
+
 	instance=0
 	for eeg, fmri in test_set.repeat(1):
 		viz_utils.plot_3D_representation_projected_slices(model(eeg, fmri)[0].numpy()[0],
 															res_img=fmri.numpy()[0],
-															save=True, save_path=metrics_path+"/"+ setting + "_" + mode +"_" + str(instance)+"_instance.pdf")
+															save=True, save_path=metrics_path+"/"+setting+"/quality"+"/"+ mode +"_" + str(instance)+"_instance.pdf")
 		instance+=1
 elif(mode=="mean_residues"):
+	#create dir setting if not exists
+	if(not os.path.exists(metrics_path+"/"+ setting+"/mean_residues")):
+		os.makedirs(metrics_path+"/"+ setting+"/mean_residues")
+
 	instance=0
 	mean_fmri = tf.zeros((1,)+fmri_shape[1:])
 	mean_synth_fmri = tf.zeros((1,)+fmri_shape[1:])
@@ -178,16 +199,20 @@ elif(mode=="mean_residues"):
 															res_img=mean_fmri.numpy()[0]/instance,
 															slice_label=False,
 															normalize_residues=True,
-															save=True, save_path=metrics_path+"/"+ setting + "_seed_"+str(seed)+"_mean_residues.pdf")
+															save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+ "seed_"+str(seed)+"_mean_residues.pdf")
 	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())[0]/instance),
 															cmap=plt.cm.gray,
 															res_img=mean_fmri.numpy()[0]/instance,
 															slice_label=False,
 															normalize_residues=False,
-															save=True, save_path=metrics_path+"/"+ setting + "_seed_"+str(seed)+"_mean_normalized_residues.pdf")
+															save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+ "seed_"+str(seed)+"_mean_normalized_residues.pdf")
 elif(mode=='lrp_eeg_channels'):
 	#explain and then get the relevances
 	if(topographical_attention):
+		#create dir setting if not exists
+		if(not os.path.exists(metrics_path+"/"+ setting+"/explainability")):
+			os.makedirs(metrics_path+"/"+ setting+"/explainability")
+
 		explainer = lrp.LRP_EEG(model)
 		R=lrp.explain(explainer, dev_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 
@@ -198,6 +223,7 @@ elif(mode=='lrp_eeg_channels'):
 		viz_utils.plot_attention_eeg(attention_scores,
 									dataset="01",
 									plot_names=True,
-									edge_threshold=np.percentile(attention_scores, 99.9))
+									edge_threshold=np.percentile(attention_scores, 99.9),
+									save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+ "seed_"+str(seed)+"_channels_attention.pdf"))
 else:
 	raise NotImplementedError
