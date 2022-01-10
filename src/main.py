@@ -224,6 +224,10 @@ elif(mode=='lrp_eeg_channels'):
 										edge_threshold=np.percentile(attention_scores, percentile),
 										save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+str(percentile)+"_channels_attention_" + "seed_"+str(seed)+".pdf")
 elif(mode=='lrp_eeg_fmri'):
+	#create dir setting if not exists
+	if(not os.path.exists(metrics_path+"/"+ setting+"/explainability")):
+		os.makedirs(metrics_path+"/"+ setting+"/explainability")
+		
 	#explain eeg
 	explainer = lrp.LRP_EEG(model)
 	R=lrp.explain(explainer, test_set, eeg=True, fmri=False, verbose=True)
