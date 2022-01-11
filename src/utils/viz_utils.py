@@ -635,10 +635,6 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
                 instance[voxel1,voxel2,voxel3] = np.array(list(_cmap_(res1[voxel1,voxel2,voxel3,0], res2[voxel1,voxel2,voxel3,0], 
                                                                 res_img[voxel1,voxel2,voxel3,0],
                                                                 pvalue=pvalues[voxel1,voxel2,voxel3,0])))
-    
-    print(instance.shape)
-    print(np.where(instance >= 1.0))
-    print(np.where(instance <= 0.0))
 
     fig = plt.figure(figsize=(25,17))
     gs = GridSpec(41, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
@@ -648,7 +644,6 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
 
     for axis in range((instance[:,:,:].shape[2])//factor):
         img = rotate(instance[:,:,axis*factor,:], 90)
-        print(img.shape)
 
         ax = axes.plot_surface(x,y,np.ones(x.shape)+5*(axis),
                                 facecolors=img,
