@@ -19,6 +19,10 @@ from pathlib import Path
 
 home = str(Path.home())
 
+TR_01=2.160
+TR_02=2.000
+TR_03=1.280
+
 dataset_path = home + '/eeg_to_fmri'
 
 media_directory="/media/david/datasets/"

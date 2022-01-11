@@ -45,6 +45,7 @@ def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partition
                                     ind_volume_fit=ind_volume_fit,
                                     standardize_eeg=standardize_eeg,
                                     iqr_outlier=iqr_outlier,
+                                    TR=getattr(fmri_utils, "TR_"+dataset),
                                     dataset=dataset)
 
     return eeg, bold, scalers
@@ -71,7 +72,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
     #clean fMRI signal
     for i in range(len(individuals_imgs)):
         individuals_imgs[i] = individuals_imgs[i].get_fdata()
-
+        
         if(iqr_outlier):
             initial_j=j
             iqr = outlier_utils.IQR()

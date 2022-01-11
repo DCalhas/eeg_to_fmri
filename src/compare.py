@@ -165,7 +165,7 @@ model1.compile(optimizer=optimizer1)
 loss_fn = losses_utils.mae_cosine
 
 #train model
-train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
+#train.train(train_set, model1, optimizer1, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 #set seed and configuration of memory
 tf_config.set_seed(seed=seed)
@@ -183,7 +183,7 @@ model2.compile(optimizer=optimizer2)
 loss_fn = losses_utils.mae_cosine
 
 #train model
-train.train(train_set, model2, optimizer2, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
+#train.train(train_set, model2, optimizer2, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 res1=np.empty((0,)+fmri_shape[1:])
 res2=np.empty((0,)+fmri_shape[1:])
@@ -196,6 +196,11 @@ pvalues=ttest_ind(res1, res2, axis=0).pvalue
 if(not os.path.exists(metrics_path+"/comparison")):
 	os.makedirs(metrics_path+"/comparison")
 
+
+print(res1.shape)
+print(res2.shape)
+print(pvalues.shape)
+print(test_data[1].shape)
 
 fig=viz_utils.comparison_plot_3D_representation_projected_slices(np.mean(res1,axis=0), np.mean(res2, axis=0), pvalues, 
 																	np.mean(test_data[1], axis=0),
