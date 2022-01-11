@@ -112,8 +112,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
 
         if(dataset!="01"):
             len_channels=len(eeg)
-            print(eeg)
-            raise NotImplementedError
+            fs_sample = getattr(eeg_utils, "fs_"+dataset)
         else:
             fs_sample = eeg.info['sfreq']
             len_channels = len(eeg.ch_names)
