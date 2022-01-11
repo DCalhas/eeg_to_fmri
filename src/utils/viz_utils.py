@@ -614,10 +614,10 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
 
     #assign colors
     instance =np.zeros(res1[:,:,:,0].shape+(3,))
-    res1=np.abs(res1)
-    res2=np.abs(res2)
-    res1[np.where(res1>1.0)]=1.0
-    res2[np.where(res2>1.0)]=1.0
+    res1=np.abs(res1)+1e-9
+    res2=np.abs(res2)+1e-9
+    res1[np.where(res1>1.0)]=0.9999#1.0
+    res2[np.where(res2>1.0)]=0.9999#1.0
 
     def _cmap_(res1, res2, voxel, pvalue=0.0):
         if(voxel==-1):
@@ -637,6 +637,8 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
                                                                 pvalue=pvalues[voxel1,voxel2,voxel3,0])))
     
     print(instance.shape)
+    print(np.where(instance >= 1.0))
+    print(np.where(instance <= 0.0))
 
     fig = plt.figure(figsize=(25,17))
     gs = GridSpec(41, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
@@ -647,7 +649,7 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
     for axis in range((instance[:,:,:].shape[2])//factor):
         img = rotate(instance[:,:,axis*factor,:], 90)
         print(img.shape)
-        
+
         ax = axes.plot_surface(x,y,np.ones(x.shape)+5*(axis),
                                 facecolors=img,
                                 shade=False, antialiased=True, zorder=0,
