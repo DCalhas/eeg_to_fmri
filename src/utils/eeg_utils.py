@@ -25,7 +25,7 @@ channels_coords_10_20= {"Fpz": (0.5,0.9),"Fp1": (0.40,0.88),"Fp2": (0.6,0.88),"A
 
 #frequency samples of each EEG dataset
 fs_01=250
-fs_02=None
+fs_02=1000
 fs_03=None
 
 media_directory="/media/david/datasets/"
