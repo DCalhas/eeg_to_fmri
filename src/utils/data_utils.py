@@ -109,11 +109,13 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
        
     for individual in individuals:
         eeg = getattr(eeg_utils, "get_eeg_instance_"+dataset)(individual)
-        fs_sample = eeg.info['sfreq']
 
-        if(dataset!="01"):
+        if(dataset!="02"):
             len_channels=len(eeg)
+            print(eeg)
+            raise NotImplementedError
         else:
+            fs_sample = eeg.info['sfreq']
             len_channels = len(eeg.ch_names)
         
         x_instance = []
