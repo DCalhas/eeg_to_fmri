@@ -288,3 +288,63 @@ def cross_validation_latent_fmri(score, learning_rate, weight_decay,
 		score.value += train.evaluate(dev_set, model, loss_fn)
 
 	score.value = (score.value-1.0)/n_folds
+
+
+def cross_validation_eeg_fmri(score, fourier_features, random_fourier,
+						topographical_attention, conditional_attention_style, 
+						na_specification_eeg, na_specification_fmri, 
+						learning_rate, weight_decay, 
+						kernel_size, stride_size,
+						batch_size, latent_dimension, n_channels, 
+						max_pool, batch_norm, skip_connections, dropout,
+						n_stacks, outfilter, dataset, n_individuals, 
+						n_individuals_train, n_volumes, 
+						interval_eeg, memory_limit):
+
+	from utils import train, losses_utils
+	from models import eeg_to_fmri
+	from sklearn.model_selection import KFold
+	import tensorflow as tf
+
+	data = load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, memory_limit, return_test=False, setup_tf=True)
+	n_folds = 5
+
+	for train_idx, val_idx in KFold(n_folds).split(data[0]):
+		with tf.device('/CPU:0'):
+			x_train, y_train = (data[0][train_idx], data[1][train_idx])
+			x_val, y_val = (data[0][val_idx], data[1][val_idx])
+			
+			model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, x_train.shape[1:], na_specification_eeg, n_channels,
+								weight_decay=weight_decay, skip_connections=True,
+								batch_norm=True, #dropout=False,
+								fourier_features=fourier_features,
+								random_fourier=random_fourier,
+								topographical_attention=topographical_attention,
+								conditional_attention_style=conditional_attention_style,
+								inverse_DFT=False, DFT=False,
+								variational_iDFT=False,
+								variational_coefs=(15,15,15),
+								low_resolution_decoder=False,
+								local=True, seed=None, 
+								fmri_args = (latent_dimension, y_train.shape[1:], 
+								kernel_size, stride_size, n_channels, 
+								max_pool, batch_norm, weight_decay, skip_connections,
+								n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
+			
+			model.build(x_train[0].shape, x_train[1].shape)
+			
+			optimizer = tf.keras.optimizers.Adam(learning_rate)
+			loss_fn = losses_utils.mae_cosine
+
+			train_set = tf.data.Dataset.from_tensor_slices((x_train, y_train)).batch(batch_size)
+			dev_set = tf.data.Dataset.from_tensor_slices((x_val, y_val)).batch(1)
+
+
+		train.train(train_set, model, optimizer, 
+								loss_fn, epochs=10, 
+								val_set=None, verbose=True)
+
+		#evaluate
+		score.value += train.evaluate(dev_set, model, loss_fn)
+
+	score.value = (score.value-1.0)/n_folds
