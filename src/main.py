@@ -218,7 +218,7 @@ elif(mode=='lrp_eeg_channels'):
 
 		for percentile in [98, 99, 99.9]:
 			viz_utils.plot_attention_eeg(np.mean(attention_scores, axis=0),
-										dataset="01",
+										dataset=dataset,
 										plot_names=True,
 										edge_threshold=np.percentile(attention_scores, percentile),
 										save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+str(percentile)+"_channels_attention_" + "seed_"+str(seed)+".pdf")

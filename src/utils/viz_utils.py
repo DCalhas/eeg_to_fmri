@@ -592,20 +592,33 @@ Inputs:
 Returns:
     matplotlib.Figure - The figure to plot, no saving option implemented
 """
-def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_img, model1="Model1", model2="Model2", factor=3, h_resolution=1, v_resolution=1, threshold=0.37, slice_label=True, save=False, save_path=None, save_format="pdf"):
+def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_img, model1="Model1", model2="Model2", factor=3, h_resolution=1, v_resolution=1, threshold=0.37, slice_label=True, save=False, save_path=None, red_blue=False, save_format="pdf"):
     label = "$Z_{"
 
     #colormap definition
-    cp1 = np.linspace(0,1)
-    cp2 = np.linspace(0,1)
-    Cp1, Cp2 = np.meshgrid(cp1,cp2)
-    C0 = np.full_like(Cp1, Cp1*Cp2*((Cp1)+(Cp2))/2)
-    p_values_range=Cp2#place holder that can stay to emulate pvalues
-    Legend = np.dstack((np.concatenate((Cp2, p_values_range*Cp1[:,::-1], ), axis=1)[:,::-1],
-                        np.concatenate((C0,C0[:,::-1]), axis=1),
-                        np.concatenate((p_values_range*Cp1, Cp2), axis=1)[:,::-1]))
-    cmap=ListedColormap(Legend)
-
+    if(red_blue):
+        cp1 = np.linspace(0,1)
+        cp2 = np.linspace(0,1)
+        Cp1, Cp2 = np.meshgrid(cp1,cp2)
+        C0 = np.full_like(Cp1, Cp1*Cp2*((Cp1)+(Cp2))/2)
+        p_values_range=Cp2#place holder that can stay to emulate pvalues
+        Legend = np.dstack((np.concatenate((Cp2, p_values_range*Cp1[:,::-1], ), axis=1)[:,::-1],
+                            np.concatenate((C0,C0[:,::-1]), axis=1),
+                            np.concatenate((p_values_range*Cp1, Cp2), axis=1)[:,::-1]))
+        cmap=ListedColormap(Legend)
+    else:
+        cp1 = np.linspace(0,1)
+        cp2 = np.linspace(0,1)
+        Cp1, Cp2 = np.meshgrid(cp1,cp2)
+        C0 = np.full_like(Cp1, Cp1*Cp2*((Cp1)+(Cp2))/2)
+        Cp2_ = np.triu(Cp2)
+        np.fill_diagonal(Cp2_, 0)
+        Cp2_
+        p_values_range=Cp2#place holder that can stay to emulate pvalues
+        Legend = np.dstack((np.concatenate((Cp2, p_values_range*Cp1[:,::-1], ), axis=1)[:,::-1],
+                            np.concatenate((p_values_range*Cp1, Cp2), axis=1)[:,::-1],
+                            np.concatenate((Cp2, Cp2), axis=1)[:,::-1]))
+        cmap=ListedColormap(Legend)
 
     #normalization
     res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
@@ -619,22 +632,28 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
     res1[np.where(res1>1.0)]=0.9999#1.0
     res2[np.where(res2>1.0)]=0.9999#1.0
 
-    def _cmap_(res1, res2, voxel, pvalue=0.0):
+    def _cmap_(res1, res2, voxel, pvalue=0.0, red_blue=False):
         if(voxel==-1):
             return (0.999,0.999,0.999)
         elif(pvalue>0.05):
             pvalue=np.clip(pvalue, a_min=1e-9, a_max=0.2)
             return (pvalue,pvalue,pvalue)
-        if(res1<res2):
-            return (1+1e-30-res1, 0.0001, pvalue+1e-9)
-        return (pvalue+1e-9, 0.0001, 1+1e-30-res2)
+        if(red_blue):
+            if(res1<res2):
+                return (1+1e-30-res1, 0.0001, pvalue+1e-9)
+            return (pvalue+1e-9, 0.0001, 1+1e-30-res2)
+        else:
+            if(res1<res2):
+                return (1+1e-30-res1, 0.0001, 1+1e-30-res1)
+            return (0.0001, 1+1e-30-res2, 1+1e-30-res2)
 
     for voxel1 in range(instance.shape[0]):
         for voxel2 in range(instance.shape[1]):
             for voxel3 in range(instance.shape[2]):
                 instance[voxel1,voxel2,voxel3] = np.array(list(_cmap_(res1[voxel1,voxel2,voxel3,0], res2[voxel1,voxel2,voxel3,0], 
                                                                 res_img[voxel1,voxel2,voxel3,0],
-                                                                pvalue=pvalues[voxel1,voxel2,voxel3,0])))
+                                                                pvalue=pvalues[voxel1,voxel2,voxel3,0],
+                                                                red_blue=red_blue)))
 
     fig = plt.figure(figsize=(25,17))
     gs = GridSpec(41, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
