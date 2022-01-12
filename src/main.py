@@ -82,10 +82,10 @@ raw_eeg=False#time or frequency features? raw-time nonraw-frequency
 resampling=False
 if(dataset=="01"):
 	n_volumes=300-3
-	n_individuals=10
-	n_individuals_train=8
+	n_individuals=10	
 if(dataset=="02"):
 	n_volumes=170-3
+	n_individuals=10
 #parametrize the interval eeg?
 interval_eeg=10
 
