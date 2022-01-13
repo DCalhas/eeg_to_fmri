@@ -1,3 +1,6 @@
+#channel relevances
+python -u main.py lrp_eeg_channels $1 -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
+python -u main.py lrp_eeg_channels $1 -fourier_features -random_fourier -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
 
 #compare models
 python compare.py $1 -name1 \(i\) -name2 \(ii\) -topographical_attention2 -epochs 10 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -gpu_mem 2000 -verbose
