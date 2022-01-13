@@ -216,7 +216,7 @@ elif(mode=='lrp_eeg_channels'):
 		explainer = lrp.LRP_EEG(model)
 		attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 
-		for percentile in [98, 99, 99.9]:
+		for percentile in [98, 99, 99.5, 99.7, 99.9]:
 			viz_utils.plot_attention_eeg(np.mean(attention_scores, axis=0),
 										dataset=dataset,
 										plot_names=True,
