@@ -37,7 +37,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 
 		c = tf.tensordot(X, self.A, axes=[[2], [1]])
 		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
-		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
+		W = tf.nn.softmax(c, axis=1)#dimension that is reduced in the next einsum, is the one that sums to one
 		self.attention_scores = W
 
 		#sum over M all M channels are multiplied by the attention scores over axis M that is normalized 
