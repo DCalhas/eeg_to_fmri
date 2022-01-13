@@ -615,8 +615,8 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
         np.fill_diagonal(Cp2_, 0)
         Cp2_
         p_values_range=Cp2#place holder that can stay to emulate pvalues
-        Legend = np.dstack((np.concatenate((Cp2, p_values_range*Cp1[:,::-1], ), axis=1)[:,::-1],
-                            np.concatenate((p_values_range*Cp1, Cp2), axis=1)[:,::-1],
+        Legend = np.dstack((np.concatenate((p_values_range*Cp1, Cp2), axis=1)[:,::-1],
+                            np.concatenate((Cp2, p_values_range*Cp1[:,::-1], ), axis=1)[:,::-1],
                             np.concatenate((Cp2, Cp2), axis=1)[:,::-1]))
         cmap=ListedColormap(Legend)
 
@@ -644,8 +644,8 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
             return (pvalue+1e-9, 0.0001, 1+1e-30-res2)
         else:
             if(res1<res2):
-                return (1+1e-30-res1, 0.0001, 1+1e-30-res1)
-            return (0.0001, 1+1e-30-res2, 1+1e-30-res2)
+                return (0.0001, 1+1e-30-res1, 1+1e-30-res1)
+            return (1+1e-30-res2, 0.0001, 1+1e-30-res2)
 
     for voxel1 in range(instance.shape[0]):
         for voxel2 in range(instance.shape[1]):
@@ -681,8 +681,8 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
     cax.set_yticks([5,95])
     cax.annotate('', xy=(0, -0.5), xycoords='axes fraction', xytext=(1, -0.5), 
                 arrowprops=dict(arrowstyle="<->, head_width=0.4", color='black'))
-    cax.annotate(model1, xy=(0, -0.56), xycoords='axes fraction', xytext=(-0.1, -0.56), size=20, color="blue")
-    cax.annotate(model2, xy=(0, -0.56), xycoords='axes fraction', xytext=(1.03, -0.56), size=20, color="red")
+    cax.annotate(model1, xy=(0, -0.56), xycoords='axes fraction', xytext=(-0.1, -0.56), size=20, color="red")
+    cax.annotate(model2, xy=(0, -0.56), xycoords='axes fraction', xytext=(1.03, -0.56), size=20, color="blue")
     cax.set_yticklabels([r"$p=0.0$",r"$p=1.0$"], size=20)
     
 
