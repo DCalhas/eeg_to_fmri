@@ -1,39 +1,3 @@
-#first run -save_metrics
-python -u main.py metrics $1 -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-python -u main.py metrics $1 -fourier_features -random_fourier -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-python -u main.py metrics $1 -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-python -u main.py metrics $1 -fourier_features -random_fourier -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-
-#recover pvalues -save_metrics
-python -u main.py metrics $1 -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-python -u main.py metrics $1 -fourier_features -random_fourier -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-python -u main.py metrics $1 -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-python -u main.py metrics $1 -fourier_features -random_fourier -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-
-#quality checkup
-#python -u main.py residues $1 -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-#python -u main.py residues $1 -fourier_features -random_fourier -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-#python -u main.py residues $1 -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-#python -u main.py residues $1 -fourier_features -random_fourier -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4 -save_metrics
-
-#mean residues
-python -u main.py mean_residues $1 -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-python -u main.py mean_residues $1 -fourier_features -random_fourier -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-python -u main.py mean_residues $1 -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-python -u main.py mean_residues $1 -fourier_features -random_fourier -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-
-#print with inferno colormap
-#python -u main.py quality $1 -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-#python -u main.py quality $1 -fourier_features -random_fourier -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-#python -u main.py quality $1 -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-#python -u main.py quality $1 -fourier_features -random_fourier -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-
-#Relevances of EEG and fMRI
-python -u main.py lrp_eeg_fmri $1 -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-python -u main.py lrp_eeg_fmri $1 -fourier_features -random_fourier -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-python -u main.py lrp_eeg_fmri $1 -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-python -u main.py lrp_eeg_fmri $1 -fourier_features -random_fourier -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
-
 #channel relevances
 python -u main.py lrp_eeg_channels $1 -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
 python -u main.py lrp_eeg_channels $1 -fourier_features -random_fourier -topographical_attention -learning_rate 0.0001 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 2000 -batch_size 4
