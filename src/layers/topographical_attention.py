@@ -33,7 +33,8 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		the F refers to the feature dimension that is reduced
 	"""
 	def call(self, X):
-
+		print(X.shape)
+		print(self.A.shape)
 		c = tf.tensordot(X, self.A, axes=[[2], [2]])
 		print(c.shape)
 		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
