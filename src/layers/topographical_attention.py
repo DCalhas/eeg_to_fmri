@@ -52,7 +52,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		with tf.GradientTape(watch_accessed_variables=False) as tape:
 			tape.watch(x)
 			
-			z = return tf.tensordot(x, self.attention_scores, axes=[[1], [2]])+1e-9
+			z = tf.tensordot(x, self.attention_scores, axes=[[1], [2]])+1e-9
 			#z = tf.einsum('NMF,NCM->NCF', x, self.attention_scores)+1e-9
 
 			s = y/tf.reshape(z, y.shape)
@@ -70,7 +70,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		with tf.GradientTape(watch_accessed_variables=False) as tape:
 			tape.watch(self.attention_scores)
 
-			z = return tf.tensordot(x, self.attention_scores, axes=[[1], [2]])+1e-9
+			z = tf.tensordot(x, self.attention_scores, axes=[[1], [2]])+1e-9
 			#z = tf.einsum('NMF,NCM->NCF', x, self.attention_scores)+1e-9
 
 			s = y/tf.reshape(z, y.shape)
