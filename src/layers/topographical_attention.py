@@ -18,7 +18,8 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		self.features=features
 		
 		self.A = self.add_weight('A',
-								shape=[self.channels,self.channels,self.features],
+								#shape=[self.channels,self.channels,self.features],
+								shape=[self.channels,self.features],
 								initializer=tf.initializers.GlorotUniform(seed=seed),
 								dtype=tf.float32,
 								trainable=True)
@@ -35,15 +36,15 @@ class Topographical_Attention(tf.keras.layers.Layer):
 	def call(self, X):
 		print(X.shape)
 		print(self.A.shape)
-		c = tf.tensordot(X, self.A, axes=[[2], [2]])
+		c = tf.tensordot(X, self.A, axes=[[2], [1]])
 		print(c.shape)
 		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
 		self.attention_scores = W
 
-		print(tf.tensordot(X, W, axes=[[1], [2]]).shape)
+		print(tf.reduce_sum(tf.tensordot(X, W, axes=[[1], [1]]), axis=2).shape)
 		#sum over M all M channels are multiplied by the attention scores over axis M that is normalized 
-		return tf.tensordot(X, W, axes=[[1], [2]]), self.attention_scores
+		return tf.reduce_sum(tf.tensordot(X, W, axes=[[1], [1]]), axis=2), self.attention_scores
 		#return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
 
 	def lrp(self, x, y):
