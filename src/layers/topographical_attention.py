@@ -34,15 +34,16 @@ class Topographical_Attention(tf.keras.layers.Layer):
 	"""
 	def call(self, X):
 
-		#c = tf.tensordot(X, self.A, axes=[[2], [2]])
-		
-		c = tf.einsum('NCF,CMF->NCM', X, self.A)
+		c = tf.tensordot(X, self.A, axes=[[2], [2]])
+		print(c.shape)
+		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
 		self.attention_scores = W
 
+		print(tf.tensordot(X, W, axes=[[1], [2]]).shape)
 		#sum over M all M channels are multiplied by the attention scores over axis M that is normalized 
-		#return tf.tensordot(X, W, axes=[[1], [2]]), self.attention_scores
-		return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
+		return tf.tensordot(X, W, axes=[[1], [2]]), self.attention_scores
+		#return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
 
 	def lrp(self, x, y):
 		#store attention scores
@@ -51,7 +52,8 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		with tf.GradientTape(watch_accessed_variables=False) as tape:
 			tape.watch(x)
 			
-			z = tf.einsum('NMF,NCM->NCF', x, self.attention_scores)+1e-9
+			z = return tf.tensordot(x, self.attention_scores, axes=[[1], [2]])+1e-9
+			#z = tf.einsum('NMF,NCM->NCF', x, self.attention_scores)+1e-9
 
 			s = y/tf.reshape(z, y.shape)
 			s = tf.reshape(s, z.shape)
@@ -67,8 +69,9 @@ class Topographical_Attention(tf.keras.layers.Layer):
 
 		with tf.GradientTape(watch_accessed_variables=False) as tape:
 			tape.watch(self.attention_scores)
-			
-			z = tf.einsum('NMF,NCM->NCF', x, self.attention_scores)+1e-9
+
+			z = return tf.tensordot(x, self.attention_scores, axes=[[1], [2]])+1e-9
+			#z = tf.einsum('NMF,NCM->NCF', x, self.attention_scores)+1e-9
 
 			s = y/tf.reshape(z, y.shape)
 			s = tf.reshape(s, z.shape)
