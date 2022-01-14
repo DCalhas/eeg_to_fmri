@@ -119,6 +119,9 @@ class Liu_et_al(tf.keras.Model):
 		eeg_train, eeg_test = x_eeg[:int(n_volumes/time_length)*n_individuals_train], x_eeg[int(n_volumes/time_length)*n_individuals_train:int(n_volumes/time_length)*(n_individuals_train+n_individuals_test)]
 		fmri_train, fmri_test = x_fmri[:int(n_volumes/time_length)*n_individuals_train], x_fmri[int(n_volumes/time_length)*n_individuals_train:int(n_volumes/time_length)*(n_individuals_train+n_individuals_test)]
 
+		eeg_train = np.swapaxes(eeg_train, 1, 2)
+		eeg_test = np.swapaxes(eeg_test, 1, 2)
+
 		eeg_train = eeg_train.astype('float32')
 		fmri_train = fmri_train.astype('float32')
 		eeg_test = eeg_test.astype('float32')
