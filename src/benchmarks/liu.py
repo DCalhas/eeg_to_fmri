@@ -59,6 +59,10 @@ class Liu_et_al(tf.keras.Model):
 		#channel dimension goes back to 1
 		x = tf.keras.layers.Conv3D(self.time_dimension, kernel_size=1, strides=1)(x)
 		
+		#wrapper to collapse time dimension of EEG
+		x = tf.keras.layers.Reshape(self.latent_shape[1:] + (self.eeg_shape[1],))(x)
+		x = tf.keras.layers.Dense(1)(x)
+
 		#reshape to perform convolution on the time dimension "Temporal Convolutional Layer"
 		x = tf.keras.layers.Reshape((self.time_dimension,self.latent_dim))(x)
 		#now goes to the time slicing part 16*16*7=1792
