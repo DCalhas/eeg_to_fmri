@@ -82,10 +82,12 @@ raw_eeg=False#time or frequency features? raw-time nonraw-frequency
 resampling=False
 if(dataset=="01"):
 	n_volumes=300-3
-	n_individuals=10	
+	n_individuals=10
+	threshold_plot=0.37
 if(dataset=="02"):
 	n_volumes=170-3
 	n_individuals=10
+	threshold_plot=0.05
 #parametrize the interval eeg?
 interval_eeg=10
 
@@ -165,11 +167,7 @@ elif(mode=="residues"):
 		os.makedirs(metrics_path+"/"+ setting+"/residues")
 	instance=0
 	for eeg, fmri in test_set.repeat(1):
-		viz_utils.plot_3D_representation_projected_slices(fmri.numpy()[0]-model(eeg, fmri)[0].numpy()[0],
-															cmap=plt.cm.gray,
-															res_img=fmri.numpy()[0],
-															slice_label=False,
-															save=True, save_path=metrics_path+"/"+setting+"/residues"+"/"+ str(instance)+"_instance_seed_"+str(seed)+".pdf")
+		viz_utils.plot_3D_representation_projected_slices(fmri.numpy()[0]-model(eeg, fmri)[0].numpy()[0], threshold=threshold_plot,cmap=plt.cm.gray,res_img=fmri.numpy()[0],slice_label=False,save=True, save_path=metrics_path+"/"+setting+"/residues"+"/"+ str(instance)+"_instance_seed_"+str(seed)+".pdf")
 		instance+=1
 elif(mode=="quality"):
 	#create dir setting if not exists
@@ -178,9 +176,7 @@ elif(mode=="quality"):
 
 	instance=0
 	for eeg, fmri in test_set.repeat(1):
-		viz_utils.plot_3D_representation_projected_slices(model(eeg, fmri)[0].numpy()[0],
-															res_img=fmri.numpy()[0],
-															save=True, save_path=metrics_path+"/"+setting+"/quality"+"/" + str(instance)+"_instance.pdf")
+		viz_utils.plot_3D_representation_projected_slices(model(eeg, fmri)[0].numpy()[0], threshold=threshold_plot, res_img=fmri.numpy()[0], save=True, save_path=metrics_path+"/"+setting+"/quality"+"/" + str(instance)+"_instance.pdf")
 		instance+=1
 elif(mode=="mean_residues"):
 	#create dir setting if not exists
@@ -194,18 +190,8 @@ elif(mode=="mean_residues"):
 		mean_fmri = mean_fmri + fmri
 		mean_synth_fmri = mean_synth_fmri + model(eeg, fmri)[0]
 		instance+=1
-	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())[0]/instance),
-															cmap=plt.cm.gray,
-															res_img=mean_fmri.numpy()[0]/instance,
-															slice_label=False,
-															normalize_residues=True,
-															save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+"_mean_residues"+"_seed_"+str(seed)+".pdf")
-	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())[0]/instance),
-															cmap=plt.cm.gray,
-															res_img=mean_fmri.numpy()[0]/instance,
-															slice_label=False,
-															normalize_residues=False,
-															save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+"_mean_normalized_residues"+"_seed_"+str(seed)+".pdf")
+	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())[0]/instance), threshold=threshold_plot,cmap=plt.cm.gray,res_img=mean_fmri.numpy()[0]/instance,slice_label=False,normalize_residues=True,save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+"_mean_residues"+"_seed_"+str(seed)+".pdf")
+	viz_utils.plot_3D_representation_projected_slices(np.abs((mean_fmri.numpy()-mean_synth_fmri.numpy())[0]/instance), threshold=threshold_plot,cmap=plt.cm.gray,res_img=mean_fmri.numpy()[0]/instance,slice_label=False,normalize_residues=False,save=True, save_path=metrics_path+"/"+setting+"/mean_residues"+"/"+"_mean_normalized_residues"+"_seed_"+str(seed)+".pdf")
 elif(mode=='lrp_eeg_channels'):
 	#explain and then get the relevances
 	if(topographical_attention):
@@ -217,11 +203,7 @@ elif(mode=='lrp_eeg_channels'):
 		attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 
 		for percentile in [98, 99, 99.5, 99.7, 99.9]:
-			viz_utils.plot_attention_eeg(np.mean(attention_scores, axis=0),
-										dataset=dataset,
-										plot_names=True,
-										edge_threshold=np.percentile(attention_scores, percentile),
-										save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+str(percentile)+"_channels_attention_" + "seed_"+str(seed)+".pdf")
+			viz_utils.plot_attention_eeg(np.mean(attention_scores, axis=0),dataset=dataset,plot_names=True,edge_threshold=np.percentile(attention_scores, percentile),save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/"+str(percentile)+"_channels_attention_" + "seed_"+str(seed)+".pdf")
 elif(mode=='lrp_eeg_fmri'):
 	#create dir setting if not exists
 	if(not os.path.exists(metrics_path+"/"+ setting+"/explainability")):
@@ -244,9 +226,9 @@ elif(mode=='lrp_eeg_fmri'):
 	explainer = lrp.LRP(model.fmri_encoder)
 	R=lrp.explain(explainer, test_set, eeg=False, fmri=True, verbose=True)
 
-	fig = viz_utils.plot_3D_representation_projected_slices(np.std(R, axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues,legend_colorbar=r"$Var[R]$",max_min_legend=["",""], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_Var_R_" + "seed_"+str(seed)+".pdf")
-	fig = viz_utils.plot_3D_representation_projected_slices(np.amax(R, axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues,legend_colorbar=r"$max(R)$",max_min_legend=["Non Relevant","Relevant"],save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_max_R_" + "seed_"+str(seed)+".pdf")
-	fig = viz_utils.plot_3D_representation_projected_slices(np.amin(R, axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues_r,legend_colorbar=r"$min(R)$",max_min_legend=["Neg Relevant","Non Relevant"],save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_min_R_" + "seed_"+str(seed)+".pdf")
-	fig = viz_utils.plot_3D_representation_projected_slices(metrics.ttest_1samp_r(R, np.mean(R), axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True, cmap=plt.cm.Blues, legend_colorbar=r"$p-value$", max_min_legend=[r"$p=1.0$",r"$p=0.0$"], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_pvalues_R_" + "seed_"+str(seed)+".pdf")
+	fig = viz_utils.plot_3D_representation_projected_slices(np.std(R, axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues,legend_colorbar=r"$Var[R]$",max_min_legend=["",""], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_Var_R_" + "seed_"+str(seed)+".pdf", threshold=threshold_plot)
+	fig = viz_utils.plot_3D_representation_projected_slices(np.amax(R, axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues,legend_colorbar=r"$max(R)$",max_min_legend=["Non Relevant","Relevant"],save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_max_R_" + "seed_"+str(seed)+".pdf", threshold=threshold_plot)
+	fig = viz_utils.plot_3D_representation_projected_slices(np.amin(R, axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True,cmap=plt.cm.Blues_r,legend_colorbar=r"$min(R)$",max_min_legend=["Neg Relevant","Non Relevant"],save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_min_R_" + "seed_"+str(seed)+".pdf", threshold=threshold_plot)
+	fig = viz_utils.plot_3D_representation_projected_slices(metrics.ttest_1samp_r(R, np.mean(R), axis=0),res_img=np.mean(test_data[1],axis=0),slice_label=False,uncertainty=True, cmap=plt.cm.Blues, legend_colorbar=r"$p-value$", max_min_legend=[r"$p=1.0$",r"$p=0.0$"], save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/fmri_pvalues_R_" + "seed_"+str(seed)+".pdf", threshold=threshold_plot)
 else:
 	raise NotImplementedError
