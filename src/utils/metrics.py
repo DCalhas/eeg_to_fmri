@@ -19,7 +19,10 @@ def ssim(data, model, factor=3):
 	_ssim = []
 
 	for instance_x, instance_y in data.repeat(1):
-		y_pred = model(instance_x, instance_y)[0]
+		y_pred = model(instance_x, instance_y)
+		if(type(y_pred) is list):
+			y_pred = y_pred[0]
+
 		#error = tf.image.ssim(instance_y, y_pred, max_val=np.amax([np.amax(y_pred.numpy()), np.amax(instance_y.numpy())]))
 
 		ssim_img = 0.0
@@ -48,7 +51,9 @@ def rmse(data, model):
 	_rmse = []
 
 	for instance_x, instance_y in data.repeat(1):
-		y_pred = model(instance_x, instance_y)[0]
+		y_pred = model(instance_x, instance_y)
+		if(type(y_pred) is list):
+			y_pred = y_pred[0]
 
 		_rmse += [(tf.reduce_mean((y_pred-instance_y)**2))**(1/2)]
 
