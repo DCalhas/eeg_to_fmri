@@ -73,7 +73,7 @@ class Liu_et_al(tf.keras.Model):
 	input_shape: (channels,time,1)
 	output_shape: (X,Y,Z,time)
 	"""
-	def call(self, x):
+	def call(self, x, *args):
 		return self.nn(x)
 
 
