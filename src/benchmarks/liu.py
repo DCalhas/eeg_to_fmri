@@ -26,7 +26,7 @@ class Liu_et_al(tf.keras.Model):
 	max number of channels to run on the personal computer is 4
 	standard number is 16
 	"""
-	def __init__(self, eeg_shape, fmri_shape, n_channels=4, latent_dim=256):
+	def __init__(self, eeg_shape, fmri_shape, n_channels=4, latent_dim=256, latent_shape=(8,8,4)):
 		super(Liu_et_al, self).__init__()
 
 		self.eeg_shape = eeg_shape
@@ -37,6 +37,7 @@ class Liu_et_al(tf.keras.Model):
 
 		self.n_channels=n_channels
 		self.latent_dim=latent_dim
+		self.latent_shape=latent_shape
 
 		self.build_model()
 
@@ -46,7 +47,7 @@ class Liu_et_al(tf.keras.Model):
 		
 		x = tf.keras.layers.Dense(self.latent_dim)(input_shape)
 		#8*8*4=256
-		x = tf.keras.layers.Reshape((8,8,4,self.fmri_shape[-1]))(x)
+		x = tf.keras.layers.Reshape(self.latent_shape+(self.fmri_shape[-1],))(x)
 
 		#kernel size to map to fmri spatial dimension sizes
 		#x = tf.keras.layers.Conv3DTranspose(self.time_dimension, kernel_size=(9,9,4))(x)
