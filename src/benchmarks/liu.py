@@ -74,8 +74,6 @@ class Liu_et_al(tf.keras.Model):
 	output_shape: (X,Y,Z,time)
 	"""
 	def call(self, x):
-		#channels last
-		x = tf.transpose(x)
 		return self.nn(x)
 
 
