@@ -253,6 +253,8 @@ def create_eeg_bold_pairs(eeg, bold, raw_eeg=False, fs_sample_eeg=250, fs_sample
             if(raw_eeg):
                 x_eeg[index_volume-individual*interval_eeg] = np.transpose(eeg[int((index_volume)*fs_sample_eeg*fs_sample_fmri):int((index_volume+interval_eeg)*fs_sample_eeg*fs_sample_fmri)], (1,0))
             else:
+                if(np.transpose(eeg[index_volume:index_volume+interval_eeg], (1,2,0)).shape[-1]!=interval_eeg):
+                    continue
                 x_eeg[index_volume-individual*interval_eeg] = np.transpose(eeg[index_volume:index_volume+interval_eeg], (1,2,0))
             x_bold[index_volume-individual*interval_eeg] = bold[index_volume+interval_eeg]
         
