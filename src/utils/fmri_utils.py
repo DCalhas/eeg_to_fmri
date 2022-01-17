@@ -25,7 +25,7 @@ TR_03=1.280
 
 dataset_path = home + '/eeg_to_fmri'
 
-media_directory="/media/david/datasets/"
+media_directory="/mnt/datasets/"
 dataset_03="ds002158"
 
 ##########################################################################################################################
