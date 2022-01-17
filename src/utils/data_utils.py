@@ -133,7 +133,6 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
                 if(mutate_bands):
                     Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
                 x_instance += [Zxx]
-                print(Zxx.shape)
             
         if(standardize_eeg):
             x_instance = zscore(np.array(x_instance))
