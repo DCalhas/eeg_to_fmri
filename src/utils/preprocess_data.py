@@ -1,13 +1,13 @@
 import tensorflow as tf
 
-from utils import data_utils, eeg_utils
+from utils import data_utils, eeg_utils, fmri_utils
 
 import sys
 
 import numpy as np
 
 #should eeg_limit be true??
-def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_eeg=False, eeg_limit=True, eeg_f_limit=134, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
+def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_eeg=False, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
 
 	if(verbose):
 		if(file_output == None):
@@ -16,7 +16,11 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 			print("I: Starting to Load Data", file=file_output)
 
 	#TR of fmri and window size of STFT
-	f_resample=2.160
+	f_resample=getattr(fmri_utils, "TR_"+dataset)
+
+	if(dataset=="03"):
+		eeg_limit=True
+		eeg_f_limit=134
 
 	eeg_train, fmri_train, scalers = data_utils.load_data(list(range(n_individuals)), raw_eeg=raw_eeg, n_voxels=None, 
 															bold_shift=3, n_partitions=25, 
