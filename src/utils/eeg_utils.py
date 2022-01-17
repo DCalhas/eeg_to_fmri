@@ -77,7 +77,7 @@ def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=Tr
     return eeg_file['data_noGA'][:43,:]
 
 
-def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run="main_run-001", preprocessed=True):
+def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run="main_run-001", preprocessed=False):
     
     run_types=["main_run-001", "main_run-002",
               "main_run-003", "main_run-004",
