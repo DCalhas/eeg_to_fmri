@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import ttest_ind
 
 parser = argparse.ArgumentParser()
-parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
+parser.add_argument('dataset', choices=['01', '02', '03'], help="Which dataset to load")
 parser.add_argument('-topographical_attention1', action="store_true", help="Verbose")
 parser.add_argument('-topographical_attention2', action="store_true", help="Verbose")
 parser.add_argument('-conditional_attention_style1', action="store_true", help="Verbose")
@@ -100,6 +100,9 @@ if(dataset=="01"):
 if(dataset=="02"):
 	n_volumes=170-3
 	n_individuals=10
+if(dataset=="03"):
+	n_volumes = 373-3#?
+	n_individuals=20
 #parametrize the interval eeg?
 interval_eeg=10
 

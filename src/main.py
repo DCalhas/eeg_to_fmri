@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('mode',
 					choices=['metrics', 'residues', 'mean_residues', 'quality', 'attention_graph', 'mean_attention_graph', 'lrp_eeg_channels', 'lrp_eeg_fmri'],
 					help="What to compute")
-parser.add_argument('dataset', choices=['01', '02'], help="Which dataset to load")
+parser.add_argument('dataset', choices=['01', '02', '03'], help="Which dataset to load")
 parser.add_argument('-topographical_attention', action="store_true", help="Verbose")
 parser.add_argument('-conditional_attention_style', action="store_true", help="Verbose")
 parser.add_argument('-fourier_features', action="store_true", help="Verbose")
@@ -87,6 +87,10 @@ if(dataset=="01"):
 if(dataset=="02"):
 	n_volumes=170-3
 	n_individuals=10
+	threshold_plot=0.05
+if(dataset=="03"):
+	n_volumes = 373-3#?
+	n_individuals=20
 	threshold_plot=0.05
 #parametrize the interval eeg?
 interval_eeg=10
