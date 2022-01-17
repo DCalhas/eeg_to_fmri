@@ -205,7 +205,6 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
         if(downsample):
             fmri_individuals[-1] = image.new_img_like(fmri_individuals[-1], 
                                                     tf.keras.layers.MaxPool3D(pool_size=(2, 2, 2), strides=(2, 2, 2))(np.expand_dims(fmri_individuals[-1].get_fdata(), axis=0)).numpy()[0])
-        print(fmri_individuals[-1].shape)
 
     return fmri_individuals
     
