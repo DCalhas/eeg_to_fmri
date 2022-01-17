@@ -19,6 +19,8 @@ from pathlib import Path
 
 import tensorflow as tf
 
+from layers import fft
+
 home = str(Path.home())
 
 TR_01=2.160
@@ -183,7 +185,8 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
                             resolution_factor = 5, 
                             number_individuals=20,
                             run="main_run-001",
-                            downsample=True):
+                            downsample=True,
+                            downsample_shape=(64,64,30)):
     
     run_types=["main_run-001", "main_run-002",
               "main_run-003", "main_run-004",
@@ -203,8 +206,11 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
         fmri_individuals += [image.load_img(file_path)]
 
         if(downsample):
+            img = np.swapaxes(np.swapaxes(np.swapaxes(fmri_individuals[-1].get_fdata(), 0, 3), 1,2), 1,3)
+            dct = fft.DCT3D(*img.shape[1:])
+            idct = fft.iDCT3D(*downsample_shape)
             fmri_individuals[-1] = image.new_img_like(fmri_individuals[-1], 
-                                                    tf.keras.layers.MaxPool3D(pool_size=(2, 2, 2), strides=(2, 2, 2))(np.expand_dims(fmri_individuals[-1].get_fdata(), axis=0)).numpy()[0])
+                                                        np.swapaxes(np.swapaxes(np.swapaxes(idct(dct(img).numpy()[:, :downsample_shape[0], :downsample_shape[1], :downsample_shape[2]]).numpy(), 0, 3), 0,2), 0,1))
 
     return fmri_individuals
     
