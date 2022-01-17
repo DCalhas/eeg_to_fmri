@@ -128,7 +128,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
                     x = resample(x, int((len(x)*(1/eeg_resample))/fs_sample))
                 x_instance += [x]
             else:
-                f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample)
+                f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample, fs=getattr(eeg_utils, "fs_"+dataset))
                 if(mutate_bands):
                     Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
                 x_instance += [Zxx]
