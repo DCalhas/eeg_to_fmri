@@ -6,7 +6,8 @@ import sys
 
 import numpy as np
 
-def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_eeg=False, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
+#should eeg_limit be true??
+def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_eeg=False, eeg_limit=True, eeg_f_limit=134, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
 
 	if(verbose):
 		if(file_output == None):
@@ -24,6 +25,7 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 															f_resample=f_resample, fmri_resolution_factor=1, 
 															standardize_eeg=standardize_eeg, standardize_fmri=standardize_fmri,
 															ind_volume_fit=ind_volume_fit, iqr_outlier=iqr,
+															eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit,
 															dataset=dataset)
 	eeg_channels=eeg_train.shape[1]
 

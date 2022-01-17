@@ -34,7 +34,7 @@ n_individuals_03=20
 #
 #############################################################################################################
 
-def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, roi=None, roi_ica_components=None, dataset="01"):
+def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit=134, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, roi=None, roi_ica_components=None, dataset="01"):
 
     #Load Data
     eeg, bold, scalers = get_data(instances,
@@ -48,6 +48,7 @@ def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partition
                                     standardize_eeg=standardize_eeg,
                                     iqr_outlier=iqr_outlier,
                                     TR=getattr(fmri_utils, "TR_"+dataset),
+                                    eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit,
                                     dataset=dataset)
 
     return eeg, bold, scalers
@@ -55,7 +56,7 @@ def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partition
 """
 """
 
-def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.160, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
+def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.160, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit=134, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
     TR = 1/TR
 
     X = []
@@ -128,7 +129,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
                     x = resample(x, int((len(x)*(1/eeg_resample))/fs_sample))
                 x_instance += [x]
             else:
-                f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample, fs=getattr(eeg_utils, "fs_"+dataset))
+                f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample, fs=getattr(eeg_utils, "fs_"+dataset), limit=eeg_limit, f_limit=eeg_f_limit)
                 if(mutate_bands):
                     Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
                 x_instance += [Zxx]

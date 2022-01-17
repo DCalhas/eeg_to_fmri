@@ -123,11 +123,13 @@ def get_eeg_dataset(number_individuals=16, path_eeg=dataset_path+'/datasets/01/E
 frequency_bands = {'delta': [0.5,4], 'theta': [4,8], 'alpha': [8,13], 'beta': [13,30], 'gamma': [30, 100]}
 
 
-def compute_fft(channel, fs=128):
+def compute_fft(channel, fs=128, limit=False, f_limit=134):
 	N = int(len(channel)/2)
 
 	fft1 = fft(channel)
 
+	if(limit):
+		return fft1[range(f_limit)]
 	return fft1[range(int(N/2))]
 
 def raw_eeg(eeg, channel=0, fs=250):
@@ -140,7 +142,7 @@ def raw_eeg(eeg, channel=0, fs=250):
 
 	return signal
 
-def stft(eeg, channel=0, window_size=2, fs=250, start_time=None, stop_time=None):
+def stft(eeg, channel=0, window_size=2, fs=250, limit=False, f_limit=134, start_time=None, stop_time=None):
 	signal = eeg[channel][:]
 	if(type(signal) is tuple):
 		signal, _ = signal
@@ -165,7 +167,7 @@ def stft(eeg, channel=0, window_size=2, fs=250, start_time=None, stop_time=None)
 	Z = []
 	seconds = 0
 	for time in range(start_time, stop_time, fs_window_size)[:-1]:
-		fft1 = compute_fft(signal[time:time+fs_window_size], fs=fs)
+		fft1 = compute_fft(signal[time:time+fs_window_size], fs=fs, limit=limit, f_limit=f_limit)
 
 		N = len(signal[time:time+fs_window_size])/2
 		f = np.linspace (0, len(fft1), int(N/2))
