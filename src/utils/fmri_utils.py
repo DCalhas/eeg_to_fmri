@@ -199,6 +199,8 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
 
         fmri_individuals += [image.load_img(file_path)]
 
+        print(fmri_individuals[-1].shape)
+
     return fmri_individuals
     
 ##########################################################################################################################
