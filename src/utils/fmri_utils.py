@@ -198,6 +198,10 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
     assert run in run_types, dataset_03+ " contains the following recording sessions: " + str(run_types) + ", please select one."
     
     fmri_individuals=[]
+
+    if(downsample):
+        dct=None
+        idct=None
     
     for i in range(number_individuals):
         individual_path = path_fmri + dir_individuals[i] + "/ses-001/func/"
@@ -207,8 +211,9 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
 
         if(downsample):
             img = np.swapaxes(np.swapaxes(np.swapaxes(fmri_individuals[-1].get_fdata(), 0, 3), 1,2), 1,3)
-            dct = fft.DCT3D(*img.shape[1:])
-            idct = fft.iDCT3D(*downsample_shape)
+            if(dct is None and idct is None):
+                dct = fft.DCT3D(*img.shape[1:])
+                idct = fft.iDCT3D(*downsample_shape)
             fmri_individuals[-1] = image.new_img_like(fmri_individuals[-1], 
                                                         np.swapaxes(np.swapaxes(np.swapaxes(idct(dct(img).numpy()[:, :downsample_shape[0], :downsample_shape[1], :downsample_shape[2]]).numpy(), 0, 3), 0,2), 0,1))
 
