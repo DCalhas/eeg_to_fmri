@@ -109,9 +109,8 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
        
     for individual in individuals:
         eeg = getattr(eeg_utils, "get_eeg_instance_"+dataset)(individual)
-        print(eeg)
-        print(eeg.shape)
-        if(dataset!="01"):
+        
+        if(dataset=="02"):
             len_channels=len(eeg)
             fs_sample = getattr(eeg_utils, "fs_"+dataset)
         else:
