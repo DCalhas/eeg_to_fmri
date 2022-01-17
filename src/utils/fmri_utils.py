@@ -17,6 +17,8 @@ from os import listdir
 from os.path import isfile, join, isdir
 from pathlib import Path
 
+import tensorflow as tf
+
 home = str(Path.home())
 
 TR_01=2.160
@@ -180,7 +182,8 @@ def get_individuals_paths_02(path_fmri=dataset_path+"/datasets/02/", task=1, run
 def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/", 
                             resolution_factor = 5, 
                             number_individuals=20,
-                            run="main_run-001"):
+                            run="main_run-001",
+                            downsample=True):
     
     run_types=["main_run-001", "main_run-002",
               "main_run-003", "main_run-004",
@@ -199,6 +202,9 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
 
         fmri_individuals += [image.load_img(file_path)]
 
+        if(downsample):
+            fmri_individuals[-1] = image.new_img_like(fmri_individuals[-1], 
+                                                    tf.keras.layers.MaxPool3D(pool_size=(2, 2, 2), strides=(2, 2, 2))(np.expand_dims(fmri_individuals[-1].get_fdata(), axis=0)).numpy()[0])
         print(fmri_individuals[-1].shape)
 
     return fmri_individuals
