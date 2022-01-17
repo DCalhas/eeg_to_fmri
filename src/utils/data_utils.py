@@ -23,7 +23,6 @@ import sys
 n_partitions = 16
 number_channels = 64
 number_individuals = 16
-n_epochs = 20
 
 n_individuals_01=10
 n_individuals_02=10
