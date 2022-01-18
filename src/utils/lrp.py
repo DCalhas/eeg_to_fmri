@@ -95,9 +95,10 @@ class LRP_EEG(tf.keras.layers.Layer):
 			if("conditional_attention_style" in layer.name):
 				continue
 			if("topo" in layer.name):
-				z,_=layer(z)
+				z,attention_scores=layer(z)
+			elif("multiply" in layer.name):
+				z = layer(z, attention_scores)
 			else:
-				print(layer.name)
 				z = layer(z)
 			self.activations += [z]
 		
