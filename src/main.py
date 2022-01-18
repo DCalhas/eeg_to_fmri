@@ -203,7 +203,7 @@ elif(mode=='lrp_eeg_channels'):
 		if(not os.path.exists(metrics_path+"/"+ setting+"/explainability")):
 			os.makedirs(metrics_path+"/"+ setting+"/explainability")
 
-		explainer = lrp.LRP_EEG(model)
+		explainer = lrp.LRP_EEG(model, conditional_attention_style=conditional_attention_style)
 		attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 
 		for percentile in [98, 99, 99.5, 99.7, 99.9]:
