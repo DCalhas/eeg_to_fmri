@@ -124,17 +124,17 @@ class LRP_EEG(tf.keras.layers.Layer):
 			if("conditional_attention_style" in model.layers[layer].name):
 				continue
 			if(self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
-				return model.layers[layer].lrp_attention(activations[layer+layer_bias-1], R)
+				return model.layers[layer].lrp_attention(activations[layer-layer_bias-1], R)
 			elif(hasattr(model.layers[layer], "lrp")):
-				R = model.layers[layer].lrp(activations[layer+layer_bias-1], R)
+				R = model.layers[layer].lrp(activations[layer-layer_bias-1], R)
 			else:
 				if(layer-1 >= 0):
 					if(self.eeg_attention and type(model.layers[layer]) is Topographical_Attention):
-						return model.layers[layer].lrp_attention(activations[layer+layer_bias-1], R)
-					print(layer+layer_bias)
+						return model.layers[layer].lrp_attention(activations[layer-layer_bias-1], R)
+					print(layer-layer_bias)
 					print(layer)
 					print(len(activations))
-					R = lrp(activations[layer+layer_bias-1], R, model.layers[layer])
+					R = lrp(activations[layer-layer_bias-1], R, model.layers[layer])
 				else:
 					R = lrp(X, R, model.layers[layer])
 		
