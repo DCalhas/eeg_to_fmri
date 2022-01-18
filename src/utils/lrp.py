@@ -156,7 +156,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 			#we are ignoring the relevance of the attention scores through the conditional style flow
 			for layer in range(len(model.layers))[::-1]:
 				if("topo" in model.layers[layer].name and self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
-					return model.layers[layer].lrp_attention(self.conditional_activations[0], R)
+					return model.layers[layer].lrp_attention(activations[layer-self.layer_bias-1], R)
 				elif("conditional_attention_style_flatten" in model.layers[layer].name):
 					R = lrp(self.conditional_activations[1], R, model.layers[layer])
 				elif("conditional_attention_style_dense" in model.layers[layer].name):
