@@ -152,7 +152,6 @@ class LRP_EEG(tf.keras.layers.Layer):
 	def propagate(self, X, R, model, activations):
 
 		if(self.explain_conditional):
-			decoder=True
 			#we are ignoring the relevance of the attention scores through the conditional style flow
 			for layer in range(len(model.layers))[::-1]:
 				if("topo" in model.layers[layer].name and self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
@@ -163,7 +162,6 @@ class LRP_EEG(tf.keras.layers.Layer):
 					R = lrp(self.conditional_activations[2], R, model.layers[layer])
 				elif("multiply" in model.layers[layer].name):
 					R = lrp(self.conditional_activations[3], R, model.layers[layer], multiply=activations[layer-self.layer_bias-1])
-					decoder=False
 				elif(decoder):
 					R = lrp(activations[layer-self.layer_bias-1], R, model.layers[layer])		
 		else:
