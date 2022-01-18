@@ -97,6 +97,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 			if("topo" in layer.name):
 				z,_=layer(z)
 			else:
+				print(layer.name)
 				z = layer(z)
 			self.activations += [z]
 		
