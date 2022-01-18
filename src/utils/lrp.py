@@ -56,7 +56,6 @@ def lrp(x, y, layer, multiply=None):
 				R = x[0]*tape.gradient(tf.reduce_sum(z*s.numpy()), x[0]) + x[1]*tape1.gradient(tf.reduce_sum(z*s.numpy()), x[1])
 		else:
 			tape.watch(x)
-
 			if("multiply" in layer.name):
 				z = layer(x, multiply)+1e-9
 			else:
@@ -136,6 +135,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 					if(self.eeg_attention and type(model.layers[layer]) is Topographical_Attention):
 						return model.layers[layer].lrp_attention(activations[layer-layer_bias-1], R)
 					if("multiply" in model.layers[layer].name):
+						print("HERE")
 						R = lrp(activations[layer-layer_bias-1], R, model.layers[layer], multiply=self.attention_scores)
 						continue
 					print(layer-layer_bias)
