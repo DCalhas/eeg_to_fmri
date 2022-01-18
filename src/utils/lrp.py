@@ -156,7 +156,6 @@ class LRP_EEG(tf.keras.layers.Layer):
 			for layer in range(len(model.layers))[::-1]:
 				decoder=True
 				if("conditional_attention_style_flatten" in model.layers[layer].name):
-					print("HERE")
 					return lrp(self.conditional_activations[1], R_conditional, model.layers[layer])
 				elif("conditional_attention_style_dense" in model.layers[layer].name):
 					R_conditional = lrp(self.conditional_activations[2], R_conditional, model.layers[layer])
