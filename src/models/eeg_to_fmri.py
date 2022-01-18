@@ -208,6 +208,7 @@ class EEG_to_fMRI(tf.keras.Model):
         if(conditional_attention_style):
             attention_scores = tf.keras.layers.Flatten()(attention_scores)
             self.latent_style = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                    use_bias=False,
                                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(attention_scores)
 
         x = self.latent_resolution(x)
