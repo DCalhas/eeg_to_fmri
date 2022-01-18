@@ -77,12 +77,13 @@ class LRP_EEG(tf.keras.layers.Layer):
 		Inputs:
 			* model: models.eeg_to_fmri.EEG_to_fMRI
 	"""
-	def __init__(self, model, attention=False):
+	def __init__(self, model, attention=False, conditional_attention_style=False):
 		super(LRP_EEG, self).__init__()
 		
 		self.model = model
 		self.eeg_attention = attention
 		self.layer_bias=0
+		self.explain_conditional=conditional_attention_style
 		
 	"""
 		Inputs:
@@ -93,26 +94,52 @@ class LRP_EEG(tf.keras.layers.Layer):
 	def forward(self, X):
 
 		self.activations = []
-
 		z = X
-		for layer in self.model.decoder.layers:
-			if("conditional_attention_style_flatten" in layer.name):
-				attention_scores_flatten=layer(attention_scores)
-				self.layer_bias+=1
-				continue
-			if("conditional_attention_style_dense" in layer.name):
-				self.attention_scores=layer(attention_scores_flatten)
-				self.layer_bias+=1
-				continue
+		decoder=True
+
+		if(self.explain_conditional):
+			for layer in self.model.decoder.layers:
+				print(layer.name)
+				if("topo" in layer.name):
+					z,attention_scores=layer(z)
+				elif("multiply" in layer.name):
+					z = layer(z, self.attention_scores)
+					print(layer.name)
+				else:
+					print(layer.name)
+					z = layer(z)
+				
+
+				if(decoder):
+					print(layer.name)
+					self.activations += [z]
 
 
-			if("topo" in layer.name):
-				z,attention_scores=layer(z)
-			elif("multiply" in layer.name):
-				z = layer(z, self.attention_scores)
-			else:
-				z = layer(z)
-			self.activations += [z]
+			raise NotImplementedError
+
+
+
+
+		else:
+			
+			for layer in self.model.decoder.layers:
+				#we are ignoring the relevance of the attention scores through the conditional style flow
+				if("conditional_attention_style_flatten" in layer.name):
+					attention_scores_flatten=layer(attention_scores)
+					self.layer_bias+=1
+					continue
+				if("conditional_attention_style_dense" in layer.name):
+					self.attention_scores=layer(attention_scores_flatten)
+					self.layer_bias+=1
+					continue
+
+				if("topo" in layer.name):
+					z,attention_scores=layer(z)
+				elif("multiply" in layer.name):
+					z = layer(z, self.attention_scores)
+				else:
+					z = layer(z)
+				self.activations += [z]
 		
 		return z
 	
@@ -126,6 +153,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 			* tf.Tensor
 	"""
 	def propagate(self, X, R, model, activations):
+		#we are ignoring the relevance of the attention scores through the conditional style flow
 		for layer in range(len(model.layers))[::-1]:
 			if("conditional_attention_style" in model.layers[layer].name):
 				self.layer_bias-=1
