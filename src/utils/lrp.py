@@ -134,7 +134,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 					print(layer-layer_bias)
 					print(layer)
 					print(len(activations))
-					print(model.layer[layer].name)
+					print(model.layers[layer].name)
 					R = lrp(activations[layer-layer_bias-1], R, model.layers[layer])
 				else:
 					R = lrp(X, R, model.layers[layer])
