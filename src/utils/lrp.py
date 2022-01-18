@@ -158,8 +158,10 @@ class LRP_EEG(tf.keras.layers.Layer):
 					return model.layers[layer].lrp_attention(self.conditional_activations[0], R)
 				elif("conditional_attention_style_flatten" in model.layers[layer].name):
 					R = lrp(self.conditional_activations[1], R, model.layers[layer])
+					self.layer_bias-=1
 				elif("conditional_attention_style_dense" in model.layers[layer].name):
 					R = lrp(self.conditional_activations[2], R, model.layers[layer])
+					self.layer_bias-=1
 				elif("multiply" in model.layers[layer].name):
 					R = lrp(self.conditional_activations[3], R, model.layers[layer], multiply=activations[layer-self.layer_bias-1])
 				else:
