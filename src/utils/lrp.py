@@ -112,7 +112,6 @@ class LRP_EEG(tf.keras.layers.Layer):
 					self.conditional_activations+=[attention_scores_dense]
 				elif("multiply" in layer.name):
 					z = layer(z, attention_scores_dense)
-					self.conditional_activations+=[z]
 					encoder=False
 				else:
 					z = layer(z)
