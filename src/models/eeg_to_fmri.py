@@ -126,13 +126,13 @@ class EEG_to_fMRI(tf.keras.Model):
         else:
             raise NotImplementedError
 
-        attention_scores = self.build_encoder(latent_shape, input_shape, na_spec, n_channels, 
+        input_shape, x, attention_scores = self.build_encoder(latent_shape, input_shape, na_spec, n_channels, 
                             dropout=dropout, weight_decay=weight_decay, 
                             skip_connections=skip_connections, local=local, 
                             batch_norm=batch_norm, 
                             topographical_attention=topographical_attention,
                             seed=seed)
-        self.build_decoder(latent_shape, inverse_DFT=inverse_DFT, DFT=DFT,
+        self.build_decoder(input_shape, x, latent_shape, inverse_DFT=inverse_DFT, DFT=DFT,
                             attention_scores=attention_scores, 
                             conditional_attention_style=conditional_attention_style,
                             random_fourier=random_fourier,
@@ -181,18 +181,16 @@ class EEG_to_fMRI(tf.keras.Model):
         self.eeg_encoder = tf.keras.Model(input_shape, x)
         self.fmri_encoder = self.fmri_ae.encoder
 
-        return attention_scores
+        return input_shape, x, attention_scores
 
-    def build_decoder(self, latent_shape, fourier_features=False, random_fourier=False, 
+    def build_decoder(self, input_shape, output_encoder, latent_shape, fourier_features=False, random_fourier=False, 
                             attention_scores=None, conditional_attention_style=False, 
                             inverse_DFT=False, DFT=False, 
                             low_resolution_decoder=False, resolution_decoder=None, 
                             variational_iDFT=False, variational_coefs=None, 
                             dropout=False, outfilter=0, seed=None):
 
-        input_shape = tf.keras.layers.Input(shape=latent_shape)
-
-        x = tf.keras.layers.Flatten()(input_shape)
+        x = tf.keras.layers.Flatten()(output_encoder)
 
         if(fourier_features):
             if(random_fourier):
@@ -278,22 +276,20 @@ class EEG_to_fMRI(tf.keras.Model):
     """
     #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
     def call(self, x1, x2):
-        z1 = self.eeg_encoder(x1)
-
         if(self.training):
-            z2 = self.fmri_encoder(x2)
-            return [self.decoder(z1), z1, z2]
+            return [self.decoder(x1), 
+                    self.eeg_encoder(x1), 
+                    self.fmri_encoder(x2)]
 
-        return self.decoder(z1)
+        return self.decoder(x1)
 
     def saved_call(self, x1, x2):
-        z1 = self.eeg_encoder(x1)
-        
         if(self.training):
-            z2 = self.fmri_encoder(x2)
-            return [self.decoder(z1), z1, z2]
+            return [self.decoder(x1), 
+                    self.eeg_encoder(x1), 
+                    self.fmri_encoder(x2)]
 
-        return self.decoder(z1)
+        return self.decoder(x1)
 
     def get_config(self):
 
