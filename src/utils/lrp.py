@@ -38,7 +38,7 @@ lrp - Layer-wise  Relevance Propagation
 	Outputs:
 		* tf.Tensor - containing relevances
 """
-def lrp(x, y, layer):
+def lrp(x, y, layer, multiply=None):
 	if(type(layer) is tf.keras.layers.Reshape or type(layer) is tf.keras.layers.BatchNormalization):
 		return tf.reshape(y, x.shape)
 
@@ -56,7 +56,11 @@ def lrp(x, y, layer):
 				R = x[0]*tape.gradient(tf.reduce_sum(z*s.numpy()), x[0]) + x[1]*tape1.gradient(tf.reduce_sum(z*s.numpy()), x[1])
 		else:
 			tape.watch(x)
-			z = layer(x)+1e-9
+
+			if("multiply" in layer.name):
+				z = layer(x, multiply)+1e-9
+			else:
+				z = layer(x)+1e-9
 			s = y/tf.reshape(z, y.shape)
 			s = tf.reshape(s, z.shape)
 			
@@ -131,10 +135,14 @@ class LRP_EEG(tf.keras.layers.Layer):
 				if(layer-1 >= 0):
 					if(self.eeg_attention and type(model.layers[layer]) is Topographical_Attention):
 						return model.layers[layer].lrp_attention(activations[layer-layer_bias-1], R)
+					if("multiply" in model.layers[layer].name):
+						R = lrp(activations[layer-layer_bias-1], R, model.layers[layer], multiply=self.attention_scores)
+						continue
 					print(layer-layer_bias)
 					print(layer)
 					print(len(activations))
 					print(model.layers[layer].name)
+
 					R = lrp(activations[layer-layer_bias-1], R, model.layers[layer])
 				else:
 					R = lrp(X, R, model.layers[layer])
