@@ -122,9 +122,12 @@ class LRP_EEG(tf.keras.layers.Layer):
 			* tf.Tensor
 	"""
 	def propagate(self, X, R, model, activations):
+
+		
 		layer_bias=2
 		for layer in range(len(model.layers))[::-1]:
 			if("conditional_attention_style" in model.layers[layer].name):
+				layer_bias-=1
 				continue
 			if(self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
 				return model.layers[layer].lrp_attention(activations[layer-layer_bias-1], R)
