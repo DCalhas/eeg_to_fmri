@@ -92,8 +92,13 @@ class LRP_EEG(tf.keras.layers.Layer):
 
 		z = X
 		for layer in self.model.decoder.layers:
-			if("conditional_attention_style" in layer.name):
+			if("conditional_attention_style_flatten" in layer.name):
+				attention_scores_flatten=layer(attention_scores)
 				continue
+			if("conditional_attention_style_dense" in layer.name):
+				attention_scores=layer(attention_scores_flatten)
+				continue
+				
 			if("topo" in layer.name):
 				z,attention_scores=layer(z)
 			elif("multiply" in layer.name):
