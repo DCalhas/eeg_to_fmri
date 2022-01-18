@@ -82,6 +82,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 		
 		self.model = model
 		self.eeg_attention = attention
+		self.layer_bias=0
 		
 	"""
 		Inputs:
@@ -97,11 +98,14 @@ class LRP_EEG(tf.keras.layers.Layer):
 		for layer in self.model.decoder.layers:
 			if("conditional_attention_style_flatten" in layer.name):
 				attention_scores_flatten=layer(attention_scores)
+				self.layer_bias+=1
 				continue
 			if("conditional_attention_style_dense" in layer.name):
 				self.attention_scores=layer(attention_scores_flatten)
+				self.layer_bias+=1
 				continue
-				
+
+
 			if("topo" in layer.name):
 				z,attention_scores=layer(z)
 			elif("multiply" in layer.name):
@@ -122,31 +126,22 @@ class LRP_EEG(tf.keras.layers.Layer):
 			* tf.Tensor
 	"""
 	def propagate(self, X, R, model, activations):
-
-		
-		layer_bias=2
 		for layer in range(len(model.layers))[::-1]:
 			if("conditional_attention_style" in model.layers[layer].name):
-				layer_bias-=1
+				self.layer_bias-=1
 				continue
 			if(self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
-				return model.layers[layer].lrp_attention(activations[layer-layer_bias-1], R)
+				return model.layers[layer].lrp_attention(activations[layer-self.layer_bias-1], R)
 			elif(hasattr(model.layers[layer], "lrp")):
-				R = model.layers[layer].lrp(activations[layer-layer_bias-1], R)
+				R = model.layers[layer].lrp(activations[layer-self.layer_bias-1], R)
 			else:
 				if(layer-1 >= 0):
 					if(self.eeg_attention and type(model.layers[layer]) is Topographical_Attention):
-						return model.layers[layer].lrp_attention(activations[layer-layer_bias-1], R)
+						return model.layers[layer].lrp_attention(activations[layer-self.layer_bias-1], R)
 					if("multiply" in model.layers[layer].name):
-						print("HERE")
-						R = lrp(activations[layer-layer_bias-1], R, model.layers[layer], multiply=self.attention_scores)
+						R = lrp(activations[layer-self.layer_bias-1], R, model.layers[layer], multiply=self.attention_scores)
 						continue
-					print(layer-layer_bias)
-					print(layer)
-					print(len(activations))
-					print(model.layers[layer].name)
-
-					R = lrp(activations[layer-layer_bias-1], R, model.layers[layer])
+					R = lrp(activations[layer-self.layer_bias-1], R, model.layers[layer])
 				else:
 					R = lrp(X, R, model.layers[layer])
 		
