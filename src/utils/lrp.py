@@ -96,13 +96,13 @@ class LRP_EEG(tf.keras.layers.Layer):
 				attention_scores_flatten=layer(attention_scores)
 				continue
 			if("conditional_attention_style_dense" in layer.name):
-				attention_scores=layer(attention_scores_flatten)
+				self.attention_scores=layer(attention_scores_flatten)
 				continue
 				
 			if("topo" in layer.name):
 				z,attention_scores=layer(z)
 			elif("multiply" in layer.name):
-				z = layer(z, attention_scores)
+				z = layer(z, self.attention_scores)
 			else:
 				z = layer(z)
 			self.activations += [z]
@@ -119,9 +119,9 @@ class LRP_EEG(tf.keras.layers.Layer):
 			* tf.Tensor
 	"""
 	def propagate(self, X, R, model, activations):
-		layer_bias=3
+		layer_bias=2
 		for layer in range(len(model.layers))[::-1]:
-			if("conditional_attention_style" in model.layers[layer].name or "multiply" in model.layers[layer].name):
+			if("conditional_attention_style" in model.layers[layer].name):
 				continue
 			if(self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
 				return model.layers[layer].lrp_attention(activations[layer+layer_bias-1], R)
