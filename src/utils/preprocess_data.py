@@ -21,6 +21,9 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 	if(dataset=="03"):
 		eeg_limit=True
 		eeg_f_limit=135
+	else:
+		eeg_limit=False
+		eeg_f_limit=135
 
 	eeg_train, fmri_train, scalers = data_utils.load_data(list(range(n_individuals)), raw_eeg=raw_eeg, n_voxels=None, 
 															bold_shift=3, n_partitions=25, 
