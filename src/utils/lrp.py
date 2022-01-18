@@ -110,7 +110,6 @@ class LRP_EEG(tf.keras.layers.Layer):
 					print(layer.name)
 					z = layer(z)
 				
-				print(layer.name)
 				self.activations += [z]
 
 
