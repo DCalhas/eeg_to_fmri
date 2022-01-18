@@ -110,9 +110,8 @@ class LRP_EEG(tf.keras.layers.Layer):
 					print(layer.name)
 					z = layer(z)
 				
-				if(decoder):
-					print(layer.name)
-					self.activations += [z]
+				print(layer.name)
+				self.activations += [z]
 
 
 			raise NotImplementedError
