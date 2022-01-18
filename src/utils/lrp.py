@@ -104,7 +104,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 				if("topo" in layer.name):
 					z,attention_scores=layer(z)
 				elif("conditional_attention_style_flatten" in layer.name):
-					attention_scores_flatten=layer(self.attention_scores)
+					attention_scores_flatten=layer(attention_scores)
 				elif("conditional_attention_style_dense" in layer.name):
 					attention_scores_dense=layer(attention_scores_flatten)
 				elif("multiply" in layer.name):
