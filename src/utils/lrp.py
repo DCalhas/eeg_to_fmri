@@ -154,17 +154,16 @@ class LRP_EEG(tf.keras.layers.Layer):
 		if(self.explain_conditional):
 			#we are ignoring the relevance of the attention scores through the conditional style flow
 			for layer in range(len(model.layers))[::-1]:
-				if("topo" in model.layers[layer].name and self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
-					return model.layers[layer].lrp_attention(self.conditional_activations[0], R)
-				elif("conditional_attention_style_flatten" in model.layers[layer].name):
-					R = lrp(self.conditional_activations[1], R, model.layers[layer])
-					self.layer_bias-=1
+				decoder=True
+				if("conditional_attention_style_flatten" in model.layers[layer].name):
+					R_conditional = lrp(self.conditional_activations[1], R_conditional, model.layers[layer])
+					print(R_conditional.shape)
 				elif("conditional_attention_style_dense" in model.layers[layer].name):
-					R = lrp(self.conditional_activations[2], R, model.layers[layer])
-					self.layer_bias-=1
+					R_conditional = lrp(self.conditional_activations[2], R_conditional, model.layers[layer])
 				elif("multiply" in model.layers[layer].name):
-					R = lrp(self.conditional_activations[3], R, model.layers[layer], multiply=activations[layer-self.layer_bias-1])
-				else:
+					R_conditional = lrp(self.conditional_activations[3], R, model.layers[layer], multiply=activations[layer-self.layer_bias-1])
+					decoder=False
+				elif(decoder):
 					R = lrp(activations[layer-self.layer_bias-1], R, model.layers[layer])		
 		else:
 			#we are ignoring the relevance of the attention scores through the conditional style flow
