@@ -95,21 +95,21 @@ class LRP_EEG(tf.keras.layers.Layer):
 
 		self.activations = []
 		z = X
-		decoder=True
+		encoder=True
 
 		if(self.explain_conditional):
 			for layer in self.model.decoder.layers:
 				print(layer.name)
 				if("topo" in layer.name):
 					z,attention_scores=layer(z)
+					encoder=False
 				elif("multiply" in layer.name):
 					z = layer(z, self.attention_scores)
 					print(layer.name)
-				else:
+				elif(encoder):
 					print(layer.name)
 					z = layer(z)
 				
-
 				if(decoder):
 					print(layer.name)
 					self.activations += [z]
