@@ -101,7 +101,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 			for layer in self.model.decoder.layers:
 				print(layer.name)
 				if("topo" in layer.name):
-					z,attention_scores=layer(z)
+					z,self.attention_scores=layer(z)
 					encoder=False
 				elif("multiply" in layer.name):
 					z = layer(z, self.attention_scores)
