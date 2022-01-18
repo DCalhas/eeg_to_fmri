@@ -123,6 +123,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 		for layer in range(len(model.layers))[::-1]:
 			if("conditional_attention_style" in model.layers[layer].name or "multiply" in model.layers[layer].name):
 				layer_bias+=1
+				print("HERE")
 				continue
 			if(self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
 				return model.layers[layer].lrp_attention(activations[layer+layer_bias-1], R)
@@ -136,6 +137,8 @@ class LRP_EEG(tf.keras.layers.Layer):
 					print(layer)
 					R = lrp(activations[layer+layer_bias-1], R, model.layers[layer])
 				else:
+					print(layer+layer_bias)
+					print(layer)
 					R = lrp(X, R, model.layers[layer])
 		
 		return R
