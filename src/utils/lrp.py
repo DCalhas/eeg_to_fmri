@@ -88,20 +88,15 @@ class LRP_EEG(tf.keras.layers.Layer):
 	"""
 	def forward(self, X):
 
-		self.encoder_activations = []
-		self.decoder_activations = []
+		self.activations = []
 
 		z = X
-		#forward pass
-		for layer in self.model.eeg_encoder.layers:
+		for layer in self.model.decoder.layers:
 			if("topo" in layer.name):
 				z,_=layer(z)
 			else:
 				z = layer(z)
-			self.encoder_activations += [z]
-		for layer in self.model.decoder.layers:
-			z = layer(z)
-			self.decoder_activations += [z]
+			self.activations += [z]
 		
 		return z
 	
@@ -139,9 +134,8 @@ class LRP_EEG(tf.keras.layers.Layer):
 	"""
 	def backward(self, X, R):
 		
-		R = self.propagate(self.encoder_activations[-1], R, self.model.decoder, self.decoder_activations)
+		return self.propagate(X, R, self.model.decoder, self.activations)
 		
-		return self.propagate(X, R, self.model.eeg_encoder, self.encoder_activations)
 
 	"""
 		Inptus
@@ -154,7 +148,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 		y = self.forward(X)
 		
 		if(self.eeg_attention):
-			assert type(self.model.eeg_encoder.layers[2]) is Topographical_Attention
+			assert type(self.model.decoder.layers[2]) is Topographical_Attention
 			return self.backward(X, y)
 		return self.backward(X, y)
 
