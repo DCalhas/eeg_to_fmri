@@ -118,12 +118,6 @@ class LRP_EEG(tf.keras.layers.Layer):
 				
 				self.activations += [z]
 
-			print(self.conditional_activations)
-			raise NotImplementedError
-
-
-
-
 		else:
 			
 			for layer in self.model.decoder.layers:
@@ -136,7 +130,6 @@ class LRP_EEG(tf.keras.layers.Layer):
 					self.attention_scores=layer(attention_scores_flatten)
 					self.layer_bias+=1
 					continue
-
 				if("topo" in layer.name):
 					z,attention_scores=layer(z)
 				elif("multiply" in layer.name):
@@ -157,26 +150,43 @@ class LRP_EEG(tf.keras.layers.Layer):
 			* tf.Tensor
 	"""
 	def propagate(self, X, R, model, activations):
-		#we are ignoring the relevance of the attention scores through the conditional style flow
-		for layer in range(len(model.layers))[::-1]:
-			if("conditional_attention_style" in model.layers[layer].name):
-				self.layer_bias-=1
-				continue
-			if(self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
-				return model.layers[layer].lrp_attention(activations[layer-self.layer_bias-1], R)
-			elif(hasattr(model.layers[layer], "lrp")):
-				R = model.layers[layer].lrp(activations[layer-self.layer_bias-1], R)
-			else:
-				if(layer-1 >= 0):
-					if(self.eeg_attention and type(model.layers[layer]) is Topographical_Attention):
-						return model.layers[layer].lrp_attention(activations[layer-self.layer_bias-1], R)
-					if("multiply" in model.layers[layer].name):
-						R = lrp(activations[layer-self.layer_bias-1], R, model.layers[layer], multiply=self.attention_scores)
-						continue
-					R = lrp(activations[layer-self.layer_bias-1], R, model.layers[layer])
+
+		if(self.explain_conditional):
+			decoder=True
+			#we are ignoring the relevance of the attention scores through the conditional style flow
+			for layer in range(len(model.layers))[::-1]:
+				if("topo" in model.layers[layer].name and self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
+					return model.layers[layer].lrp_attention(self.conditional_activations[0], R)
+				elif("conditional_attention_style_flatten" in model.layers[layer].name):
+					R = model.layers[layer].lrp_attention(self.conditional_activations[1], R)
+				elif("conditional_attention_style_dense" in model.layers[layer].name):
+					R = model.layers[layer].lrp_attention(self.conditional_activations[2], R)
+				elif("multiply" in model.layers[layer].name):
+					R = lrp(self.attention_scores, R, model.layers[layer], multiply=self.conditional_activations[3])
+					decoder=False
+				elif(decoder):
+					R = lrp(activations[layer-self.layer_bias-1], R, model.layers[layer])		
+		else:
+			#we are ignoring the relevance of the attention scores through the conditional style flow
+			for layer in range(len(model.layers))[::-1]:
+				if("conditional_attention_style" in model.layers[layer].name):
+					self.layer_bias-=1
+					continue
+				if(self.eeg_attention and hasattr(model.layers[layer], "lrp_attention")):
+					return model.layers[layer].lrp_attention(activations[layer-self.layer_bias-1], R)
+				elif(hasattr(model.layers[layer], "lrp")):
+					R = model.layers[layer].lrp(activations[layer-self.layer_bias-1], R)
 				else:
-					R = lrp(X, R, model.layers[layer])
-		
+					if(layer-1 >= 0):
+						if(self.eeg_attention and type(model.layers[layer]) is Topographical_Attention):
+							return model.layers[layer].lrp_attention(activations[layer-self.layer_bias-1], R)
+						if("multiply" in model.layers[layer].name):
+							R = lrp(activations[layer-self.layer_bias-1], R, model.layers[layer], multiply=self.attention_scores)
+							continue
+						R = lrp(activations[layer-self.layer_bias-1], R, model.layers[layer])
+					else:
+						R = lrp(X, R, model.layers[layer])
+			
 		return R
 			
 	"""
