@@ -100,24 +100,25 @@ class LRP_EEG(tf.keras.layers.Layer):
 			encoder=True
 			self.conditional_activations=[]
 			for layer in self.model.decoder.layers:
-				print(layer.name)
 				if("topo" in layer.name):
 					z,attention_scores=layer(z)
+					self.conditional_activations+=[attention_scores]
 				elif("conditional_attention_style_flatten" in layer.name):
 					attention_scores_flatten=layer(attention_scores)
+					self.conditional_activations+=[attention_scores_flatten]
 				elif("conditional_attention_style_dense" in layer.name):
 					attention_scores_dense=layer(attention_scores_flatten)
+					self.conditional_activations+=[attention_scores_dense]
 				elif("multiply" in layer.name):
 					z = layer(z, attention_scores_dense)
-					print(layer.name)
+					self.conditional_activations+=[z]
 					encoder=False
-				elif(encoder):
-					print(layer.name)
+				else:
 					z = layer(z)
 				
 				self.activations += [z]
 
-
+			print(self.conditional_activations)
 			raise NotImplementedError
 
 
