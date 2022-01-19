@@ -82,7 +82,9 @@ class Liu_et_al(tf.keras.Model):
 	Outputs:
 		*tuple - (tf.DataLoader, tf.DataLoader)
 	"""
-	def load_data(self, dataset, n_individuals=getattr(data_utils, "n_individuals_"+dataset), time_length=10, batch_size=4):
+	def load_data(self, dataset, time_length=10, batch_size=4):
+		n_individuals=getattr(data_utils, "n_individuals_"+dataset)
+		
 		with tf.device('/CPU:0'):
 			eeg_train, fmri_train,_ = data_utils.get_data(range(n_individuals),
 														dataset=dataset,
