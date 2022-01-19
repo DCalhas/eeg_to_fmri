@@ -31,6 +31,10 @@ fmri_shape_01=(64,64,30)
 fmri_shape_02=(64,64,32)
 fmri_shape_03=(64,64,30)
 
+n_volumes_01=300-3
+n_volumes_02=170-3
+n_volumes_03=370-3
+
 dataset_path = home + '/eeg_to_fmri'
 
 media_directory="/mnt/datasets/"

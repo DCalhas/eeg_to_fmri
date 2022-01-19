@@ -98,12 +98,12 @@ class Liu_et_al(tf.keras.Model):
 		if(dataset=="01"):
 			n_individuals_train = 8
 			n_individuals_test = 2
-			n_volumes = 300-3
 		elif(dataset=="02"):
 			n_individuals_train = 8
 			n_individuals_test = 2
-			n_volumes = 170-3#?
 
+		n_volumes = getattr(fmri_utils, "n_volumes_"+dataset)
+		
 		x_eeg = np.empty((n_individuals*int(n_volumes/time_length),)+(eeg_train.shape[1], time_length))
 		x_fmri = np.empty((n_individuals*int(n_volumes/time_length),)+fmri_train.shape[1:]+(time_length,))
 
