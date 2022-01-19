@@ -27,6 +27,10 @@ TR_01=2.160
 TR_02=2.000
 TR_03=1.280
 
+fmri_shape_01=(64,64,30)
+fmri_shape_02=(64,64,2)
+fmri_shape_03=(64,64,30)
+
 dataset_path = home + '/eeg_to_fmri'
 
 media_directory="/mnt/datasets/"
