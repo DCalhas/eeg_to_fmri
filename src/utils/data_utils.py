@@ -28,6 +28,13 @@ n_individuals_01=10
 n_individuals_02=10
 n_individuals_03=20
 
+n_individuals_train_01 = 8
+n_individuals_test_01 = 2
+n_individuals_train_02 = 8
+n_individuals_test_02 = 2
+n_individuals_train_03 = 16
+n_individuals_test_03 = 4
+
 #############################################################################################################
 #
 #                                           LOAD DATA FUNCTION                                       

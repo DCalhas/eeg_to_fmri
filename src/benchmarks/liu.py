@@ -82,7 +82,7 @@ class Liu_et_al(tf.keras.Model):
 	Outputs:
 		*tuple - (tf.DataLoader, tf.DataLoader)
 	"""
-	def load_data(self, dataset, n_individuals, time_length=10, batch_size=4):
+	def load_data(self, dataset, n_individuals=getattr(data_utils, "n_individuals_"+dataset), time_length=10, batch_size=4):
 		with tf.device('/CPU:0'):
 			eeg_train, fmri_train,_ = data_utils.get_data(range(n_individuals),
 														dataset=dataset,
@@ -95,15 +95,10 @@ class Liu_et_al(tf.keras.Model):
 														eeg_resample=getattr(fmri_utils, "TR_"+dataset), 
 														fmri_resolution_factor=1)
 
-		if(dataset=="01"):
-			n_individuals_train = 8
-			n_individuals_test = 2
-		elif(dataset=="02"):
-			n_individuals_train = 8
-			n_individuals_test = 2
-
+		n_individuals_train = getattr(data_utils, "n_individuals_train_"+dataset)
+		n_individuals_test = getattr(data_utils, "n_individuals_test_"+dataset)
 		n_volumes = getattr(fmri_utils, "n_volumes_"+dataset)
-		
+
 		x_eeg = np.empty((n_individuals*int(n_volumes/time_length),)+(eeg_train.shape[1], time_length))
 		x_fmri = np.empty((n_individuals*int(n_volumes/time_length),)+fmri_train.shape[1:]+(time_length,))
 
