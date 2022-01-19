@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from utils import data_utils
+from utils import data_utils, fmri_utils, eeg_utils
 
 import numpy as np
 
@@ -92,7 +92,7 @@ class Liu_et_al(tf.keras.Model):
 														ind_volume_fit=False,
 														iqr_outlier=False,
 														raw_eeg_resample=True,
-														eeg_resample=2.160, 
+														eeg_resample=getattr(fmri_utils, "TR_"+dataset), 
 														fmri_resolution_factor=1)
 
 		if(dataset=="01"):
