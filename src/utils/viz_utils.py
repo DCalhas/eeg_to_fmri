@@ -1355,7 +1355,9 @@ def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, 
                 if(scores[channel] > 0.5):
                     color="white"
 
-            axes.text(eeg_utils.channels_coords_10_20[channel][0]-0.012,
+            text_shift=0.005*len(channel)
+
+            axes.text(eeg_utils.channels_coords_10_20[channel][0]-text_shift,
                       eeg_utils.channels_coords_10_20[channel][1]-0.006, 
                         channel, color=color, size=8, zorder=6)
 
