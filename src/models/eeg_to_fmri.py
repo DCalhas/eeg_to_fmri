@@ -208,7 +208,7 @@ class EEG_to_fMRI(tf.keras.Model):
         if(conditional_attention_style):
             if(conditional_attention_style_prior):
                 self.latent_style = self.add_weight(name='style_prior',
-                                                      shape=(latent_shape[0]*latent_shape[1]*latent_shape[2]),
+                                                      shape=(latent_shape[0]*latent_shape[1]*latent_shape[2],),
                                                       initializer=tf.keras.initializers.GlorotUniform(seed=seed),
                                                       trainable=True)
             else:
