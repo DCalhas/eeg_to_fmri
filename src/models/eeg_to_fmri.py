@@ -92,6 +92,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 weight_decay=0.000, skip_connections=False, batch_norm=True,
                 dropout=False, local=True, fourier_features=False, 
                 conditional_attention_style=False, random_fourier=False,
+                conditional_attention_style_prior=False,
                 inverse_DFT=False, DFT=False, 
                 variational_iDFT=False, variational_coefs=None,
                 resolution_decoder=None, low_resolution_decoder=False,
@@ -135,6 +136,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.build_decoder(input_shape, x, latent_shape, inverse_DFT=inverse_DFT, DFT=DFT,
                             attention_scores=attention_scores, 
                             conditional_attention_style=conditional_attention_style,
+                            conditional_attention_style_prior=conditional_attention_style_prior,
                             random_fourier=random_fourier,
                             fourier_features=fourier_features,
                             resolution_decoder=resolution_decoder,
@@ -184,7 +186,7 @@ class EEG_to_fMRI(tf.keras.Model):
         return input_shape, x, attention_scores
 
     def build_decoder(self, input_shape, output_encoder, latent_shape, fourier_features=False, random_fourier=False, 
-                            attention_scores=None, conditional_attention_style=False, 
+                            attention_scores=None, conditional_attention_style=False, conditional_attention_style_prior=False,
                             inverse_DFT=False, DFT=False, 
                             low_resolution_decoder=False, resolution_decoder=None, 
                             variational_iDFT=False, variational_coefs=None, 
@@ -204,11 +206,17 @@ class EEG_to_fMRI(tf.keras.Model):
                                                             kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
                                                             name="dense")
         if(conditional_attention_style):
-            attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
-            self.latent_style = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                    use_bias=False,
-                                                    name="conditional_attention_style_dense",
-                                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(attention_scores)
+            if(conditional_attention_style_prior):
+                self.latent_style = self.add_weight(name='style_prior',
+                                                      shape=(latent_shape[0]*latent_shape[1]*latent_shape[2]),
+                                                      initializer=tf.keras.initializers.GlorotUniform(seed=seed),
+                                                      trainable=True)
+            else:
+                attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
+                self.latent_style = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                        use_bias=False,
+                                                        name="conditional_attention_style_dense",
+                                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(attention_scores)
 
         x = self.latent_resolution(x)
         
