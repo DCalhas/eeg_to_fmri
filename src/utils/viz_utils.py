@@ -707,6 +707,7 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
             row-=1
 
     plt.rcParams["font.family"] = "serif"
+    fig.set_tight_layout(True)
 
     if(save):
         fig.savefig(save_path, format=save_format)
