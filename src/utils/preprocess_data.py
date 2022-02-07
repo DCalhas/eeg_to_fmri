@@ -107,10 +107,14 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 		n_individuals_train = 20
 		n_individuals_test = 8
 		recording_time=190
+		eeg_limit=True 
+		eeg_f_limit=134
 	elif(dataset=="11"):
 		n_individuals_train = 20
 		n_individuals_test = 8
 		recording_time=90
+		eeg_limit=True 
+		eeg_f_limit=134
 	
 	if(verbose):
 		if(file_output == None):
