@@ -14,6 +14,8 @@ from os import listdir
 from os.path import isfile, join, isdir
 from pathlib import Path
 
+import csv
+
 home = str(Path.home())
 
 dataset_path = home + '/eeg_to_fmri'
@@ -65,88 +67,129 @@ def get_eeg_instance_01(individual, path_eeg=dataset_path+'/datasets/01/EEG/', p
 
 def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=True, path_eeg=dataset_path+'/datasets/02'):
 
-    individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
-    
-    path_eeg = path_eeg + '/' + individuals[individual] + '/EEG'
-    
-    runs = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
-    
-    run = runs[task*total_runs+run]
+	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
+	
+	path_eeg = path_eeg + '/' + individuals[individual] + '/EEG'
+	
+	runs = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
+	
+	run = runs[task*total_runs+run]
 
-    if(preprocessed):
-        path = path_eeg + '/' + run + '/EEG_noGA.mat'
-    else:
-        path = path_eeg + '/' + run + '/EEG_noGA.mat'
+	if(preprocessed):
+		path = path_eeg + '/' + run + '/EEG_noGA.mat'
+	else:
+		path = path_eeg + '/' + run + '/EEG_noGA.mat'
 
-    eeg_file = loadmat(path)
-    
-    return eeg_file['data_noGA'][:43,:]
+	eeg_file = loadmat(path)
+	
+	return eeg_file['data_noGA'][:43,:]
 
 
 def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run="main_run-001", preprocessed=False):
-    
-    run_types=["main_run-001", "main_run-002",
-              "main_run-003", "main_run-004",
-              "main_run-005", "main_run-006"]
-    
-    assert run in run_types, dataset_03+ " contains the following recording sessions: " + str(run_types) + ", please select one."
+	
+	run_types=["main_run-001", "main_run-002",
+			  "main_run-003", "main_run-004",
+			  "main_run-005", "main_run-006"]
+	
+	assert run in run_types, dataset_03+ " contains the following recording sessions: " + str(run_types) + ", please select one."
+	assert not preprocessed, "Preprocessed EEG signal is not available, only EEG events"
+	
+	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[2:]
+
+	individual = individuals[individual]
+
+	if(preprocessed):
+		path = path_eeg + "derivatives/eegprep/" + individual + "/ses-001/eeg/" + individual + "_ses-001_task-main_eeg_preproc.set"
+		return mne.io.read_epochs_eeglab(path)
+	else:
+		path = path_eeg + individual + "/ses-001/eeg/"
+
+		brainvision_files = sorted([f for f in listdir(path) if isfile(join(path, f))])
+
+		vhdr_file = brainvision_files[1]
+
+		complete_path = path + vhdr_file
+
+		return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+
+def get_eeg_instance_10(individual, path_eeg=media_directory+dataset_10+"/", proposer=True, preprocessed=False):
+
     assert not preprocessed, "Preprocessed EEG signal is not available, only EEG events"
-    
-    individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[2:]
 
+    individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[:]
     individual = individuals[individual]
-
+    
+    
     if(preprocessed):
-        path = path_eeg + "derivatives/eegprep/" + individual + "/ses-001/eeg/" + individual + "_ses-001_task-main_eeg_preproc.set"
+        path = path_eeg + "derivatives/eegprep/" + individual + "/eeg/" + individual + "_task-main_eeg_preproc.set"
         return mne.io.read_epochs_eeglab(path)
     else:
-        path = path_eeg + individual + "/ses-001/eeg/"
+        path = path_eeg + individual + "/eeg/"
 
-        brainvision_files = sorted([f for f in listdir(path) if isfile(join(path, f))])
-
-        vhdr_file = brainvision_files[1]
-
+        brainvision_files = sorted([f for f in listdir(path) if "vhdr" in f])
+        
+        if(proposer):
+            vhdr_file = brainvision_files[0]
+        else:
+            vhdr_file = brainvision_files[1]
         complete_path = path + vhdr_file
 
         return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 
 def get_eeg_instance_11(individual, path_eeg=media_directory+dataset_11+"/", sess_on=True, preprocessed=False):
-    
-    assert not preprocessed, "Preprocessed EEG signal is not available, only EEG events"
-    
-    individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[1:]
-    individual = individuals[individual]
+	
+	assert not preprocessed, "Preprocessed EEG signal is not available, only EEG events"
+	
+	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[1:]
+	individual = individuals[individual]
 
-    if(preprocessed):
-        path = path_eeg + "derivatives/eegprep/" + individual + "/eeg/" + individual + "_task-main_eeg_preproc.set"
-        return mne.io.read_epochs_eeglab(path)
-    else:
-        if("hc" in individual):
-            session="ses-hc"
-        elif("pd" in individual and sess_on):
-            session="ses-on"
-        else:
-            session="ses-off"
-        
-        path = path_eeg + individual + "/" + session + "/eeg/"
+	if(preprocessed):
+		path = path_eeg + "derivatives/eegprep/" + individual + "/eeg/" + individual + "_task-main_eeg_preproc.set"
+		return mne.io.read_epochs_eeglab(path)
+	else:
+		if("hc" in individual):
+			session="ses-hc"
+		elif("pd" in individual and sess_on):
+			session="ses-on"
+		else:
+			session="ses-off"
+		
+		path = path_eeg + individual + "/" + session + "/eeg/"
 
-        complete_path = path + individual + "_" + session + "_task-rest_eeg.bdf" 
-        
-        return mne.io.read_raw_bdf(complete_path, preload=True, verbose=0)
+		complete_path = path + individual + "_" + session + "_task-rest_eeg.bdf" 
+		
+		return mne.io.read_raw_bdf(complete_path, preload=True, verbose=0)
 
-def get_labels_11(individuals, path_eeg=media_directory+dataset_11+"/"):
+def get_labels_10(individuals, path_eeg=media_directory+dataset_10+"/"):
     labels=np.zeros((len(individuals), 2))#0 - hc, 1 - p
     
-    individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[1:len(individuals)+1]
+    participants_info_file = open(path_eeg+"participants.tsv", "r")
     
-    for ind in range(len(individuals)):
-        if("hc" in individuals[ind]):
+    participants_info = participants_info_file.readlines()[1:]
+
+    for ind in range(len(participants_info)):        
+        if("HC" in participants_info[ind].split("\t")[1]):
             labels[ind][0] = 1.0
-        elif("pd" in individuals[ind]):
+        elif("P" in participants_info[ind].split("\t")[1]):
             labels[ind][1] = 1.0
             
+    participants_info_file.close()
+
     return labels
     
+def get_labels_11(individuals, path_eeg=media_directory+dataset_11+"/"):
+	labels=np.zeros((len(individuals), 2))#0 - hc, 1 - p
+	
+	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[1:len(individuals)+1]
+	
+	for ind in range(len(individuals)):
+		if("hc" in individuals[ind]):
+			labels[ind][0] = 1.0
+		elif("pd" in individuals[ind]):
+			labels[ind][1] = 1.0
+			
+	return labels
+
 
 def get_eeg_dataset(number_individuals=16, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
 	individuals = []
