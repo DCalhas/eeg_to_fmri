@@ -31,7 +31,7 @@ channels_coords_10_20= {"Fpz": (0.5,0.9),"Fp1": (0.40,0.88),"Fp2": (0.6,0.88),"A
 fs_01=250
 fs_02=1000
 fs_03=5000
-
+fs_10=2180
 fs_11=512
 
 media_directory="/mnt/datasets/"
