@@ -99,3 +99,41 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 			print("I: Pairs Created", file=file_output)
 
 	return (eeg_train, fmri_train), (eeg_test, fmri_test)
+
+
+def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, standardize_eeg=False, interval_eeg=10, verbose=False):
+
+	if(dataset=="10"):
+		raise NotImplementedError
+	elif(dataset=="11"):
+		n_individuals_train = 20
+		n_individuals_test = 8
+		recording_time=90
+	
+
+	if(verbose):
+		print("I: Loading data")
+
+	X, y = data_utils.load_data_clf(dataset, n_individuals=n_individuals, 
+									mutate_bands=mutate_bands, f_resample=f_resample, 
+									raw_eeg=raw_eeg, raw_eeg_resample=raw_eeg_resample, 
+									eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit, 
+									standardize_eeg=standardize_eeg)
+
+	if(verbose):
+		print("I: Creating pairs")
+
+
+	X_train, y_train = data_utils.create_clf_pairs(n_individuals_train, X[:n_individuals_train*recording_time], 
+											y[:n_individuals_train], 
+											recording_time=recording_time, 
+											interval_eeg=interval_eeg)
+	X_test, y_test = data_utils.create_clf_pairs(n_individuals_test, X[:n_individuals_test*recording_time], 
+												y[:n_individuals_test], 
+												recording_time=recording_time,
+												interval_eeg=interval_eeg)
+
+	if(verbose):
+		print("I: Finished loading data")
+
+	return (X_train, y_train), (X_test, y_test)

@@ -60,6 +60,19 @@ def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partition
 
     return eeg, bold, scalers
 
+
+def load_data_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, standardize_eeg=False):
+
+    return get_data_classification(list(range(n_individuals)), dataset,
+                                f_resample=f_resample,
+                                raw_eeg=raw_eeg,
+                                raw_eeg_resample=raw_eeg_resample,
+                                recording_time=recording_time,
+                                mutate_bands=mutate_bands,
+                                eeg_limit=eeg_limit,
+                                eeg_f_limit=eeg_f_limit,
+                                standardize_eeg=standardize_eeg)
+
 """
 """
 
