@@ -118,6 +118,7 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 									mutate_bands=mutate_bands, f_resample=f_resample, 
 									raw_eeg=raw_eeg, raw_eeg_resample=raw_eeg_resample, 
 									eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit, 
+									recording_time=recording_time,
 									standardize_eeg=standardize_eeg)
 
 	if(verbose):

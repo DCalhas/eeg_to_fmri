@@ -61,7 +61,7 @@ def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partition
     return eeg, bold, scalers
 
 
-def load_data_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, standardize_eeg=False):
+def load_data_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, recording_time=90, standardize_eeg=False):
 
     return get_data_classification(list(range(n_individuals)), dataset,
                                 f_resample=f_resample,
