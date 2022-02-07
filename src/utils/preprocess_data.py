@@ -101,7 +101,7 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 	return (eeg_train, fmri_train), (eeg_test, fmri_test)
 
 
-def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, standardize_eeg=False, interval_eeg=10, verbose=False):
+def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, file_output=None, standardize_eeg=False, interval_eeg=10, verbose=False):
 
 	if(dataset=="10"):
 		raise NotImplementedError
@@ -110,9 +110,11 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 		n_individuals_test = 8
 		recording_time=90
 	
-
 	if(verbose):
-		print("I: Loading data")
+		if(file_output == None):
+			print("I: Loading data")
+		else:
+			print("I: Loading data", file=file_output)
 
 	X, y = data_utils.load_data_clf(dataset, n_individuals=n_individuals, 
 									mutate_bands=mutate_bands, f_resample=f_resample, 
@@ -122,8 +124,10 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 									standardize_eeg=standardize_eeg)
 
 	if(verbose):
-		print("I: Creating pairs")
-
+		if(file_output == None):
+			print("I: Creating pairs")
+		else:
+			print("I: Creating pairs", file=file_output)
 
 	X_train, y_train = data_utils.create_clf_pairs(n_individuals_train, X[:n_individuals_train*recording_time], 
 											y[:n_individuals_train], 
@@ -135,6 +139,19 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 												interval_eeg=interval_eeg)
 
 	if(verbose):
-		print("I: Finished loading data")
+		if(file_output == None):
+			print("I: Finished loading data")
+		else:
+			print("I: Finished loading data", file=file_output)
+			
+	X_train = np.expand_dims(X_train, axis=-1)
+	y_train = np.expand_dims(y_train, axis=-1)
+	X_test = np.expand_dims(X_test, axis=-1)
+	y_test = np.expand_dims(y_test, axis=-1)
+
+	X_train = X_train.astype('float32')
+	y_train = y_train.astype('float32')
+	X_test = X_test.astype('float32')
+	y_test = y_test.astype('float32')
 
 	return (X_train, y_train), (X_test, y_test)
