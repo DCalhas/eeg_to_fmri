@@ -189,7 +189,9 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
             fs_sample = getattr(eeg_utils, "fs_"+dataset)
         else:
             fs_sample = eeg.info['sfreq']
+            print(fs_sample)
             len_channels = len(eeg.ch_names)
+
 
         x_instance = []
         #eeg

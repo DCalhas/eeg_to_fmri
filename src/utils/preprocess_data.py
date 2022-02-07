@@ -106,7 +106,7 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 	if(dataset=="10"):
 		n_individuals_train = 20
 		n_individuals_test = 8
-		recording_time=90
+		recording_time=190
 	elif(dataset=="11"):
 		n_individuals_train = 20
 		n_individuals_test = 8
