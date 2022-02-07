@@ -145,9 +145,7 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 			print("I: Finished loading data", file=file_output)
 			
 	X_train = np.expand_dims(X_train, axis=-1)
-	y_train = np.expand_dims(y_train, axis=-1)
 	X_test = np.expand_dims(X_test, axis=-1)
-	y_test = np.expand_dims(y_test, axis=-1)
 
 	X_train = X_train.astype('float32')
 	y_train = y_train.astype('float32')
