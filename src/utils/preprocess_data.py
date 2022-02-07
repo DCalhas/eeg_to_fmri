@@ -104,7 +104,9 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, file_output=None, standardize_eeg=False, interval_eeg=10, verbose=False):
 
 	if(dataset=="10"):
-		raise NotImplementedError
+		n_individuals_train = 20
+		n_individuals_test = 8
+		recording_time=90
 	elif(dataset=="11"):
 		n_individuals_train = 20
 		n_individuals_test = 8
