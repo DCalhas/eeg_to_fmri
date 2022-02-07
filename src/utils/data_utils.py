@@ -221,12 +221,12 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
         if(raw_eeg_resample):#placeholder because eeg was already resampled
             fs_sample=1
             f_resample=1
+
+        #number of ECG channels differ for some individuals
+        x_instance=x_instance[:132]
         if(raw_eeg):
             individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,:int(((recording_time))*fs_sample*f_resample)], (1,0))))
         else:
-            print(eeg.ch_names)
-            x_instance=x_instance[:132]
-            print(x_instance.shape)
             individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[:recording_time]))
 
     return individuals_eegs, getattr(eeg_utils, "get_labels_"+dataset)(individuals)
