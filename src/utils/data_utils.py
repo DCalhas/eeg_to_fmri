@@ -223,6 +223,10 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
         if(raw_eeg):
             individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,:int(((recording_time))*fs_sample*f_resample)], (1,0))))
         else:
+            print(x_instance.shape)
+            print(np.transpose(x_instance, (2,0,1))[:recording_time].shape)
+            print(individuals_eegs.shape)
+            print()
             individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[:recording_time]))
 
     return individuals_eegs, getattr(eeg_utils, "get_labels_"+dataset)(individuals)
