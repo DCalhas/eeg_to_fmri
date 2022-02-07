@@ -191,9 +191,6 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
             fs_sample = eeg.info['sfreq']
             len_channels = len(eeg.ch_names)
 
-        print(eeg)
-        print(eeg[:][0].shape)
-        
         x_instance = []
         #eeg
         for channel in range(len_channels):
@@ -212,6 +209,8 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
             x_instance = zscore(np.array(x_instance))
         else:
             x_instance = np.array(x_instance)
+
+        print(x_instance.shape)
 
         if(not type(individuals_eegs) is np.ndarray):
             if(raw_eeg):
