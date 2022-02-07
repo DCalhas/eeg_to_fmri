@@ -110,7 +110,44 @@ def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run
 
         return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 
+def get_eeg_instance_11(individual, path_eeg=media_directory+dataset_11+"/", sess_on=True, preprocessed=False):
+    
+    assert not preprocessed, "Preprocessed EEG signal is not available, only EEG events"
+    
+    individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[1:]
+    individual = individuals[individual]
+
+    if(preprocessed):
+        path = path_eeg + "derivatives/eegprep/" + individual + "/eeg/" + individual + "_task-main_eeg_preproc.set"
+        return mne.io.read_epochs_eeglab(path)
+    else:
+        if("hc" in individual):
+            session="ses-hc"
+        elif("pd" in individual and sess_on):
+            session="ses-on"
+        else:
+            session="ses-off"
         
+        path = path_eeg + individual + "/" + session + "/eeg/"
+
+        complete_path = path + individual + "_" + session + "_task-rest_eeg.bdf" 
+        
+        return mne.io.read_raw_bdf(complete_path, preload=True, verbose=0)
+
+def get_labels_11(individuals, path_eeg=media_directory+dataset_11+"/"):
+    labels=np.zeros((len(individuals), 2))#0 - hc, 1 - p
+    
+    individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[1:len(individuals)+1]
+    
+    for ind in range(len(individuals)):
+        if("hc" in individuals[ind]):
+            labels[ind][0] = 1.0
+        elif("pd" in individuals[ind]):
+            labels[ind][1] = 1.0
+            
+    return labels
+    
+
 def get_eeg_dataset(number_individuals=16, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
 	individuals = []
 

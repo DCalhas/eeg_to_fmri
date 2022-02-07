@@ -37,7 +37,7 @@ n_individuals_test_03 = 4
 
 #############################################################################################################
 #
-#                                           LOAD DATA FUNCTION                                       
+#                                 LOAD DATA FUNCTION                     
 #
 #############################################################################################################
 
@@ -164,6 +164,55 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
     return individuals_eegs, individuals_imgs, fmri_scalers
 
 
+def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resample=False, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit=134, recording_time=90, standardize_eeg=True):
+    individuals_eegs = None
+    
+    for individual in individuals:
+        #eeg = getattr(eeg_utils, "get_eeg_instance_"+dataset)(individual)
+        eeg = getattr(eeg_utils, "get_eeg_instance_"+dataset)(individual)
+
+        if(dataset=="02"):
+            len_channels=len(eeg)
+            fs_sample = getattr(eeg_utils, "fs_"+dataset)
+        else:
+            fs_sample = eeg.info['sfreq']
+            len_channels = len(eeg.ch_names)
+        
+        x_instance = []
+        #eeg
+        for channel in range(len_channels):
+            if(raw_eeg):
+                x = eeg_utils.raw_eeg(eeg, channel=channel)
+                if(raw_eeg_resample):
+                    x = resample(x, int((len(x)*(1/eeg_resample))/fs_sample))
+                x_instance += [x]
+            else:
+                f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample, fs=getattr(eeg_utils, "fs_"+dataset), limit=eeg_limit, f_limit=eeg_f_limit)
+                if(mutate_bands):
+                    Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
+                x_instance += [Zxx]
+
+        if(standardize_eeg):
+            x_instance = zscore(np.array(x_instance))
+        else:
+            x_instance = np.array(x_instance)
+
+        if(not type(individuals_eegs) is np.ndarray):
+            if(raw_eeg):
+                individuals_eegs = np.empty((0,) +(x_instance.shape[0],))
+            else:
+                individuals_eegs = np.empty((0,) + (x_instance.shape[0], x_instance.shape[1]))
+
+        if(raw_eeg_resample):#placeholder because eeg was already resampled
+            fs_sample=1
+            f_resample=1
+        if(raw_eeg):
+            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,:int(((recording_time))*fs_sample*f_resample)], (1,0))))
+        else:
+            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[:recording_time]))
+
+    return individuals_eegs, getattr(eeg_utils, "get_labels_"+dataset)(individuals)
+
 
 
 #16 - corresponds to a 20 second length signal with 10 time points
@@ -266,9 +315,31 @@ def create_eeg_bold_pairs(eeg, bold, raw_eeg=False, fs_sample_eeg=250, fs_sample
         
     return x_eeg, x_bold
 
+
+
+"""
+Inputs:
+    * n_individuals - int
+    * data - np.ndarray(T, channels, freqs)
+    * labels - np.ndarray(individuals, 2)
+    * recording_time - int
+    * interval_eeg - int
+"""
+def create_clf_pairs(n_individuals, data, labels, recording_time=90, interval_eeg=10):
+    X = np.empty(((n_individuals*recording_time)//interval_eeg, data.shape[1], data.shape[2], interval_eeg))
+    y = np.empty(((n_individuals*recording_time)//interval_eeg, 2))
+    
+    i = 0
+    for ind in range(n_individuals):
+        for time in range(0, recording_time, interval_eeg):
+            X[i] = np.transpose(data[(ind*recording_time)+time:(ind*recording_time)+(time+interval_eeg)], (1,2,0))
+            y[i] = labels[ind]
+            i+=1
+    
+    return X, y
 #############################################################################################################
 #
-#                                           STANDARDIZE DATA FUNCTION                                       
+#                                 STANDARDIZE DATA FUNCTION                              
 #
 #############################################################################################################
 
