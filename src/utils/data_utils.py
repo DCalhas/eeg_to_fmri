@@ -350,15 +350,12 @@ def create_clf_pairs(n_individuals, data, labels, recording_time=90, interval_ee
     i = 0
     for ind in range(n_individuals):
         for time in range(0, recording_time, interval_eeg):
-            print(time)
-            print((ind*recording_time)+time,(ind*recording_time)+(time+interval_eeg))
             if((ind*recording_time)+(time+interval_eeg) < (ind+1)*recording_time):
                 X[i] = np.transpose(data[(ind*recording_time)+time:(ind*recording_time)+(time+interval_eeg)], (1,2,0))
                 y[i] = labels[ind]
                 i+=1
-                print(i, (n_individuals*recording_time)//interval_eeg)
     
-    return X, y
+    return X[:i], y[:i]
 #############################################################################################################
 #
 #                                 STANDARDIZE DATA FUNCTION                              
