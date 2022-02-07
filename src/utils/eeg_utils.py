@@ -133,7 +133,7 @@ def get_eeg_instance_10(individual, path_eeg=media_directory+dataset_10+"/", pro
         else:
             vhdr_file = brainvision_files[1]
         complete_path = path + vhdr_file
-        print(complete_path)
+        
         return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 
 def get_eeg_instance_11(individual, path_eeg=media_directory+dataset_11+"/", sess_on=True, preprocessed=False):
