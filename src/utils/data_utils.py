@@ -349,15 +349,21 @@ Inputs:
     * recording_time - int
     * interval_eeg - int
 """
-def create_clf_pairs(n_individuals, data, labels, recording_time=90, interval_eeg=10):
-    X = np.empty(((n_individuals*recording_time)//interval_eeg, data.shape[1], data.shape[2], interval_eeg))
+def create_clf_pairs(n_individuals, data, labels, raw_eeg=False, recording_time=90, interval_eeg=10):
+    if(raw_eeg):
+        X = np.empty(((n_individuals*recording_time)//interval_eeg, data.shape[1], interval_eeg))
+    else:
+        X = np.empty(((n_individuals*recording_time)//interval_eeg, data.shape[1], data.shape[2], interval_eeg))
     y = np.empty(((n_individuals*recording_time)//interval_eeg, 2))
     
     i = 0
     for ind in range(n_individuals):
         for time in range(0, recording_time, interval_eeg):
             if((ind*recording_time)+(time+interval_eeg) < (ind+1)*recording_time):
-                X[i] = np.transpose(data[(ind*recording_time)+time:(ind*recording_time)+(time+interval_eeg)], (1,2,0))
+                if(raw_eeg)
+                    X[i] = np.transpose(data[(ind*recording_time)+time:(ind*recording_time)+(time+interval_eeg)], (1,0))
+                else:
+                    X[i] = np.transpose(data[(ind*recording_time)+time:(ind*recording_time)+(time+interval_eeg)], (1,2,0))
                 y[i] = labels[ind]
                 i+=1
     
