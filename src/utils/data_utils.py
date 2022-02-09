@@ -184,7 +184,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
     return individuals_eegs, individuals_imgs, fmri_scalers
 
 
-def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resample=False, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit=134, recording_time=90, standardize_eeg=True):
+def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit=134, recording_time=90, standardize_eeg=True):
     individuals_eegs = None
     
     for individual in individuals:
