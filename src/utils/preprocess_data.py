@@ -143,10 +143,12 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 	print(X[:n_individuals_test*recording_time].shape)
 	X_train, y_train = data_utils.create_clf_pairs(n_individuals_train, X[:n_individuals_train*recording_time], 
 											y[:n_individuals_train], 
+											raw_eeg=raw_eeg,
 											recording_time=recording_time, 
 											interval_eeg=interval_eeg)
 	X_test, y_test = data_utils.create_clf_pairs(n_individuals_test, X[:n_individuals_test*recording_time], 
 												y[:n_individuals_test], 
+												raw_eeg=raw_eeg,
 												recording_time=recording_time,
 												interval_eeg=interval_eeg)
 

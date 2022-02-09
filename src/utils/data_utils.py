@@ -360,7 +360,7 @@ def create_clf_pairs(n_individuals, data, labels, raw_eeg=False, recording_time=
     for ind in range(n_individuals):
         for time in range(0, recording_time, interval_eeg):
             if((ind*recording_time)+(time+interval_eeg) < (ind+1)*recording_time):
-                if(raw_eeg)
+                if(raw_eeg):
                     X[i] = np.transpose(data[(ind*recording_time)+time:(ind*recording_time)+(time+interval_eeg)], (1,0))
                 else:
                     X[i] = np.transpose(data[(ind*recording_time)+time:(ind*recording_time)+(time+interval_eeg)], (1,2,0))
