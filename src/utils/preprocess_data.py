@@ -135,12 +135,6 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 		else:
 			print("I: Creating pairs", file=file_output)
 
-
-	print(X.shape)
-	print(y.shape)
-
-	print(X[:n_individuals_train*recording_time].shape)
-	print(X[:n_individuals_test*recording_time].shape)
 	X_train, y_train = data_utils.create_clf_pairs(n_individuals_train, X[:n_individuals_train*recording_time], 
 											y[:n_individuals_train], 
 											raw_eeg=raw_eeg,
