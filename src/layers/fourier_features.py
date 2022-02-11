@@ -52,6 +52,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		self.kernel_initializer = kernel_initializer
 		self.scale = scale
 		self.seed=seed
+		self.trainable=trainable
 		super(RandomFourierFeatures, self).__init__(trainable=trainable, **kwargs)
 
 	def build(self, input_shape):
@@ -84,7 +85,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			self.scale = _get_default_scale(self.kernel_initializer, input_dim)
 		self.kernel_scale = self.add_weight(name='kernel_scale',shape=(1,),
 											dtype=tf.float32, initializer= tf.constant_initializer(self.scale),
-											trainable=True, constraint='NonNeg')
+											trainable=self.trainable, constraint='NonNeg')
 		super(RandomFourierFeatures, self).build(input_shape)
 
 	def call(self, inputs):
