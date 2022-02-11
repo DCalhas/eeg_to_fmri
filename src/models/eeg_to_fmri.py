@@ -7,7 +7,7 @@ from utils import state_utils
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D
 from layers.topographical_attention import Topographical_Attention
-from layers.resnet_block import ResBlock
+from layers.resnet_block import ResBlock, pretrained_ResBlock
 
 from pathlib import Path
 import shutil
