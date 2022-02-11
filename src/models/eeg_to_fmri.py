@@ -327,3 +327,120 @@ class EEG_to_fMRI(tf.keras.Model):
     @classmethod
     def from_config(cls, config):
         return cls(**config)
+
+
+
+
+"""
+
+"""
+class pretrained_EEG_to_fMRI(tf.keras.Model):
+
+
+    """
+    """
+    def __init__(self, model, input_shape, seed=None):
+        super(pretrained_EEG_to_fMRI, self).__init__()
+
+        self._input_shape = input_shape
+        
+        input_shape, x, attention_scores = self.build_encoder(model, seed=seed)
+        
+        self.build_decoder(model, input_shape, x, attention_scores=attention_scores, seed=seed)
+
+    def build_encoder(self, pretrained_model, seed=None):
+
+        attention_scores=None
+
+        input_shape = tf.keras.layers.Input(shape=self._input_shape)
+
+        x = input_shape
+        #reshape to flattened features to apply attention mechanism
+        x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
+        #topographical attention
+        x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2])(x)
+        #reshape back to original shape
+        x = tf.keras.layers.Reshape(self._input_shape)(x)
+        previous_block_x = x
+        
+        #set the rest of the layers, but untrainable
+        resblocks = pretrained_model.layers[1].layers[4:-3]
+        for i in range(len(resblocks)):
+            #change stride size according to number of channels
+            if(self._input_shape[0]==41):
+                resblocks[i].left_layers[0].strides=(2,)+resblocks[i].left_layers[0].strides[1:]
+                resblocks[i].right_layers[0].strides=(2,)+resblocks[i].right_layers[0].strides[1:]
+                x = tf.pad(x, tf.constant([[0,0],[0, 2], [0, 0], [0,0], [0,0],]), "CONSTANT")
+            
+            x = pretrained_ResBlock(resblocks[i], seed=seed)(x)
+            
+        
+        x = tf.keras.layers.Flatten()(x)
+        
+        x = tf.keras.layers.Dense(pretrained_model.layers[1].layers[-2].units,
+                                kernel_initializer=tf.constant_initializer(pretrained_model.layers[1].layers[-2].kernel.numpy()),
+                                bias_initializer=tf.constant_initializer(pretrained_model.layers[1].layers[-2].bias.numpy()),
+                                trainable=False)(x)#placeholder
+        
+        x = tf.keras.layers.Reshape(pretrained_model.layers[1].layers[-1].target_shape)(x)
+
+        self.eeg_encoder = tf.keras.Model(input_shape, x)
+
+        return input_shape, x, attention_scores
+    
+    def build_decoder(self, pretrained_model, input_shape, output_encoder, attention_scores=None, seed=None):
+        x = tf.keras.layers.Flatten()(output_encoder)
+        
+        self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
+                                            pretrained_model.layers[4].layers[11].output_dim,
+                                            trainable=False, seed=seed, name="random_fourier_features")
+        
+        attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
+        self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(
+                                    pretrained_model.layers[4].layers[12].units,
+                                    use_bias=pretrained_model.layers[4].layers[12].use_bias,
+                                    name="conditional_attention_style_dense",
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
+                                    trainable=True)(attention_scores)
+        
+        x = self.latent_resolution(x)
+        x = x*self.latent_style
+        
+        
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[14]).__name__)(
+                    pretrained_model.layers[4].layers[14].target_shape)(x)
+
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[15]).__name__)()(x)
+        #upsampling
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
+                    pretrained_model.layers[4].layers[16].units,
+                    kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[16].kernel.numpy()),
+                    bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[16].bias.numpy()),
+                    trainable=False)(x)
+        
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
+                    pretrained_model.layers[4].layers[17].target_shape)(x)
+
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[18]).__name__)(
+                                        filters=pretrained_model.layers[4].layers[18].filters, 
+                                        kernel_size=pretrained_model.layers[4].layers[18].kernel_size, 
+                                        strides=pretrained_model.layers[4].layers[18].strides,
+                                        kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].kernel.numpy()),
+                                        bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].bias.numpy()),
+                                        padding=pretrained_model.layers[4].layers[18].padding,
+                                        trainable=False)(x)
+
+        self.decoder = tf.keras.Model(input_shape, x)   
+        
+    def build(self, input_shape):
+        self.decoder.build(input_shape=input_shape)
+        self.built=True
+
+
+    """
+        Random behaviour of GPU with tf functions does not reproduce the same results
+        Call this function when getting results
+    """
+    #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
+    def call(self, x1):
+        return self.decoder(x1)
