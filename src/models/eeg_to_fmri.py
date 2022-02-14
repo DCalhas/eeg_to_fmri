@@ -371,7 +371,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                 resblocks[i].left_layers[0].strides=(2,)+resblocks[i].left_layers[0].strides[1:]
                 resblocks[i].right_layers[0].strides=(2,)+resblocks[i].right_layers[0].strides[1:]
                 x = tf.pad(x, tf.constant([[0,0],[0, 2], [0, 0], [0,0], [0,0],]), "CONSTANT")
-            elif(self._input_shape[0]==128):
+            elif(self._input_shape[0]==132):
                 print(x.shape)
                 print(resblocks[i].left_layers[0].kernel_size, resblocks[i].left_layers[0].strides)
                 resblocks[i].left_layers[0].strides=(3,)+resblocks[i].left_layers[0].strides[1:]
