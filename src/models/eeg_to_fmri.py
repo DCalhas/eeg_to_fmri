@@ -365,17 +365,18 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         
         #set the rest of the layers, but untrainable
         resblocks = pretrained_model.layers[1].layers[4:-3]
+
+        if(self._input_shape[0]==132):
+            resblocks[0].left_layers[0].strides=(3,)+resblocks[0].left_layers[0].strides[1:]
+            resblocks[0].right_layers[0].strides=(3,)+resblocks[0].right_layers[0].strides[1:]
+            resblocks[1].left_layers[0].strides=(5,)+resblocks[1].left_layers[0].strides[1:]
+            resblocks[1].right_layers[0].strides=(5,)+resblocks[1].right_layers[0].strides[1:]
         for i in range(len(resblocks)):
             #change stride size according to number of channels
             if(self._input_shape[0]==41):
                 resblocks[i].left_layers[0].strides=(2,)+resblocks[i].left_layers[0].strides[1:]
                 resblocks[i].right_layers[0].strides=(2,)+resblocks[i].right_layers[0].strides[1:]
                 x = tf.pad(x, tf.constant([[0,0],[0, 2], [0, 0], [0,0], [0,0],]), "CONSTANT")
-            elif(self._input_shape[0]==132):
-                print(x.shape)
-                print(resblocks[i].left_layers[0].kernel_size, resblocks[i].left_layers[0].strides)
-                resblocks[i].left_layers[0].strides=(3,)+resblocks[i].left_layers[0].strides[1:]
-                resblocks[i].right_layers[0].strides=(3,)+resblocks[i].right_layers[0].strides[1:]
             
             x = pretrained_ResBlock(resblocks[i], seed=seed)(x)
             
