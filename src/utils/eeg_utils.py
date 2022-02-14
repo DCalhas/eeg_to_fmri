@@ -112,7 +112,7 @@ def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run
 
 		return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 
-def get_eeg_instance_10(individual, path_eeg=media_directory+dataset_10+"/", proposer=True, preprocessed=False):
+def get_eeg_instance_10(individual, path_eeg=media_directory+dataset_10+"/", proposer=False, preprocessed=False):
 
     assert not preprocessed, "Preprocessed EEG signal is not available, only EEG events"
 
