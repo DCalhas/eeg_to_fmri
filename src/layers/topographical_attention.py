@@ -9,9 +9,7 @@ Topographical_Attention:
 """
 class Topographical_Attention(tf.keras.layers.Layer):
 
-	def __init__(self, channels, features, seed=None):
-
-		super(Topographical_Attention, self).__init__()
+	def __init__(self, channels, features, seed=None, **kwargs):
 
 		self.channels=channels
 		self.features=features
@@ -23,6 +21,8 @@ class Topographical_Attention(tf.keras.layers.Layer):
 								initializer=tf.initializers.GlorotUniform(seed=seed),
 								dtype=tf.float32,
 								trainable=True)
+
+		super(Topographical_Attention, self).__init__(**kwargs)
 
 	"""
 	The defined topographical attention mechanism has an extra step:
