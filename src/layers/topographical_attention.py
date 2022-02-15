@@ -13,9 +13,9 @@ class Topographical_Attention(tf.keras.layers.Layer):
 
 		super(Topographical_Attention, self).__init__()
 
-
 		self.channels=channels
 		self.features=features
+		self.seed=seed
 		
 		self.A = self.add_weight('A',
 								#shape=[self.channels,self.channels,self.features],
@@ -79,3 +79,12 @@ class Topographical_Attention(tf.keras.layers.Layer):
 			R = self.attention_scores*c
 
 		return R
+
+	def get_config(self):
+		config = {
+			'channels': self.channels,
+			'features': self.features,
+			'seed': self.seed,
+		}
+		base_config = super(Topographical_Attention, self).get_config()
+		return dict(list(base_config.items()) + list(config.items()))
