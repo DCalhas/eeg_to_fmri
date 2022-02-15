@@ -88,3 +88,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		}
 		base_config = super(Topographical_Attention, self).get_config()
 		return dict(list(base_config.items()) + list(config.items()))
+
+	@classmethod
+    def from_config(cls, config):
+        return cls(**config)
