@@ -15,14 +15,14 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		self.features=features
 		self.seed=seed
 		
+		super(Topographical_Attention, self).__init__(**kwargs)
+
 		self.A = self.add_weight('A',
 								#shape=[self.channels,self.channels,self.features],
 								shape=[self.channels,self.features],
 								initializer=tf.initializers.GlorotUniform(seed=seed),
 								dtype=tf.float32,
 								trainable=True)
-
-		super(Topographical_Attention, self).__init__(**kwargs)
 
 	"""
 	The defined topographical attention mechanism has an extra step:
