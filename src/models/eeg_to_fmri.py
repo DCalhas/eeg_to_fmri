@@ -70,7 +70,6 @@ decode: architecture that maps the encoded representation to the fMRI space repr
 call: encode and decode
 
 """
-
 class EEG_to_fMRI(tf.keras.Model):
 
 
@@ -283,7 +282,7 @@ class EEG_to_fMRI(tf.keras.Model):
         Random behaviour of GPU with tf functions does not reproduce the same results
         Call this function when getting results
     """
-    #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
+    @tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
     def call(self, x1, x2):
         if(self.training):
             return [self.decoder(x1), 
