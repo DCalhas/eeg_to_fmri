@@ -525,9 +525,9 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
-	train_set, test_set = dataset_clf_wrapper.split(fold)
-	X_train, y_train = train_set
-	X_test, y_test = test_set
+	train_data, test_data = dataset_clf_wrapper.split(fold)
+	X_train, y_train = train_data
+	X_test, y_test = test_data
 
 	with tf.device('/CPU:0'):
 		optimizer = tf.keras.optimizers.Adam(learning_rate)
@@ -540,6 +540,7 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 													X_train.shape[1:])
 		linearCLF.build(X_train.shape)
 
+	print(linearCLF.trainable_variables)
 	#train classifier
 	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 
