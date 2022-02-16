@@ -501,9 +501,21 @@ def predict(test_set, model):
 	
 	return hits, y_true, y_pred
 
+
+def explain(model, test_set, y):
+	from utils import fmri_utils
+	import tensorflow as tf
+
+	dev_views = np.empty((0,)+getattr(fmri_utils, "fmri_shape_01")+(1,))
+	for x, _ in test_set.repeat(1):
+		dev_views = np.append(dev_views, model.view(x), axis=0)
+	
+	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
+
+
 def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
 	
-	from utils import preprocess_data, tf_config, train
+	from utils import preprocess_data, tf_config, train, lrp
 
 	from models import eeg_to_fmri, classifiers
 
@@ -522,7 +534,7 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 		loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 		train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
-		dev_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
+		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
 		
 		linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
 													X_train.shape[1:])
@@ -537,6 +549,7 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 	append_labels(path_labels, y_true, y_pred)
 
 	print("Finished fold", fold)
-
-
-	
+	#explaing features
+	test_views = views(linearCLF, test_set, y_test)
+	explainer = lrp.LRP(linearCLF.clf)
+	R=lrp.explain(explainer, test_views, verbose=True)
