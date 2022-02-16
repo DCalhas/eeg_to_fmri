@@ -1,29 +1,5 @@
 import tensorflow as tf
 
-
-class SUP(tf.keras.layers.Layer):
-
-
-	def __init__(self, n, f):
-
-		self.n=n
-		self.f=f
-		super(SUP, self).__init__()
-
-	def call(self, X):
-
-		return X
-
-
-	def get_config(self):
-
-		return {"n": self.n, "f": self.n}
-
-	@classmethod
-	def from_config(cls, config):
-		return cls(**config)
-
-
 """
 Topographical_Attention:
 
@@ -65,14 +41,11 @@ class Topographical_Attention(tf.keras.layers.Layer):
 	""" 
 	def call(self, X):
 
-		return X
-
 		c = tf.tensordot(X, self.A, axes=[[2], [1]])
 		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
-		return W
 
-		return [tf.linalg.matmul(W, X), self.attention_scores]
+		return tf.linalg.matmul(W, X), self.attention_scores
 		#return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
 
 	def lrp(self, x, y):
