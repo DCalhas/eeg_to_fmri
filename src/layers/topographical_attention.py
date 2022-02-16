@@ -33,7 +33,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		it has shape NxNxF
 		the F refers to the feature dimension that is reduced
 	"""
-	@tf.function(input_signature=tf.TensorSpec([None,64,1340], tf.float32))
+	@tf.function(input_signature=[tf.TensorSpec([None,64,1340], tf.float32)])
 	def call(self, X):
 
 		c = tf.tensordot(X, self.A, axes=[[2], [1]])
