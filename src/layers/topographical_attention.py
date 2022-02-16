@@ -42,7 +42,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		self.attention_scores = W
 
 		#sum over M all M channels are multiplied by the attention scores over axis M that is normalized 
-		return tf.linalg.matmul(W, X) self.attention_scores
+		return tf.linalg.matmul(W, X), self.attention_scores
 		#return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
 
 	def lrp(self, x, y):
