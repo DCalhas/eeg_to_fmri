@@ -503,7 +503,7 @@ def predict(test_set, model):
 	return hits, y_true, y_pred
 
 
-def explain(model, test_set, y):
+def views(model, test_set, y):
 	from utils import fmri_utils
 	import tensorflow as tf
 	import numpy as np
