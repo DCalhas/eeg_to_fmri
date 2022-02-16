@@ -17,14 +17,6 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		
 		super(Topographical_Attention, self).__init__(**kwargs)
 
-	def build(self, input_shape):
-		self.A = self.add_weight('A',
-								#shape=[self.channels,self.channels,self.features],
-								shape=[self.channels,self.features],
-								initializer=tf.initializers.GlorotUniform(seed=self.seed),
-								dtype=tf.float32,
-								trainable=True)
-
 
 	#def compute_output_signature(self, input_signature):
 	#	return [tf.TensorSpec(shape=(None, self.channels, self.features), dtype=tf.float32),
@@ -39,19 +31,10 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		it has shape NxNxF
 		the F refers to the feature dimension that is reduced
 	"""
-	@tf.function(input_signature=[tf.TensorSpec(shape=(None,64,1340), dtype=tf.float32)])
 	def call(self, X):
 
 		return X
-
-		c = tf.tensordot(X, self.A, axes=[[2], [1]])
-		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
-		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
-		return W
-
-		return [tf.linalg.matmul(W, X), self.attention_scores]
-		#return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
-
+		
 	def lrp(self, x, y):
 		#store attention scores
 		self.call(x)
