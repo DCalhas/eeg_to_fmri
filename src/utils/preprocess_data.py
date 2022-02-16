@@ -1,5 +1,3 @@
-import tensorflow as tf
-
 from utils import data_utils, eeg_utils, fmri_utils
 
 import sys

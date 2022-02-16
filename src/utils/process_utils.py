@@ -438,6 +438,9 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 
 
 def create_labels(dataset, path):
+
+	import numpy as np
+	
 	y_pred = np.empty((0,2), dtype="float32")
 	y_true = np.empty((0,2), dtype="float32")
 
