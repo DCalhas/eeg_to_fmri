@@ -457,6 +457,7 @@ def setup_data_loocv(dataset, epochs, learning_rate, batch_size, gpu_mem, seed, 
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=True, load_path=None)
 
+	dataset_clf_wrapper.save(path_labels)
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		launch_process(loocv,
