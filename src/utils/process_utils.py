@@ -427,6 +427,8 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 
 	print("I: Starting pretraining of synthesis network")
 
+	#remove this
+	epochs=0
 	loss_history = train.train(train_set, model, optimizer, 
 							loss_fn, epochs=epochs, 
 							u_architecture=True,
@@ -440,9 +442,36 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 def create_labels(dataset, path):
 
 	import numpy as np
-	
+
 	y_pred = np.empty((0,2), dtype="float32")
 	y_true = np.empty((0,2), dtype="float32")
 
 	np.save(path+"y_pred.npy", y_pred, allow_pickle=True)
 	np.save(path+"y_true.npy", y_true, allow_pickle=True)
+
+
+
+def setup_data_loocv(dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
+
+	from utils import preprocess_data
+
+	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=True, load_path=None)
+
+
+	for i in range(dataset_clf_wrapper.n_individuals):
+		launch_process(loocv,
+					(i, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels))
+
+def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
+	
+	from utils import preprocess_data
+
+	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
+
+	train_set, test_set = dataset_clf_wrapper.split(i)
+	X_train, y_train = train_set
+	X_test, y_test = test_set
+
+
+	print(X_train.shape, X_test.shape)
+	print(y_train.shape, y_test.shape)

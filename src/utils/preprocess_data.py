@@ -159,3 +159,92 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 	y_test = y_test.astype('float32')
 
 	return (X_train, y_train), (X_test, y_test)
+
+
+
+"""
+This class is a wrapper for a dataset that returns the folds in a cross validation setting
+"""
+class Dataset_CLF_CV:
+
+
+	"""
+	Inputs:
+		* str - dataset identifier
+		* bool - mutate_bands mutate frequency domain to correspond to bands (DEPRECATED)
+		* bool - f_resample resample EEG signal, used for STFT window size
+		* bool - raw_eeg whether to return EEG as channel time or channel frequency time
+		* bool - raw_eeg_resample if (raw EEG) should be resampled to f_resample
+		* bool - eeg_limit whether to give a frequency high pass filter
+		* int - eeg_f_limit frequency high pass filter value
+		* bool - standardize_eeg whether or not to scale the dataset to be a Normal(0,1)
+		* bool - verbose whether to print state of execution
+	"""
+	def __init__(self, dataset, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, standardize_eeg=False, load=True, load_path=None, verbose=False):
+		assert dataset in ["10", "11"], "Dataset not recognized, may not yet be implemented"
+
+		if(dataset=="10"):
+			self.n_individuals = 43
+			self.recording_time=203
+		elif(dataset=="11"):
+			self.n_individuals = 31
+			self.recording_time=90
+			
+		self.eeg_limit=eeg_limit
+		self.eeg_f_limit=eeg_f_limit
+		self.interval_eeg=10
+
+		if(load):
+			X, y = data_utils.load_data_clf(dataset, n_individuals=self.n_individuals, 
+											mutate_bands=mutate_bands, f_resample=f_resample, 
+											raw_eeg=raw_eeg, raw_eeg_resample=raw_eeg_resample, 
+											eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit, 
+											recording_time=self.recording_time,
+											standardize_eeg=standardize_eeg)
+			
+			self.X, self.y = data_utils.create_clf_pairs(self.n_individuals, 
+														X, y, raw_eeg=raw_eeg,
+														recording_time=self.recording_time, 
+														interval_eeg=self.interval_eeg)
+		else:
+			self.load(load_path)
+
+		self.folds=self.n_individuals
+		self.ind_time=(self.X.shape[0])//(self.n_individuals)
+	
+	"""
+	Inputs:
+		* int - number of folds, default is leave one out
+	"""
+	def set_folds(self, n):
+		
+		self.folds=n
+		
+	"""
+	Inputs:
+		* int - fold number
+	Outputs:
+		* tuple(tuple, tuple) - train test split
+	"""
+	def split(self, fold):
+		
+		assert fold < self.n_individuals, "A fold is within {0, 1, ..., N-1} for a total of N folds"
+		
+		return (np.append(self.X[:i*self.ind_time], self.X[i*self.ind_time+self.ind_time:], axis=0), 
+						np.append(self.y[:i*self.ind_time], self.y[i*self.ind_time+self.ind_time:], axis=0)), \
+				(self.X[i*self.ind_time:i*self.ind_time+self.ind_time], 
+						 self.y[i*self.ind_time:i*self.ind_time+self.ind_time])
+
+	"""
+	Save data to numpy array to ease loading bottleneck
+	"""
+	def save(self, path):
+		np.save(path+"X.npy", self.X, allow_pickle=True)
+		np.save(path+"y.npy", self.y, allow_pickle=True)
+
+	"""
+	Load data from .npy file
+	"""
+	def load(self, path):
+		self.X = np.load(path+"X.npy", allow_pickle=True)
+		self.y = np.load(path+"y.npy", allow_pickle=True)
