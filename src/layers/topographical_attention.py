@@ -8,7 +8,7 @@ class SUP(tf.keras.layers.Layer):
 
 		self.n=n
 		self.f=f
-
+		super(SUP, self).__init__()
 
 	def call(self, X):
 
