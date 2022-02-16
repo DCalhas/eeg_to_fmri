@@ -522,6 +522,7 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 	import tensorflow as tf
 
 	tf_config.set_seed(seed=seed)
+	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
