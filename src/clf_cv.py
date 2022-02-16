@@ -47,4 +47,6 @@ process_utils.launch_process(process_utils.train_synthesis,
 
 #create predictions and true labels
 process_utils.launch_process(process_utils.create_labels,
-							(datatset_clf, path_labels))
+							(dataset_clf, path_labels))
+
+
