@@ -230,10 +230,10 @@ class Dataset_CLF_CV:
 		
 		assert fold < self.n_individuals, "A fold is within {0, 1, ..., N-1} for a total of N folds"
 		
-		return (np.append(self.X[:i*self.ind_time], self.X[i*self.ind_time+self.ind_time:], axis=0), 
-						np.append(self.y[:i*self.ind_time], self.y[i*self.ind_time+self.ind_time:], axis=0)), \
-				(self.X[i*self.ind_time:i*self.ind_time+self.ind_time], 
-						 self.y[i*self.ind_time:i*self.ind_time+self.ind_time])
+		return (np.append(self.X[:fold*self.ind_time], self.X[fold*self.ind_time+self.ind_time:], axis=0), 
+						np.append(self.y[:fold*self.ind_time], self.y[fold*self.ind_time+self.ind_time:], axis=0)), \
+				(self.X[fold*self.ind_time:fold*self.ind_time+self.ind_time], 
+						 self.y[fold*self.ind_time:fold*self.ind_time+self.ind_time])
 
 	"""
 	Save data to numpy array to ease loading bottleneck

@@ -17,8 +17,6 @@ from os import listdir
 from os.path import isfile, join, isdir
 from pathlib import Path
 
-from layers import fft
-
 home = str(Path.home())
 
 TR_01=2.160
@@ -206,6 +204,7 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
     fmri_individuals=[]
 
     if(downsample):
+        from layers import fft
         dct=None
         idct=None
     
