@@ -522,7 +522,7 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 	import tensorflow as tf
 
 	tf_config.set_seed(seed=seed)
-	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
+	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
@@ -552,6 +552,12 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 
 	print("Finished fold", fold)
 	#explaing features
-	test_views = views(linearCLF, test_set, y_test)
-	explainer = lrp.LRP(linearCLF.clf)
-	R=lrp.explain(explainer, test_views, verbose=True)
+	#explain to fMRI view
+	explainer=lrp.LRP(linearCLF.clf)
+	R=lrp.explain(explainer, views(linearCLF, test_set, y_test), verbose=True)
+	#explain to EEG channels
+	explainer=lrp.LRP_EEG(linearCLF.view)
+	attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
+
+	print(R.shape)
+	print(attention_scores.shape)
