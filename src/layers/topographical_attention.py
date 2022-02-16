@@ -89,13 +89,11 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		return R
 
 	def get_config(self):
-		config = {
+		return {
 			'channels': self.channels,
 			'features': self.features,
-			'seed': self.seed,
+			'seed': self.seed
 		}
-		base_config = super(Topographical_Attention, self).get_config()
-		return dict(list(base_config.items()) + list(config.items()))
 
 	@classmethod
 	def from_config(cls, config):
