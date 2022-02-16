@@ -40,6 +40,18 @@ class ResBlock(tf.keras.layers.Layer):
 						seed=None):
 		super(ResBlock, self).__init__()
 
+		self.operation=operation
+		self.kernel_size=kernel_size
+		self.stride_size=stride_size
+		self.n_channels=n_channel
+		self.maxpool=maxpool
+		self.batch_norm=batch_norm
+		self.weight_decay=weight_decay
+		self.skip_connections=skip_connections
+		self.maxpool_k=maxpool_k
+		self.maxpool_s=maxpool_s
+		self.seed=seed
+
 		self.set_layers(operation, kernel_size, stride_size, n_channels,
 						maxpool=maxpool, batch_norm=batch_norm, 
 						weight_decay=weight_decay, skip_connections=skip_connections,
@@ -162,6 +174,26 @@ class ResBlock(tf.keras.layers.Layer):
 		#sum of the modulos, this breaks negative feature importance
 		return R_left_+R_right_
 
+	def get_config(self):
+		config = {
+			"operation": self.operation,
+			"kernel_size": self.kernel_size,
+			"stride_size": self.stride_size,
+			"n_channels": self.n_channels,
+			"maxpool": self.maxpool,
+			"batch_norm": self.batch_norm,
+			"weight_decay": self.weight_decay,
+			"skip_connections": self.skip_connections,
+			"maxpool_k": self.maxpool_k,
+			"maxpool_s": self.maxpool_s,
+			"seed": self.seed
+		}
+		base_config = super(ResBlock, self).get_config()
+		return dict(list(base_config.items()) + list(config.items()))
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
 
 
 """
