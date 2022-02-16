@@ -43,7 +43,7 @@ class ResBlock(tf.keras.layers.Layer):
 		self.operation=operation
 		self.kernel_size=kernel_size
 		self.stride_size=stride_size
-		self.n_channels=n_channel
+		self.n_channels=n_channels
 		self.maxpool=maxpool
 		self.batch_norm=batch_norm
 		self.weight_decay=weight_decay
