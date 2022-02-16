@@ -434,7 +434,7 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 							u_architecture=True,
 							val_set=None, verbose=True, verbose_batch=False)[0]
 
-	print("I: Saving synthesis network at ", save_path)
+	print("I: Saving synthesis network at", save_path)
 
 	model.save(save_path, save_format="tf", save_traces=False)
 
@@ -503,7 +503,7 @@ def predict(test_set, model):
 
 def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
 	
-	from utils import preprocess_data, tf_config
+	from utils import preprocess_data, tf_config, train
 
 	from models import eeg_to_fmri, classifiers
 
