@@ -498,8 +498,8 @@ def predict(test_set, model):
 			y_true=np.append(y_true,0.0)
 		
 		y_pred=np.append(y_pred, tf.nn.softmax(model(x), axis=-1).numpy()[0,1])
-    
-    return hits, y_true, y_pred
+	
+	return hits, y_true, y_pred
 
 def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
 	
