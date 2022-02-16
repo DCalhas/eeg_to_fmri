@@ -450,6 +450,7 @@ def create_labels(dataset, path):
 	np.save(path+"y_true.npy", y_true, allow_pickle=True)
 
 def append_labels(path, y_true, y_pred):
+	import numpy as np
 	print(np.load(path+"y_pred.npy", allow_pickle=True).shape)
 	np.save(path+"y_pred.npy",np.append(np.load(path+"y_pred.npy", allow_pickle=True), y_pred), allow_pickle=True)
 	np.save(path+"y_true.npy",np.append(np.load(path+"y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
@@ -505,6 +506,7 @@ def predict(test_set, model):
 def explain(model, test_set, y):
 	from utils import fmri_utils
 	import tensorflow as tf
+	import numpy as np
 
 	dev_views = np.empty((0,)+getattr(fmri_utils, "fmri_shape_01")+(1,))
 	for x, _ in test_set.repeat(1):
