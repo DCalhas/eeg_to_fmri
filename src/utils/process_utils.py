@@ -475,9 +475,9 @@ def load_data_loocv(dataset, path_labels):
 
 def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
 	
-	from utils import preprocess_data
+	from utils import preprocess_data, tf_config
 
-	from models import eeg_to_fmri
+	from models import eeg_to_fmri, classifiers
 
 	import tensorflow as tf
 
