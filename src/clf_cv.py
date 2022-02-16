@@ -51,10 +51,5 @@ process_utils.launch_process(process_utils.create_labels,
 
 
 #create predictions and true labels
-process_utils.launch_process(process_utils.setup_data_loocv,
-							(dataset_clf, epochs, learning_rate, batch_size, gpu_mem, seed, path_save_network, path_labels))
-
-
-
-
+process_utils.setup_data_loocv(dataset_clf, epochs, learning_rate, batch_size, gpu_mem, seed, path_save_network, path_labels)
 

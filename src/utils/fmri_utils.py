@@ -17,8 +17,6 @@ from os import listdir
 from os.path import isfile, join, isdir
 from pathlib import Path
 
-import tensorflow as tf
-
 from layers import fft
 
 home = str(Path.home())
