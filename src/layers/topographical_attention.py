@@ -44,7 +44,8 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		c = tf.tensordot(X, self.A, axes=[[2], [1]])
 		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
-
+		self.attention_scores=W
+		
 		return tf.linalg.matmul(W, X), self.attention_scores
 		#return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
 
