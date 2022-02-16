@@ -26,9 +26,9 @@ class Topographical_Attention(tf.keras.layers.Layer):
 								trainable=True)
 
 
-	def compute_output_signature(self, input_signature):
-		return [tf.TensorSpec(shape=(None, self.channels, self.features), dtype=tf.float32),
-				tf.TensorSpec(shape=(None, self.channels, self.channels), dtype=tf.float32)]
+	#def compute_output_signature(self, input_signature):
+	#	return [tf.TensorSpec(shape=(None, self.channels, self.features), dtype=tf.float32),
+	#			tf.TensorSpec(shape=(None, self.channels, self.channels), dtype=tf.float32)]
 
 	"""
 	The defined topographical attention mechanism has an extra step:
