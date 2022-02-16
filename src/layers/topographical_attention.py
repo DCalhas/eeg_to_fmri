@@ -39,6 +39,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		it has shape NxNxF
 		the F refers to the feature dimension that is reduced
 	"""
+	@tf.function(input_signature=[tf.TensorSpec(shape=(None,64,1340), dtype=tf.float32)])
 	def call(self, X):
 
 		c = tf.tensordot(X, self.A, axes=[[2], [1]])
@@ -46,13 +47,6 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
 		self.attention_scores = W
 
-
-		return tf.linalg.matmul(W, X)
-		print(self.attention_scores.shape)
-
-		#sum over M all M channels are multiplied by the attention scores over axis M that is normalized 
-		print(tf.linalg.matmul(W, X))
-		print(self.attention_scores)
 		return [tf.linalg.matmul(W, X), self.attention_scores]
 		#return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
 
