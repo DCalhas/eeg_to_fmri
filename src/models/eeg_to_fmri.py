@@ -162,6 +162,7 @@ class EEG_to_fMRI(tf.keras.Model):
             topo_layer = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2])
             x = topo_layer(x)
             attention_scores=topo_layer.attention_scores
+            print(attention_scores)
             #reshape back to original shape
             x = tf.keras.layers.Reshape(self._input_shape)(x)
             previous_block_x = x
