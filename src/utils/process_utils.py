@@ -469,7 +469,7 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
-	train_set, test_set = dataset_clf_wrapper.split(i)
+	train_set, test_set = dataset_clf_wrapper.split(fold)
 	X_train, y_train = train_set
 	X_test, y_test = test_set
 
