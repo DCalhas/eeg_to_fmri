@@ -541,7 +541,6 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 													X_train.shape[1:])
 		linearCLF.build(X_train.shape)
 
-	print(linearCLF.trainable_variables)
 	#train classifier
 	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 
