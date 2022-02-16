@@ -46,6 +46,8 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
 		self.attention_scores = W
 
+
+		return tf.linalg.matmul(W, X)
 		print(self.attention_scores.shape)
 
 		#sum over M all M channels are multiplied by the attention scores over axis M that is normalized 
