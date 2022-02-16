@@ -24,12 +24,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 								initializer=tf.initializers.GlorotUniform(seed=self.seed),
 								dtype=tf.float32,
 								trainable=True)
-
-
-	#def compute_output_signature(self, input_signature):
-	#	return [tf.TensorSpec(shape=(None, self.channels, self.features), dtype=tf.float32),
-	#			tf.TensorSpec(shape=(None, self.channels, self.channels), dtype=tf.float32)]
-
+		
 	"""
 	The defined topographical attention mechanism has an extra step:
 
@@ -45,7 +40,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
 		self.attention_scores=W
-		
+
 		return tf.linalg.matmul(W, X), self.attention_scores
 		#return tf.einsum('NMF,NCM->NCF', X, W), self.attention_scores
 
