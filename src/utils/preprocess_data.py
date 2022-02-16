@@ -206,6 +206,9 @@ class Dataset_CLF_CV:
 														X, y, raw_eeg=raw_eeg,
 														recording_time=self.recording_time, 
 														interval_eeg=self.interval_eeg)
+
+			self.X = np.expand_dims(self.X, axis=-1)
+			self.y = np.expand_dims(self.y, axis=-1)
 		else:
 			self.load(load_path)
 
