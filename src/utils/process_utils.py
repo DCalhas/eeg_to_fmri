@@ -455,18 +455,30 @@ def setup_data_loocv(dataset, epochs, learning_rate, batch_size, gpu_mem, seed, 
 
 	from utils import preprocess_data
 
-	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=True, load_path=None)
+	launch_process(load_data_loocv,
+					(dataset, path_labels))
 
-	dataset_clf_wrapper.save(path_labels)
+	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		launch_process(loocv,
 					(i, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels))
 
+def load_data_loocv(dataset, path_labels):
+	from utils import preprocess_data
+
+	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, eeg_limit=True, 
+														eeg_f_limit=134, standardize_eeg=True, 
+														load=True, load_path=None)
+
+	dataset_clf_wrapper.save(path_labels)
+
 def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
 	
 	from utils import preprocess_data
 
+	import tensorflow as tf
+	
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
 	train_set, test_set = dataset_clf_wrapper.split(fold)
