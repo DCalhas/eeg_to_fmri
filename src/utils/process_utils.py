@@ -348,3 +348,98 @@ def cross_validation_eeg_fmri(score, fourier_features, random_fourier,
 		score.value += train.evaluate(dev_set, model, loss_fn)
 
 	score.value = (score.value-1.0)/n_folds
+
+
+def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
+	#imports
+	import tensorflow as tf
+
+	from utils import data_utils, preprocess_data, tf_config, train, losses_utils
+
+	from models import eeg_to_fmri
+
+	interval_eeg=10
+	tf_config.set_seed(seed=seed)#02 20
+	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
+
+	from pathlib import Path
+
+	import numpy as np
+
+	import pickle
+
+
+	raw_eeg=False
+
+	theta = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1)
+	#unroll hyperparameters
+	learning_rate=float(theta[0])
+	weight_decay = float(theta[1])
+	kernel_size = theta[2]
+	stride_size = theta[3]
+	batch_size=int(theta[4])
+	latent_dimension=theta[5]
+	n_channels=int(theta[6])
+	max_pool=bool(theta[7])
+	batch_norm=bool(theta[8])
+	skip_connections=bool(theta[9])
+	dropout=bool(theta[10])
+	n_stacks=int(theta[11])
+	outfilter=int(theta[12])
+	local=True
+	with open(str(Path.home())+"/eeg_to_fmri/na_models_eeg/na_specification_2", "rb") as f:
+		na_specification_eeg = pickle.load(f)
+	with open(str(Path.home())+"/eeg_to_fmri/na_models_fmri/na_specification_2", "rb") as f:
+		na_specification_fmri = pickle.load(f)
+
+	with tf.device('/CPU:0'):
+		
+		train_data, _ = preprocess_data.dataset(dataset, 
+														n_individuals=getattr(data_utils, "n_individuals_"+dataset),
+														interval_eeg=interval_eeg, 
+														ind_volume_fit=False,
+														standardize_fmri=True,
+														iqr=False,
+														verbose=True)
+		eeg_train, fmri_train = train_data
+		
+		model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
+							weight_decay=weight_decay, skip_connections=True,
+							batch_norm=True, #dropout=False,
+							fourier_features=True,
+							random_fourier=True,
+							topographical_attention=True,
+							conditional_attention_style=True,
+							conditional_attention_style_prior=False,
+							inverse_DFT=False, DFT=False,
+							variational_iDFT=False,
+							variational_coefs=(15,15,15),
+							low_resolution_decoder=False,
+							local=True, seed=None, 
+							fmri_args = (latent_dimension, fmri_train.shape[1:], 
+							kernel_size, stride_size, n_channels, 
+							max_pool, batch_norm, weight_decay, skip_connections,
+							n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
+		model.build(eeg_train.shape, fmri_train.shape)
+		optimizer = tf.keras.optimizers.Adam(learning_rate)
+		loss_fn = losses_utils.mae_cosine
+		train_set = tf.data.Dataset.from_tensor_slices((eeg_train, fmri_train)).batch(batch_size)
+
+	print("I: Starting pretraining of synthesis network")
+
+	loss_history = train.train(train_set, model, optimizer, 
+							loss_fn, epochs=epochs, 
+							u_architecture=True,
+							val_set=None, verbose=True, verbose_batch=False)[0]
+
+	print("I: Saving synthesis network at ", save_path)
+
+	model.save(save_path, save_format="tf", save_traces=False)
+
+
+def create_labels(dataset, path):
+	y_pred = np.empty((0,2), dtype="float32")
+	y_true = np.empty((0,2), dtype="float32")
+
+	np.save(path+"y_pred.npy", y_pred, allow_pickle=True)
+	np.save(path+"y_true.npy", y_true, allow_pickle=True)
