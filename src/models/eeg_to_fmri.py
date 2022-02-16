@@ -168,7 +168,7 @@ class EEG_to_fMRI(tf.keras.Model):
             previous_block_x = input_shape
 
         for i in range(len(na_spec[0])):
-            x = ResBlock(tf.keras.layers.Conv3D, 
+            x = ResBlock("Conv3D", 
                         na_spec[0][i], na_spec[1][i], n_channels,
                         maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],

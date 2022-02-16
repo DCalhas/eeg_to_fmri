@@ -52,7 +52,7 @@ class ResBlock(tf.keras.layers.Layer):
 		self.maxpool_s=maxpool_s
 		self.seed=seed
 
-		self.set_layers(operation, kernel_size, stride_size, n_channels,
+		self.set_layers(getattr(tf.keras.layers, operation), kernel_size, stride_size, n_channels,
 						maxpool=maxpool, batch_norm=batch_norm, 
 						weight_decay=weight_decay, skip_connections=skip_connections,
 						maxpool_k=maxpool_k, maxpool_s=maxpool_s, seed=seed)
