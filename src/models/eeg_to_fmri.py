@@ -335,7 +335,7 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "fMRI_AE": fmri_ae.fMRI_AE,
                 "RandomFourierFeatures": RandomFourierFeatures}
 
-                
+
 """
 
 """
@@ -356,7 +356,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     def build_encoder(self, pretrained_model, seed=None):
 
         attention_scores=None
-
+        print(self._input_shape)
         input_shape = tf.keras.layers.Input(shape=self._input_shape)
 
         x = input_shape
@@ -367,6 +367,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #reshape back to original shape
         x = tf.keras.layers.Reshape(self._input_shape)(x)
         previous_block_x = x
+
+        print(x.shape)
         
         #set the rest of the layers, but untrainable
         resblocks = pretrained_model.layers[1].layers[4:-3]
