@@ -14,6 +14,12 @@ import shutil
 import os
 import pickle
 
+custom_objects={"Topographical_Attention": topographical_attention.Topographical_Attention,
+                "EEG_to_fMRI": eeg_to_fmri.EEG_to_fMRI,
+                "ResBlock": resnet_block.ResBlock,
+                "fMRI_AE": fmri_ae.fMRI_AE,
+                "RandomFourierFeatures": fourier_features.RandomFourierFeatures}
+
 search_space = [{'name': 'learning_rate', 'type': 'continuous',
 					'domain': (1e-5, 1e-2)},
 					{'name': 'reg', 'type': 'continuous',

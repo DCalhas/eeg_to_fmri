@@ -468,7 +468,7 @@ def load_data_loocv(dataset, path_labels):
 	from utils import preprocess_data
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, eeg_limit=True, 
-														eeg_f_limit=134, standardize_eeg=True, 
+														eeg_f_limit=135, standardize_eeg=True, 
 														load=True, load_path=None)
 
 	dataset_clf_wrapper.save(path_labels)
@@ -477,14 +477,27 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 	
 	from utils import preprocess_data
 
+	from models import eeg_to_fmri
+
 	import tensorflow as tf
-	
+
+	tf_config.set_seed(seed=seed)
+
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
 	train_set, test_set = dataset_clf_wrapper.split(fold)
 	X_train, y_train = train_set
 	X_test, y_test = test_set
 
+	with tf.device('/CPU:0'):
+		optimizer = tf.keras.optimizers.Adam(learning_rate)
+		loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
-	print(X_train.shape, X_test.shape)
-	print(y_train.shape, y_test.shape)
+		train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
+		dev_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
+		
+		linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
+													X_train.shape[1:])
+		linearCLF.build(X_train.shape)
+
+	print(linearCLF.summary())
