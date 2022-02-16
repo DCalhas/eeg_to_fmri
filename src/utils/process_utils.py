@@ -443,12 +443,16 @@ def create_labels(dataset, path):
 
 	import numpy as np
 
-	y_pred = np.empty((0,2), dtype="float32")
-	y_true = np.empty((0,2), dtype="float32")
+	y_pred = np.empty((0,), dtype="float32")
+	y_true = np.empty((0,), dtype="float32")
 
 	np.save(path+"y_pred.npy", y_pred, allow_pickle=True)
 	np.save(path+"y_true.npy", y_true, allow_pickle=True)
 
+def append_labels(path, y_true, y_pred):
+	print(np.load(path+"y_pred.npy", allow_pickle=True).shape)
+	np.save(path+"y_pred.npy",np.append(np.load(path+"y_pred.npy", allow_pickle=True), y_pred), allow_pickle=True)
+	np.save(path+"y_true.npy",np.append(np.load(path+"y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
 def setup_data_loocv(dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
@@ -472,6 +476,30 @@ def load_data_loocv(dataset, path_labels):
 														load=True, load_path=None)
 
 	dataset_clf_wrapper.save(path_labels)
+
+def predict(test_set, model):
+	import numpy as np
+	import tensorflow as tf
+
+	hits = np.empty((0,))
+	y_true = np.empty((0,))
+	y_pred = np.empty((0,))
+
+	for x,y in test_set.repeat(1):
+		
+		if(tf.math.reduce_all(tf.math.equal(tf.math.argmax(y, axis=-1), tf.math.argmax(model(x), axis=-1))).numpy()):
+			hits = np.append(hits, 1.0)
+		else:
+			hits = np.append(hits, 0.0)
+			
+		if(y.numpy()[0,1]==1.0):
+			y_true=np.append(y_true,1.0)
+		else:
+			y_true=np.append(y_true,0.0)
+		
+		y_pred=np.append(y_pred, tf.nn.softmax(model(x), axis=-1).numpy()[0,1])
+    
+    return hits, y_true, y_pred
 
 def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
 	
@@ -500,4 +528,15 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 													X_train.shape[1:])
 		linearCLF.build(X_train.shape)
 
-	print(linearCLF.summary())
+	#train classifier
+	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
+
+	#get predictions
+	hits, y_true, y_pred = predict(test_set, linearCLF)
+	#save predictions
+	append_labels(path_labels, y_true, y_pred)
+
+	print("Finished fold", fold)
+
+
+	
