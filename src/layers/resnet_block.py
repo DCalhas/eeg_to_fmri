@@ -37,8 +37,8 @@ class ResBlock(tf.keras.layers.Layer):
 						maxpool=True, batch_norm=True, 
 						weight_decay=0.000, skip_connections=True,
 						maxpool_k=None, maxpool_s=None,
-						seed=None):
-		super(ResBlock, self).__init__()
+						seed=None, **kwargs):
+		super(ResBlock, self).__init__(**kwargs)
 
 		self.operation=operation
 		self.kernel_size=kernel_size
