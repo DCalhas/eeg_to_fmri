@@ -427,8 +427,6 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 
 	print("I: Starting pretraining of synthesis network")
 
-	#remove this
-	epochs=0
 	loss_history = train.train(train_set, model, optimizer, 
 							loss_fn, epochs=epochs, 
 							u_architecture=True,
