@@ -522,6 +522,8 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 
 	import tensorflow as tf
 
+	import numpy as np
+
 	tf_config.set_seed(seed=seed)
 	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
 
@@ -567,3 +569,25 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 		print(np.load(path_labels+"attention_scores.npy", allow_pickle=True).shape)
 		np.save(path_labels+"R.npy", np.append(np.load(path_labels+"R.npy", allow_pickle=True), R), allow_pickle=True)
 		np.save(path_labels+"attention_scores.npy", np.append(np.load(path_labels+"attention_scores.npy", allow_pickle=True), attention_scores), allow_pickle=True)
+
+
+def compute_acc_metrics(path):
+
+	import numpy as np
+
+	y_pred = np.load(path+"y_pred.npy", allow_pickle=True)
+	y_true = np.load(path+"y_true.npy", allow_pickle=True)
+
+	#true positive
+	tp = len(np.where(y_pred[np.where(y_true==1.0)] >= 0.5)[0])
+	#true negative
+	tn = len(np.where(y_pred[np.where(y_true==0.0)] < 0.5)[0])
+	#false positive
+	fp = len(np.where(y_pred[np.where(y_true==0.0)] >= 0.5)[0])
+	#false negative
+	fn = len(np.where(y_pred[np.where(y_true==1.0)] < 0.5)[0])
+
+	print("Accuracy:", (tn+tp)/(tn+tp+fn+fp))
+	print("Sensitivity:", (tp)/(tp+fn))
+	print("Specificity:", (tn)/(tn+fp))
+	print("F1-score:", (tp)/(tp+0.5*(fp+fn)))
