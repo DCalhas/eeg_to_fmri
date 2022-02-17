@@ -475,7 +475,8 @@ def load_data_loocv(view, dataset, path_labels):
 	if(view=="raw"):
 		raw_eeg=True
 
-	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, eeg_limit=True, 
+	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset,
+														eeg_limit=True, raw_eeg=raw_eeg,
 														eeg_f_limit=135, standardize_eeg=True, 
 														load=True, load_path=None)
 
@@ -555,7 +556,7 @@ def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed,
 	#train classifier
 	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 
-	#get predictions
+	#get predictionsf
 	hits, y_true, y_pred = predict(test_set, linearCLF)
 	#save predictions
 	append_labels(view, path_labels, y_true, y_pred)
@@ -575,9 +576,7 @@ def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed,
 			np.save(path_labels+"attention_scores.npy", attention_scores, allow_pickle=True)
 		else:
 			np.save(path_labels+"R.npy", np.append(np.load(path_labels+"R.npy", allow_pickle=True), R, axis=0), allow_pickle=True)
-			print(np.append(np.load(path_labels+"R.npy", allow_pickle=True), R, axis=0).shape)
 			np.save(path_labels+"attention_scores.npy", np.append(np.load(path_labels+"attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
-			print(np.append(np.load(path_labels+"attention_scores.npy", allow_pickle=True), attention_scores, axis=0).shape)
 
 
 def compute_acc_metrics(view, path):
