@@ -460,7 +460,7 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 	launch_process(load_data_loocv,
 					(view, dataset, path_labels))
 
-	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
+	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=False, load=False, load_path=path_labels)
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		launch_process(loocv,
@@ -475,7 +475,7 @@ def load_data_loocv(view, dataset, path_labels):
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset,
 														eeg_limit=True, raw_eeg=raw_eeg,
-														eeg_f_limit=135, standardize_eeg=True, 
+														eeg_f_limit=135, standardize_eeg=False, 
 														load=True, load_path=None)
 
 	dataset_clf_wrapper.save(path_labels)
@@ -530,7 +530,7 @@ def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed,
 	tf_config.set_seed(seed=seed)
 	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
 
-	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
+	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=False, load=False, load_path=path_labels)
 
 	train_data, test_data = dataset_clf_wrapper.split(fold)
 	X_train, y_train = train_data
