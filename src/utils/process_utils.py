@@ -451,7 +451,6 @@ def create_labels(dataset, path):
 
 def append_labels(path, y_true, y_pred):
 	import numpy as np
-	print(np.load(path+"y_pred.npy", allow_pickle=True).shape)
 	np.save(path+"y_pred.npy",np.append(np.load(path+"y_pred.npy", allow_pickle=True), y_pred), allow_pickle=True)
 	np.save(path+"y_true.npy",np.append(np.load(path+"y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
@@ -559,6 +558,12 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 	#explain to EEG channels
 	explainer=lrp.LRP_EEG(linearCLF.view)
 	attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
-
-	print(R.shape)
-	print(attention_scores.shape)
+	#save explainability
+	if(fold==0):
+		np.save(path_labels+"R.npy", R, allow_pickle=True)
+		np.save(path_labels+"attention_scores.npy", attention_scores, allow_pickle=True)
+	else:
+		print(np.load(path_labels+"R.npy", allow_pickle=True).shape)
+		print(np.load(path_labels+"attention_scores.npy", allow_pickle=True).shape)
+		np.save(path_labels+"R.npy", np.append(np.load(path_labels+"R.npy", allow_pickle=True), R), allow_pickle=True)
+		np.save(path_labels+"attention_scores.npy", np.append(np.load(path_labels+"attention_scores.npy", allow_pickle=True), attention_scores), allow_pickle=True)
