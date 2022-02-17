@@ -466,7 +466,7 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		launch_process(loocv,
-					(i, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
+					(i, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
