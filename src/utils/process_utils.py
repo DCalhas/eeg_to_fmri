@@ -439,37 +439,41 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 	model.save(save_path, save_format="tf", save_traces=False)
 
 
-def create_labels(dataset, path):
+def create_labels(view, dataset, path):
 
 	import numpy as np
 
 	y_pred = np.empty((0,), dtype="float32")
 	y_true = np.empty((0,), dtype="float32")
 
-	np.save(path+"y_pred.npy", y_pred, allow_pickle=True)
-	np.save(path+"y_true.npy", y_true, allow_pickle=True)
+	np.save(path+view+"_y_pred.npy", y_pred, allow_pickle=True)
+	np.save(path+view+"_y_true.npy", y_true, allow_pickle=True)
 
-def append_labels(path, y_true, y_pred):
+def append_labels(view, path, y_true, y_pred):
 	import numpy as np
-	np.save(path+"y_pred.npy",np.append(np.load(path+"y_pred.npy", allow_pickle=True), y_pred), allow_pickle=True)
-	np.save(path+"y_true.npy",np.append(np.load(path+"y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
+	np.save(path+view+"_y_pred.npy",np.append(np.load(path+view+"_y_pred.npy", allow_pickle=True), y_pred), allow_pickle=True)
+	np.save(path+view+"_y_true.npy",np.append(np.load(path+view+"_y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
+def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
 
 	from utils import preprocess_data
 
 	launch_process(load_data_loocv,
-					(dataset, path_labels))
+					(view, dataset, path_labels))
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		launch_process(loocv,
-					(i, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels))
+					(i, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
 
-def load_data_loocv(dataset, path_labels):
+def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
+	
+	raw_eeg=False
+	if(view=="raw"):
+		raw_eeg=True
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, eeg_limit=True, 
 														eeg_f_limit=135, standardize_eeg=True, 
@@ -514,7 +518,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_network, path_labels):
+def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
 	
 	from utils import preprocess_data, tf_config, train, lrp
 
@@ -550,33 +554,34 @@ def loocv(fold, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, path_
 	#get predictions
 	hits, y_true, y_pred = predict(test_set, linearCLF)
 	#save predictions
-	append_labels(path_labels, y_true, y_pred)
+	append_labels(view, path_labels, y_true, y_pred)
 
 	print("Finished fold", fold)
-	#explaing features
-	#explain to fMRI view
-	explainer=lrp.LRP(linearCLF.clf)
-	R=lrp.explain(explainer, views(linearCLF, test_set, y_test), verbose=True)
-	#explain to EEG channels
-	explainer=lrp.LRP_EEG(linearCLF.view)
-	attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
-	#save explainability
-	if(fold==0):
-		np.save(path_labels+"R.npy", R, allow_pickle=True)
-		np.save(path_labels+"attention_scores.npy", attention_scores, allow_pickle=True)
-	else:
-		print(np.load(path_labels+"R.npy", allow_pickle=True).shape)
-		print(np.load(path_labels+"attention_scores.npy", allow_pickle=True).shape)
-		np.save(path_labels+"R.npy", np.append(np.load(path_labels+"R.npy", allow_pickle=True), R), allow_pickle=True)
-		np.save(path_labels+"attention_scores.npy", np.append(np.load(path_labels+"attention_scores.npy", allow_pickle=True), attention_scores), allow_pickle=True)
+	if(save_explainability):
+		#explaing features
+		#explain to fMRI view
+		explainer=lrp.LRP(linearCLF.clf)
+		R=lrp.explain(explainer, views(linearCLF, test_set, y_test), verbose=True)
+		#explain to EEG channels
+		explainer=lrp.LRP_EEG(linearCLF.view)
+		attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
+		#save explainability
+		if(fold==0):
+			np.save(path_labels+"R.npy", R, allow_pickle=True)
+			np.save(path_labels+"attention_scores.npy", attention_scores, allow_pickle=True)
+		else:
+			np.save(path_labels+"R.npy", np.append(np.load(path_labels+"R.npy", allow_pickle=True), R, axis=0), allow_pickle=True)
+			print(np.append(np.load(path_labels+"R.npy", allow_pickle=True), R, axis=0).shape)
+			np.save(path_labels+"attention_scores.npy", np.append(np.load(path_labels+"attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
+			print(np.append(np.load(path_labels+"attention_scores.npy", allow_pickle=True), attention_scores, axis=0).shape)
 
 
-def compute_acc_metrics(path):
+def compute_acc_metrics(view, path):
 
 	import numpy as np
 
-	y_pred = np.load(path+"y_pred.npy", allow_pickle=True)
-	y_true = np.load(path+"y_true.npy", allow_pickle=True)
+	y_pred = np.load(path+view+"_y_pred.npy", allow_pickle=True)
+	y_true = np.load(path+view+"_y_true.npy", allow_pickle=True)
 
 	#true positive
 	tp = len(np.where(y_pred[np.where(y_true==1.0)] >= 0.5)[0])
