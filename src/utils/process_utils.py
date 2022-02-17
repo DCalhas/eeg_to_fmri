@@ -544,8 +544,12 @@ def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed,
 		train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
 		
-		linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
-													X_train.shape[1:])
+
+		if(view=="fmri"):
+			linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
+														X_train.shape[1:])
+		else:
+			linearCLF = classifiers.LinearClassifier()
 		linearCLF.build(X_train.shape)
 
 	#train classifier
@@ -557,7 +561,7 @@ def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed,
 	append_labels(view, path_labels, y_true, y_pred)
 
 	print("Finished fold", fold)
-	if(save_explainability):
+	if(save_explainability and view=="fmri"):
 		#explaing features
 		#explain to fMRI view
 		explainer=lrp.LRP(linearCLF.clf)
