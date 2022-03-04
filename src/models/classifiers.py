@@ -14,7 +14,6 @@ class LinearClassifier(tf.keras.Model):
 		self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
 		
 	def call(self, X):
-		print(self.flatten(X))
 		return self.linear(self.flatten(X))
 
 
