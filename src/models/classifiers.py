@@ -7,7 +7,7 @@ class LinearClassifier(tf.keras.Model):
 	
 	
 	"""
-	def __init__(self, n_classes=1, regularizer=None):
+	def __init__(self, n_classes=2, regularizer=None):
 		super(LinearClassifier, self).__init__()
 		
 		self.flatten = tf.keras.layers.Flatten()
