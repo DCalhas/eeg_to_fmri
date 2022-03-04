@@ -21,6 +21,7 @@ if __name__ == "__main__":
 	parser.add_argument('dataset_clf', choices=['10', '11'], help="Which dataset to load for classification")
 	parser.add_argument('view', choices=['raw', 'stft', 'fmri'], help="Which view to consider for classification")
 	parser.add_argument('-dataset_synth', default="01", type=str, help="Which dataset to load for synthesis")
+	parser.add_argument('-folds', default=5, type=int, help="Folds to consider in CV hyperparameter optimization")
 	parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 	parser.add_argument('-lr', default=0.001, type=float, help="Learning rate")
 	parser.add_argument('-batch_size', default=4, type=int, help="Batch size in training session")
@@ -34,6 +35,7 @@ if __name__ == "__main__":
 	dataset_synth=opt.dataset_synth
 	dataset_clf=opt.dataset_clf
 	view=opt.view
+	folds=opt.folds
 	epochs=opt.epochs
 	learning_rate=opt.lr
 	batch_size=opt.batch_size
@@ -53,7 +55,7 @@ process_utils.launch_process(process_utils.create_labels,
 							(view, dataset_clf, path_labels))
 
 #create predictions and true labels
-process_utils.setup_data_loocv(view, dataset_clf, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_save_network, path_labels)
+process_utils.setup_data_loocv(view, dataset_clf, folds, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_save_network, path_labels)
 
 #report classification metrics
 process_utils.launch_process(process_utils.compute_acc_metrics, 

@@ -453,7 +453,7 @@ def append_labels(view, path, y_true, y_pred):
 	np.save(path+view+"_y_true.npy",np.append(np.load(path+view+"_y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
+def setup_data_loocv(view, dataset, n_folds_cv, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
 
 	from utils import preprocess_data
 
@@ -467,7 +467,7 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		reg_constants = Manager().Array('d', range(2))
 		#CV hyperparameter l1 and l2 reg constants
-		regularizer_consts = cv_opt(reg_constants, i, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network)
+		regularizer_consts = cv_opt(reg_constants, i, n_folds_cv, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network)
 		#validate
 		launch_process(loocv,
 					(i, view, dataset, regularizer_consts, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
@@ -523,7 +523,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network):
+def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network):
 	import GPyOpt
 	
 	iteration=0
@@ -557,7 +557,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 		train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
 		dataset_clf_wrapper.X = train_data[0]
 		dataset_clf_wrapper.y = train_data[1]
-		dataset_clf_wrapper.set_folds(5)
+		dataset_clf_wrapper.set_folds(n_folds_cv)
 
 		score = 0.0
 		for fold in range(5):
@@ -581,6 +581,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=False, verbose_batch=False)
 			#evaluate
+			print(linearCLF(X_test))
 			score+=loss_fn(y_test[:,:,0], linearCLF(X_test))
 			
 		value[0] = score
