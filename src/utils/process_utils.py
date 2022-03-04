@@ -558,7 +558,6 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 		dataset_clf_wrapper.y = train_data[1]
 		dataset_clf_wrapper.set_folds(5)
 
-
 		score = 0.0
 		for fold in range(5):
 			train_data, test_data = dataset_clf_wrapper.split(fold)
@@ -573,10 +572,16 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 				
 				if(view=="fmri"):
 					linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
-																X_train.shape[1:])
+																X_train.shape[1:],
+																regularizer=tensorflow.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				else:
-					linearCLF = classifiers.LinearClassifier()
+					linearCLF = classifiers.LinearClassifier(regularizer=tensorflow.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				linearCLF.build(X_train.shape)
+
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
+			
+			#evaluate
+			loss_fn(y_test, linearCLF(X_test))
 
 			print(train_data[0].shape, test_data[0].shape)
 

@@ -7,11 +7,11 @@ class LinearClassifier(tf.keras.Model):
 	
 	
 	"""
-	def __init__(self, n_classes=2):
+	def __init__(self, n_classes=2, regularizer=None):
 		super(LinearClassifier, self).__init__()
 		
 		self.flatten = tf.keras.layers.Flatten()
-		self.linear = tf.keras.layers.Dense(n_classes)
+		self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
 		
 	def call(self, X):
 		
@@ -30,11 +30,11 @@ class view_EEG_classifier(tf.keras.Model):
         - EEG_to_fMRI: model
         - tupel: input_shape, eeg input shape
     """
-    def __init__(self, model, input_shape, seed=None):
+    def __init__(self, model, input_shape, regularizer=None, seed=None):
         super(view_EEG_classifier, self).__init__()
         
         self.view = pretrained_EEG_to_fMRI(model, input_shape, seed=seed)
-        self.clf = LinearClassifier()
+        self.clf = LinearClassifier(regularizer=regularizer)
     
     def build(self, input_shape):
         self.view.build(input_shape)
