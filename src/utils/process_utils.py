@@ -527,7 +527,7 @@ def views(model, test_set, y):
 def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path_labels):
 	import GPyOpt
 
-	def optimize_elastic():
+	def optimize_elastic(theta):
 
 		from utils import preprocess_data, tf_config, train
 
@@ -536,6 +536,8 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 		import tensorflow as tf
 
 		import numpy as np
+
+		l1_reg, l2_reg = (float(theta[:,0]), float(theta[:,1]))
 
 		tf_config.set_seed(seed=seed)
 		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
@@ -546,6 +548,8 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 		dataset_clf_wrapper.X = train_data[0]
 		dataset_clf_wrapper.y = train_data[1]
 		dataset_clf_wrapper.set_folds(5)
+
+		print(l1_reg, l2_reg)
 
 		return 0.0
 
