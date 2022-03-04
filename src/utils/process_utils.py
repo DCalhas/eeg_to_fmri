@@ -467,7 +467,7 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		reg_constants = Manager().Array('d', range(2))
 		#CV hyperparameter l1 and l2 reg constants
-		cv_opt(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels)
+		cv_opt(reg_constants, i, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network)
 		#validate
 		launch_process(loocv,
 					(i, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
@@ -523,7 +523,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path_labels):
+def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network):
 	import GPyOpt
 
 	def optimize_wrapper(theta):
@@ -553,20 +553,31 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
 
 		dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
-
 		train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
-
-		print(train_data[0].shape, test_data[0].shape)
-		
 		dataset_clf_wrapper.X = train_data[0]
 		dataset_clf_wrapper.y = train_data[1]
 		dataset_clf_wrapper.set_folds(5)
 
-		train_data, test_data = dataset_clf_wrapper.split(0)
 
-		print(train_data[0].shape, test_data[0].shape)
+		score = 0.0
+		for fold in range(5):
+			with tf.device('/CPU:0'):
+				optimizer = tf.keras.optimizers.Adam(learning_rate)
+				loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
-		print(l1_reg, l2_reg)
+				train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
+				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
+				
+				if(view=="fmri"):
+					linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
+																X_train.shape[1:])
+				else:
+					linearCLF = classifiers.LinearClassifier()
+				linearCLF.build(X_train.shape)
+
+			train_data, test_data = dataset_clf_wrapper.split(fold)
+
+			print(train_data[0].shape, test_data[0].shape)
 
 		value[0] = 0.0
 
