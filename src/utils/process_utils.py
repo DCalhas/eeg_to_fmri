@@ -555,6 +555,9 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 		dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
 		train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
+
+		print(train_data[0].shape, test_data[0].shape)
+		
 		dataset_clf_wrapper.X = train_data[0]
 		dataset_clf_wrapper.y = train_data[1]
 		dataset_clf_wrapper.set_folds(5)
