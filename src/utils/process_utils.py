@@ -457,6 +457,8 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 
 	from utils import preprocess_data
 
+	from multiprocessing import Manager
+
 	launch_process(load_data_loocv,
 					(view, dataset, path_labels))
 
