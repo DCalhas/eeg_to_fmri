@@ -463,6 +463,11 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
 	for i in range(dataset_clf_wrapper.n_individuals):
+		reg_constants = Manager().Array('d', range(2))
+		#CV hyperparameter l1 and l2 reg constants
+		launch_process(cv_opt,
+						(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels))
+		#validate
 		launch_process(loocv,
 					(i, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
 
@@ -515,6 +520,26 @@ def views(model, test_set, y):
 		dev_views = np.append(dev_views, model.view(x), axis=0)
 	
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
+
+
+def cv_opt(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels):
+
+	print(reg_constants)
+
+	from utils import preprocess_data, tf_config, train
+
+	from models import eeg_to_fmri, classifiers
+
+	import tensorflow as tf
+
+	import numpy as np
+
+	tf_config.set_seed(seed=seed)
+	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
+
+	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
+
+	raise NotImplementedError
 
 
 def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):

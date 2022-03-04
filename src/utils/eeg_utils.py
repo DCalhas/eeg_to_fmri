@@ -33,6 +33,7 @@ fs_02=1000
 fs_03=5000
 fs_10=2048
 fs_11=512
+fs_12=1024
 
 media_directory="/mnt/datasets/"
 dataset_03="ds002158"
