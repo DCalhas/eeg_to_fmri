@@ -531,10 +531,10 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 	def optimize_wrapper(theta):
 		from multiprocessing import Manager
 
-		l1_reg, l2_reg = (float(theta[:,0]), float(theta[:,1]))
+		l1_reg, l2_reg, batch_size, learning_rate = (float(theta[:,0]), float(theta[:,1]), int(theta[:,2]), float(theta[:,3]))
 		value = Manager().Array('d', range(1))
 
-		launch_process(optimize_elastic, (value, (l1_reg, l2_reg),))
+		launch_process(optimize_elastic, (value, (l1_reg, l2_reg, batch_size, learning_rate),))
 		print("Finished with score", value[0], end="\n\n\n")
 		return value[0]
 
@@ -548,7 +548,7 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 
 		import numpy as np
 
-		l1_reg, l2_reg = (theta)
+		l1_reg, l2_reg, batch_size, learning_rate = (theta)
 
 		tf_config.set_seed(seed=seed)
 		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
@@ -579,14 +579,17 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				linearCLF.build(X_train.shape)
 
-			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=50, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 			#evaluate
 			score+=loss_fn(y_test, linearCLF(X_test))
 			print(loss_fn(y_test, linearCLF(X_test)))
 
 		value[0]=score
 
-	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 10.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 10.)}]
+	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 10.)}, 
+						{'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 10.)},
+						{'name': 'batch_size', 'type': 'discrete', 'domain': (1,2,4,8,16,32,64)},
+						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 0.01)}]
 
 
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
