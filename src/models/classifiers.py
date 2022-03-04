@@ -14,7 +14,7 @@ class LinearClassifier(tf.keras.Model):
 		self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
 		
 	def call(self, X):
-		return self.linear(self.flatten(X))
+		return tf.keras.activations.sigmoid(self.linear(self.flatten(X)))
 
 
 """
