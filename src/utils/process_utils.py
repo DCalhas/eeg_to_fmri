@@ -535,9 +535,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 		value = Manager().Array('d', range(1))
 
 		launch_process(optimize_elastic, (value, (l1_reg, l2_reg),))
-
 		print("Finished with score", value[0], end="\n")
-		iteration+=1
 		return value[0]
 
 	def optimize_elastic(value, theta):
@@ -595,15 +593,14 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
 													acquisition_type="EI_MCMC")
-	optimizer.run_optimization(max_iter=100)
+	optimizer.run_optimization(max_iter=1)
 
 	print("Best value: ", optimizer.fx_opt)
 	print("Best hyperparameters: \n", optimizer.x_opt)
 
-	raise NotImplementedError
 
-
-
+	print(optimizer.x_opt)
+	return 
 
 def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
 	
