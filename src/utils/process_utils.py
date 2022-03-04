@@ -527,7 +527,16 @@ def views(model, test_set, y):
 def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path_labels):
 	import GPyOpt
 
-	def optimize_elastic(theta):
+	def optimize_wrapper(theta):
+		l1_reg, l2_reg = (float(theta[:,0]), float(theta[:,1]))
+		value = Manager().Array('d', range(1))
+
+		launch_process(optimize_elastic, (value, (l1_reg, l2_reg),))
+
+		print(value[0])
+		return value[0]
+
+	def optimize_elastic(value, theta):
 
 		from utils import preprocess_data, tf_config, train
 
@@ -537,7 +546,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 
 		import numpy as np
 
-		l1_reg, l2_reg = (float(theta[:,0]), float(theta[:,1]))
+		l1_reg, l2_reg = (theta)
 
 		tf_config.set_seed(seed=seed)
 		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
@@ -551,7 +560,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 
 		print(l1_reg, l2_reg)
 
-		return 0.0
+		value[0] = 0.0
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 1.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 1.)}]
 
