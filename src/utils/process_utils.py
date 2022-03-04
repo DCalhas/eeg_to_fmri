@@ -560,7 +560,7 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 		dataset_clf_wrapper.set_folds(n_folds_cv)
 
 		score = 0.0
-		for fold in range(5):
+		for fold in range(n_folds_cv):
 			print("On fold", fold+1, end="\r")
 			train_data, test_data = dataset_clf_wrapper.split(fold)
 			X_train, y_train=train_data
@@ -579,7 +579,7 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				linearCLF.build(X_train.shape)
 
-			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=50, val_set=None, u_architecture=False, verbose=False, verbose_batch=False)
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=50, val_set=None, u_architecture=False, verbose=True, verbose_batch=True)
 			#evaluate
 			print(y_test)
 			print(linearCLF(X_test))
