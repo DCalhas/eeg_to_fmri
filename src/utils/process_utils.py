@@ -561,6 +561,9 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 
 		score = 0.0
 		for fold in range(5):
+			train_data, test_data = dataset_clf_wrapper.split(fold)
+			X_train, y_train=train_data
+			X_test, y_test=test_set
 			with tf.device('/CPU:0'):
 				optimizer = tf.keras.optimizers.Adam(learning_rate)
 				loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
