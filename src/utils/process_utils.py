@@ -566,7 +566,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 			X_train, y_train=train_data
 			X_test, y_test=test_data
 			with tf.device('/CPU:0'):
-				optimizer = tf.keras.optimizers.Adam(learning_rate)
+				optimizer = tf.keras.optimizers.SGD(learning_rate)
 				loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 				train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
@@ -619,7 +619,7 @@ def loocv(fold, view, dataset, regularizer_consts, epochs, learning_rate, batch_
 	X_test, y_test = test_data
 
 	with tf.device('/CPU:0'):
-		optimizer = tf.keras.optimizers.Adam(learning_rate)
+		optimizer = tf.keras.optimizers.SGD(learning_rate)
 		loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 		train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
