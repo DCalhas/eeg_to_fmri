@@ -547,21 +547,19 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 		dataset_clf_wrapper.y = train_data[1]
 		dataset_clf_wrapper.set_folds(5)
 
-
-
 		return 0.0
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 1.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 1.)}]
 
 
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_elastic, 
-                                                    domain=hyperparameters, 
-                                                    model_type="GP_MCMC", 
-                                                    acquisition_type="EI_MCMC")
-    optimizer.run_optimization(max_iter=100)
+													domain=hyperparameters, 
+													model_type="GP_MCMC", 
+													acquisition_type="EI_MCMC")
+	optimizer.run_optimization(max_iter=100)
 
-    print("Best value: ", optimizer.fx_opt)
-    print("Best hyperparameters: \n", optimizer.x_opt)
+	print("Best value: ", optimizer.fx_opt)
+	print("Best hyperparameters: \n", optimizer.x_opt)
 
 	raise NotImplementedError
 
