@@ -565,6 +565,8 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 			train_data, test_data = dataset_clf_wrapper.split(fold)
 			X_train, y_train=train_data
 			X_test, y_test=test_data
+			y_train=y_train[:,1,:]
+			y_test=y_test[:,1,:]
 			with tf.device('/CPU:0'):
 				optimizer = tf.keras.optimizers.SGD(learning_rate)
 				loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=False)
