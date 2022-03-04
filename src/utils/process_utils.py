@@ -525,30 +525,43 @@ def views(model, test_set, y):
 
 
 def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path_labels):
-
-	print(reg_constants)
-
-	from utils import preprocess_data, tf_config, train
-
-	from models import eeg_to_fmri, classifiers
-
-	import tensorflow as tf
-
-	import numpy as np
-
 	import GPyOpt
 
-	tf_config.set_seed(seed=seed)
-	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
+	def optimize_elastic():
 
-	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
+		from utils import preprocess_data, tf_config, train
 
-	train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
-	dataset_clf_wrapper.X = train_data[0]
-	dataset_clf_wrapper.y = train_data[1]
-	dataset_clf_wrapper.set_folds(5)
+		from models import eeg_to_fmri, classifiers
 
-	
+		import tensorflow as tf
+
+		import numpy as np
+
+		tf_config.set_seed(seed=seed)
+		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
+
+		dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
+
+		train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
+		dataset_clf_wrapper.X = train_data[0]
+		dataset_clf_wrapper.y = train_data[1]
+		dataset_clf_wrapper.set_folds(5)
+
+
+
+		return 0.0
+
+	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 1.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 1.)}]
+
+
+	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_elastic, 
+                                                    domain=hyperparameters, 
+                                                    model_type="GP_MCMC", 
+                                                    acquisition_type="EI_MCMC")
+    optimizer.run_optimization(max_iter=100)
+
+    print("Best value: ", optimizer.fx_opt)
+    print("Best hyperparameters: \n", optimizer.x_opt)
 
 	raise NotImplementedError
 
