@@ -525,6 +525,7 @@ def views(model, test_set, y):
 
 def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network):
 	import GPyOpt
+	iteration=0
 
 	def optimize_wrapper(theta):
 		from multiprocessing import Manager
@@ -534,7 +535,8 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 
 		launch_process(optimize_elastic, (value, (l1_reg, l2_reg),))
 
-		print(value[0])
+		print("On iteration", iteration+1, "with score", value[0], end="\n")
+		iteration+=1
 		return value[0]
 
 	def optimize_elastic(value, theta):
@@ -560,6 +562,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 
 		score = 0.0
 		for fold in range(5):
+			print("On fold", fold+1, end="\r")
 			train_data, test_data = dataset_clf_wrapper.split(fold)
 			X_train, y_train=train_data
 			X_test, y_test=test_data
@@ -578,13 +581,10 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				linearCLF.build(X_train.shape)
 
-			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
-
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=False, verbose_batch=False)
 			#evaluate
 			score+=loss_fn(y_test[:,:,0], linearCLF(X_test))
-
-			print(train_data[0].shape, test_data[0].shape)
-
+			
 		value[0] = score
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 1.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 1.)}]
