@@ -559,6 +559,8 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 		dataset_clf_wrapper.y = train_data[1]
 		dataset_clf_wrapper.set_folds(5)
 
+		dataset_clf_wrapper.split(0)
+
 		print(l1_reg, l2_reg)
 
 		value[0] = 0.0
