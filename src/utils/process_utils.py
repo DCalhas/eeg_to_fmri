@@ -559,7 +559,9 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 		dataset_clf_wrapper.y = train_data[1]
 		dataset_clf_wrapper.set_folds(5)
 
-		dataset_clf_wrapper.split(0)
+		train_data, test_data = dataset_clf_wrapper.split(0)
+
+		print(train_data[0].shape, test_data[0].shape)
 
 		print(l1_reg, l2_reg)
 
