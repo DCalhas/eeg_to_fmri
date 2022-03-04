@@ -588,7 +588,7 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 			
 		value[0] = score
 
-	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 1.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 1.)}]
+	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 10.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 10.)}]
 
 
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
