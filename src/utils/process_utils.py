@@ -535,7 +535,7 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 		value = Manager().Array('d', range(1))
 
 		launch_process(optimize_elastic, (value, (l1_reg, l2_reg),))
-		print("Finished with score", value[0], end="\n")
+		print("Finished with score", value[0], end="\n\n\n")
 		return value[0]
 
 	def optimize_elastic(value, theta):
@@ -581,12 +581,10 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=50, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 			#evaluate
-			print(y_test)
-			print(linearCLF(X_test))
-
 			score+=loss_fn(y_test, linearCLF(X_test))
+			print(loss_fn(y_test, linearCLF(X_test)))
 			
-		value[0] = score
+		value[0]=score
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 10.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 10.)}]
 
