@@ -584,6 +584,7 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 			score+=loss_fn(y_test, linearCLF(X_test))
 			print(loss_fn(y_test, linearCLF(X_test)))
 
+		print(score)
 		value[0]=score
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 10.)}, 
