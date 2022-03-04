@@ -525,6 +525,7 @@ def views(model, test_set, y):
 
 def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network):
 	import GPyOpt
+	
 	iteration=0
 
 	def optimize_wrapper(theta):
@@ -535,7 +536,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 
 		launch_process(optimize_elastic, (value, (l1_reg, l2_reg),))
 
-		print("On iteration", iteration+1, "with score", value[0], end="\n")
+		print("Finished with score", value[0], end="\n")
 		iteration+=1
 		return value[0]
 
