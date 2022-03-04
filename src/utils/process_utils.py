@@ -566,7 +566,7 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 			X_train, y_train=train_data
 			X_test, y_test=test_data
 			with tf.device('/CPU:0'):
-				optimizer = tf.keras.optimizers.SGD(learning_rate)
+				optimizer = tf.keras.optimizers.RMSProp(learning_rate)
 				loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=False)
 
 				train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
@@ -583,7 +583,7 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 			#evaluate
 			score+=loss_fn(y_test, linearCLF(X_test))
 			print(loss_fn(y_test, linearCLF(X_test)))
-			
+
 		value[0]=score
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 10.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 10.)}]
