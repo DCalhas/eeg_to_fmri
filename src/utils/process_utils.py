@@ -467,10 +467,10 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		reg_constants = Manager().Array('d', range(2))
 		#CV hyperparameter l1 and l2 reg constants
-		cv_opt(reg_constants, i, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network)
+		regularizer_consts = cv_opt(reg_constants, i, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network)
 		#validate
 		launch_process(loocv,
-					(i, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
+					(i, view, dataset, regularizer_consts, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -574,8 +574,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 				
 				if(view=="fmri"):
 					linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
-																X_train.shape[1:],
-																regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
+																X_train.shape[1:], regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				else:
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				linearCLF.build(X_train.shape)
@@ -598,11 +597,9 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 	print("Best value: ", optimizer.fx_opt)
 	print("Best hyperparameters: \n", optimizer.x_opt)
 
+	return optimizer.x_opt[0], optimizer.x_opt[1]
 
-	print(optimizer.x_opt)
-	return 
-
-def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
+def loocv(fold, view, dataset, regularizer_consts, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
 	
 	from utils import preprocess_data, tf_config, train, lrp
 
@@ -631,9 +628,9 @@ def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed,
 
 		if(view=="fmri"):
 			linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
-														X_train.shape[1:])
+														X_train.shape[1:], regularizer=tf.keras.regularizers.l1_l2(l1=regularizer_consts[0], l2=regularizer_consts[1]))
 		else:
-			linearCLF = classifiers.LinearClassifier()
+			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=regularizer_consts[0], l2=regularizer_consts[1]))
 		linearCLF.build(X_train.shape)
 
 	#train classifier
