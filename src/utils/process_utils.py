@@ -467,8 +467,7 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		reg_constants = Manager().Array('d', range(2))
 		#CV hyperparameter l1 and l2 reg constants
-		launch_process(cv_opt,
-						(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels))
+		cv_opt(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels)
 		#validate
 		launch_process(loocv,
 					(i, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
@@ -529,7 +528,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 
 	def optimize_wrapper(theta):
 		from multiprocessing import Manager
-		
+
 		l1_reg, l2_reg = (float(theta[:,0]), float(theta[:,1]))
 		value = Manager().Array('d', range(1))
 
