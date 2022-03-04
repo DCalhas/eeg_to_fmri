@@ -528,6 +528,8 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path
 	import GPyOpt
 
 	def optimize_wrapper(theta):
+		from multiprocessing import Manager
+		
 		l1_reg, l2_reg = (float(theta[:,0]), float(theta[:,1]))
 		value = Manager().Array('d', range(1))
 
