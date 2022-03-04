@@ -584,15 +584,12 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 			score+=loss_fn(y_test, linearCLF(X_test))
 			print(loss_fn(y_test, linearCLF(X_test)))
 
-		print(score)
-		value[0]=score
+		value[0]=score.numpy()
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 10.)}, 
 						{'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 10.)},
 						{'name': 'batch_size', 'type': 'discrete', 'domain': (1,2,4,8,16,32,64)},
 						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 0.01)}]
-
-
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
