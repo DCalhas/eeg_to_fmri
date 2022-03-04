@@ -573,13 +573,13 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 				if(view=="fmri"):
 					linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
 																X_train.shape[1:],
-																regularizer=tensorflow.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
+																regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				else:
-					linearCLF = classifiers.LinearClassifier(regularizer=tensorflow.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
+					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				linearCLF.build(X_train.shape)
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
-			
+
 			#evaluate
 			loss_fn(y_test, linearCLF(X_test))
 
