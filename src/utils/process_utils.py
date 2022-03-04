@@ -466,7 +466,6 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		reg_constants = Manager().Array('d', range(2))
-		print(reg_constants)
 		#CV hyperparameter l1 and l2 reg constants
 		launch_process(cv_opt,
 						(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels))
@@ -525,7 +524,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels):
+def cv_opt(reg_constants, fold_loocv, view, dataset, epochs, gpu_mem, seed, path_labels):
 
 	print(reg_constants)
 
@@ -544,7 +543,16 @@ def cv_opt(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels):
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
+	train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
+	dataset_clf_wrapper.X = train_data[0]
+	dataset_clf_wrapper.y = train_data[1]
+	dataset_clf_wrapper.set_folds(5)
+
+	
+
 	raise NotImplementedError
+
+
 
 
 def loocv(fold, view, dataset, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
