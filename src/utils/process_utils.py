@@ -581,7 +581,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 
 			#evaluate
-			loss_fn(y_test, linearCLF(X_test))
+			score+=loss_fn(y_test[:,:,0], linearCLF(X_test))
 
 			print(train_data[0].shape, test_data[0].shape)
 
