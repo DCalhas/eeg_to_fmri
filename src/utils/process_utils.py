@@ -464,6 +464,7 @@ def setup_data_loocv(view, dataset, epochs, learning_rate, batch_size, gpu_mem, 
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		reg_constants = Manager().Array('d', range(2))
+		print(reg_constants)
 		#CV hyperparameter l1 and l2 reg constants
 		launch_process(cv_opt,
 						(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels))
@@ -533,6 +534,8 @@ def cv_opt(reg_constants, i, view, dataset, epochs, gpu_mem, seed, path_labels):
 	import tensorflow as tf
 
 	import numpy as np
+
+	import GPyOpt
 
 	tf_config.set_seed(seed=seed)
 	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
