@@ -585,7 +585,7 @@ def cv_opt(reg_constants, fold_loocv, view, dataset, learning_rate, batch_size, 
 
 			print(train_data[0].shape, test_data[0].shape)
 
-		value[0] = 0.0
+		value[0] = score
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 1.)}, {'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 1.)}]
 
