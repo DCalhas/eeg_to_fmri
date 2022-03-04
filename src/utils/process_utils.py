@@ -566,7 +566,7 @@ def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, 
 			X_train, y_train=train_data
 			X_test, y_test=test_data
 			with tf.device('/CPU:0'):
-				optimizer = tf.keras.optimizers.RMSProp(learning_rate)
+				optimizer = tf.keras.optimizers.RMSprop(learning_rate)
 				loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=False)
 
 				train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
