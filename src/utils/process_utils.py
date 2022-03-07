@@ -453,7 +453,7 @@ def append_labels(view, path, y_true, y_pred):
 	np.save(path+view+"_y_true.npy",np.append(np.load(path+view+"_y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(view, dataset, n_folds_cv, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
+def setup_data_loocv(view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_explainability, path_network, path_labels):
 
 	from utils import preprocess_data
 
@@ -465,12 +465,11 @@ def setup_data_loocv(view, dataset, n_folds_cv, epochs, learning_rate, batch_siz
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
 	for i in range(dataset_clf_wrapper.n_individuals):
-		reg_constants = Manager().Array('d', range(2))
 		#CV hyperparameter l1 and l2 reg constants
-		regularizer_consts = cv_opt(reg_constants, i, n_folds_cv, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network)
+		regularizer_consts = cv_opt(hyperparams, i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network)
 		#validate
 		launch_process(loocv,
-					(i, view, dataset, regularizer_consts, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels))
+					(i, view, dataset, regularizer_consts[0], regularizer_consts[1], epochs, regularizer_consts[3], regularizer_consts[2], gpu_mem, seed, save_explainability, path_network, path_labels))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -523,7 +522,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, learning_rate, batch_size, epochs, gpu_mem, seed, path_labels, path_network):
+def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network):
 	import GPyOpt
 	
 	iteration=0

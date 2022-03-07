@@ -35,8 +35,6 @@ if __name__ == "__main__":
 	view=opt.view
 	folds=opt.folds
 	epochs=opt.epochs
-	learning_rate=opt.lr
-	batch_size=opt.batch_size
 	gpu_mem=opt.gpu_mem
 	path_save_network=opt.path_save_network
 	seed=opt.seed
@@ -53,7 +51,7 @@ process_utils.launch_process(process_utils.create_labels,
 							(view, dataset_clf, path_labels))
 
 #create predictions and true labels
-process_utils.setup_data_loocv(view, dataset_clf, folds, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_save_network, path_labels)
+process_utils.setup_data_loocv(view, dataset_clf, folds, epochs, gpu_mem, seed, save_explainability, path_save_network, path_labels)
 
 #report classification metrics
 process_utils.launch_process(process_utils.compute_acc_metrics, 
