@@ -466,10 +466,10 @@ def setup_data_loocv(view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_expl
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
-		regularizer_consts = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network)
+		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network)
 		#validate
 		launch_process(loocv,
-					(i, view, dataset, regularizer_consts[0], regularizer_consts[1], epochs, regularizer_consts[3], regularizer_consts[2], gpu_mem, seed, save_explainability, path_network, path_labels))
+					(i, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, save_explainability, path_network, path_labels))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -598,9 +598,9 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 	print("Best value: ", optimizer.fx_opt)
 	print("Best hyperparameters: \n", optimizer.x_opt)
 
-	return optimizer.x_opt[0], optimizer.x_opt[1]
+	return optimizer.x_opt
 
-def loocv(fold, view, dataset, regularizer_consts, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
+def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
 	
 	from utils import preprocess_data, tf_config, train, lrp
 
@@ -629,9 +629,9 @@ def loocv(fold, view, dataset, regularizer_consts, epochs, learning_rate, batch_
 
 		if(view=="fmri"):
 			linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
-														X_train.shape[1:], regularizer=tf.keras.regularizers.l1_l2(l1=regularizer_consts[0], l2=regularizer_consts[1]))
+														X_train.shape[1:], regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
 		else:
-			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=regularizer_consts[0], l2=regularizer_consts[1]))
+			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
 		linearCLF.build(X_train.shape)
 
 	#train classifier
