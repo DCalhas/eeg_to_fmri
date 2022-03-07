@@ -466,7 +466,7 @@ def setup_data_loocv(view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_expl
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
-		regularizer_consts = cv_opt(hyperparams, i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network)
+		regularizer_consts = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network)
 		#validate
 		launch_process(loocv,
 					(i, view, dataset, regularizer_consts[0], regularizer_consts[1], epochs, regularizer_consts[3], regularizer_consts[2], gpu_mem, seed, save_explainability, path_network, path_labels))
@@ -522,7 +522,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(reg_constants, fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network):
+def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network):
 	import GPyOpt
 	
 	iteration=0
