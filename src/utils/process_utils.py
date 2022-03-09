@@ -593,7 +593,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
 													acquisition_type="EI_MCMC")
-	optimizer.run_optimization(max_iter=20)
+	optimizer.run_optimization(max_iter=1)#increase to 20 for real results
 
 	print("Best value: ", optimizer.fx_opt)
 	print("Best hyperparameters: \n", optimizer.x_opt)

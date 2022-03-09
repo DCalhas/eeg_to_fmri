@@ -4,6 +4,8 @@ from models import fmri_ae
 
 from utils import state_utils
 
+from tensorflow.keras.layers import Dense#globals get attr
+
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D
 from layers.topographical_attention import Topographical_Attention
