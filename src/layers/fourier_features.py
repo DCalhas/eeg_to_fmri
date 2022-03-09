@@ -34,7 +34,7 @@ def _get_random_features_initializer(initializer, shape, seed=None):
 
 class RandomFourierFeatures(tf.keras.layers.Layer):
 
-	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, trainable=False, seed=None, name=None, **kwargs):
+	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, trainable=False, units=None, seed=None, name=None, **kwargs):
 		if output_dim <= 0:
 			raise ValueError(
 			'`output_dim` should be a positive integer. Given: {}.'.format(
@@ -49,6 +49,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			'Given: {}.'.format(scale))
 		super(RandomFourierFeatures, self).__init__(name=name)
 		self.output_dim = output_dim
+		self.units=output_dim
 		self.kernel_initializer = kernel_initializer
 		self.scale = scale
 		self.seed=seed
@@ -113,6 +114,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			'output_dim': self.output_dim,
 			'kernel_initializer': kernel_initializer,
 			'scale': self.scale,
+			'units': self.units,
 		}
 		base_config = super(RandomFourierFeatures, self).get_config()
 		return dict(list(base_config.items()) + list(config.items()))
