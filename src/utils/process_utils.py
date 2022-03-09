@@ -406,8 +406,8 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 		model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
 							weight_decay=weight_decay, skip_connections=True,
 							batch_norm=True, #dropout=False,
-							fourier_features=True,
-							random_fourier=True,
+							fourier_features=False,
+							random_fourier=False,
 							topographical_attention=True,
 							conditional_attention_style=True,
 							conditional_attention_style_prior=False,
@@ -428,7 +428,7 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 	print("I: Starting pretraining of synthesis network")
 
 	loss_history = train.train(train_set, model, optimizer, 
-							loss_fn, epochs=epochs, 
+							loss_fn, epochs=1, 
 							u_architecture=True,
 							val_set=None, verbose=True, verbose_batch=False)[0]
 
