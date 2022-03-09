@@ -407,7 +407,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         
         self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                             pretrained_model.layers[4].layers[11].output_dim,
-                                            trainable=False, seed=seed, name="random_fourier_features")
+                                            trainable=False, name="latent_projection")
         
         attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
         self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(
