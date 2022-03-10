@@ -534,6 +534,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 		value = Manager().Array('d', range(1))
 
 		launch_process(optimize_elastic, (value, (l1_reg, l2_reg, batch_size, learning_rate),))
+
 		print("Finished with score", value[0], end="\n\n\n")
 		return value[0]
 
@@ -584,6 +585,8 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 			print(loss_fn(y_test, linearCLF(X_test)))
 
 		value[0]=score.numpy()
+		if(np.isnan(value[0])):
+			value[0] = 1e-9
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 10.)}, 
 						{'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 10.)},
