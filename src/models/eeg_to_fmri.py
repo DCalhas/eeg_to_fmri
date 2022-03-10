@@ -392,8 +392,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = tf.keras.layers.Flatten()(x)
         
         x = tf.keras.layers.Dense(pretrained_model.layers[1].layers[-2].units,
-                                kernel_initializer=tf.constant_initializer(pretrained_model.layers[1].layers[-2].kernel.numpy()),
-                                bias_initializer=tf.constant_initializer(pretrained_model.layers[1].layers[-2].bias.numpy()),
+                                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[1].layers[-2].kernel.numpy()),
+                                bias_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[1].layers[-2].bias.numpy()),
                                 trainable=True)(x)#placeholder
         
         x = tf.keras.layers.Reshape(pretrained_model.layers[1].layers[-1].target_shape)(x)
@@ -407,7 +407,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         
         self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                             pretrained_model.layers[4].layers[11].units,
-                                            trainable=False, name="latent_projection")
+                                            trainable=True, name="latent_projection")
         
         attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
         self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(

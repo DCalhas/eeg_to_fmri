@@ -235,21 +235,31 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 		self.right_layers = []
 		self.join_layers = []
 		
-		
-		
+		if(self._trainable):
+			kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed)
+			bias_initializer=tf.keras.initializers.GlorotUniform(seed=seed)
+		else:
+			kernel_initializer=tf.constant_initializer(resblock.left_layers[0].kernel.numpy())
+			bias_initializer=tf.constant_initializer(resblock.left_layers[0].bias.numpy())
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[0]).__name__)(
 										filters=resblock.left_layers[0].filters, 
 										kernel_size=resblock.left_layers[0].kernel_size, 
 										strides=resblock.left_layers[0].strides,
 										kernel_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[0].kernel_regularizer.l2)),
 										bias_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[0].bias_regularizer.l2)),
-										kernel_initializer=tf.constant_initializer(resblock.left_layers[0].kernel.numpy()),
-										bias_initializer=tf.constant_initializer(resblock.left_layers[0].bias.numpy()),
+										kernel_initializer=kernel_initializer,
+										bias_initializer=bias_initializer,
 										padding=resblock.left_layers[0].padding,
 										trainable=self._trainable)]
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[1]).__name__)(
 										pool_size=resblock.left_layers[1].pool_size, 
 										strides=resblock.left_layers[1].strides)]
+		if(self._trainable):
+			kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed)
+			bias_initializer=tf.keras.initializers.GlorotUniform(seed=seed)
+		else:
+			kernel_initializer=tf.constant_initializer(resblock.left_layers[4].kernel.numpy())
+			bias_initializer=tf.constant_initializer(resblock.left_layers[4].bias.numpy())
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[2]).__name__)(trainable=self._trainable)]
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[3]).__name__)(trainable=self._trainable)]
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[4]).__name__)(
@@ -258,22 +268,27 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 										strides=resblock.left_layers[4].strides,
 										kernel_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[4].kernel_regularizer.l2)),
 										bias_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[4].bias_regularizer.l2)),
-										kernel_initializer=tf.constant_initializer(resblock.left_layers[4].kernel.numpy()),
-										bias_initializer=tf.constant_initializer(resblock.left_layers[4].bias.numpy()),
+										kernel_initializer=kernel_initializer,
+										bias_initializer=bias_initializer,
 										padding=resblock.left_layers[4].padding,
 										trainable=self._trainable)]
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[5]).__name__)(trainable=self._trainable)]
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[6]).__name__)(trainable=self._trainable)]
 
-		
+		if(self._trainable):
+			kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed)
+			bias_initializer=tf.keras.initializers.GlorotUniform(seed=seed)
+		else:
+			kernel_initializer=tf.constant_initializer(resblock.right_layers[0].kernel.numpy())
+			bias_initializer=tf.constant_initializer(resblock.right_layers[0].bias.numpy())
 		self.right_layers += [getattr(tf.keras.layers, type(resblock.right_layers[0]).__name__)(
 										filters=resblock.right_layers[0].filters, 
 										kernel_size=resblock.right_layers[0].kernel_size, 
 										strides=resblock.right_layers[0].strides,
 										kernel_regularizer=tf.keras.regularizers.L2(float(resblock.right_layers[0].kernel_regularizer.l2)),
 										bias_regularizer=tf.keras.regularizers.L2(float(resblock.right_layers[0].bias_regularizer.l2)),
-										kernel_initializer=tf.constant_initializer(resblock.right_layers[0].kernel.numpy()),
-										bias_initializer=tf.constant_initializer(resblock.right_layers[0].bias.numpy()),
+										kernel_initializer=kernel_initializer,
+										bias_initializer=bias_initializer,
 										padding=resblock.right_layers[0].padding,
 										trainable=self._trainable)]
 		self.right_layers += [getattr(tf.keras.layers, type(resblock.right_layers[1]).__name__)(
