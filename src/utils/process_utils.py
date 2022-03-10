@@ -586,7 +586,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 		value[0]=score.numpy()
 		if(np.isnan(value[0])):
-			value[0] = 1e-9
+			value[0] = 1/1e-9
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 10.)}, 
 						{'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 10.)},
