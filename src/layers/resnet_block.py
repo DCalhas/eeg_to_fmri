@@ -223,10 +223,10 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 			* maxpool_s - tuple
 			* seed - int
 	"""
-	def __init__(self, resblock, seed=None):
+	def __init__(self, resblock, trainable=False, seed=None):
 		super(pretrained_ResBlock, self).__init__()
 		
-
+		self._trainable=trainable
 		self.set_layers(resblock, seed=seed)
 
 	def set_layers(self, resblock, seed=None):
@@ -246,12 +246,12 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 										kernel_initializer=tf.constant_initializer(resblock.left_layers[0].kernel.numpy()),
 										bias_initializer=tf.constant_initializer(resblock.left_layers[0].bias.numpy()),
 										padding=resblock.left_layers[0].padding,
-										trainable=False)]
+										trainable=self._trainable)]
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[1]).__name__)(
 										pool_size=resblock.left_layers[1].pool_size, 
 										strides=resblock.left_layers[1].strides)]
-		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[2]).__name__)(trainable=False)]
-		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[3]).__name__)(trainable=False)]
+		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[2]).__name__)(trainable=self._trainable)]
+		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[3]).__name__)(trainable=self._trainable)]
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[4]).__name__)(
 										filters=resblock.left_layers[4].filters, 
 										kernel_size=resblock.left_layers[4].kernel_size, 
@@ -261,9 +261,9 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 										kernel_initializer=tf.constant_initializer(resblock.left_layers[4].kernel.numpy()),
 										bias_initializer=tf.constant_initializer(resblock.left_layers[4].bias.numpy()),
 										padding=resblock.left_layers[4].padding,
-										trainable=False)]
-		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[5]).__name__)(trainable=False)]
-		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[6]).__name__)(trainable=False)]
+										trainable=self._trainable)]
+		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[5]).__name__)(trainable=self._trainable)]
+		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[6]).__name__)(trainable=self._trainable)]
 
 		
 		self.right_layers += [getattr(tf.keras.layers, type(resblock.right_layers[0]).__name__)(
@@ -275,14 +275,14 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 										kernel_initializer=tf.constant_initializer(resblock.right_layers[0].kernel.numpy()),
 										bias_initializer=tf.constant_initializer(resblock.right_layers[0].bias.numpy()),
 										padding=resblock.right_layers[0].padding,
-										trainable=False)]
+										trainable=self._trainable)]
 		self.right_layers += [getattr(tf.keras.layers, type(resblock.right_layers[1]).__name__)(
 										pool_size=resblock.right_layers[1].pool_size, 
 										strides=resblock.right_layers[1].strides)]
-		self.right_layers += [getattr(tf.keras.layers, type(resblock.right_layers[2]).__name__)(trainable=False)]
+		self.right_layers += [getattr(tf.keras.layers, type(resblock.right_layers[2]).__name__)(trainable=self._trainable)]
 
-		self.join_layers += [getattr(tf.keras.layers, type(resblock.join_layers[0]).__name__)(trainable=False)]
-		self.join_layers += [getattr(tf.keras.layers, type(resblock.join_layers[1]).__name__)(trainable=False)]
+		self.join_layers += [getattr(tf.keras.layers, type(resblock.join_layers[0]).__name__)(trainable=self._trainable)]
+		self.join_layers += [getattr(tf.keras.layers, type(resblock.join_layers[1]).__name__)(trainable=self._trainable)]
 
 
 	def call(self, x):

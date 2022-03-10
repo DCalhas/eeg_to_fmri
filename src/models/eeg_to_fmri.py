@@ -386,7 +386,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                 x = tf.keras.layers.ZeroPadding3D(padding=((0,2), (0,0), (0,0)))(x)
                 #x = tf.pad(x, tf.constant([[0,0],[0, 2], [0, 0], [0,0], [0,0],]), "CONSTANT")
             
-            x = pretrained_ResBlock(resblocks[i], seed=seed)(x)
+            x = pretrained_ResBlock(resblocks[i], trainable=True, seed=seed)(x)
             
         
         x = tf.keras.layers.Flatten()(x)
@@ -394,7 +394,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = tf.keras.layers.Dense(pretrained_model.layers[1].layers[-2].units,
                                 kernel_initializer=tf.constant_initializer(pretrained_model.layers[1].layers[-2].kernel.numpy()),
                                 bias_initializer=tf.constant_initializer(pretrained_model.layers[1].layers[-2].bias.numpy()),
-                                trainable=False)(x)#placeholder
+                                trainable=True)(x)#placeholder
         
         x = tf.keras.layers.Reshape(pretrained_model.layers[1].layers[-1].target_shape)(x)
 
