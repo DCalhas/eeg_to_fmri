@@ -346,16 +346,16 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
     """
     """
-    def __init__(self, model, input_shape, seed=None):
+    def __init__(self, model, input_shape, regularizer=None, seed=None):
         super(pretrained_EEG_to_fMRI, self).__init__()
 
         self._input_shape = input_shape
         
-        input_shape, x, attention_scores = self.build_encoder(model, seed=seed)
+        input_shape, x, attention_scores = self.build_encoder(model, regularizer=regularizer, seed=seed)
         
-        self.build_decoder(model, input_shape, x, attention_scores=attention_scores, seed=seed)
+        self.build_decoder(model, input_shape, x, attention_scores=attention_scores, regularizer=regularizer, seed=seed)
 
-    def build_encoder(self, pretrained_model, seed=None):
+    def build_encoder(self, pretrained_model, regularizer=None, seed=None):
 
         attention_scores=None
         input_shape = tf.keras.layers.Input(shape=self._input_shape)
@@ -364,7 +364,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #reshape to flattened features to apply attention mechanism
         x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
         #topographical attention
-        x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2])(x)
+        x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], regularizer=regularizer)(x)
         #reshape back to original shape
         x = tf.keras.layers.Reshape(self._input_shape)(x)
         previous_block_x = x
@@ -386,12 +386,14 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                 x = tf.keras.layers.ZeroPadding3D(padding=((0,2), (0,0), (0,0)))(x)
                 #x = tf.pad(x, tf.constant([[0,0],[0, 2], [0, 0], [0,0], [0,0],]), "CONSTANT")
             
-            x = pretrained_ResBlock(resblocks[i], trainable=True, seed=seed)(x)
+            x = pretrained_ResBlock(resblocks[i], trainable=True, regularizer=regularizer, seed=seed)(x)
             
         
         x = tf.keras.layers.Flatten()(x)
         
         x = tf.keras.layers.Dense(pretrained_model.layers[1].layers[-2].units,
+                                kernel_regularizer=regularizer,
+                                bias_regularizer=regularizer,
                                 kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[1].layers[-2].kernel.numpy()),
                                 bias_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[1].layers[-2].bias.numpy()),
                                 trainable=True)(x)#placeholder
@@ -402,16 +404,20 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         return input_shape, x, attention_scores
     
-    def build_decoder(self, pretrained_model, input_shape, output_encoder, attention_scores=None, seed=None):
+    def build_decoder(self, pretrained_model, input_shape, output_encoder, attention_scores=None, regularizer=None, seed=None):
         x = tf.keras.layers.Flatten()(output_encoder)
         
         self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                             pretrained_model.layers[4].layers[11].units,
+                                            kernel_regularizer=regularizer,
+                                            bias_regularizer=regularizer,
                                             trainable=True, name="latent_projection")
         
         attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
         self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(
                                     pretrained_model.layers[4].layers[12].units,
+                                    kernel_regularizer=regularizer,
+                                    bias_regularizer=regularizer,
                                     use_bias=pretrained_model.layers[4].layers[12].use_bias,
                                     name="conditional_attention_style_dense",
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),

@@ -223,13 +223,13 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 			* maxpool_s - tuple
 			* seed - int
 	"""
-	def __init__(self, resblock, trainable=False, seed=None):
+	def __init__(self, resblock, trainable=False, regularizer=None, seed=None):
 		super(pretrained_ResBlock, self).__init__()
 		
 		self._trainable=trainable
-		self.set_layers(resblock, seed=seed)
+		self.set_layers(resblock, regularizer=regularizer, seed=seed)
 
-	def set_layers(self, resblock, seed=None):
+	def set_layers(self, resblock, regularizer=None, seed=None):
 
 		self.left_layers = []
 		self.right_layers = []
@@ -241,12 +241,18 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 		else:
 			kernel_initializer=tf.constant_initializer(resblock.left_layers[0].kernel.numpy())
 			bias_initializer=tf.constant_initializer(resblock.left_layers[0].bias.numpy())
+		if(regularizer is None):
+			kernel_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[0].kernel_regularizer.l2))
+			bias_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[0].bias_regularizer.l2))
+		else:
+			kernel_regularizer=regularizer
+			bias_regularizer=regularizer
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[0]).__name__)(
 										filters=resblock.left_layers[0].filters, 
 										kernel_size=resblock.left_layers[0].kernel_size, 
 										strides=resblock.left_layers[0].strides,
-										kernel_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[0].kernel_regularizer.l2)),
-										bias_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[0].bias_regularizer.l2)),
+										kernel_regularizer=kernel_regularizer,
+										bias_regularizer=bias_regularizer,
 										kernel_initializer=kernel_initializer,
 										bias_initializer=bias_initializer,
 										padding=resblock.left_layers[0].padding,
@@ -260,14 +266,20 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 		else:
 			kernel_initializer=tf.constant_initializer(resblock.left_layers[4].kernel.numpy())
 			bias_initializer=tf.constant_initializer(resblock.left_layers[4].bias.numpy())
+		if(regularizer is None):
+			kernel_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[4].bias_regularizer.l2))
+			bias_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[4].bias_regularizer.l2))
+		else:
+			kernel_regularizer=regularizer
+			bias_regularizer=regularizer
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[2]).__name__)(trainable=self._trainable)]
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[3]).__name__)(trainable=self._trainable)]
 		self.left_layers += [getattr(tf.keras.layers, type(resblock.left_layers[4]).__name__)(
 										filters=resblock.left_layers[4].filters, 
 										kernel_size=resblock.left_layers[4].kernel_size, 
 										strides=resblock.left_layers[4].strides,
-										kernel_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[4].kernel_regularizer.l2)),
-										bias_regularizer=tf.keras.regularizers.L2(float(resblock.left_layers[4].bias_regularizer.l2)),
+										kernel_regularizer=kernel_regularizer,
+										bias_regularizer=bias_regularizer,
 										kernel_initializer=kernel_initializer,
 										bias_initializer=bias_initializer,
 										padding=resblock.left_layers[4].padding,
@@ -281,12 +293,18 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 		else:
 			kernel_initializer=tf.constant_initializer(resblock.right_layers[0].kernel.numpy())
 			bias_initializer=tf.constant_initializer(resblock.right_layers[0].bias.numpy())
+		if(regularizer is None):
+			kernel_regularizer=tf.keras.regularizers.L2(float(resblock.right_layers[0].bias_regularizer.l2))
+			bias_regularizer=tf.keras.regularizers.L2(float(resblock.right_layers[0].bias_regularizer.l2))
+		else:
+			kernel_regularizer=regularizer
+			bias_regularizer=regularizer
 		self.right_layers += [getattr(tf.keras.layers, type(resblock.right_layers[0]).__name__)(
 										filters=resblock.right_layers[0].filters, 
 										kernel_size=resblock.right_layers[0].kernel_size, 
 										strides=resblock.right_layers[0].strides,
-										kernel_regularizer=tf.keras.regularizers.L2(float(resblock.right_layers[0].kernel_regularizer.l2)),
-										bias_regularizer=tf.keras.regularizers.L2(float(resblock.right_layers[0].bias_regularizer.l2)),
+										kernel_regularizer=kernel_regularizer,
+										bias_regularizer=bias_regularizer,
 										kernel_initializer=kernel_initializer,
 										bias_initializer=bias_initializer,
 										padding=resblock.right_layers[0].padding,

@@ -9,11 +9,13 @@ Topographical_Attention:
 """
 class Topographical_Attention(tf.keras.layers.Layer):
 
-	def __init__(self, channels, features, seed=None, **kwargs):
+	def __init__(self, channels, features, regularizer=None, seed=None, **kwargs):
 
 		self.channels=channels
 		self.features=features
+		self.regularizer=regularizer
 		self.seed=seed
+
 		
 		super(Topographical_Attention, self).__init__(**kwargs)
 
@@ -21,6 +23,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		self.A = self.add_weight('A',
 								#shape=[self.channels,self.channels,self.features],
 								shape=[self.channels,self.features],
+								regularizer=self.regularizer,
 								initializer=tf.initializers.GlorotUniform(seed=self.seed),
 								dtype=tf.float32,
 								trainable=True)
@@ -84,7 +87,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		return {
 			'channels': self.channels,
 			'features': self.features,
-			'seed': self.seed
+			'seed': self.seed,
 		}
 
 	@classmethod
