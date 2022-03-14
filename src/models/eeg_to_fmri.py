@@ -408,7 +408,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = tf.keras.layers.Flatten()(output_encoder)
         
         if("Fourier" in type(pretrained_model.layers[4].layers[11]).__name__):
-            print("Creating fourier layer")
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                             pretrained_model.layers[4].layers[11].units,
                                             scale=pretrained_model.layers[4].layers[11].kernel_scale.numpy(),
