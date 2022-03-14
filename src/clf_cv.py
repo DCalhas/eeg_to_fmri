@@ -46,6 +46,7 @@ if(view=="fmri"):
 	process_utils.launch_process(process_utils.train_synthesis, 
 								(dataset_synth, epochs, path_save_network, gpu_mem, seed))
 
+exit(1)
 #create predictions and true labels
 process_utils.launch_process(process_utils.create_labels,
 							(view, dataset_clf, path_labels))
