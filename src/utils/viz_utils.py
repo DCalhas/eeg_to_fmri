@@ -1376,10 +1376,8 @@ def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, 
                             color="black",
                             zorder=3)
 
-
-
-
     axes.axis('off')
+    axes.margins(0.001, 0.01)
 
     plt.rcParams["font.family"] = "serif"
 
