@@ -85,6 +85,8 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 	eeg_test = np.expand_dims(eeg_test, axis=-1)
 	fmri_test = np.expand_dims(fmri_test, axis=-1)
 
+	print(eeg_train.shape)
+	print(fmri_train.shape)
 	eeg_train = eeg_train.astype('float32')
 	fmri_train = fmri_train.astype('float32')
 	eeg_test = eeg_test.astype('float32')
