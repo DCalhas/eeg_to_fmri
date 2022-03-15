@@ -29,10 +29,10 @@ class view_EEG_classifier(tf.keras.Model):
         - EEG_to_fMRI: model
         - tupel: input_shape, eeg input shape
     """
-    def __init__(self, model, input_shape, regularizer=None, seed=None):
+    def __init__(self, model, input_shape, activation=None, regularizer=None, seed=None):
         super(view_EEG_classifier, self).__init__()
         
-        self.view = pretrained_EEG_to_fMRI(model, input_shape, regularizer=regularizer, seed=seed)
+        self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, seed=seed)
         self.clf = LinearClassifier(regularizer=regularizer)
         self.training=True
     
