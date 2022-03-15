@@ -411,7 +411,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                             pretrained_model.layers[4].layers[11].units,
                                             scale=pretrained_model.layers[4].layers[11].kernel_scale.numpy(),
-                                            trainable=True, name="latent_projection")
+                                            trainable=False, name="latent_projection")
         else:
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                                 pretrained_model.layers[4].layers[11].units,
@@ -444,7 +444,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #split flow in two
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
-                    activation=activation,
+                    activation=None,
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=True)(x)
