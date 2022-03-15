@@ -16,7 +16,7 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 	#TR of fmri and window size of STFT
 	f_resample=getattr(fmri_utils, "TR_"+dataset)
 
-	if(dataset=="03"):
+	if(dataset in ["02","03"]):
 		eeg_limit=True
 		eeg_f_limit=135
 	else:
