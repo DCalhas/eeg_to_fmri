@@ -457,7 +457,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         shape_smoothing=(30,30,15)
         z = z*tf.keras.layers.ZeroPadding3D(padding=((0, z.shape[1]-shape_smoothing[0]), 
                     (0, z.shape[2]-shape_smoothing[1]), 
-                    (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))
+                    (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))[:,:,:,:,0]
         print(z.shape)
         z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
 
