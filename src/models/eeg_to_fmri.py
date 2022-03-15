@@ -486,4 +486,4 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     """
     #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
     def call(self, x1):
-        return [self.decoder(x1)*self.q_decoder(x1), self.q_decoder(x1)]
+        return [self.decoder(x1)*self.q_decoder(x1).numpy(), self.q_decoder(x1)]
