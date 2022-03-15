@@ -443,6 +443,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #split flow in two
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
+                    activation=tf.keras.activations.relu,
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=True)(x)
@@ -456,7 +457,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].kernel.numpy()),
                                         bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].bias.numpy()),
                                         padding=pretrained_model.layers[4].layers[18].padding,
-                                        trainable=False)(z)
+                                        trainable=True)(z)
 
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
