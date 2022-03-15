@@ -7,7 +7,7 @@ from utils import state_utils
 from tensorflow.keras.layers import Dense#globals get attr
 
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures
-from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D
+from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention
 from layers.resnet_block import ResBlock, pretrained_ResBlock
 
@@ -458,9 +458,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z = z*tf.keras.layers.ZeroPadding3D(padding=((0, z.shape[1]-shape_smoothing[0]), 
                     (0, z.shape[2]-shape_smoothing[1]), 
                     (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))[:,:,:,:,0]
-        print(z.shape)
         z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
-
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
 
