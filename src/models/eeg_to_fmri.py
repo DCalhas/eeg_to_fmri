@@ -437,6 +437,27 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     pretrained_model.layers[4].layers[14].target_shape)(x)
 
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[15]).__name__)()(x)
+
+
+
+        #split flow in two
+        z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
+                    pretrained_model.layers[4].layers[16].units,
+                    kernel_regularizer=regularizer,
+                    bias_regularizer=regularizer,
+                    trainable=True)(x)
+        z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
+                    pretrained_model.layers[4].layers[17].target_shape)(z)
+
+        z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[18]).__name__)(
+                                        filters=pretrained_model.layers[4].layers[18].filters, 
+                                        kernel_size=pretrained_model.layers[4].layers[18].kernel_size, 
+                                        strides=pretrained_model.layers[4].layers[18].strides,
+                                        kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].kernel.numpy()),
+                                        bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].bias.numpy()),
+                                        padding=pretrained_model.layers[4].layers[18].padding,
+                                        trainable=False)(z)
+
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
@@ -445,7 +466,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=False)(x)
-        
+
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(x)
 
@@ -458,7 +479,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         padding=pretrained_model.layers[4].layers[18].padding,
                                         trainable=False)(x)
 
-        self.decoder = tf.keras.Model(input_shape, x)   
+        self.decoder = tf.keras.Model(input_shape, x)
+        self.q_decoder = tf.keras.Model(input_shape, z)
         
     def build(self, input_shape):
         self.decoder.build(input_shape=input_shape)
@@ -471,4 +493,4 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     """
     #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
     def call(self, x1):
-        return self.decoder(x1)
+        return [self.decoder(x1), self.q_decoder(x1)]
