@@ -223,13 +223,13 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 			* maxpool_s - tuple
 			* seed - int
 	"""
-	def __init__(self, resblock, trainable=False, regularizer=None, seed=None):
+	def __init__(self, resblock, activation=None, trainable=False, regularizer=None, seed=None):
 		super(pretrained_ResBlock, self).__init__()
 		
 		self._trainable=trainable
-		self.set_layers(resblock, regularizer=regularizer, seed=seed)
+		self.set_layers(resblock, activation=activation, regularizer=regularizer, seed=seed)
 
-	def set_layers(self, resblock, regularizer=None, seed=None):
+	def set_layers(self, resblock, activation=None, regularizer=None, seed=None):
 
 		self.left_layers = []
 		self.right_layers = []
@@ -251,6 +251,7 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 										filters=resblock.left_layers[0].filters, 
 										kernel_size=resblock.left_layers[0].kernel_size, 
 										strides=resblock.left_layers[0].strides,
+										activation=activation,
 										kernel_regularizer=kernel_regularizer,
 										bias_regularizer=bias_regularizer,
 										kernel_initializer=kernel_initializer,
@@ -278,6 +279,7 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 										filters=resblock.left_layers[4].filters, 
 										kernel_size=resblock.left_layers[4].kernel_size, 
 										strides=resblock.left_layers[4].strides,
+										activation=activation,
 										kernel_regularizer=kernel_regularizer,
 										bias_regularizer=bias_regularizer,
 										kernel_initializer=kernel_initializer,
@@ -303,6 +305,7 @@ class pretrained_ResBlock(tf.keras.layers.Layer):
 										filters=resblock.right_layers[0].filters, 
 										kernel_size=resblock.right_layers[0].kernel_size, 
 										strides=resblock.right_layers[0].strides,
+										activation=activation,
 										kernel_regularizer=kernel_regularizer,
 										bias_regularizer=bias_regularizer,
 										kernel_initializer=kernel_initializer,

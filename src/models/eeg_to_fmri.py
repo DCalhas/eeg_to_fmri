@@ -386,12 +386,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                 x = tf.keras.layers.ZeroPadding3D(padding=((0,2), (0,0), (0,0)))(x)
                 #x = tf.pad(x, tf.constant([[0,0],[0, 2], [0, 0], [0,0], [0,0],]), "CONSTANT")
             
-            x = pretrained_ResBlock(resblocks[i], trainable=True, regularizer=regularizer, seed=seed)(x)
+            x = pretrained_ResBlock(resblocks[i], trainable=True, activation=tf.keras.activations.relu, regularizer=regularizer, seed=seed)(x)
             
         
         x = tf.keras.layers.Flatten()(x)
         
         x = tf.keras.layers.Dense(pretrained_model.layers[1].layers[-2].units,
+                                activation=tf.keras.activations.relu,
                                 kernel_regularizer=regularizer,
                                 bias_regularizer=regularizer,
                                 kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[1].layers[-2].kernel.numpy()),
@@ -422,6 +423,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
         self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(
                                     pretrained_model.layers[4].layers[12].units,
+                                    activation=tf.keras.activations.relu,
                                     kernel_regularizer=regularizer,
                                     bias_regularizer=regularizer,
                                     use_bias=pretrained_model.layers[4].layers[12].use_bias,
