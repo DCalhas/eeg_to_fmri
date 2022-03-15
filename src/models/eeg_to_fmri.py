@@ -479,8 +479,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         padding=pretrained_model.layers[4].layers[18].padding,
                                         trainable=False)(x)
 
-        self.decoder = tf.keras.Model(input_shape, x)
-        self.q_decoder = tf.keras.Model(input_shape, z)
+        self.decoder = tf.keras.Model(input_shape, z)
+        self.q_decoder = tf.keras.Model(input_shape, x)
         
     def build(self, input_shape):
         self.decoder.build(input_shape=input_shape)
