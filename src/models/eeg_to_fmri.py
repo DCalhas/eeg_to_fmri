@@ -444,10 +444,11 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #split flow in two
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
-                    activation=activation,
+                    activation=None,
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=True)(x)
+        z = tf.keras.layers.ReLU(max_value=1.0)(z)
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
 
