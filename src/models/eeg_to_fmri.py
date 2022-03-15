@@ -449,15 +449,18 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     bias_regularizer=regularizer,
                     trainable=True)(x)
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
-                    pretrained_model.layers[4].layers[17].target_shape)(z)
+                    pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
 
 
         #try smoothing feature selection
-        print(pretrained_model.layers[4].layers[17].target_shape)
+        print(*pretrained_model.layers[4].layers[17].target_shape[:-1])
         print(z.shape)
         z = DCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
         z[:,30:,30:,15:,:]=0.0
         z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
+
+        z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
+                    pretrained_model.layers[4].layers[17].target_shape)(z)
 
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
