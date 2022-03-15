@@ -482,7 +482,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         #layer normalization
         z = tf.keras.layers.LayerNormalization()(z)
-        x = tf.keras.layers.LayerNormalization()(x)
+        x = tf.keras.layers.LayerNormalization(trainable=False)(x)
 
         self.decoder = tf.keras.Model(input_shape, z)
         self.q_decoder = tf.keras.Model(input_shape, x)
