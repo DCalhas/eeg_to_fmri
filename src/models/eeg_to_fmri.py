@@ -411,7 +411,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                             pretrained_model.layers[4].layers[11].units,
                                             scale=pretrained_model.layers[4].layers[11].kernel_scale.numpy(),
-                                            trainable=False, name="latent_projection")
+                                            trainable=True, name="latent_projection")
         else:
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                                 pretrained_model.layers[4].layers[11].units,
