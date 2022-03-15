@@ -439,6 +439,10 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[15]).__name__)()(x)
 
+
+        #layer normalization
+        x = tf.keras.layers.LayerNormalization()(x)
+
         #split flow in two
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
@@ -478,11 +482,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].bias.numpy()),
                                         padding=pretrained_model.layers[4].layers[18].padding,
                                         trainable=False)(x)
-
-
-        #layer normalization
-        z = tf.keras.layers.LayerNormalization(trainable=False)(z)
-        x = tf.keras.layers.LayerNormalization(trainable=False)(x)
 
         self.decoder = tf.keras.Model(input_shape, z)
         self.q_decoder = tf.keras.Model(input_shape, x)
