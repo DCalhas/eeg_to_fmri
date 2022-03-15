@@ -451,15 +451,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
 
-        z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[18]).__name__)(
-                                        filters=pretrained_model.layers[4].layers[18].filters, 
-                                        kernel_size=pretrained_model.layers[4].layers[18].kernel_size, 
-                                        strides=pretrained_model.layers[4].layers[18].strides,
-                                        kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].kernel.numpy()),
-                                        bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].bias.numpy()),
-                                        padding=pretrained_model.layers[4].layers[18].padding,
-                                        trainable=True)(z)
-
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
