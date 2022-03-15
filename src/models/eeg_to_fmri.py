@@ -451,6 +451,12 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
 
+
+        #try smoothing feature selection
+        z = DCT3D(*pretrained_model.layers[4].layers[17].target_shape)(z)
+        z[:,30:,30:,15:,:]=0.0
+        z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape)(z)
+
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
