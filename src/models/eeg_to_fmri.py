@@ -454,7 +454,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #try smoothing feature selection
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
         z = DCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
-        shape_smoothing=(5,5,5)
+        shape_smoothing=(10,10,7)
         z = z*tf.keras.layers.ZeroPadding3D(padding=((0, z.shape[1]-shape_smoothing[0]), (0, z.shape[2]-shape_smoothing[1]), (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))[:,:,:,:,0]
         z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
 
