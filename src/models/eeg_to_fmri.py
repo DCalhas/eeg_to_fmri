@@ -430,6 +430,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                     name="conditional_attention_style_dense",
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
                                     trainable=True)(attention_scores)
+        self.latent_style = tf.keras.layers.Dropout(0.5)(self.latent_style)
 
 
         x = self.latent_resolution(x)
@@ -450,11 +451,12 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     trainable=True)(x)
         z = tf.keras.layers.LayerNormalization()(z)
         z = tf.keras.layers.ReLU(max_value=1.0)(z)
+        z = tf.keras.layers.Dropout(0.5)(z)
         
         #try smoothing feature selection
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
         z = DCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
-        shape_smoothing=(7,7,3)
+        shape_smoothing=(6,6,3)
         z = z*tf.keras.layers.ZeroPadding3D(padding=((0, z.shape[1]-shape_smoothing[0]), (0, z.shape[2]-shape_smoothing[1]), (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))[:,:,:,:,0]
         z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
 
