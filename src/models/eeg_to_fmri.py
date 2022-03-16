@@ -406,7 +406,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     
     def build_decoder(self, pretrained_model, input_shape, output_encoder, activation=None, attention_scores=None, regularizer=None, seed=None):
         x = tf.keras.layers.Flatten()(output_encoder)
-        
+        x = tf.keras.layers.LayerNormalization()(x)
         if("Fourier" in type(pretrained_model.layers[4].layers[11]).__name__):
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                             pretrained_model.layers[4].layers[11].units,
@@ -420,7 +420,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                                 trainable=True, name="latent_projection")
             
         attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
-        attention_scores = tf.keras.layers.BatchNormalization()(attention_scores)
+        attention_scores = tf.keras.layers.LayerNormalization()(attention_scores)
         self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(
                                     pretrained_model.layers[4].layers[12].units,
                                     activation=activation,
