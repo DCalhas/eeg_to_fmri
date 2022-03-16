@@ -11,10 +11,11 @@ class LinearClassifier(tf.keras.Model):
 		super(LinearClassifier, self).__init__()
 		
 		self.flatten = tf.keras.layers.Flatten()
+        self.normalization = tf.keras.layers.LayerNormalization()
 		self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
 		
 	def call(self, X):
-		return self.linear(self.flatten(X))
+		return self.linear(self.flatten(self.normalization(X)))
 
 
 """
