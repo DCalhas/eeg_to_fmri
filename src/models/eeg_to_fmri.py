@@ -430,6 +430,11 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
                                     trainable=True)(attention_scores)
         
+        #layer normalization
+        x = tf.keras.layers.LayerNormalization()(x)
+        self.latent_style = tf.keras.layers.LayerNormalization()(self.latent_style)
+
+
         x = self.latent_resolution(x)
         x = x*self.latent_style
         
@@ -438,10 +443,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     pretrained_model.layers[4].layers[14].target_shape)(x)
 
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[15]).__name__)()(x)
-
-
-        #layer normalization
-        x = tf.keras.layers.LayerNormalization()(x)
 
         #split flow in two
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
