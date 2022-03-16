@@ -420,6 +420,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                                 trainable=True, name="latent_projection")
             
         attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
+        attention_scores = tf.keras.layers.LayerNormalization()(attention_scores)
         self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(
                                     pretrained_model.layers[4].layers[12].units,
                                     activation=activation,
@@ -429,10 +430,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                     name="conditional_attention_style_dense",
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
                                     trainable=True)(attention_scores)
-        
-        #layer normalization
-        x = tf.keras.layers.LayerNormalization()(x)
-        self.latent_style = tf.keras.layers.LayerNormalization()(self.latent_style)
 
 
         x = self.latent_resolution(x)
