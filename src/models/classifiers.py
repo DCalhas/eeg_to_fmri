@@ -3,19 +3,19 @@ import tensorflow as tf
 from models.eeg_to_fmri import pretrained_EEG_to_fMRI
 
 class LinearClassifier(tf.keras.Model):
-	"""
-	
-	
-	"""
-	def __init__(self, n_classes=2, regularizer=None):
-		super(LinearClassifier, self).__init__()
-		
-		self.flatten = tf.keras.layers.Flatten()
+    """
+    
+    
+    """
+    def __init__(self, n_classes=2, regularizer=None):
+        super(LinearClassifier, self).__init__()
+        
+        self.flatten = tf.keras.layers.Flatten()
         self.normalization = tf.keras.layers.LayerNormalization()
-		self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
-		
-	def call(self, X):
-		return self.linear(self.flatten(self.normalization(X)))
+        self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
+        
+    def call(self, X):
+        return self.linear(self.flatten(self.normalization(X)))
 
 
 """
