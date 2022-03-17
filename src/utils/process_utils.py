@@ -540,7 +540,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 	def optimize_elastic(value, theta):
 
-		from utils import preprocess_data, tf_config, train
+		from utils import preprocess_data, tf_config, train, losses_utils
 
 		from models import eeg_to_fmri, classifiers
 
@@ -567,22 +567,25 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 			X_test, y_test=test_data
 			with tf.device('/CPU:0'):
 				optimizer = tf.keras.optimizers.Adam(learning_rate)
-				loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 				train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
 				
 				if(view=="fmri"):
+					loss_fn=losses_utils.entropy_mae_loss
 					linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
-																X_train.shape[1:], regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
+																X_train.shape[1:], activation=tf.keras.activations.relu, 
+																regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				else:
+					loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				linearCLF.build(X_train.shape)
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 			#evaluate
-			score+=loss_fn(y_test, linearCLF(X_test))
-			print(loss_fn(y_test, linearCLF(X_test)))
+			linearCLF.training=False
+			score+=tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_test, linearCLF(X_test))
+			print(tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_test, linearCLF(X_test)))
 
 		value[0]=score.numpy()
 		if(np.isnan(value[0])):
@@ -605,7 +608,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
 	
-	from utils import preprocess_data, tf_config, train, lrp
+	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
 	from models import eeg_to_fmri, classifiers
 
@@ -631,21 +634,35 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 		
 
 		if(view=="fmri"):
+			loss_fn=losses_utils.entropy_mae_loss
 			linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
-														X_train.shape[1:], regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
+														X_train.shape[1:], activation=tf.keras.activations.relu, 
+														regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
 		else:
+			loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
 		linearCLF.build(X_train.shape)
 
 	#train classifier
 	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 
+	#evaluate
+	linearCLF.training=False
 	#get predictionsf
 	hits, y_true, y_pred = predict(test_set, linearCLF)
 	#save predictions
 	append_labels(view, path_labels, y_true, y_pred)
-
+	#save views of fmri
+	if(view=="fmri"):
+		if(fold==0):
+			np.save(path_labels+"views.npy", linearCLF.view(X_test)[0].numpy(), allow_pickle=True)
+			np.save(path_labels+"views_relu_regions.npy", linearCLF.view.decoder(X_test).numpy(), allow_pickle=True)
+		else:
+			np.save(path_labels+"views.npy", np.append(np.load(path_labels+"views.npy", allow_pickle=True), linearCLF.view(X_test)[0].numpy(), axis=0), allow_pickle=True)
+			np.save(path_labels+"views_relu_regions.npy", np.append(np.load(path_labels+"views_relu_regions.npy", allow_pickle=True), linearCLF.view.decoder(X_test).numpy(), axis=0), allow_pickle=True)
+	
 	print("Finished fold", fold)
+
 	if(save_explainability and view=="fmri"):
 		#explaing features
 		#explain to fMRI view

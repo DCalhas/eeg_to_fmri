@@ -9,6 +9,8 @@ class LinearClassifier(tf.keras.Model):
     """
     def __init__(self, n_classes=2, regularizer=None):
         super(LinearClassifier, self).__init__()
+
+        self.training=True
         
         self.flatten = tf.keras.layers.Flatten()
         self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
@@ -34,7 +36,6 @@ class view_EEG_classifier(tf.keras.Model):
         
         self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, seed=seed)
         self.clf = LinearClassifier(regularizer=regularizer)
-        self.training=True
     
     def build(self, input_shape):
         self.view.build(input_shape)
