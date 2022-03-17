@@ -572,7 +572,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
 				
 				if(view=="fmri"):
-					loss_fn=losses_utils.entropy_kl_loss
+					loss_fn=losses_utils.entropy_mae_loss
 					linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
 																X_train.shape[1:], activation=tf.keras.activations.relu, 
 																regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
@@ -634,7 +634,7 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 		
 
 		if(view=="fmri"):
-			loss_fn=losses_utils.entropy_kl_loss
+			loss_fn=losses_utils.entropy_mae_loss
 			linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
 														X_train.shape[1:], activation=tf.keras.activations.relu, 
 														regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
