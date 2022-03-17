@@ -33,6 +33,8 @@ class view_EEG_classifier(tf.keras.Model):
     """
     def __init__(self, model, input_shape, activation=None, regularizer=None, seed=None):
         super(view_EEG_classifier, self).__init__()
+
+        self.training=True
         
         self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, seed=seed)
         self.clf = LinearClassifier(regularizer=regularizer)
