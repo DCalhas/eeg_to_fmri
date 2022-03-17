@@ -608,7 +608,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
 	
-	from utils import preprocess_data, tf_config, train, lrp
+	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
 	from models import eeg_to_fmri, classifiers
 
