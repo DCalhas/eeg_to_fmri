@@ -443,3 +443,13 @@ cosine:
 """
 def cosine(x1, x2):
     return 1.0 - tf.tensordot(x1,x2, [[1,2,3],[3,2,1]])/(tf.norm(x1, ord=2)*tf.norm(x2, ord=2))
+
+"""
+list: y_pred - from classifier.linearCLF viewer []
+np.ndarray: y_true
+"""
+def entropy_mae_loss(y_true, y_pred):
+    loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_true, y_pred[0])
+    loss += tf.keras.losses.MeanAbsoluteError()(y_pred[1], y_pred[2])#do not propagate gradients through q_decoder
+    
+    return loss
