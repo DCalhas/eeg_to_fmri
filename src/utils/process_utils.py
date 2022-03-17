@@ -428,7 +428,7 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 	print("I: Starting pretraining of synthesis network")
 
 	loss_history = train.train(train_set, model, optimizer, 
-							loss_fn, epochs=epochs, 
+							loss_fn, epochs=0, 
 							u_architecture=True,
 							val_set=None, verbose=True, verbose_batch=False)[0]
 
@@ -581,7 +581,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				linearCLF.build(X_train.shape)
 
-			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=0, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 			#evaluate
 			linearCLF.training=False
 			score+=tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_test, linearCLF(X_test))
@@ -644,7 +644,7 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 		linearCLF.build(X_train.shape)
 
 	#train classifier
-	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
+	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=0, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 
 	#evaluate
 	linearCLF.training=False
