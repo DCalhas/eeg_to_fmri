@@ -593,7 +593,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 1.)}, 
 						{'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 1.)},
-						{'name': 'batch_size', 'type': 'discrete', 'domain': (1,2,4,8,16,32,64)},
+						{'name': 'batch_size', 'type': 'discrete', 'domain': (1,2,4,8,16)},
 						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-10, 1e-4)}]
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
