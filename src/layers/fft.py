@@ -375,10 +375,55 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 				   [0, 0],
 				   [self.in3, 0]]
 		
+		#https://github.com/tensorflow/probability/blob/88d217dfe8be49050362eb14ba3076c0dc0f1ba6/tensorflow_probability/python/distributions/normal.py#L174
 		rand_coefs1 = self.normal1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs2 = self.normal2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs3 = self.normal3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		
+		"""
+		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
+		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
+		return self.padded_idct3(tf.pad(z, rand_paddings3, constant_values=1.0)*tf.pad(rand_coefs3, in_paddings3, constant_values=1.0))
+		"""
+
 		z = tf.pad(x, rand_paddings1) + tf.pad(rand_coefs1, in_paddings1)
 		z = tf.pad(z, rand_paddings2) + tf.pad(rand_coefs2, in_paddings2)
 		return self.padded_idct3(tf.pad(z, rand_paddings3) + tf.pad(rand_coefs3, in_paddings3))
+
+
+
+
+"""
+Spectral Dropout Layer - Khan et al. 2019 - https://www.sciencedirect.com/science/article/pii/S0893608018302715
+
+tfp.distributions.Bernoulli(probs=p)
+
+>>> import tensorflow as tf
+>>> import tensorflow_probability as tfp
+>>> layer = SpectralDropout(64,64,30,0.5)
+>>> layer(tf.ones(1, 64,64,30))
+
+"""
+class SpectralDropout(tf.keras.layers.Layer):
+	"""
+	in1 - int - first dimension input
+	"""
+	def __init__(self, in1, in2, in3, probs=None, dtype=tf.float32):
+		super(SpectralDropout, self).__init__()
+
+
+		if(probs is None):
+			probs=tf.constant(0.5, shape=(in1, in2, in3))
+			self.probs=self.add_weight('probs',
+								shape=[in1, in2, in3],
+								initializer=tf.constant_initializer(probs.numpy()),
+								constraint=tf.keras.constraints.NonNeg(),
+								dtype=tf.float32,
+								trainable=False)#can not be trained since Bernoulli sampling is not differentiable
+		else:
+			self.probs=tf.constant_initializer(probs, shape=(in1, in2, in3))
+
+		self.mask_dist = tfp.distributions.Bernoulli(probs=self.probs, dtype=dtype)
+
+	def call(self, X):
+		return X*self.mask_dist.sample()
