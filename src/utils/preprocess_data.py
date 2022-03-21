@@ -4,6 +4,8 @@ import sys
 
 import numpy as np
 
+from sklearn.utils import shuffle
+
 #should eeg_limit be true??
 def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_eeg=False, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
 
@@ -237,6 +239,17 @@ class Dataset_CLF_CV:
 						np.append(self.y[:fold*self.ind_time*step], self.y[fold*self.ind_time*step+self.ind_time*step:], axis=0)), \
 				(self.X[fold*self.ind_time*step:fold*self.ind_time*step+self.ind_time*step], 
 						 self.y[fold*self.ind_time*step:fold*self.ind_time*step+self.ind_time*step])
+
+	"""
+	Shuffle dataset
+
+	This should only be done in a CV setting with fold < individuals, i.e. please do not do this in a LOOCV setting
+	"""
+	def shuffle(self):
+		data = shuffle(self.X, self.y)
+		self.X=data[0]
+		self.y=data[1]
+
 
 	"""
 	Save data to numpy array to ease loading bottleneck

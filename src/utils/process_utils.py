@@ -548,6 +548,8 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 		import numpy as np
 
+		from sklearn.utils import shuffle
+
 		l1_reg, l2_reg, batch_size, learning_rate = (theta)
 
 		tf_config.set_seed(seed=seed)
@@ -557,6 +559,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 		train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
 		dataset_clf_wrapper.X = train_data[0]
 		dataset_clf_wrapper.y = train_data[1]
+		dataset_clf_wrapper.shuffle()
 		dataset_clf_wrapper.set_folds(n_folds_cv)
 
 		score = 0.0
