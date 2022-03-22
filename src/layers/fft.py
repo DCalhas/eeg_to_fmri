@@ -347,7 +347,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
 		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal2, self.normal2_prior)))
 		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
-		
+		"""
 		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
 		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
 		return self.padded_idct3(tf.pad(z, rand_paddings3, constant_values=1.0)*tf.pad(rand_coefs3, in_paddings3, constant_values=1.0))
@@ -355,7 +355,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		z = tf.pad(x, rand_paddings1) + tf.pad(rand_coefs1, in_paddings1)
 		z = tf.pad(z, rand_paddings2) + tf.pad(rand_coefs2, in_paddings2)
 		return self.padded_idct3(tf.pad(z, rand_paddings3) + tf.pad(rand_coefs3, in_paddings3))
-		"""
+		
 
 
 
