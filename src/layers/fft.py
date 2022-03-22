@@ -310,7 +310,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(self.coefs_perturb):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
-			x = x*dist_normal.sample()
+			x = x+dist_normal.sample()
 			#add kl divergence loss
 			self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal, self.normal_prior)))
 
