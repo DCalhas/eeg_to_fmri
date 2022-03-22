@@ -549,6 +549,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 		import numpy as np
 
 		from sklearn.utils import shuffle
+		from sklearn import metrics
 
 		l1_reg, l2_reg, batch_size, learning_rate = (theta)
 
@@ -562,7 +563,8 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 		dataset_clf_wrapper.shuffle()
 		dataset_clf_wrapper.set_folds(n_folds_cv)
 
-		score = 0.0
+		y_true=np.empty((0,), dtype=np.float64)
+		y_pred=np.empty((0,), dtype=np.float64)
 		for fold in range(n_folds_cv):
 			print("On fold", fold+1, end="\r")
 			train_data, test_data = dataset_clf_wrapper.split(fold)
@@ -587,10 +589,13 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 			#evaluate
 			linearCLF.training=False
-			score+=tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_test, linearCLF(X_test))
-			print(tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_test, linearCLF(X_test)))
+			#evaluate according to final AUC in validation sets
+			y_pred=np.append(y_pred, linearCLF(X_test).numpy()[:,1])
+			y_true=np.append(y_true, y_test[:,1])
+			fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred)
+			print("Fold", fold+1, "with AUC:", metrics.auc(fpr, tpr))
 
-		value[0]=score.numpy()
+		value[0]=1.-metrics.auc(fpr, tpr)
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
