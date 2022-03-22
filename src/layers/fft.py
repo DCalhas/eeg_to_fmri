@@ -306,6 +306,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 									dtype=tf.float32,
 									trainable=True)
 			self.normal = tfp.distributions.Normal(loc=self.mu, scale=self.sigma)
+			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_variable)
 
 		self.padded_idct3 = padded_iDCT3D(in1+rand1, in2+rand2, in3+rand3, out1, out2, out3)
 
@@ -346,11 +347,19 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.normal1 = tfp.distributions.Normal(loc=self.mu1, scale=self.sigma1)
 		self.normal2 = tfp.distributions.Normal(loc=self.mu2, scale=self.sigma2)
 		self.normal3 = tfp.distributions.Normal(loc=self.mu3, scale=self.sigma3)
+
+		self.normal1_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.rand1, self.in2, self.in3], 'normal1_prior', True, self.add_variable)
+		self.normal2_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1+self.rand1, self.rand2, self.in3], 'normal2_prior', True, self.add_variable)
+		self.normal3_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1+self.rand1, self.in2+self.rand2, self.rand3], 'normal3_prior', True, self.add_variable)
 		
 	def call(self, x):
 
 		if(self.coefs_perturb):
 			x = x + self.normal.sample()
+
+			#add kl divergence loss
+			self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal, self.normal_prior)))
+
 
 		rand_paddings1 = [[0,0],
 					[0, self.rand1],
@@ -379,6 +388,10 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		rand_coefs1 = self.normal1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs2 = self.normal2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs3 = self.normal3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+
+		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
+		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal2, self.normal2_prior)))
+		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
 		
 		"""
 		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
