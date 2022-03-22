@@ -294,60 +294,14 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.coefs_perturb = coefs_perturb
 
 		if(self.coefs_perturb):
-			self.mu=self.add_weight('mu',
-									shape=[self.in1, self.in2, self.in3],
-									initializer=tf.constant_initializer(np.zeros((self.in1, self.in2, self.in3))),
-									dtype=tf.float32,
-									trainable=True)
-			self.sigma=self.add_weight('sigma',
-									shape=[self.in1, self.in2, self.in3],
-									initializer=tf.constant_initializer(np.ones((self.in1, self.in2, self.in3))),
-									constraint=tf.keras.constraints.NonNeg(),
-									dtype=tf.float32,
-									trainable=True)
-			self.normal = tfp.distributions.Normal(loc=self.mu, scale=self.sigma)
+			self.normal= tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_variable)
 			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_variable)
 
 		self.padded_idct3 = padded_iDCT3D(in1+rand1, in2+rand2, in3+rand3, out1, out2, out3)
 
-		self.mu1=self.add_weight('mu1',
-								shape=[self.rand1, self.in2, self.in3],
-								initializer=tf.constant_initializer(np.zeros((self.rand1, self.in2, self.in3))),
-								dtype=tf.float32,
-								trainable=True)
-		self.sigma1=self.add_weight('sigma1',
-								shape=[self.rand1, self.in2, self.in3],
-								initializer=tf.constant_initializer(np.ones((self.rand1, self.in2, self.in3))),
-								constraint=tf.keras.constraints.NonNeg(),
-								dtype=tf.float32,
-								trainable=True)
-		self.mu2=self.add_weight('mu2',
-								shape=[self.in1+self.rand1, self.rand2, self.in3],
-								initializer=tf.constant_initializer(np.zeros((self.in1+self.rand1, self.rand2, self.in3))),
-								dtype=tf.float32,
-								trainable=True)
-		self.sigma2=self.add_weight('sigma2',
-								shape=[self.in1+self.rand1, self.rand2, self.in3],
-								initializer=tf.constant_initializer(np.ones((self.in1+self.rand1, self.rand2, self.in3))),
-								constraint=tf.keras.constraints.NonNeg(),
-								dtype=tf.float32,
-								trainable=True)
-		self.mu3=self.add_weight('mu3',
-								shape=[self.in1+self.rand1, self.in2+self.rand2, self.rand3],
-								initializer=tf.constant_initializer(np.zeros((self.in1+self.rand1, self.in2+self.rand2, self.rand3))),
-								dtype=tf.float32,
-								trainable=True)
-		self.sigma3=self.add_weight('sigma3',
-								shape=[self.in1+self.rand1, self.in2+self.rand2, self.rand3],
-								initializer=tf.constant_initializer(np.ones((self.in1+self.rand1, self.in2+self.rand2, self.rand3))),
-								constraint=tf.keras.constraints.NonNeg(),
-								dtype=tf.float32,
-								trainable=True)
-
-		self.normal1 = tfp.distributions.Normal(loc=self.mu1, scale=self.sigma1)
-		self.normal2 = tfp.distributions.Normal(loc=self.mu2, scale=self.sigma2)
-		self.normal3 = tfp.distributions.Normal(loc=self.mu3, scale=self.sigma3)
-
+		self.normal1 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.rand1, self.in2, self.in3], 'normal1_posterior', True, self.add_variable)
+		self.normal2 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.in1+self.rand1, self.rand2, self.in3], 'normal2_posterior', True, self.add_variable)
+		self.normal3 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.in1+self.rand1, self.in2+self.rand2, self.rand3], 'normal3_posterior', True, self.add_variable)
 		self.normal1_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.rand1, self.in2, self.in3], 'normal1_prior', True, self.add_variable)
 		self.normal2_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1+self.rand1, self.rand2, self.in3], 'normal2_prior', True, self.add_variable)
 		self.normal3_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1+self.rand1, self.in2+self.rand2, self.rand3], 'normal3_prior', True, self.add_variable)
@@ -355,11 +309,10 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 	def call(self, x):
 
 		if(self.coefs_perturb):
-			x = x + self.normal.sample()
-
+			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
+			x = x + dist_normal.sample()
 			#add kl divergence loss
 			self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal, self.normal_prior)))
-
 
 		rand_paddings1 = [[0,0],
 					[0, self.rand1],
@@ -385,20 +338,20 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 				   [self.in3, 0]]
 		
 		#https://github.com/tensorflow/probability/blob/88d217dfe8be49050362eb14ba3076c0dc0f1ba6/tensorflow_probability/python/distributions/normal.py#L174
-		rand_coefs1 = self.normal1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
-		rand_coefs2 = self.normal2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
-		rand_coefs3 = self.normal3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
-
+		dist_normal1 = tfp.distributions.Normal(loc=self.normal1.distribution.loc, scale=self.normal1.distribution.scale)
+		dist_normal2 = tfp.distributions.Normal(loc=self.normal2.distribution.loc, scale=self.normal2.distribution.scale)
+		dist_normal3 = tfp.distributions.Normal(loc=self.normal3.distribution.loc, scale=self.normal3.distribution.scale)
+		rand_coefs1 = dist_normal1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+		rand_coefs2 = dist_normal2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+		rand_coefs3 = dist_normal3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
 		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal2, self.normal2_prior)))
 		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
-		
 		"""
 		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
 		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
 		return self.padded_idct3(tf.pad(z, rand_paddings3, constant_values=1.0)*tf.pad(rand_coefs3, in_paddings3, constant_values=1.0))
 		"""
-
 		z = tf.pad(x, rand_paddings1) + tf.pad(rand_coefs1, in_paddings1)
 		z = tf.pad(z, rand_paddings2) + tf.pad(rand_coefs2, in_paddings2)
 		return self.padded_idct3(tf.pad(z, rand_paddings3) + tf.pad(rand_coefs3, in_paddings3))
