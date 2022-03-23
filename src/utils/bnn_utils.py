@@ -118,7 +118,7 @@ def aleatoric_uncertainty(model, X, T=10):
 	y_std = tf.zeros(X[1].shape)#shape of fmri
 	
 	for i in range(T):
-		y_t = model(X)
+		y_t = model(*X)
 
 		if(type(y_t[0]) is list):
 			y_t = y_t[0]
