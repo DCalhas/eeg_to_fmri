@@ -8,7 +8,7 @@ import tensorflow.keras.backend as K
 from scipy.stats import norm
 from scipy.stats import entropy
 
-NON_DIVISION_ZERO=0.5
+NON_DIVISION_ZERO=1e-9
 
 ######################################################################################################################
 #
