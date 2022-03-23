@@ -592,7 +592,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 			#evaluate according to final AUC in validation sets
 			y_pred=np.append(y_pred, linearCLF(X_test).numpy()[:,1])
 			y_true=np.append(y_true, y_test[:,1])
-			fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred)
+			fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred, drop_intermediate=False)
 			print("Fold", fold+1, "with AUC:", metrics.auc(fpr, tpr))
 
 		value[0]=1.-metrics.auc(fpr, tpr)
