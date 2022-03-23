@@ -115,14 +115,15 @@ Computing \sigma_{i}^{2}
 """
 def aleatoric_uncertainty(model, X, T=10):
 	
-	y_std = tf.zeros(X.shape)
+	y_std = tf.zeros(X[1].shape)#shape of fmri
 	
 	for i in range(T):
 		y_t = model(X)
-		if(len(y_t) < 3):
-			y_std = y_std + tf.math.square(y_t[1])
-		else:
-			y_std = y_std + MC_posterior_Gamma(y_t[1], y_t[2])
+
+		if(type(y_t[0]) is list):
+			y_t = y_t[0]
+
+		y_std = y_std + tf.math.square(y_t[1])
 		
 	return y_std/T
 
@@ -133,16 +134,16 @@ def epistemic_uncertainty(model, X, T=10):
 
 	assert type(X) is tuple
 	
-	y_hat = tf.zeros(X[1].shape)
+	y_hat = tf.zeros(X[1].shape)#shape of fmri
 	
 	for i in range(T):
 
 		y_t = model(*X)
 
 		if(type(y_t[0]) is list):
-				y_t = y_t[0][0]
-			else:
-				y_t = y_t[0]
+			y_t = y_t[0][0]
+		else:
+			y_t = y_t[0]
 
 		y_hat = y_hat + tf.math.square(y_t)
 		
