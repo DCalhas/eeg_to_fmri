@@ -269,7 +269,7 @@ class EEG_to_fMRI(tf.keras.Model):
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
 
         if(self.aleatoric_uncertainty):
-            self.decoder = tf.keras.Model(input_shape, [x, tf.keras.layers.Dense(1)(x)])
+            self.decoder = tf.keras.Model(input_shape, [x, tf.keras.layers.Dense(1, activation=tf.keras.activations.relu)(x)])
         else:
             self.decoder = tf.keras.Model(input_shape, x)
 
