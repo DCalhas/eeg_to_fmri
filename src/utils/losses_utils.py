@@ -453,3 +453,15 @@ def entropy_mae_loss(y_true, y_pred):
     loss += tf.keras.losses.MeanAbsoluteError()(y_pred[1], y_pred[2])#do not propagate gradients through q_decoder
     
     return loss
+
+"""
+laplace_Loss:
+    Inputs:
+        * y_true - tf.Tensor
+        * y_pred - [[tf.Tensor, tf.Tensor], tf.Tensor, tf.Tensor]
+    Returns:
+        * tf.Tensor
+"""
+def Laplacian_Loss(y_true, y_pred):
+    laplace_loss = tf.reduce_mean((1/(y_pred[0][1]+1e-9))*tf.math.abs(y_pred[0][0] - y_true)+tf.math.log(2*(y_pred[0][1]+1e-9)), axis=(1,2,3))
+    return laplace_loss + cosine(y_pred[1], y_pred[2])
