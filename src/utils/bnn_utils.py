@@ -148,3 +148,26 @@ def epistemic_uncertainty(model, X, T=10):
 		y_hat = y_hat + tf.math.square(y_t)
 		
 	return y_hat*(1/T) - tf.math.square(X[1][0])#missing empirical variance \sigma
+
+
+"""
+Computing E(y*)
+"""
+def predict_MC(model, X, T=10):
+
+	assert type(X) is tuple
+	
+	y_hat = tf.zeros(X[1].shape)#shape of fmri
+	
+	for i in range(T):
+
+		y_t = model(*X)
+
+		if(type(y_t[0]) is list):
+			y_t = y_t[0][0]
+		else:
+			y_t = y_t[0]
+
+		y_hat = y_hat + y_t
+		
+	return y_hat*(1/T)
