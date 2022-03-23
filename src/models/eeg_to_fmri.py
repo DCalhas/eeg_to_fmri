@@ -255,7 +255,7 @@ class EEG_to_fMRI(tf.keras.Model):
             else:
                 x = padded_iDCT3D(latent_shape[0], latent_shape[1], latent_shape[2],
                             out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(x)
-        elif(aleatoric_uncertainty):
+        elif(self.aleatoric_uncertainty):
             x = tf.keras.layers.Flatten()(x)
             x =  tfp.layers.DenseFlipout(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2])(x)
         else:
