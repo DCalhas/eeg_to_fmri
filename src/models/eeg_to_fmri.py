@@ -94,7 +94,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 dropout=False, local=True, fourier_features=False, 
                 conditional_attention_style=False, random_fourier=False,
                 conditional_attention_style_prior=False,
-                inverse_DFT=False, DFT=False, 
+                inverse_DFT=False, DFT=False, aleatoric_uncertainty=False,
                 variational_iDFT=False, variational_coefs=None,
                 resolution_decoder=None, low_resolution_decoder=False,
                 topographical_attention=False, seed=None, fmri_args=None):
@@ -120,6 +120,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.resolution_decoder=resolution_decoder
         self.low_resolution_decoder=low_resolution_decoder
         self.topographical_attention=topographical_attention
+        self.aleatoric_uncertainty=aleatoric_uncertainty
         self.seed=seed
         self.fmri_args=fmri_args
         
@@ -267,7 +268,10 @@ class EEG_to_fMRI(tf.keras.Model):
             x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3,
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
 
-        self.decoder = tf.keras.Model(input_shape, x)   
+        if(self.aleatoric_uncertainty):
+            self.decoder = tf.keras.Model(input_shape, [x, tf.keras.layers.Dense(1)(x)])
+        else:
+            self.decoder = tf.keras.Model(input_shape, x)
 
     def build(self, input_shape1, input_shape2):
         self.eeg_encoder.build(input_shape=input_shape1)
@@ -322,6 +326,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 "resolution_decoder": self.resolution_decoder,
                 "low_resolution_decoder": self.low_resolution_decoder,
                 "topographical_attention": self.topographical_attention,
+                "aleatoric_uncertainty": self.aleatoric_uncertainty,
                 "seed": self.seed,
                 "fmri_args": self.fmri_args}
 
