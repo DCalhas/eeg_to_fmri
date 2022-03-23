@@ -136,8 +136,14 @@ def epistemic_uncertainty(model, X, T=10):
 	y_hat = tf.zeros(X[1].shape)
 	
 	for i in range(T):
+
 		y_t = model(*X)
 
-		y_hat = y_hat + tf.math.square(y_t[0])
+		if(type(y_t[0]) is list):
+				y_t = y_t[0][0]
+			else:
+				y_t = y_t[0]
+
+		y_hat = y_hat + tf.math.square(y_t)
 		
 	return y_hat*(1/T) - tf.math.square(X[1][0])#missing empirical variance \sigma
