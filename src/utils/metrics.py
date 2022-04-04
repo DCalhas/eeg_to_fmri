@@ -15,11 +15,15 @@ ssim:
 		* SSIM values - list
 		* SSIM mean - float
 """
-def ssim(data, model, factor=3):
+def ssim(data, model, factor=3, two_inputs=True):
 	_ssim = []
 
 	for instance_x, instance_y in data.repeat(1):
-		y_pred = model(instance_x, instance_y)
+		if(two_inputs):
+			y_pred = model(instance_x, instance_y)
+		else:
+			y_pred = model(instance_x)
+			
 		if(type(y_pred) is list):
 			if(type(y_pred[0]) is list):
 				y_pred = y_pred[0][0]
