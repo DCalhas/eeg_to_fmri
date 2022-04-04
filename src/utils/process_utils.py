@@ -586,13 +586,14 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
 				linearCLF.build(X_train.shape)
 
-			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=0, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 			#evaluate
 			linearCLF.training=False
 			#evaluate according to final AUC in validation sets
 			y_pred=np.append(y_pred, linearCLF(X_test).numpy()[:,1])
 			y_true=np.append(y_true, y_test[:,1])
-			ssim=np.append(ssim, metrics.ssim(linearCLF.decoder, tf.data.Dataset,from_tensor_slices((X_test, linearCLF(X_test)[1].numpy())).batch(1)))
+			if(view=="fmri"):
+				ssim=np.append(ssim, metrics.ssim(linearCLF.view.decoder, tf.data.Dataset,from_tensor_slices((X_test, linearCLF.view(X_test)[1].numpy())).batch(1)))
 			print("Fold", fold+1, "with Acc:", np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")), ", SSIM:", np.mean(ssim))
 
 		value[0]=1. - (np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")) + np.mean(ssim))
