@@ -540,7 +540,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 	def optimize_elastic(value, theta):
 
-		from utils import preprocess_data, tf_config, train, losses_utils
+		from utils import preprocess_data, tf_config, train, losses_utils, metrics
 
 		from models import eeg_to_fmri, classifiers
 
@@ -565,6 +565,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 		y_true=np.empty((0,), dtype=np.float64)
 		y_pred=np.empty((0,), dtype=np.float64)
+		ssim=np.empty((0,), dtype=np.float64)
 		for fold in range(n_folds_cv):
 			print("On fold", fold+1, end="\r")
 			train_data, test_data = dataset_clf_wrapper.split(fold)
@@ -592,9 +593,10 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 			#evaluate according to final AUC in validation sets
 			y_pred=np.append(y_pred, linearCLF(X_test).numpy()[:,1])
 			y_true=np.append(y_true, y_test[:,1])
-			print("Fold", fold+1, "with Acc:", np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")))
+			ssim=np.append(ssim, metrics.ssim(linearCLF.decoder, tf.data.Dataset,from_tensor_slices((X_test, linearCLF(X_test)[1].numpy())).batch(1)))
+			print("Fold", fold+1, "with Acc:", np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")), ", SSIM:", np.mean(ssim))
 
-		value[0]=1. - np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32"))
+		value[0]=1. - (np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")) + np.mean(ssim))
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
