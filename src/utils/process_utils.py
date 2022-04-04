@@ -549,7 +549,6 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 		import numpy as np
 
 		from sklearn.utils import shuffle
-		from sklearn import metrics
 
 		l1_reg, l2_reg, batch_size, learning_rate = (theta)
 
