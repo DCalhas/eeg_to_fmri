@@ -576,6 +576,124 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
     return fig
 
 
+"""
+    
+Inputs:
+    instance: Numpy.ndarray - of shape (X,Y,Z,1)
+    factor: float - that resamples the Z axis slices
+    h_resolution: int - resolution in the horizontal dimension
+    v_resolution: int - resolution in the vertical dimension
+    save: bool - whether to save the figure
+    save_path: str - path to save the figure, save has to be True
+Returns:
+    matplotlib.Figure - The figure to plot, no saving option implemented
+"""
+def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resolution=1, v_resolution=1, threshold=0.37, cmap=plt.cm.nipy_spectral, uncertainty=False, res_img=None, alpha_img=None, legend_colorbar="redidues", max_min_legend=["Good","Bad"], normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
+    label = "$Z_{"
+
+    assert alpha_img is not None
+
+    #this is a placeholder for the residues plot
+    if(res_img is None):
+        res_img=instance
+        res_img_none=False
+    else:
+        res_img_none=True
+    
+    fig = plt.figure(figsize=(25,7))
+    gs = GridSpec(2, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
+
+    axes = fig.add_subplot(gs[:,0:2], projection='3d', proj_type='ortho')
+    
+    cmap = copy.copy(mpl.cm.get_cmap(cmap))
+    cmap.set_over("w")
+    
+    x, y = np.mgrid[0:instance[:,:,0].shape[0], 0:instance[:,:,0].shape[1]]
+    
+    #normalization
+    if(not normalize_residues):
+        instance = (instance[:,:,:,:]-np.amin(instance[:,:,:,:]))/(np.amax(instance[:,:,:,:])-np.amin(instance[:,:,:,:]))
+        res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+        if(uncertainty):
+            _instance=copy.deepcopy(instance)
+        instance[np.where(res_img < threshold)]= 1.001
+    else:
+        res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+        if(uncertainty):
+            _instance=copy.deepcopy(instance)
+        instance[np.where(res_img < threshold)]= 1.001
+
+    for axis in range((instance[:,:,:].shape[2])//factor):
+        img = rotate(instance[:,:,axis*factor,0], 90)
+        alpha = rotate(alpha_img[:,:,axis*factor,0], 90)
+
+        ax = axes.plot_surface(x,y,np.ones(x.shape)+5*(axis),
+                                facecolors=cmap(img), cmap=cmap, 
+                                shade=False, antialiased=True, zorder=0,
+                                cstride=v_resolution, rstride=h_resolution,
+                                alpha=alpha)
+        if(slice_label):
+            axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=13, zorder=100)
+
+    if(uncertainty):
+        instance=_instance
+
+    #axes.text(60, 60, 20+5*(instance[:,:,:].shape[2])//factor, "3-Dimensional sliced representation", size=13, zorder=100)
+    if(slice_label):
+        pos=[0.13, 0.15, 0.01, 0.7]
+    elif(not slice_label and res_img_none):
+        pos=[0.12, 0.15, 0.01, 0.7]
+    else:
+        pos=[0.09, 0.15, 0.01, 0.7]
+    cbaxes = fig.add_axes(pos)  # This is the position for the colorbar
+    #to give a normalized bar that goes from 0.0 to 1.0
+    if(normalize_residues):
+        norm=mpl.colors.Normalize(vmin=0.0, vmax=1.0)
+        cb = plt.colorbar(ax, cax = cbaxes, norm=norm)
+    else:
+        cb = plt.colorbar(ax, cax = cbaxes)
+
+    if(not slice_label):
+        text_legend = fig.add_axes([pos[0]-0.007]+pos[1:])
+        text_legend.axis("off")
+        text_legend.text(-0.25,0.45, legend_colorbar, size=17, rotation=90)  # This is the position for the colorbar
+        cb.ax.get_yaxis().set_ticks([0,1])
+        cb.ax.get_yaxis().set_ticklabels(max_min_legend, size=17)
+
+
+    axes.axis("off")
+    axes.view_init(elev=5.5, azim=7)#(100,150)
+    axes.dist = 5
+    
+    #plot each slice in 2 Dimensional plot
+    row = 1
+    col = 6
+    for axis in range((instance[:,:,:].shape[2])//factor):
+        axes = fig.add_subplot(gs[row,col])
+        
+        img = rotate(instance[:,:,axis*factor,0], 90)
+        alpha = rotate(alpha_img[:,:,axis*factor,0], 90)
+        
+        axes.imshow(cmap(img), alpha=alpha)
+        if(slice_label):
+            axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
+                 va="baseline", ha="left", multialignment="left",)
+
+        axes.axis("off")
+
+        col -= 1
+        if(col == 1):
+            col=6
+            row-=1
+
+    plt.rcParams["font.family"] = "serif"
+
+    if(save):
+        fig.savefig(save_path, format=save_format)
+
+    return fig
+
+
 
 """
     
