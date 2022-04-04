@@ -625,13 +625,11 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
 
     for axis in range((instance[:,:,:].shape[2])//factor):
         img = rotate(instance[:,:,axis*factor,0], 90)
-        alpha = rotate(alpha_img[:,:,axis*factor,0], 90)
 
         ax = axes.plot_surface(x,y,np.ones(x.shape)+5*(axis),
                                 facecolors=cmap(img), cmap=cmap, 
                                 shade=False, antialiased=True, zorder=0,
-                                cstride=v_resolution, rstride=h_resolution,
-                                alpha=alpha)
+                                cstride=v_resolution, rstride=h_resolution)
         if(slice_label):
             axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=13, zorder=100)
 
@@ -673,7 +671,7 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
         
         img = rotate(instance[:,:,axis*factor,0], 90)
         alpha = rotate(alpha_img[:,:,axis*factor,0], 90)
-        
+
         axes.imshow(cmap(img), alpha=alpha)
         if(slice_label):
             axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
