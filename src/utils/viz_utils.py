@@ -673,8 +673,8 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
         alpha = rotate(alpha_img[:,:,axis*factor,0], 90)
 
         axes.imshow(cmap(img), alpha=0.2)
-        axes.imshow(cmap(alpha_img*img), alpha=1.0)
-        
+        axes.imshow(cmap(alpha*img), alpha=1.0)
+
         if(slice_label):
             axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
                  va="baseline", ha="left", multialignment="left",)
