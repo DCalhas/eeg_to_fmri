@@ -670,11 +670,10 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
     col = 6
     for axis in range((instance[:,:,:].shape[2])//factor):
         axes = fig.add_subplot(gs[row,col])
-        
         img = rotate(instance[:,:,axis*factor,0], 90)
         mask = rotate(alpha_img[:,:,axis*factor,0], 90)
 
-        #alpha=(mask>0.8).astype("float32")
+        #alpha=(mask>0.5).astype("float32")
         #alpha+=(mask<0.1).astype("float32")
         #alpha[np.where(alpha==0.0)]=0.2
 
