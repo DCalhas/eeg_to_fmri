@@ -510,7 +510,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z_mask = 1.-self.decoder(x1)
 
         #be similar
-        self.add_loss(tf.keras.losses.MeanAbsoluteError(z, z*z_mask))
+        self.add_loss(tf.reduce_mean(tf.abs(z-z*z_mask), axes=(1,2,3)))
         #l0 norm - close to because of ReLU activation
-        self.add_loss(-tf.reduce_sum(z_mask))#it should select all and omit only regions that are important
+        self.add_loss(-tf.reduce_sum(z_mask, axes=(1,2,3)))#it should select all and omit only regions that are important
         return [z*z_mask, z_mask]
