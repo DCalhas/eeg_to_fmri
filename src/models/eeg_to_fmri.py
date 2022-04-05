@@ -505,4 +505,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     """
     #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
     def call(self, x1):
-        return [self.decoder(x1)*self.q_decoder(x1).numpy(), self.q_decoder(x1).numpy()]
+        #l0 norm??? counts of 
+        z = self.q_decoder(x1).numpy()
+        z_mask = self.decoder(x1)
+
+        #be similar
+        self.add_loss(tf.keras.losses.KLDivergence(z*z_mask, z))
+        #l0 norm - close to because of ReLU activation
+        self.add_loss(tf.reduce_sum(z_mask))
+
+        return [z*z_mask, z_mask]
