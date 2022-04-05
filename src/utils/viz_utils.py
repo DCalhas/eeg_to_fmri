@@ -607,8 +607,8 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
     
     cmap = copy.copy(mpl.cm.get_cmap(cmap))
     cmap.set_over("w")
-    cmap.set_under("w")
-    cmap.set_bad("w")
+    #cmap.set_under("w")
+    #cmap.set_bad("w")
     
     x, y = np.mgrid[0:instance[:,:,0].shape[0], 0:instance[:,:,0].shape[1]]
     
