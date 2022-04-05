@@ -469,6 +469,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
+        z = tf.keras.layers.LayerNormalization(trainable=False)
 
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
@@ -512,5 +513,5 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #be similar
         self.add_loss(tf.reduce_mean(tf.abs(z-z*z_mask), axis=(1,2,3)))
         #l0 norm - close to because of ReLU activation
-        self.add_loss(tf.reduce_sum(-z_mask, axis=(1,2,3)))#it should select all and omit only regions that are important
+        self.add_loss(tf.reduce_mean(-z_mask, axis=(1,2,3)))#it should select all and omit only regions that are important
         return [z*z_mask, z_mask]
