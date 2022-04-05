@@ -670,10 +670,13 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
         axes = fig.add_subplot(gs[row,col])
         
         img = rotate(instance[:,:,axis*factor,0], 90)
-        alpha = rotate(alpha_img[:,:,axis*factor,0], 90)
+        mask = rotate(alpha_img[:,:,axis*factor,0], 90)
 
-        axes.imshow(cmap(img), alpha=0.2)
-        axes.imshow(cmap(alpha*img), alpha=1.0)
+        alpha=(mask>0.8).astype("float32")
+        alpha+=(mask<0.1).astype("float32")
+        alpha[np.where(alpha==0.0)]=0.2
+
+        axes.imshow(cmap(img), alpha=alpha)
 
         if(slice_label):
             axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
