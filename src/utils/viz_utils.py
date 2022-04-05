@@ -674,9 +674,9 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
         img = rotate(instance[:,:,axis*factor,0], 90)
         mask = rotate(alpha_img[:,:,axis*factor,0], 90)
 
-        alpha=(mask>0.8).astype("float32")
-        alpha+=(mask<0.1).astype("float32")
-        alpha[np.where(alpha==0.0)]=0.2
+        #alpha=(mask>0.8).astype("float32")
+        #alpha+=(mask<0.1).astype("float32")
+        #alpha[np.where(alpha==0.0)]=0.2
 
         axes.imshow(cmap(img, alpha=alpha))
 
