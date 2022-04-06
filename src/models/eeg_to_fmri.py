@@ -494,6 +494,15 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         self.decoder = tf.keras.Model(input_shape, z)
         self.q_decoder = tf.keras.Model(input_shape, x)
+
+        #task weight
+        sigma_1 = tf.keras.layers.Flatten()(z)
+        sigma_2 = tf.keras.layers.Flatten()(z)
+        sigma_1 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_1)
+        sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
+
+        self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
+        self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
         
     def build(self, input_shape):
         self.decoder.build(input_shape=input_shape)
@@ -510,8 +519,12 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z = self.q_decoder(x1).numpy()
         z_mask = 1.-self.decoder(x1)
 
+        #weight of tasks
+        sigma_1 = self.sigma_1(x1)
+        sigma_2 = self.sigma_2(x1)
+
         #be similar
-        self.add_loss(tf.reduce_mean(tf.abs(z-z*z_mask), axis=(1,2,3)))
+        self.add_loss((1/sigma_1)*tf.reduce_mean(tf.abs(z-z*z_mask), axis=(1,2,3)) + tf.math.log(sigma_1))
         #l0 norm - close to because of ReLU activation
         #self.add_loss(tf.reduce_mean(-z_mask, axis=(1,2,3)))#it should select all and omit only regions that are important
-        return [z*z_mask, z_mask]
+        return [z*z_mask, z_mask, sigma_2]
