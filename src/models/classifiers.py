@@ -39,9 +39,6 @@ class view_EEG_classifier(tf.keras.Model):
         self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, seed=seed)
         self.clf = LinearClassifier(regularizer=regularizer)
 
-        self.flatten = tf.keras.layers.Flatten()
-        self.sigma = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)
-    
     def build(self, input_shape):
         self.view.build(input_shape)
         self.clf.build(self.view.decoder.output_shape)
@@ -50,6 +47,6 @@ class view_EEG_classifier(tf.keras.Model):
         z = self.view(X)
 
         if(self.training):
-            return [self.clf(z[0])]+z+[self.sigma(self.flatten(z[0]))]
+            return [self.clf(z[0])]+z
         return self.clf(z[0])
         

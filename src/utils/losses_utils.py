@@ -450,6 +450,7 @@ list: y_pred - from classifier.linearCLF viewer []
 np.ndarray: y_true
 """
 def entropy_mae_loss(y_true, y_pred):
+    print(y_pred[-1])
     return (1/y_pred[-1])*tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_true, y_pred[0]) + tf.math.log(y_pred[-1])
     
 

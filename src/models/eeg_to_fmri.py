@@ -492,14 +492,14 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         padding=pretrained_model.layers[4].layers[18].padding,
                                         trainable=False)(x)
 
-        self.decoder = tf.keras.Model(input_shape, z)
-        self.q_decoder = tf.keras.Model(input_shape, x)
-
         #task weight
         sigma_1 = tf.keras.layers.Flatten()(z)
         sigma_2 = tf.keras.layers.Flatten()(z)
         sigma_1 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_1)
         sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
+
+        self.decoder = tf.keras.Model(input_shape, z)
+        self.q_decoder = tf.keras.Model(input_shape, x)
 
         self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
         self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
