@@ -451,7 +451,7 @@ np.ndarray: y_true
 """
 def entropy_mae_loss(y_true, y_pred):
     
-    regression = (1/y_pred[3])*tf.reduce_mean(tf.abs(y_pred[1]-y_pred[2]), axis=(1,2,3))) + tf.math.log(y_pred[3])
+    regression = (1/y_pred[3])*tf.reduce_mean(tf.abs(y_pred[1]-y_pred[2]), axis=(1,2,3)) + tf.math.log(y_pred[3])
     classification = (1/y_pred[4])*tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_true, y_pred[0]) + tf.math.log(y_pred[4])
     return classification + regression
     
