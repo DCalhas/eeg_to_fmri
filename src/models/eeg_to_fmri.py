@@ -458,8 +458,14 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     trainable=True)(x)
 
         #predict uncertainty here?
+        #task weight
+        sigma_1 = tf.keras.layers.Flatten()(z)
+        sigma_2 = tf.keras.layers.Flatten()(z)
+        sigma_1 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_1)
+        sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
+        self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
+        self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
 
-        
         #z = tf.keras.layers.LayerNormalization()(z)
         z = tf.keras.layers.ReLU(max_value=1.0)(z)
         
@@ -473,7 +479,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
-        #z = tf.keras.layers.LayerNormalization(trainable=False)(z)
+        z = tf.keras.layers.LayerNormalization(trainable=False)(z)
 
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
@@ -496,17 +502,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         padding=pretrained_model.layers[4].layers[18].padding,
                                         trainable=False)(x)
 
-        #task weight
-        sigma_1 = tf.keras.layers.Flatten()(x)
-        sigma_2 = tf.keras.layers.Flatten()(x)
-        sigma_1 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_1)
-        sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
-
         self.decoder = tf.keras.Model(input_shape, z)
         self.q_decoder = tf.keras.Model(input_shape, x)
-
-        self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
-        self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
         
     def build(self, input_shape):
         self.decoder.build(input_shape=input_shape)
