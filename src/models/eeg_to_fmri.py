@@ -459,8 +459,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         #predict uncertainty here?
         #task weight
-        sigma_1 = tf.keras.layers.Flatten()(z)
-        sigma_2 = tf.keras.layers.Flatten()(z)
+        sigma_1 = tf.keras.layers.Flatten()(x)
+        sigma_2 = tf.keras.layers.Flatten()(x)
         sigma_1 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_1)
         sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
         self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
