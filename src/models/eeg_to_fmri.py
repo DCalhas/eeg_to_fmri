@@ -469,7 +469,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
-        z = tf.keras.layers.LayerNormalization(trainable=False)(z)
+        #z = tf.keras.layers.LayerNormalization(trainable=False)(z)
 
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
