@@ -456,6 +456,10 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=True)(x)
+
+        #predict uncertainty here?
+
+        
         #z = tf.keras.layers.LayerNormalization()(z)
         z = tf.keras.layers.ReLU(max_value=1.0)(z)
         
