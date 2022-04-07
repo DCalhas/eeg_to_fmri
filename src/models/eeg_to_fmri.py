@@ -468,7 +468,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
-        z = tf.keras.layers.BatchNormalization(trainable=False)(z)
+        z = tf.keras.layers.LayerNormalization(trainable=False)(z)
 
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
@@ -507,14 +507,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         self.decoder.build(input_shape=input_shape)
         self.built=True
 
-
     """
         Random behaviour of GPU with tf functions does not reproduce the same results
         Call this function when getting results
     """
     #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
     def call(self, x1):
-        #l0 norm??? counts of 
+        #l0 norm??? counts of
         z = self.q_decoder(x1).numpy()
         z_mask = 1.-self.decoder(x1)
 
