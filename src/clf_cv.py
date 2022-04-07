@@ -43,6 +43,7 @@ if __name__ == "__main__":
 
 #train neural network synthesis
 if(view=="fmri"):
+	break
 	process_utils.launch_process(process_utils.train_synthesis, 
 								(dataset_synth, epochs, path_save_network, gpu_mem, seed))
 
