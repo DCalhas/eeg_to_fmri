@@ -44,8 +44,8 @@ if __name__ == "__main__":
 #train neural network synthesis
 if(view=="fmri"):
 	pass
-	process_utils.launch_process(process_utils.train_synthesis, 
-								(dataset_synth, epochs, path_save_network, gpu_mem, seed))
+	#process_utils.launch_process(process_utils.train_synthesis, 
+	#							(dataset_synth, epochs, path_save_network, gpu_mem, seed))
 
 #create predictions and true labels
 process_utils.launch_process(process_utils.create_labels,
