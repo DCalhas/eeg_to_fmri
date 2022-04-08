@@ -467,7 +467,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
-
+        z = tf.keras.layers.LayerNormalization()(z)
+        
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
