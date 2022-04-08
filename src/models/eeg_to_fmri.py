@@ -515,7 +515,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     def call(self, x1):
         #l0 norm??? counts of
         z = self.q_decoder(x1).numpy()
-        z_mask = 1.-self.decoder(x1)
+        z_mask = self.decoder(x1)
 
         #weight of tasks
         sigma_1 = self.sigma_1(x1)
