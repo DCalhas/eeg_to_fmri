@@ -456,8 +456,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=True)(x)
-        #z = tf.keras.layers.LayerNormalization()(z)
-        z = tf.keras.layers.ReLU(max_value=1.0)(z)
+        z = tf.keras.layers.LayerNormalization()(z)
+        z = tf.keras.layers.ReLU()(z)
         
         #try smoothing feature selection
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
@@ -513,7 +513,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     def call(self, x1):
         #l0 norm??? counts of
         z = self.q_decoder(x1).numpy()
-        z_mask = 1.-self.decoder(x1)
+        z_mask = self.decoder(x1)
 
         #weight of tasks
         sigma_1 = self.sigma_1(x1)
