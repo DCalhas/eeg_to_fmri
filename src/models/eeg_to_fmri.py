@@ -456,7 +456,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=True)(x)
-        z = tf.keras.layers.LayerNormalization()(z)
+        #z = tf.keras.layers.LayerNormalization()(z)
         z = tf.keras.layers.ReLU()(z)
         
         #try smoothing feature selection
