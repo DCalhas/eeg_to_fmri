@@ -590,7 +590,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 			#evaluate
 			linearCLF.training=False
 			#evaluate according to final AUC in validation sets
-			y_pred=np.append(y_pred, linearCLF(X_test).numpy()[:,1])
+			y_pred=np.append(y_pred, tf.keras.activations.softmax(linearCLF(X_test)).numpy()[:,1])
 			y_true=np.append(y_true, y_test[:,1])
 			if(view=="fmri"):
 				ssim=np.append(ssim, metrics.ssim(tf.data.Dataset.from_tensor_slices((X_test, linearCLF.view.q_decoder(X_test))).batch(1), linearCLF.view, two_inputs=False))
