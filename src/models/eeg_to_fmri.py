@@ -516,9 +516,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z_mask = self.decoder(x1)
 
         #weight of tasks
-        #sigma_1 = self.sigma_1(x1)
-        #sigma_2 = self.sigma_2(x1)
+        sigma_1 = self.sigma_1(x1)
+        sigma_2 = self.sigma_2(x1)
 
         #l0 norm - close to because of ReLU activation
         #self.add_loss(tf.reduce_mean(-z_mask, axis=(1,2,3)))#it should select all and omit only regions that are important
-        return [z*z_mask, z_mask]#, sigma_1, sigma_2]
+        return [z*z_mask, z_mask, sigma_1, sigma_2]
