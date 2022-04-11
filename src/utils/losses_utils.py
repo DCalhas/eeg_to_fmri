@@ -454,7 +454,7 @@ def entropy_mae_loss(y_true, y_pred):
     sigma_r = y_pred[4]
 
     regression = tf.keras.losses.MeanSquaredError()(y_pred[1],y_pred[2])
-    classification = tf.keras.losses.MeanSquaredError()(y_true, y_pred[0])
+    classification = tf.keras.losses.MeanSquaredError()(y_true, tf.keras.activations.softmax(y_pred[0]))
     return (1/sigma_r)*regression + (1/sigma_c)*classification + tf.math.log(sigma_c*sigma_r)
     
 
