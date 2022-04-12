@@ -642,7 +642,6 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 
 		train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
-		
 
 		if(view=="fmri"):
 			loss_fn=losses_utils.entropy_mae_loss
