@@ -32,8 +32,8 @@ def ssim(data, model, factor=3, two_inputs=True):
 
 		#error = tf.image.ssim(instance_y, y_pred, max_val=np.amax([np.amax(y_pred.numpy()), np.amax(instance_y.numpy())]))
 		#avoid division by zero
-		instance_y[np.where(instance_y==0.0)] = 1.0
-		y_pred[np.where(y_pred==0.0)] = 1.0
+		instance_y+=1e-9
+		y_pred+=1e-9
 
 		ssim_img = 0.0
 
