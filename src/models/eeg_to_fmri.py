@@ -12,6 +12,7 @@ from layers.fourier_features import RandomFourierFeatures, FourierFeatures
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention
 from layers.resnet_block import ResBlock, pretrained_ResBlock
+from layers.mask import MRICircleMask
 
 from pathlib import Path
 import shutil
@@ -466,6 +467,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
+        
+        #perform brain segmentation with mask
+        z = MRICircleMask(z.shape)(z)#mask a circle
 
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
