@@ -457,7 +457,7 @@ def entropy_mae_loss(y_true, y_pred):
     y_true = tf.cast(y_true, y_pred[0].dtype)
     regression = tf.keras.losses.MeanSquaredError()(y_pred[1],y_pred[2])
     #treat it as a log normal distribution
-    classification = tf.math.log(tf.math.exp(y_true)-tf.math.exp(tf.keras.activations.softmax(y_pred[0])))**2
+    classification = tf.math.log(tf.math.exp(y_true - tf.keras.activations.softmax(y_pred[0])))**2
 
     print(classification)
     #classification = tf.keras.losses.CategoricalCrossentropy(from_logits=False)(y_true, tf.keras.activations.softmax(y_pred[0]))
