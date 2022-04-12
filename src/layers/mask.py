@@ -13,7 +13,7 @@ Example:
 """
 class MRICircleMask(tf.keras.layers.Layer):
 	
-	def __init__(self, input_shape, radius=25.):
+	def __init__(self, input_shape, radius=30.):
 		super(MRICircleMask, self).__init__()
 		
 		if(len(input_shape)==5):

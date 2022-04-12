@@ -491,6 +491,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].bias.numpy()),
                                         padding=pretrained_model.layers[4].layers[18].padding,
                                         trainable=False)(x)
+        x = MRICircleMask(z.shape)(x)#mask a circle
 
         self.decoder = tf.keras.Model(input_shape, z)
         self.q_decoder = tf.keras.Model(input_shape, x)
