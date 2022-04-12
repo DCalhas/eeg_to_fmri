@@ -430,7 +430,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                                 trainable=True, name="latent_projection")
             
         attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
-        attention_scores = tf.keras.layers.BatchNormalization(axis=-1)(attention_scores)
+        #attention_scores = tf.keras.layers.BatchNormalization(axis=-1)(attention_scores)
         self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(
                                     pretrained_model.layers[4].layers[12].units,
                                     activation=tf.keras.activations.linear,
@@ -457,7 +457,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     bias_regularizer=regularizer,
                     trainable=True)(x)
         z = tf.keras.layers.ReLU()(z)
-        z = tf.keras.layers.BatchNormalization(axis=-1)(z)
         
         #try smoothing feature selection
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
@@ -467,7 +466,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(z)
-
+        z = tf.keras.layers.BatchNormalization(axis=-1)(z)
+        
         #upsampling
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
