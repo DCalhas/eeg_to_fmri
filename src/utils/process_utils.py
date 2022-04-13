@@ -631,6 +631,8 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 
 	import numpy as np
 
+	from sklearn.utils import shuffle
+
 	tf_config.set_seed(seed=seed)
 	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
 
@@ -639,6 +641,8 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 	train_data, test_data = dataset_clf_wrapper.split(fold)
 	X_train, y_train = train_data
 	X_test, y_test = test_data
+	#shuffle training data
+	X_train, y_train = shuffle(X_train, y_train)
 
 	with tf.device('/CPU:0'):
 		optimizer = tf.keras.optimizers.Adam(learning_rate)
