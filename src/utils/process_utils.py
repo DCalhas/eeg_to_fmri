@@ -466,14 +466,11 @@ def setup_data_loocv(view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_expl
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
-		#hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network)
+		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network)
 
-		hyperparameters = [9.19251478e-01, 1.00000000e+00, 1.00000000e+00, 6.26138693e-05]
-		i=2
 		#validate
 		launch_process(loocv,
-					(i, view, dataset, float(hyperparameters[0]), float(hyperparameters[1]), epochs, float(hyperparameters[3]), int(hyperparameters[2]), gpu_mem, seed, save_explainability, path_network, path_labels))
-		exit(1)
+					(i, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, save_explainability, path_network, path_labels))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -641,7 +638,6 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 	train_data, test_data = dataset_clf_wrapper.split(fold)
 	X_train, y_train = train_data
 	X_test, y_test = test_data
-	#shuffle training data
 	X_train, y_train = shuffle(X_train, y_train)
 
 	with tf.device('/CPU:0'):
