@@ -357,12 +357,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		
 
 		if(self.dependent):
-			print(tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w).shape)
-			print(rand_coefs1.shape)
-			print(tf.math.multiply(rand_coefs1, tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w)))
-			rand_coefs1 = rand_coefs1*tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w)
-			rand_coefs2 = rand_coefs2*tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w)
-			rand_coefs3 = rand_coefs3*tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w)
+			rand_coefs1 = tf.math.multiply(rand_coefs1, tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w))
+			rand_coefs2 = tf.math.multiply(rand_coefs2, tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w))
+			rand_coefs3 = tf.math.multiply(rand_coefs3, tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w))
 		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
 		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
 		return self.padded_idct3(tf.pad(z, rand_paddings3, constant_values=1.0)*tf.pad(rand_coefs3, in_paddings3, constant_values=1.0))
