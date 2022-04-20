@@ -300,7 +300,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(self.dependent):
 			self.w = self.add_weight('W',
 								shape=[self.in1*self.in2*self.in3, 1],
-								initializer=tf.initializers.GlorotUniform(seed=self.seed),
+								initializer=tf.initializers.GlorotUniform(),
 								dtype=tf.float32,
 								trainable=True)
 
