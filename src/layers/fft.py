@@ -361,11 +361,11 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(self.dependent):
 			x_cond=tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w)
-			print(tf.math.multiply(rand_coefs1, x_cond))
 			shape_coef1, shape_coef2, shape_coef3 = (tf.shape(rand_coefs1), tf.shape(rand_coefs2), tf.shape(rand_coefs3))
 			rand_coefs1 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs1, (shape_coef1[0]*shape_coef1[1]*shape_coef1[2],))), shape_coef1)
 			rand_coefs2 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs2, (shape_coef2[0]*shape_coef2[1]*shape_coef2[2],))), shape_coef2)
 			rand_coefs3 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs3, (shape_coef3[0]*shape_coef3[1]*shape_coef3[2],))), shape_coef3)
+			print(rand_coefs1)
 			
 		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
 		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
