@@ -328,13 +328,16 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 				   [0, 0],
 				   [0, self.rand3]]
 
-		in_paddings1 = [[self.in1, 0],
+		in_paddings1 = [[0, 0],
+					[self.in1, 0],
 				   [0, 0],
 				   [0, 0]]
 		in_paddings2 = [[0, 0],
+					[0, 0],
 				   [self.in2, 0],
 				   [0, 0]]
 		in_paddings3 = [[0, 0],
+					[0, 0],
 				   [0, 0],
 				   [self.in3, 0]]
 		
@@ -352,9 +355,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(self.dependent):
 			x_cond = tf.tensordot(tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w, axes=[[1], [0]])
-			rand_coefs1 = tf.math.multiply(x_cond, rand_coefs1)
-			rand_coefs2 = tf.math.multiply(x_cond, rand_coefs2)
-			rand_coefs3 = tf.math.multiply(x_cond, rand_coefs3)
+			rand_coefs1 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs1, 0))
+			rand_coefs2 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs2, 0))
+			rand_coefs3 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs3, 0))
 			
 
 		if(self.coefs_perturb):
