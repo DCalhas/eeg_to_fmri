@@ -276,7 +276,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 	"""
 	in1 - int - first dimension input
 	"""
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=True):
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False):
 
 		super(variational_iDCT3D, self).__init__()
 
@@ -355,13 +355,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(self.dependent):
 			x_cond = tf.tensordot(tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w, axes=[[1], [0]])
-
 			x_cond = tf.expand_dims(tf.expand_dims(x_cond, -1), -1)
 			rand_coefs1 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs1, 0))
 			rand_coefs2 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs2, 0))
 			rand_coefs3 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs3, 0))
+		else:
+			rand_coefs1 = tf.expand_dims(rand_coefs1, 0)
+			rand_coefs2 = tf.expand_dims(rand_coefs2, 0)
+			rand_coefs3 = tf.expand_dims(rand_coefs3, 0)
 			
-
 		if(self.coefs_perturb):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
 			x = x*dist_normal.sample()
