@@ -99,7 +99,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 conditional_attention_style_prior=False,
                 inverse_DFT=False, DFT=False, aleatoric_uncertainty=False,
                 variational_iDFT=False, variational_coefs=None,
-                variational_iDFT_dependent=False,
+                variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
                 resolution_decoder=None, low_resolution_decoder=False,
                 topographical_attention=False, seed=None, fmri_args=None):
         super(EEG_to_fMRI, self).__init__()
@@ -122,6 +122,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.variational_iDFT=variational_iDFT
         self.variational_coefs=variational_coefs
         self.variational_iDFT_dependent=variational_iDFT_dependent
+        self.variational_iDFT_dependent_dim=variational_iDFT_dependent_dim
         self.resolution_decoder=resolution_decoder
         self.low_resolution_decoder=low_resolution_decoder
         self.topographical_attention=topographical_attention
@@ -151,6 +152,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             variational_iDFT=variational_iDFT, 
                             variational_coefs=variational_coefs,
                             variational_iDFT_dependent=variational_iDFT_dependent,
+                            variational_iDFT_dependent_dim=variational_iDFT_dependent_dim,
                             outfilter=self.fmri_ae.outfilter, seed=seed)
 
     def build_encoder(self, latent_shape, input_shape, na_spec, n_channels, 
@@ -197,7 +199,8 @@ class EEG_to_fMRI(tf.keras.Model):
                             attention_scores=None, conditional_attention_style=False, conditional_attention_style_prior=False,
                             inverse_DFT=False, DFT=False, 
                             low_resolution_decoder=False, resolution_decoder=None, 
-                            variational_iDFT=False, variational_coefs=None, variational_iDFT_dependent=False,
+                            variational_iDFT=False, variational_coefs=None, 
+                            variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
                             dropout=False, outfilter=0, seed=None):
 
         x = tf.keras.layers.Flatten()(output_encoder)
@@ -256,7 +259,7 @@ class EEG_to_fMRI(tf.keras.Model):
             if(variational_iDFT):
                 assert type(variational_coefs) is tuple
                 x = variational_iDCT3D(*(latent_shape + self.fmri_ae.in_shape[:3] + variational_coefs), 
-                                        coefs_perturb=True, dependent=variational_iDFT_dependent)(x)
+                                        coefs_perturb=True, dependent=variational_iDFT_dependent, posterior_dimension=variational_iDFT_dependent_dim)(x)
             else:
                 x = padded_iDCT3D(latent_shape[0], latent_shape[1], latent_shape[2],
                             out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(x)
@@ -334,6 +337,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 "variational_iDFT": self.variational_iDFT,
                 "variational_coefs": self.variational_coefs,
                 "variational_iDFT_dependent": self.variational_iDFT_dependent,
+                "variational_iDFT_dependent_dim": self.variational_iDFT_dependent_dim,
                 "resolution_decoder": self.resolution_decoder,
                 "low_resolution_decoder": self.low_resolution_decoder,
                 "topographical_attention": self.topographical_attention,
