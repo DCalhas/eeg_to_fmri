@@ -354,22 +354,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		
 
 		if(self.dependent):
-			print(self.w.shape)
-			print(x.shape)
-
-
 			x_cond = tf.tensordot(tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w, axes=[[1], [0]])
-			print(x_cond.shape)
-			print("HERE")
 
 
-
-			#x_cond=tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w)
 			shape_coef1, shape_coef2, shape_coef3 = (tf.shape(rand_coefs1), tf.shape(rand_coefs2), tf.shape(rand_coefs3))
-			rand_coefs1 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs1, (shape_coef1[0]*shape_coef1[1]*shape_coef1[2],))), shape_coef1)
-			rand_coefs2 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs2, (shape_coef2[0]*shape_coef2[1]*shape_coef2[2],))), shape_coef2)
-			rand_coefs3 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs3, (shape_coef3[0]*shape_coef3[1]*shape_coef3[2],))), shape_coef3)
-			print(rand_coefs1)
+			rand_coefs1 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs1, (shape_coef1[0]*shape_coef1[1]*shape_coef1[2],))), (x_cond.shape[0],)+shape_coef1)
+			rand_coefs2 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs2, (shape_coef2[0]*shape_coef2[1]*shape_coef2[2],))), (x_cond.shape[0],)+shape_coef2)
+			rand_coefs3 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs3, (shape_coef3[0]*shape_coef3[1]*shape_coef3[2],))), (x_cond.shape[0],)+shape_coef3)
+			print(rand_coefs1.shape)
+			print()
 			print(rand_coefs2)
 			print(rand_coefs3)
 
