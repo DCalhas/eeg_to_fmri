@@ -354,12 +354,12 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		
 
 		if(self.dependent):
-			print(tf.shape(self.w))
-			print(tf.shape(x))
+			print(self.w.shape)
+			print(x.shape)
 
 
 			x_cond = tf.tensordot(tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w, axes=[[1], [0]])
-			print(tf.shape(x_cond))
+			print(x_cond.shape)
 			print("HERE")
 
 
