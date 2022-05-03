@@ -358,13 +358,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(self.dependent):
 			x_cond = tf.tensordot(tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w, axes=[[1], [0]])
-			print(tf.shape(x_cond))
+			
 			print(x_cond.shape)
-			x_cond = tf.expand_dims(tf.expand_dims(x_cond, -1), -1)
-
-
-
-			print(tf.tensordot(x_cond, tf.expand_dims(rand_coefs1, 0), axes=[[1], [4]])).shape
+			print(tf.tensordot(x_cond, tf.expand_dims(rand_coefs1, 0), axes=[[1], [4]]).shape)
 
 			rand_coefs1 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs1, 0))
 			rand_coefs2 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs2, 0))
