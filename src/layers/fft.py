@@ -276,7 +276,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 	"""
 	in1 - int - first dimension input
 	"""
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False):
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1):
 
 		super(variational_iDCT3D, self).__init__()
 
@@ -299,7 +299,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_variable)
 		if(self.dependent):
 			self.w = self.add_weight('W',
-								shape=[self.in1*self.in2*self.in3, 1],
+								shape=[self.in1*self.in2*self.in3, posterior_dimension],
 								initializer=tf.initializers.GlorotUniform(),
 								dtype=tf.float32,
 								trainable=True)
@@ -355,6 +355,8 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(self.dependent):
 			x_cond = tf.tensordot(tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w, axes=[[1], [0]])
+			print(tf.shape(x_cond))
+			print(x_cond.shape)
 			x_cond = tf.expand_dims(tf.expand_dims(x_cond, -1), -1)
 			rand_coefs1 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs1, 0))
 			rand_coefs2 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs2, 0))
