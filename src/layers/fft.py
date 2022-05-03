@@ -359,12 +359,13 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(self.dependent):
 			x_cond = tf.tensordot(tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w, axes=[[1], [0]])
 			
-			print(x_cond.shape)
-			print(tf.tensordot(x_cond, tf.expand_dims(rand_coefs1, 0), axes=[[1], [4]]).shape)
+			rand_coefs1 = tf.tensordot(x_cond, rand_coefs1, axes=[[1], [4]])
+			rand_coefs2 = tf.tensordot(x_cond, rand_coefs2, axes=[[1], [4]])
+			rand_coefs3 = tf.tensordot(x_cond, rand_coefs3, axes=[[1], [4]])
 
-			rand_coefs1 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs1, 0))
-			rand_coefs2 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs2, 0))
-			rand_coefs3 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs3, 0))
+			#rand_coefs1 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs1, 0))
+			#rand_coefs2 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs2, 0))
+			#rand_coefs3 = tf.math.multiply(x_cond, tf.expand_dims(rand_coefs3, 0))
 		else:
 			rand_coefs1 = tf.expand_dims(tf.squeeze(rand_coefs1, [-1]), 0)
 			rand_coefs2 = tf.expand_dims(tf.squeeze(rand_coefs2, [-1]), 0)
