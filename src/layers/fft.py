@@ -315,12 +315,6 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		
 	def call(self, x):
 
-		if(self.coefs_perturb):
-			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
-			x = x*dist_normal.sample()
-			#add kl divergence loss
-			self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal, self.normal_prior)))
-
 		rand_paddings1 = [[0,0],
 					[0, self.rand1],
 				   [0, 0],
@@ -363,11 +357,12 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			print(tf.shape(self.w))
 			print(tf.shape(x))
 
+
 			x_cond = tf.tensordot(tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w, axes=[[1], [0]])
 			print(tf.shape(x_cond))
 			print("HERE")
 
-			
+
 
 			#x_cond=tf.matmul(a=tf.reshape(x, (tf.shape(x)[0], tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), b=self.w)
 			shape_coef1, shape_coef2, shape_coef3 = (tf.shape(rand_coefs1), tf.shape(rand_coefs2), tf.shape(rand_coefs3))
@@ -377,6 +372,12 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			print(rand_coefs1)
 			print(rand_coefs2)
 			print(rand_coefs3)
+
+		if(self.coefs_perturb):
+			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
+			x = x*dist_normal.sample()
+			#add kl divergence loss
+			self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal, self.normal_prior)))
 			
 		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
 		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
