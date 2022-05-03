@@ -359,14 +359,10 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 			shape_coef1, shape_coef2, shape_coef3 = (tf.shape(rand_coefs1), tf.shape(rand_coefs2), tf.shape(rand_coefs3))
 			rand_coefs1 = tf.math.multiply(x_cond, rand_coefs1)
+			rand_coefs2 = tf.math.multiply(x_cond, rand_coefs2)
+			rand_coefs3 = tf.math.multiply(x_cond, rand_coefs3)
 			print(rand_coefs1.shape)
-			rand_coefs1 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs1, (shape_coef1[0]*shape_coef1[1]*shape_coef1[2],))), shape_coef1)
-			rand_coefs2 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs2, (shape_coef2[0]*shape_coef2[1]*shape_coef2[2],))), shape_coef2)
-			rand_coefs3 = tf.reshape(tf.math.multiply(x_cond, tf.reshape(rand_coefs3, (shape_coef3[0]*shape_coef3[1]*shape_coef3[2],))), shape_coef3)
-			print(rand_coefs1.shape)
-			print()
-			print(rand_coefs2)
-			print(rand_coefs3)
+			
 
 		if(self.coefs_perturb):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
