@@ -309,12 +309,16 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		self.padded_idct3 = padded_iDCT3D(in1+rand1, in2+rand2, in3+rand3, out1, out2, out3)
 
-		self.normal1 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.rand1, self.in2, self.in3, posterior_dimension], 'normal1_posterior', True, self.add_variable)
-		self.normal2 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.in1+self.rand1, self.rand2, self.in3, posterior_dimension], 'normal2_posterior', True, self.add_variable)
-		self.normal3 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.in1+self.rand1, self.in2+self.rand2, self.rand3, posterior_dimension], 'normal3_posterior', True, self.add_variable)
-		self.normal1_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.rand1, self.in2, self.in3, posterior_dimension], 'normal1_prior', True, self.add_variable)
-		self.normal2_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1+self.rand1, self.rand2, self.in3, posterior_dimension], 'normal2_prior', True, self.add_variable)
-		self.normal3_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1+self.rand1, self.in2+self.rand2, self.rand3, posterior_dimension], 'normal3_prior', True, self.add_variable)
+		self.shape_normal1 = (self.rand1, self.in2, self.in3)
+		self.shape_normal2 = (self.in1+self.rand1, self.rand2, self.in3)
+		self.shape_normal3 = (self.in1+self.rand1, self.in2+self.rand2, self.rand3)
+
+		self.normal1 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], posterior_dimension], 'normal1_posterior', True, self.add_variable)
+		self.normal2 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], posterior_dimension], 'normal2_posterior', True, self.add_variable)
+		self.normal3 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2], posterior_dimension], 'normal3_posterior', True, self.add_variable)
+		self.normal1_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], posterior_dimension], 'normal1_prior', True, self.add_variable)
+		self.normal2_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], posterior_dimension], 'normal2_prior', True, self.add_variable)
+		self.normal3_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2], posterior_dimension], 'normal3_prior', True, self.add_variable)
 		
 	def call(self, x):
 
@@ -357,17 +361,22 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		
 
 		if(self.dependent):
-
 			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
 			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
-			print(x_cond.shape)
-			rand_coefs1 = tf.tensordot(x_cond, rand_coefs1, axes=[[1], [3]])
-			rand_coefs2 = tf.tensordot(x_cond, rand_coefs2, axes=[[1], [3]])
-			rand_coefs3 = tf.tensordot(x_cond, rand_coefs3, axes=[[1], [3]])
+			rand_coefs1 = tf.matmul(x_cond, rand_coefs1)#shape = [None, F]
+			rand_coefs2 = tf.matmul(x_cond, rand_coefs2)#shape = [None, F]
+			rand_coefs3 = tf.matmul(x_cond, rand_coefs3)#shape = [None, F]
 		else:
 			rand_coefs1 = tf.expand_dims(tf.squeeze(rand_coefs1, [-1]), 0)
 			rand_coefs2 = tf.expand_dims(tf.squeeze(rand_coefs2, [-1]), 0)
 			rand_coefs3 = tf.expand_dims(tf.squeeze(rand_coefs3, [-1]), 0)
+
+		print(rand_coefs1.shape)
+		rand_coefs1 = tf.reshape(rand_coefs1, (tf.shape(rand_coefs1)[0],)+self.shape_normal1)
+		rand_coefs2 = tf.reshape(rand_coefs2, (tf.shape(rand_coefs2)[0],)+self.shape_normal2)
+		rand_coefs3 = tf.reshape(rand_coefs3, (tf.shape(rand_coefs3)[0],)+self.shape_normal3)
+
+		print(rand_coefs1.shape)
 			
 		if(self.coefs_perturb):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
