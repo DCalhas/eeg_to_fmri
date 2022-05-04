@@ -363,16 +363,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(self.dependent):
 			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
 			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
+			#attention?
+			#x_cond = tf.nn.softmax(x_cond)
 			rand_coefs1 = tf.matmul(x_cond, rand_coefs1)#shape = [None, F]
 			rand_coefs2 = tf.matmul(x_cond, rand_coefs2)#shape = [None, F]
 			rand_coefs3 = tf.matmul(x_cond, rand_coefs3)#shape = [None, F]
 
-		print(rand_coefs1.shape)
 		rand_coefs1 = tf.reshape(rand_coefs1, (tf.shape(rand_coefs1)[0],)+self.shape_normal1)
 		rand_coefs2 = tf.reshape(rand_coefs2, (tf.shape(rand_coefs2)[0],)+self.shape_normal2)
 		rand_coefs3 = tf.reshape(rand_coefs3, (tf.shape(rand_coefs3)[0],)+self.shape_normal3)
-
-		print(rand_coefs1.shape)
 			
 		if(self.coefs_perturb):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
