@@ -28,6 +28,10 @@ class DCT3D(tf.keras.layers.Layer):
 
 		super(DCT3D, self).__init__()
 
+		self.N1=N1
+		self.N2=N2
+		self.N3=N3
+
 		n1 = np.arange(N1)
 		k1 = n1.reshape((N1,1))
 		n2 = np.arange(N2)
@@ -93,6 +97,18 @@ class DCT3D(tf.keras.layers.Layer):
 		z1 = 2*tf.tensordot((tf.cos(np.pi*(2*self.n1+1)*self.k1/(2*self.N1))), z2, axes=[[1], [1]])
 		z1 = tf.transpose(z1, [1,0,2,3])
 		return z1
+
+	def get_config(self):
+		return {
+			'N1': self.N1,
+			'N2': self.N2,
+			'N3': self.N3,
+		}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
 	
 	
 """
@@ -115,6 +131,10 @@ class iDCT3D(tf.keras.layers.Layer):
 	def __init__(self, N1, N2, N3):
 
 		super(iDCT3D, self).__init__()
+
+		self.N1=N1
+		self.N2=N2
+		self.N3=N3
 
 		n1 = np.arange(N1)
 		k1 = n1.reshape((N1,1))
@@ -209,6 +229,18 @@ class iDCT3D(tf.keras.layers.Layer):
 		
 		return tf.transpose(z1, [1,0,2,3])
 
+	def get_config(self):
+		return {
+			'N1': self.N1,
+			'N2': self.N2,
+			'N3': self.N3,
+		}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
+
 
 
 """
@@ -255,6 +287,20 @@ class padded_iDCT3D(tf.keras.layers.Layer):
 		
 		return self.idct3(tf.pad(x, paddings))
 
+	def get_config(self):
+		return {
+			"in1": self.in1,
+			"in2": self.in2,
+			"in3": self.in3,
+			"out1": self.out1,
+			"out2": self.out2,
+			"out3": self.out3,
+		}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
 
 
 """
@@ -292,12 +338,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.in1 = in1
 		self.in2 = in2
 		self.in3 = in3
-
+		self.out1 = out1
+		self.out2 = out2
+		self.out3 = out3
 		self.rand1 = rand1
 		self.rand2 = rand2
 		self.rand3 = rand3
 		self.coefs_perturb = coefs_perturb
 		self.dependent = dependent
+		self.posterior_dimension = posterior_dimension
 		self.distribution = distribution
 
 		if(self.coefs_perturb):
@@ -386,7 +435,26 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
 		return self.padded_idct3(tf.pad(z, rand_paddings3, constant_values=1.0)*tf.pad(rand_coefs3, in_paddings3, constant_values=1.0))
 		
-		
+	def get_config(self):
+		return {
+			"in1": self.in1,
+			"in2": self.in2,
+			"in3": self.in3,
+			"out1": self.out1,
+			"out2": self.out2,
+			"out3": self.out3,
+			"rand1": self.rand1,
+			"rand2": self.rand2,
+			"rand3": self.rand3,
+			"coefs_perturb": self.coefs_perturb,
+			"dependent": self.dependent,
+			"posterior_dimension": self.posterior_dimension,
+			"distribution": self.distribution,
+		}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)		
 
 
 
