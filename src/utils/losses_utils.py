@@ -456,7 +456,6 @@ def entropy_mae_loss(y_true, y_pred):
     regression = tf.keras.losses.MeanSquaredError()(y_pred[1],y_pred[2])
     classification = tf.keras.losses.MeanSquaredError()(y_true, tf.keras.activations.softmax(y_pred[0]))
     return (1/sigma_r)*regression + (1/sigma_c)*classification + tf.math.log(sigma_c*sigma_r)
-    
 
 """
 laplace_Loss:
@@ -469,3 +468,22 @@ laplace_Loss:
 def Laplacian_Loss(y_true, y_pred):
     laplace_loss = tf.reduce_mean((1/(y_pred[0][1]+NON_DIVISION_ZERO))*tf.math.abs(y_pred[0][0] - y_true)+tf.math.log(2*(y_pred[0][1]+NON_DIVISION_ZERO)), axis=(1,2,3))
     return laplace_loss + cosine(y_pred[1], y_pred[2])
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+GLOBAL VARIABLE END OF FILE ALWAYS
+"""
+LOSS_FNS={"regression": mae_cosine,
+        "uncertainty": Laplacian_Loss,
+        "classification": entropy_mae_loss,}

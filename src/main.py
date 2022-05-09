@@ -6,7 +6,7 @@ import numpy as np
 
 import pickle
 
-from utils import metrics, process_utils, train, losses_utils, viz_utils, lrp, eeg_utils
+from utils import metrics, process_utils, train, losses_utils, viz_utils, lrp, eeg_utils, bnn_utils
 
 from models.eeg_to_fmri import EEG_to_fMRI
 
@@ -20,13 +20,19 @@ from scipy.stats import ttest_ind
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mode',
-					choices=['metrics', 'residues', 'mean_residues', 'quality', 'attention_graph', 'mean_attention_graph', 'lrp_eeg_channels', 'lrp_eeg_fmri'],
+					choices=['metrics', 'residues', 'uncertainty', 'mean_residues', 'quality', 'attention_graph', 'mean_attention_graph', 'lrp_eeg_channels', 'lrp_eeg_fmri'],
 					help="What to compute")
 parser.add_argument('dataset', choices=['01', '02', '03'], help="Which dataset to load")
-parser.add_argument('-topographical_attention', action="store_true", help="Verbose")
-parser.add_argument('-conditional_attention_style', action="store_true", help="Verbose")
-parser.add_argument('-fourier_features', action="store_true", help="Verbose")
-parser.add_argument('-random_fourier', action="store_true", help="Verbose")
+parser.add_argument('-topographical_attention', action="store_true", help="Topographical attention on EEG channels")
+parser.add_argument('-conditional_attention_style', action="store_true", help="Conditional attention style on the latent space")
+parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
+parser.add_argument('-variational_coefs', default="5,5,5", type=str, help="Number of extra stochastic resolution coefficients")
+parser.add_argument('-variational_dependent_h', default=None, type=int, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
+parser.add_argument('-variational_dist', default="gaussian", type=str, help="Distribution used for the high resolution coefficients")
+parser.add_argument('-resolution_decoder', default=None, type=float, help="Resolution decoder intermediary before final transformation in decoder -- used in uncertainty")
+parser.add_argument('-aleatoric_uncertainty', action="store_true", help="Aleatoric uncertainty flag")
+parser.add_argument('-fourier_features', action="store_true", help="Fourier features flag")
+parser.add_argument('-random_fourier', action="store_true", help="Use random fourier features projection")
 parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 parser.add_argument('-batch_size', default=4, type=int, help="Batch size")
 parser.add_argument('-learning_rate', default=0.001, type=float, help="Learning rate")#to remove
@@ -36,12 +42,19 @@ parser.add_argument('-gpu_mem', default=4000, type=int, help="GPU memory limit")
 parser.add_argument('-verbose', action="store_true", help="Verbose")
 parser.add_argument('-save_metrics', action="store_true", help="save metrics to compare afterwards")
 parser.add_argument('-metrics_path', default=str(Path.home())+"/eeg_to_fmri/metrics", type=str, help="Metrics save path.")
+parser.add_argument('-T', default=100, type=int, help="Monte Carlo Simulation number of samples taken to approximate.")
 parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
 opt = parser.parse_args()
 
 mode=opt.mode
 dataset=opt.dataset
 topographical_attention=opt.topographical_attention
+variational=opt.variational
+variational_coefs=opt.variational_coefs
+variational_dependent_h=opt.variational_dependent_h
+variational_dist=opt.variational_dist
+resolution_decoder=opt.resolution_decoder
+aleatoric_uncertainty=opt.aleatoric_uncertainty
 fourier_features=opt.fourier_features
 random_fourier=opt.random_fourier
 conditional_attention_style=opt.conditional_attention_style
@@ -54,6 +67,7 @@ gpu_mem=opt.gpu_mem
 verbose=opt.verbose
 save_metrics=opt.save_metrics
 metrics_path=opt.metrics_path
+T=opt.T
 seed=opt.seed
 
 #assertion
@@ -68,6 +82,30 @@ if(fourier_features):
 if(conditional_attention_style):
 	assert topographical_attention, "To run conditional_attention_style, topographical_attention needs to be active"
 	setting+="_attention_style"
+if(variational):
+	assert variational_coefs, "Need to be specified number of coefs, always upsampling for now, set issue to allow better implementation"
+	setting+="_variational"
+if(type(variational_dist) is str):
+	assert variational_dist in ["gaussian", "gamma"]
+	setting+="_"+variational_dist
+if(not type(variational_dependent_h) is None):
+	assert variational, "Needs variational flag set to True"
+	setting+="_dependent_h_"+str(variational_dependent_h)
+else:
+	variational_dependent_h=1
+if(type(variational_coefs) is str):
+	assert variational, "Only done with variational flag set to True"
+	variational_coefs=tuple(map(int ,variational_coefs.split(",")))
+	assert len(variational_coefs) == 3, "Needs to specify all dimensions"
+	assert type(variational_coefs[0]) is int and type(variational_coefs[1]) is int and type(variational_coefs[2]) is int, "Integers"
+	assert variational_coefs[0] > 0 and variational_coefs[1] > 0 and variational_coefs[2] > 0, "Positive integers"
+	setting+="_"+str(variational_coefs[0])+"x"+str(variational_coefs[1])+"x"+str(variational_coefs[2])
+if(type(resolution_decoder) is float):
+	assert resolution_decoder > 1, "Resolution decoder needs to be \in [1,+\infty]"
+	assert variational, "For now only done with variational implementation"
+	setting+="_res_"+"{:.1f}".format(resolution_decoder)
+if(aleatoric_uncertainty):
+	assert variational, "For now only done with variational implementation"
 
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
@@ -75,7 +113,6 @@ process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
 #create dir setting if not exists
 if(not os.path.exists(metrics_path+"/"+ setting)):
 	os.makedirs(metrics_path+"/"+ setting)
-
 
 #load data
 raw_eeg=False#time or frequency features? raw-time nonraw-frequency
@@ -95,61 +132,70 @@ if(dataset=="03"):
 #parametrize the interval eeg?
 interval_eeg=10
 
-#return_test returns the test set, this is not active when running validation optimization
-#setup_tf sets the tensorflow memory growth on GPU, this should not be done when already set, which is the case
-train_data, test_data = process_utils.load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, gpu_mem, return_test=True, setup_tf=False)
+with tf.device('/CPU:0'):
+	#return_test returns the test set, this is not active when running validation optimization
+	#setup_tf sets the tensorflow memory growth on GPU, this should not be done when already set, which is the case
+	train_data, test_data = process_utils.load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, gpu_mem, return_test=True, setup_tf=False)
 
-#setup shapes and data loaders
-eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]
-train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size)
-test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
+	#setup shapes and data loaders
+	eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]
+	train_set = tf.data.Dataset.from_tensor_slices(train_data).shuffle(1, reshuffle_each_iteration=True).batch(batch_size)
+	test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
 
-#load model
-#unroll hyperparameters
-theta = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1)
-learning_rate=0.002980911194116198
-weight_decay = float(theta[1])
-kernel_size = theta[2]
-stride_size = theta[3]
-batch_size=int(theta[4])
-latent_dimension=theta[5]
-n_channels=int(theta[6])
-max_pool=bool(theta[7])
-batch_norm=bool(theta[8])
-skip_connections=bool(theta[9])
-dropout=bool(theta[10])
-n_stacks=int(theta[11])
-outfilter=int(theta[12])
-local=True
-with open(na_path_eeg, "rb") as f:
-	na_specification_eeg = pickle.load(f)
-with open(na_path_fmri, "rb") as f:
-	na_specification_fmri = pickle.load(f)
-optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
-							batch_norm=batch_norm, local=local, fourier_features=fourier_features,
-							random_fourier=random_fourier, conditional_attention_style=conditional_attention_style,
-							topographical_attention=topographical_attention, seed=None, fmri_args = (latent_dimension, fmri_shape[1:], 
-							kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
-							n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
-model.build(eeg_shape, fmri_shape)
-model.compile(optimizer=optimizer)
-loss_fn = losses_utils.mae_cosine
+	#load model
+	#unroll hyperparameters
+	theta = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1)
+	learning_rate=0.002980911194116198
+	weight_decay = float(theta[1])
+	kernel_size = theta[2]
+	stride_size = theta[3]
+	batch_size=int(theta[4])
+	latent_dimension=theta[5]
+	n_channels=int(theta[6])
+	max_pool=bool(theta[7])
+	batch_norm=bool(theta[8])
+	skip_connections=bool(theta[9])
+	dropout=bool(theta[10])
+	n_stacks=int(theta[11])
+	outfilter=int(theta[12])
+	local=True
+	with open(na_path_eeg, "rb") as f:
+		na_specification_eeg = pickle.load(f)
+	with open(na_path_fmri, "rb") as f:
+		na_specification_fmri = pickle.load(f)
+	optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+	
+	#placeholder not pretty please correct me
+	_resolution_decoder=None
+	if(type(resolution_decoder) is float):
+		_resolution_decoder=(int(fmri_shape[1]/resolution_decoder),int(fmri_shape[2]/resolution_decoder),int(fmri_shape[3]/resolution_decoder))
+
+	model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
+								batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
+								conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
+								inverse_DFT=variational, DFT=variational, variational_iDFT=variational, variational_coefs=variational_coefs, 
+								variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
+								aleatoric_uncertainty=aleatoric_uncertainty, low_resolution_decoder=type(resolution_decoder) is float, 
+								resolution_decoder=_resolution_decoder, seed=None, 
+								fmri_args = (latent_dimension, fmri_shape[1:], 
+								kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
+								n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
+	model.build(eeg_shape, fmri_shape)
+	model.compile(optimizer=optimizer)
+	loss_fn = list(losses_utils.LOSS_FNS.values())[int(variational)]#if variational get loss fn at index 1
 
 #train model
 history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 if(mode=="metrics"):
-
 	#create dir setting if not exists
 	if(not os.path.exists(metrics_path+"/"+ setting+"/metrics")):
 		os.makedirs(metrics_path+"/"+ setting+"/metrics")
 
-	rmse_pop = metrics.rmse(test_set, model)
-	ssim_pop = metrics.ssim(test_set, model)
+	rmse_pop = metrics.rmse(test_set, model, variational=variational, T=T)
+	ssim_pop = metrics.ssim(test_set, model, variational=variational, T=T)
 	print("RMSE: ", np.mean(rmse_pop), "\pm", np.std(rmse_pop))
 	print("SSIM: ", np.mean(ssim_pop), "\pm", np.std(ssim_pop))
-
 	#compute p values against saved metrics
 	for f in os.listdir(metrics_path):
 		if("rmse" in f):
@@ -158,13 +204,28 @@ if(mode=="metrics"):
 		if("ssim" in f):
 			other_pop_ssim = np.load(metrics_path+"/"+f, allow_pickle=True)
 			print("p-value against", f.split("/")[-1][:-4], ttest_ind(ssim_pop, other_pop_ssim).pvalue)
-
 	if(save_metrics):
 		with open(metrics_path+"/"+setting+"/metrics"+"/rmse_"+"seed_"+str(seed)+".npy", 'wb') as f:
 			np.save(f, rmse_pop)
 		with open(metrics_path+"/"+setting+"/metrics"+"/ssim_"+"seed_"+str(seed)+".npy", 'wb') as f:
 			np.save(f, ssim_pop)
-
+elif(mode=="uncertainty"):
+	#create dir setting if not exists
+	if(not os.path.exists(metrics_path+"/"+ setting+"/uncertainty")):
+		os.makedirs(metrics_path+"/"+ setting+"/uncertainty")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/epistemic")):
+		os.makedirs(metrics_path+"/"+ setting+"/epistemic")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/aleatoric")):
+		os.makedirs(metrics_path+"/"+ setting+"/aleatoric")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/quality")):
+		os.makedirs(metrics_path+"/"+ setting+"/quality")
+	
+	instance=0
+	for eeg, fmri in test_set.repeat(1):
+		viz_utils.plot_3D_representation_projected_slices(np.mean(bnn_utils.epistemic_uncertainty(model, (eeg, fmri), T=T), axis=0), threshold=threshold_plot, res_img=fmri.numpy()[0], slice_label=False, uncertainty=True, legend_colorbar="Epistemic", max_min_legend=["Certain","Uncertain"], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/epistemic"+"/" + str(instance)+"_instance.pdf")
+		viz_utils.plot_3D_representation_projected_slices(np.mean(bnn_utils.aleatoric_uncertainty(model, (eeg, fmri), T=T), axis=0), threshold=threshold_plot, res_img=fmri.numpy()[0], slice_label=False, uncertainty=True, legend_colorbar="Aleatoric", max_min_legend=["Certain","Uncertain"], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/aleatoric"+"/" + str(instance)+"_instance.pdf")
+		viz_utils.plot_3D_representation_projected_slices(np.mean(bnn_utils.predict_MC(model, (eeg, fmri), T=T), axis=0), threshold=threshold_plot, res_img=fmri.numpy()[0], slice_label=False, uncertainty=False, legend_colorbar="Haemodynamic", max_min_legend=["",""], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality"+"/" + str(instance)+"_instance.pdf")
+		instance+=1
 elif(mode=="residues"):
 	#create dir setting if not exists
 	if(not os.path.exists(metrics_path+"/"+ setting+"/residues")):
