@@ -4,6 +4,8 @@ import tensorflow as tf
 
 from scipy.stats import ttest_1samp
 
+from utils import bnn_utils
+
 
 """
 ssim:
@@ -11,16 +13,21 @@ ssim:
 		* data - tf.data.DataLoader
 		* model - tf.keras.Model
 		* factor - int default factor=3
+		* variational - bool
+		* T - int
 	Outputs:
 		* SSIM values - list
 		* SSIM mean - float
 """
-def ssim(data, model, factor=3, two_inputs=True):
+def ssim(data, model, factor=3, two_inputs=True, variational=False, T=10):
 	_ssim = []
 
 	for instance_x, instance_y in data.repeat(1):
 		if(two_inputs):
-			y_pred = model(instance_x, instance_y)
+			if(variational):
+				y_pred = bnn_utils.predict_MC(model, (instance_x, instance_y), T=T)
+			else:
+				y_pred = model(instance_x, instance_y)
 		else:
 			y_pred = model(instance_x)
 			
@@ -53,15 +60,21 @@ rmse:
 	Inputs:
 		* data - tf.data.DataLoader
 		* model - tf.keras.Model
+		* variational - bool
+		* T - int
 	Outputs:
 		* RMSE values - list
 		* RMSE mean - float
 """
-def rmse(data, model):
+def rmse(data, model, variational=False, T=10):
 	_rmse = []
 
 	for instance_x, instance_y in data.repeat(1):
-		y_pred = model(instance_x, instance_y)
+		if(variational):
+			y_pred = bnn_utils.predict_MC(model, (instance_x, instance_y), T=T)
+		else:
+			y_pred = model(instance_x, instance_y)
+
 		if(type(y_pred) is list):
 			if(type(y_pred[0]) is list):
 				y_pred = y_pred[0][0]
