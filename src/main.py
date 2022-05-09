@@ -28,7 +28,7 @@ parser.add_argument('-conditional_attention_style', action="store_true", help="C
 parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
 parser.add_argument('-variational_coefs', default="5,5,5", type=str, help="Number of extra stochastic resolution coefficients")
 parser.add_argument('-variational_dependent_h', default=None, type=int, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
-parser.add_argument('-variational_dist', default="gaussian", type=str, help="Distribution used for the high resolution coefficients")
+parser.add_argument('-variational_dist', default="Normal", type=str, help="Distribution used for the high resolution coefficients")
 parser.add_argument('-resolution_decoder', default=None, type=float, help="Resolution decoder intermediary before final transformation in decoder -- used in uncertainty")
 parser.add_argument('-aleatoric_uncertainty', action="store_true", help="Aleatoric uncertainty flag")
 parser.add_argument('-fourier_features', action="store_true", help="Fourier features flag")
@@ -86,7 +86,7 @@ if(variational):
 	assert variational_coefs, "Need to be specified number of coefs, always upsampling for now, set issue to allow better implementation"
 	setting+="_variational"
 if(type(variational_dist) is str):
-	assert variational_dist in ["gaussian", "gamma"]
+	assert variational_dist in ["Normal", "Gamma"]
 	setting+="_"+variational_dist
 if(not type(variational_dependent_h) is None):
 	assert variational, "Needs variational flag set to True"
