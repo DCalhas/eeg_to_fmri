@@ -26,8 +26,8 @@ parser.add_argument('dataset', choices=['01', '02', '03'], help="Which dataset t
 parser.add_argument('-topographical_attention', action="store_true", help="Topographical attention on EEG channels")
 parser.add_argument('-conditional_attention_style', action="store_true", help="Conditional attention style on the latent space")
 parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
-parser.add_argument('-variational_coefs', default="5,5,5", type=str, help="Number of extra stochastic resolution coefficients")
-parser.add_argument('-variational_dependent_h', default=None, type=int, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
+parser.add_argument('-variational_coefs', default=None, type=None, help="Number of extra stochastic resolution coefficients")
+parser.add_argument('-variational_dependent_h', default=None, type=None, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
 parser.add_argument('-variational_dist', default="Normal", type=str, help="Distribution used for the high resolution coefficients")
 parser.add_argument('-resolution_decoder', default=None, type=float, help="Resolution decoder intermediary before final transformation in decoder -- used in uncertainty")
 parser.add_argument('-aleatoric_uncertainty', action="store_true", help="Aleatoric uncertainty flag")
@@ -88,7 +88,7 @@ if(variational):
 if(type(variational_dist) is str):
 	assert variational_dist in ["Normal", "Gamma"]
 	setting+="_"+variational_dist
-if(not type(variational_dependent_h) is None):
+if(type(variational_dependent_h) is int):
 	assert variational, "Needs variational flag set to True"
 	setting+="_dependent_h_"+str(variational_dependent_h)
 else:
@@ -132,60 +132,59 @@ if(dataset=="03"):
 #parametrize the interval eeg?
 interval_eeg=10
 
-with tf.device('/CPU:0'):
-	#return_test returns the test set, this is not active when running validation optimization
-	#setup_tf sets the tensorflow memory growth on GPU, this should not be done when already set, which is the case
-	train_data, test_data = process_utils.load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, gpu_mem, return_test=True, setup_tf=False)
+#return_test returns the test set, this is not active when running validation optimization
+#setup_tf sets the tensorflow memory growth on GPU, this should not be done when already set, which is the case
+train_data, test_data = process_utils.load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, gpu_mem, return_test=True, setup_tf=False)
 
-	#setup shapes and data loaders
-	eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]
-	train_set = tf.data.Dataset.from_tensor_slices(train_data).shuffle(1, reshuffle_each_iteration=True).batch(batch_size)
-	test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
+#setup shapes and data loaders
+eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]
+train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size)
+test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
 
-	#load model
-	#unroll hyperparameters
-	theta = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1)
-	learning_rate=0.002980911194116198
-	weight_decay = float(theta[1])
-	kernel_size = theta[2]
-	stride_size = theta[3]
-	batch_size=int(theta[4])
-	latent_dimension=theta[5]
-	n_channels=int(theta[6])
-	max_pool=bool(theta[7])
-	batch_norm=bool(theta[8])
-	skip_connections=bool(theta[9])
-	dropout=bool(theta[10])
-	n_stacks=int(theta[11])
-	outfilter=int(theta[12])
-	local=True
-	with open(na_path_eeg, "rb") as f:
-		na_specification_eeg = pickle.load(f)
-	with open(na_path_fmri, "rb") as f:
-		na_specification_fmri = pickle.load(f)
-	optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-	
-	#placeholder not pretty please correct me
-	_resolution_decoder=None
-	if(type(resolution_decoder) is float):
-		_resolution_decoder=(int(fmri_shape[1]/resolution_decoder),int(fmri_shape[2]/resolution_decoder),int(fmri_shape[3]/resolution_decoder))
+#load model
+#unroll hyperparameters
+theta = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1)
+learning_rate=0.002980911194116198
+weight_decay = float(theta[1])
+kernel_size = theta[2]
+stride_size = theta[3]
+batch_size=int(theta[4])
+latent_dimension=theta[5]
+n_channels=int(theta[6])
+max_pool=bool(theta[7])
+batch_norm=bool(theta[8])
+skip_connections=bool(theta[9])
+dropout=bool(theta[10])
+n_stacks=int(theta[11])
+outfilter=int(theta[12])
+local=True
+with open(na_path_eeg, "rb") as f:
+	na_specification_eeg = pickle.load(f)
+with open(na_path_fmri, "rb") as f:
+	na_specification_fmri = pickle.load(f)
+optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-	model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
-								batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
-								conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
-								inverse_DFT=variational, DFT=variational, variational_iDFT=variational, variational_coefs=variational_coefs, 
-								variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
-								aleatoric_uncertainty=aleatoric_uncertainty, low_resolution_decoder=type(resolution_decoder) is float, 
-								resolution_decoder=_resolution_decoder, seed=None, 
-								fmri_args = (latent_dimension, fmri_shape[1:], 
-								kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
-								n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
-	model.build(eeg_shape, fmri_shape)
-	model.compile(optimizer=optimizer)
-	loss_fn = list(losses_utils.LOSS_FNS.values())[int(variational)]#if variational get loss fn at index 1
+#placeholder not pretty please correct me
+_resolution_decoder=None
+if(type(resolution_decoder) is float):
+	_resolution_decoder=(int(fmri_shape[1]/resolution_decoder),int(fmri_shape[2]/resolution_decoder),int(fmri_shape[3]/resolution_decoder))
+
+model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
+							batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
+							conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
+							inverse_DFT=variational, DFT=variational, variational_iDFT=variational, variational_coefs=variational_coefs, 
+							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
+							aleatoric_uncertainty=aleatoric_uncertainty, low_resolution_decoder=type(resolution_decoder) is float, 
+							resolution_decoder=_resolution_decoder, seed=None, 
+							fmri_args = (latent_dimension, fmri_shape[1:], 
+							kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
+							n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
+model.build(eeg_shape, fmri_shape)
+model.compile(optimizer=optimizer)
+loss_fn = list(losses_utils.LOSS_FNS.values())[int(variational)]#if variational get loss fn at index 1
 
 #train model
-history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
+history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose, verbose_batch=True)
 
 if(mode=="metrics"):
 	#create dir setting if not exists
