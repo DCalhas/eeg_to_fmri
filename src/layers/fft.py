@@ -275,8 +275,10 @@ Example usage:
 class variational_iDCT3D(tf.keras.layers.Layer):
 	"""
 	in1 - int - first dimension input
+
+	If Gamma is used please cite arXiv:1805.08498 - Figurnov et al. 2019
 	"""
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1):
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution="Gamma"):
 
 		super(variational_iDCT3D, self).__init__()
 
@@ -296,6 +298,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.rand3 = rand3
 		self.coefs_perturb = coefs_perturb
 		self.dependent = dependent
+		self.distribution = distribution
 
 		if(self.coefs_perturb):
 			self.normal= tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_variable)
@@ -349,12 +352,12 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 				   [self.in3, 0]]
 		
 		#https://github.com/tensorflow/probability/blob/88d217dfe8be49050362eb14ba3076c0dc0f1ba6/tensorflow_probability/python/distributions/normal.py#L174
-		dist_normal1 = tfp.distributions.Normal(loc=self.normal1.distribution.loc, scale=self.normal1.distribution.scale)
-		dist_normal2 = tfp.distributions.Normal(loc=self.normal2.distribution.loc, scale=self.normal2.distribution.scale)
-		dist_normal3 = tfp.distributions.Normal(loc=self.normal3.distribution.loc, scale=self.normal3.distribution.scale)
-		rand_coefs1 = dist_normal1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
-		rand_coefs2 = dist_normal2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
-		rand_coefs3 = dist_normal3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+		dist1 = getattr(tfp.distributions, self.distribution)(self.normal1.distribution.loc, self.normal1.distribution.scale)
+		dist2 = getattr(tfp.distributions, self.distribution)(self.normal2.distribution.loc, self.normal2.distribution.scale)
+		dist3 = getattr(tfp.distributions, self.distribution)(self.normal3.distribution.loc, self.normal3.distribution.scale)
+		rand_coefs1 = dist1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+		rand_coefs2 = dist2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+		rand_coefs3 = dist3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
 		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal2, self.normal2_prior)))
 		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
