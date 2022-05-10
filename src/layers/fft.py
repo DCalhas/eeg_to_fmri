@@ -394,7 +394,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 
 			self.angular_loc2 = self.add_weight('angular_loc2_posterior',
-										shape=[self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], , posterior_dimension],
+										shape=[self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], posterior_dimension],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
