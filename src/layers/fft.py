@@ -418,45 +418,46 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 										dtype=tf.float32,
 										trainable=True)
 
-		self.cartesian_loc1 = self.add_weight('cartesian_loc1_posterior',
-									shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
-									initializer=loc_initializer,
-									constraint=None,
-									dtype=tf.float32,
-									trainable=True)
-		self.cartesian_scale1 = self.add_weight('cartesian_scale1_posterior',
-									shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
-									initializer=scale_initializer,
-									constraint=constraint,
-									dtype=tf.float32,
-									trainable=True)
+		if(self.distribution=="VonMises"):
+			self.cartesian_loc1 = self.add_weight('cartesian_loc1_posterior',
+										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
+										initializer=loc_initializer,
+										constraint=None,
+										dtype=tf.float32,
+										trainable=True)
+			self.cartesian_scale1 = self.add_weight('cartesian_scale1_posterior',
+										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
+										initializer=scale_initializer,
+										constraint=constraint,
+										dtype=tf.float32,
+										trainable=True)
 
 
-		self.cartesian_loc2 = self.add_weight('cartesian_loc2_posterior',
-									shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
-									initializer=loc_initializer,
-									constraint=None,
-									dtype=tf.float32,
-									trainable=True)
-		self.cartesian_scale2 = self.add_weight('cartesian_scale2_posterior',
-									shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
-									initializer=scale_initializer,
-									constraint=constraint,
-									dtype=tf.float32,
-									trainable=True)
+			self.cartesian_loc2 = self.add_weight('cartesian_loc2_posterior',
+										shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
+										initializer=loc_initializer,
+										constraint=None,
+										dtype=tf.float32,
+										trainable=True)
+			self.cartesian_scale2 = self.add_weight('cartesian_scale2_posterior',
+										shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
+										initializer=scale_initializer,
+										constraint=constraint,
+										dtype=tf.float32,
+										trainable=True)
 
-		self.cartesian_loc3 = self.add_weight('cartesian_loc3_posterior',
-									shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-									initializer=loc_initializer,
-									constraint=None,
-									dtype=tf.float32,
-									trainable=True)
-		self.cartesian_scale3 = self.add_weight('cartesian_scale3_posterior',
-									shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-									initializer=scale_initializer,
-									constraint=constraint,
-									dtype=tf.float32,
-									trainable=True)
+			self.cartesian_loc3 = self.add_weight('cartesian_loc3_posterior',
+										shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
+										initializer=loc_initializer,
+										constraint=None,
+										dtype=tf.float32,
+										trainable=True)
+			self.cartesian_scale3 = self.add_weight('cartesian_scale3_posterior',
+										shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
+										initializer=scale_initializer,
+										constraint=constraint,
+										dtype=tf.float32,
+										trainable=True)
 
 	def call(self, x):
 
@@ -493,21 +494,23 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		#rand_coefs1 = dist1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		#rand_coefs2 = dist2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		#rand_coefs3 = dist3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
-		cartesian_dist1 = tfp.distributions.VonMises(self.cartesian_loc1, self.cartesian_scale1)
-		cartesian_dist2 = tfp.distributions.VonMises(self.cartesian_loc2, self.cartesian_scale2)
-		cartesian_dist3 = tfp.distributions.VonMises(self.cartesian_loc3, self.cartesian_scale3)
-		rand_coefs1=cartesian_dist1.sample()#creating random coefficients with random angles and coordinates
-		rand_coefs2=cartesian_dist2.sample()#creating random coefficients with random angles and coordinates
-		rand_coefs3=cartesian_dist3.sample()#creating random coefficients with random angles and coordinates
-		#learn the angles of the frequency space as well??
-		if(self.distribution=="VonMisesFisher"):
-			angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1, self.angular_scale1)
-			angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2, self.angular_scale2)
-			angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3, self.angular_scale3)
-			rand_coefs1=rand_coefs1*tf.cos(angular_dist1.sample())#creating random coefficients with random angles and coordinates
-			rand_coefs2=rand_coefs2*tf.cos(angular_dist2.sample())#creating random coefficients with random angles and coordinates
-			rand_coefs3=rand_coefs3*tf.cos(angular_dist3.sample())#creating random coefficients with random angles and coordinates
-		
+		if(self.distribution=="VonMises"):
+			cartesian_dist1 = tfp.distributions.VonMises(self.cartesian_loc1, self.cartesian_scale1)
+			cartesian_dist2 = tfp.distributions.VonMises(self.cartesian_loc2, self.cartesian_scale2)
+			cartesian_dist3 = tfp.distributions.VonMises(self.cartesian_loc3, self.cartesian_scale3)
+			rand_coefs1=cartesian_dist1.sample()#creating random coefficients with random angles and coordinates
+			rand_coefs2=cartesian_dist2.sample()#creating random coefficients with random angles and coordinates
+			rand_coefs3=cartesian_dist3.sample()#creating random coefficients with random angles and coordinates
+		elif(self.distribution=="VonMisesFisher"):#learn the angles of the frequency space as well??
+			angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1*2*np.pi, self.angular_scale1)
+			angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2*2*np.pi, self.angular_scale2)
+			angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3*2*np.pi, self.angular_scale3)
+			rand_coefs1=angular_dist1.sample()
+			rand_coefs2=angular_dist2.sample()
+			rand_coefs3=angular_dist3.sample()
+		else:
+			raise NotImplementedError
+
 		if(self.dependent):
 			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
 			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
