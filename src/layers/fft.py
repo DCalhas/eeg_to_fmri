@@ -324,7 +324,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 	If Gamma is used please cite arXiv:1805.08498 - Figurnov et al. 2019
 	"""
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution="Normal"):
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution="Gamma"):
 
 		super(variational_iDCT3D, self).__init__()
 
@@ -350,7 +350,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.distribution = distribution
 
 		if(self.coefs_perturb):
-			self.normal= tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
+			self.normal= tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight, loc_constraint=tf.keras.constraints.NonNeg())
 			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_weight)
 		if(self.dependent):
 			self.w = self.add_weight('W',
@@ -365,9 +365,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.shape_normal2 = (self.in1+self.rand1, self.rand2, self.in3)
 		self.shape_normal3 = (self.in1+self.rand1, self.in2+self.rand2, self.rand3)
 
-		self.normal1 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_posterior', True, self.add_weight)
-		self.normal2 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_posterior', True, self.add_weight)
-		self.normal3 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_posterior', True, self.add_weight)
+		self.normal1 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_posterior', True, self.add_weight, loc_constraint=tf.keras.constraints.NonNeg())
+		self.normal2 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_posterior', True, self.add_weight, loc_constraint=tf.keras.constraints.NonNeg())
+		self.normal3 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_posterior', True, self.add_weight, loc_constraint=tf.keras.constraints.NonNeg())
 		self.normal1_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_prior', True, self.add_weight)
 		self.normal2_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_prior', True, self.add_weight)
 		self.normal3_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_prior', True, self.add_weight)
@@ -411,11 +411,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal2, self.normal2_prior)))
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
 		
-		tf.print(x)
 		if(self.dependent):
 			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
 			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
-			tf.print(x_cond)
 			#attention?
 			x_cond = tf.nn.softmax(x_cond)
 			rand_coefs1 = tf.matmul(x_cond, rand_coefs1)#shape = [None, F] = [Batch, F]
@@ -425,9 +423,6 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		rand_coefs1 = tf.reshape(rand_coefs1, (tf.shape(rand_coefs1)[0],)+self.shape_normal1)
 		rand_coefs2 = tf.reshape(rand_coefs2, (tf.shape(rand_coefs2)[0],)+self.shape_normal2)
 		rand_coefs3 = tf.reshape(rand_coefs3, (tf.shape(rand_coefs3)[0],)+self.shape_normal3)
-		tf.print(rand_coefs1)
-		tf.print(rand_coefs2)
-		tf.print(rand_coefs3)
 			
 		if(self.coefs_perturb):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
