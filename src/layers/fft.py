@@ -369,7 +369,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 								shape=[self.in1*self.in2*self.in3, posterior_dimension],
 								initializer=tf.initializers.GlorotUniform(),
 								dtype=tf.float32,
-								trainable=True)scale_initializer
+								trainable=True)
 
 		self.padded_idct3 = padded_iDCT3D(in1+rand1, in2+rand2, in3+rand3, out1, out2, out3)
 
