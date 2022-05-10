@@ -454,9 +454,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		#dist1 = getattr(tfp.distributions, self.distribution)(self.normal1.distribution.loc, self.normal1.distribution.scale)
 		#dist2 = getattr(tfp.distributions, self.distribution)(self.normal2.distribution.loc, self.normal2.distribution.scale)
 		#dist3 = getattr(tfp.distributions, self.distribution)(self.normal3.distribution.loc, self.normal3.distribution.scale)
-		dist1 = getattr(tfp.distributions, self.distribution)(self.loc1, rate=self.scale1)
-		dist2 = getattr(tfp.distributions, self.distribution)(self.loc2, rate=self.scale2)
-		dist3 = getattr(tfp.distributions, self.distribution)(self.loc3, rate=self.scale3)
+		dist1 = getattr(tfp.distributions, self.distribution)(self.loc1, self.scale1)
+		dist2 = getattr(tfp.distributions, self.distribution)(self.loc2, self.scale2)
+		dist3 = getattr(tfp.distributions, self.distribution)(self.loc3, self.scale3)
 		rand_coefs1 = dist1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs2 = dist2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs3 = dist3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
