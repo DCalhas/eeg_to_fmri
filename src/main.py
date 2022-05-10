@@ -86,7 +86,7 @@ if(variational):
 	assert variational_coefs, "Need to be specified number of coefs, always upsampling for now, set issue to allow better implementation"
 	setting+="_variational"
 if(type(variational_dist) is str):
-	assert variational_dist in ["Normal", "VonMisesFisher"]
+	assert variational_dist in ["Normal", "VonMises", "VonMisesFisher"]
 	setting+="_"+variational_dist
 if(variational_dependent_h > 1 and variational):
 	setting+="_dependent_h_"+str(variational_dependent_h)
@@ -182,7 +182,7 @@ model.compile(optimizer=optimizer)
 loss_fn = list(losses_utils.LOSS_FNS.values())[int(variational)]#if variational get loss fn at index 1
 
 #train model
-history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose, verbose_batch=True)
+history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
 
 if(mode=="metrics"):
 	#create dir setting if not exists
