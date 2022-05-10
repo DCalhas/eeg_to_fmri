@@ -466,7 +466,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
 		
 		if(self.dependent):
-			print(x_cond.shape)
+			print(x.shape)
 			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
 			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
 			print(x_cond.shape)
