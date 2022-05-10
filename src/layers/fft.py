@@ -324,7 +324,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 	If Gamma is used please cite arXiv:1805.08498 - Figurnov et al. 2019
 	"""
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution="Gamma"):
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution="Normal"):
 
 		super(variational_iDCT3D, self).__init__()
 

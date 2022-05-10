@@ -466,8 +466,6 @@ laplace_Loss:
         * tf.Tensor
 """
 def Laplacian_Loss(y_true, y_pred):
-    print(y_pred[0][0])
-    print(y_pred[0][1])
     laplace_loss = tf.reduce_mean((1/(y_pred[0][1]+NON_DIVISION_ZERO))*tf.math.abs(y_pred[0][0] - y_true)+tf.math.log(2*(y_pred[0][1]+NON_DIVISION_ZERO)), axis=(1,2,3))
     return laplace_loss + cosine(y_pred[1], y_pred[2])
 
