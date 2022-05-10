@@ -492,6 +492,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		cartesian_dist1 = tfp.distributions.VonMises(self.cartesian_loc1, self.cartesian_scale1)
 		cartesian_dist2 = tfp.distributions.VonMises(self.cartesian_loc2, self.cartesian_scale2)
 		cartesian_dist3 = tfp.distributions.VonMises(self.cartesian_loc3, self.cartesian_scale3)
+		print(self.angular_loc1.shape, self.angular_scale1.shape)
 		angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1, self.angular_scale1)
 		angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2, self.angular_scale2)
 		angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3, self.angular_scale3)
