@@ -371,13 +371,13 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		self.loc1 = self.add_weight('loc1_posterior',
 									shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
-									initializer=tf.keras.initializers.GlorotUniform(),
+									initializer=tf.keras.initializers.RandomUniform(minval=0.0, maxval=0.05),
 									constraint=constraint,
 									dtype=tf.float32,
 									trainable=True)
 		self.scale1 = self.add_weight('scale1_posterior',
 									shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
-									initializer=tf.keras.initializers.GlorotUniform(),
+									initializer=tf.keras.initializers.RandomUniform(minval=0.0, maxval=0.05),
 									constraint=constraint,
 									dtype=tf.float32,
 									trainable=True)
@@ -385,26 +385,26 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		self.loc2 = self.add_weight('loc2_posterior',
 									shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
-									initializer=tf.keras.initializers.GlorotUniform(),
+									initializer=tf.keras.initializers.RandomUniform(minval=0.0, maxval=0.05),
 									constraint=constraint,
 									dtype=tf.float32,
 									trainable=True)
 		self.scale2 = self.add_weight('scale2_posterior',
 									shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
-									initializer=tf.keras.initializers.GlorotUniform(),
+									initializer=tf.keras.initializers.RandomUniform(minval=0.0, maxval=0.05),
 									constraint=constraint,
 									dtype=tf.float32,
 									trainable=True)
 
 		self.loc3 = self.add_weight('loc3_posterior',
 									shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-									initializer=tf.keras.initializers.GlorotUniform(),
+									initializer=tf.keras.initializers.RandomUniform(minval=0.0, maxval=0.05),
 									constraint=constraint,
 									dtype=tf.float32,
 									trainable=True)
 		self.scale3 = self.add_weight('scale3_posterior',
 									shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-									initializer=tf.keras.initializers.GlorotUniform(),
+									initializer=tf.keras.initializers.RandomUniform(minval=0.0, maxval=0.05),
 									constraint=constraint,
 									dtype=tf.float32,
 									trainable=True)
