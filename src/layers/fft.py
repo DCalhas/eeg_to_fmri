@@ -407,14 +407,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		rand_coefs1 = dist1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs2 = dist2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs3 = dist3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
-		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
-		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal2, self.normal2_prior)))
-		self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
+		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
+		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal2, self.normal2_prior)))
+		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
 		
-
+		tf.print(x)
 		if(self.dependent):
 			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
 			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
+			tf.print(x_cond)
 			#attention?
 			x_cond = tf.nn.softmax(x_cond)
 			rand_coefs1 = tf.matmul(x_cond, rand_coefs1)#shape = [None, F] = [Batch, F]
@@ -424,12 +425,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		rand_coefs1 = tf.reshape(rand_coefs1, (tf.shape(rand_coefs1)[0],)+self.shape_normal1)
 		rand_coefs2 = tf.reshape(rand_coefs2, (tf.shape(rand_coefs2)[0],)+self.shape_normal2)
 		rand_coefs3 = tf.reshape(rand_coefs3, (tf.shape(rand_coefs3)[0],)+self.shape_normal3)
+		tf.print(rand_coefs1)
+		tf.print(rand_coefs2)
+		tf.print(rand_coefs3)
 			
 		if(self.coefs_perturb):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
 			x = x*dist_normal.sample()
 			#add kl divergence loss
-			self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal, self.normal_prior)))
+			#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal, self.normal_prior)))
 			
 		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
 		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
