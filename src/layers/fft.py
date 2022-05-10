@@ -381,7 +381,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 									dtype=tf.float32,
 									trainable=True)
 		self.angular_scale1 = self.add_weight('angular_scale1_posterior',
-									shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
+									shape=[posterior_dimension],
 									initializer=scale_initializer,
 									constraint=constraint,
 									dtype=tf.float32,
@@ -395,7 +395,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 									dtype=tf.float32,
 									trainable=True)
 		self.angular_scale2 = self.add_weight('angular_scale2_posterior',
-									shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
+									shape=[posterior_dimension],
 									initializer=scale_initializer,
 									constraint=constraint,
 									dtype=tf.float32,
@@ -408,7 +408,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 									dtype=tf.float32,
 									trainable=True)
 		self.angular_scale3 = self.add_weight('angular_scale3_posterior',
-									shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
+									shape=[posterior_dimension],
 									initializer=scale_initializer,
 									constraint=constraint,
 									dtype=tf.float32,
@@ -492,12 +492,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		cartesian_dist1 = tfp.distributions.VonMises(self.cartesian_loc1, self.cartesian_scale1)
 		cartesian_dist2 = tfp.distributions.VonMises(self.cartesian_loc2, self.cartesian_scale2)
 		cartesian_dist3 = tfp.distributions.VonMises(self.cartesian_loc3, self.cartesian_scale3)
-		print(self.angular_loc1.shape, self.angular_scale1.shape)
 		angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1, self.angular_scale1)
 		angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2, self.angular_scale2)
 		angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3, self.angular_scale3)
-		print(cartesian_dist1.sample().shape)
-		print(angular_dist1.sample().shape)
 		rand_coefs1=cartesian_dist1.sample()*tf.cos(angular_dist1.sample())#creating random coefficients with random angles and coordinates
 		rand_coefs2=cartesian_dist2.sample()*tf.cos(angular_dist2.sample())#creating random coefficients with random angles and coordinates
 		rand_coefs3=cartesian_dist3.sample()*tf.cos(angular_dist3.sample())#creating random coefficients with random angles and coordinates
