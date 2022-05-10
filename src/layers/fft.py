@@ -324,7 +324,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 	If Gamma is used please cite arXiv:1805.08498 - Figurnov et al. 2019
 	"""
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution="Beta"):
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution="VonMises"):
 
 		super(variational_iDCT3D, self).__init__()
 
@@ -352,7 +352,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		constraint=None
 		initializer=tf.initializers.GlorotUniform()
 		scale_initializer=tf.initializers.Ones()
-		if(self.distribution=="Beta"):
+		if(self.distribution=="VonMises"):
 			constraint=tf.keras.constraints.NonNeg()
 			loc_initializer=tf.keras.initializers.RandomUniform(minval=1e-9, maxval=1e-1)
 			scale_initializer=tf.keras.initializers.RandomUniform(minval=1e-9, maxval=1e-1)
