@@ -27,7 +27,7 @@ parser.add_argument('-topographical_attention', action="store_true", help="Topog
 parser.add_argument('-conditional_attention_style', action="store_true", help="Conditional attention style on the latent space")
 parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
 parser.add_argument('-variational_coefs', default=None, type=None, help="Number of extra stochastic resolution coefficients")
-parser.add_argument('-variational_dependent_h', default=None, type=None, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
+parser.add_argument('-variational_dependent_h', default=None, type=int, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
 parser.add_argument('-variational_dist', default="Normal", type=str, help="Distribution used for the high resolution coefficients")
 parser.add_argument('-resolution_decoder', default=None, type=float, help="Resolution decoder intermediary before final transformation in decoder -- used in uncertainty")
 parser.add_argument('-aleatoric_uncertainty', action="store_true", help="Aleatoric uncertainty flag")
@@ -88,11 +88,8 @@ if(variational):
 if(type(variational_dist) is str):
 	assert variational_dist in ["Normal", "VonMisesFisher"]
 	setting+="_"+variational_dist
-if(type(variational_dependent_h) is int):
-	assert variational, "Needs variational flag set to True"
+if(variational_dependent_h > 1 and variational):
 	setting+="_dependent_h_"+str(variational_dependent_h)
-else:
-	variational_dependent_h=1
 if(type(variational_coefs) is str):
 	assert variational, "Only done with variational flag set to True"
 	variational_coefs=tuple(map(int ,variational_coefs.split(",")))
@@ -138,7 +135,7 @@ train_data, test_data = process_utils.load_data_eeg_fmri(dataset, n_individuals,
 
 #setup shapes and data loaders
 eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]
-train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size)
+train_set = tf.data.Dataset.from_tensor_slices(train_data).shuffle(1).batch(batch_size)
 test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
 
 #load model
