@@ -446,13 +446,19 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 				   [self.in3, 0]]
 		
 		#https://github.com/tensorflow/probability/blob/88d217dfe8be49050362eb14ba3076c0dc0f1ba6/tensorflow_probability/python/distributions/normal.py#L174
-		#dist1 = getattr(tfp.distributions, self.distribution)(self.normal1.distribution.loc, self.normal1.distribution.scale)
+		dist1 = getattr(tfp.distributions, self.distribution)(self.normal1.distribution.loc, self.normal1.distribution.scale)
 		#dist2 = getattr(tfp.distributions, self.distribution)(self.normal2.distribution.loc, self.normal2.distribution.scale)
 		#dist3 = getattr(tfp.distributions, self.distribution)(self.normal3.distribution.loc, self.normal3.distribution.scale)
 		dist1 = getattr(tfp.distributions, self.distribution)(self.loc1, self.scale1)
 		dist2 = getattr(tfp.distributions, self.distribution)(self.loc2, self.scale2)
 		dist3 = getattr(tfp.distributions, self.distribution)(self.loc3, self.scale3)
 		rand_coefs1 = dist1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+		print(rand_coefs1.shape)
+
+		dist1 = getattr(tfp.distributions, self.distribution)(self.normal1.distribution.loc, self.normal1.distribution.scale)
+		rand_coefs1 = dist1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+		print(rand_coefs1.shape)
+		
 		rand_coefs2 = dist2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs3 = dist3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
