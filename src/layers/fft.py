@@ -349,8 +349,11 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.posterior_dimension = posterior_dimension
 		self.distribution = distribution
 
+		if(self.distribution=="Gamma"):
+			loc_constraint=tf.keras.constraints.NonNeg()
+
 		if(self.coefs_perturb):
-			self.normal= tfp.layers.default_mean_field_normal_fn()(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight, loc_constraint=tf.keras.constraints.NonNeg())
+			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=loc_constraint)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
 			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_weight)
 		if(self.dependent):
 			self.w = self.add_weight('W',
@@ -365,9 +368,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.shape_normal2 = (self.in1+self.rand1, self.rand2, self.in3)
 		self.shape_normal3 = (self.in1+self.rand1, self.in2+self.rand2, self.rand3)
 
-		self.normal1 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_posterior', True, self.add_weight, loc_constraint=tf.keras.constraints.NonNeg())
-		self.normal2 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_posterior', True, self.add_weight, loc_constraint=tf.keras.constraints.NonNeg())
-		self.normal3 = tfp.layers.default_mean_field_normal_fn()(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_posterior', True, self.add_weight, loc_constraint=tf.keras.constraints.NonNeg())
+		self.normal1 = tfp.layers.default_mean_field_normal_fn(loc_constraint=loc_constraint)(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_posterior', True, self.add_weight)
+		self.normal2 = tfp.layers.default_mean_field_normal_fn(loc_constraint=loc_constraint)(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_posterior', True, self.add_weight)
+		self.normal3 = tfp.layers.default_mean_field_normal_fn(loc_constraint=loc_constraint)(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_posterior', True, self.add_weight)
 		self.normal1_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_prior', True, self.add_weight)
 		self.normal2_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_prior', True, self.add_weight)
 		self.normal3_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_prior', True, self.add_weight)
