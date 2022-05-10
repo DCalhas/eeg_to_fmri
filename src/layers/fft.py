@@ -420,7 +420,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 			self.real_angle = self.add_weight('angular_scale3_posterior',
 										shape=[1,2],
-										initializer=tf.constant_initializer(np.array([[1.,0.]])),
+										initializer=tf.constant_initializer(np.array([[1.,1.]])),
 										dtype=tf.float32,
 										trainable=False)
 
