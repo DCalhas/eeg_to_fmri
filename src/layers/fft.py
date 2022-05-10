@@ -354,8 +354,8 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		scale_initializer=tf.initializers.Ones()
 		if(self.distribution=="Gamma"):
 			constraint=tf.keras.constraints.NonNeg()
-			loc_initializer=tf.keras.initializers.RandomUniform(minval=1e-9, maxval=1e-3)
-			scale_initializer=tf.keras.initializers.RandomUniform(minval=1e-9, maxval=1e-3)
+			loc_initializer=tf.keras.initializers.RandomUniform(minval=1e-9, maxval=1e-1)
+			scale_initializer=tf.keras.initializers.RandomUniform(minval=1e-9, maxval=1e-1)
 
 
 		if(self.coefs_perturb):
@@ -460,9 +460,6 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		rand_coefs1 = dist1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs2 = dist2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs3 = dist3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
-		tf.print(rand_coefs1)
-		tf.print(self.loc1)
-		tf.print(self.scale1)
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal2, self.normal2_prior)))
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
