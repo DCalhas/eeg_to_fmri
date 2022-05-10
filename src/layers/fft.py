@@ -410,12 +410,12 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 									trainable=True)
 
 
-		self.normal1 = tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_posterior', True, self.add_weight)
-		self.normal2 = tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_posterior', True, self.add_weight)
-		self.normal3 = tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_posterior', True, self.add_weight)
-		self.normal1_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_prior', True, self.add_weight)
-		self.normal2_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_prior', True, self.add_weight)
-		self.normal3_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_prior', True, self.add_weight)
+		#self.normal1 = tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_posterior', True, self.add_weight)
+		#self.normal2 = tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_posterior', True, self.add_weight)
+		#self.normal3 = tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_posterior', True, self.add_weight)
+		#self.normal1_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_prior', True, self.add_weight)
+		#self.normal2_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_prior', True, self.add_weight)
+		#self.normal3_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_prior', True, self.add_weight)
 		
 	def call(self, x):
 
@@ -449,12 +449,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		#dist1 = getattr(tfp.distributions, self.distribution)(self.normal1.distribution.loc, self.normal1.distribution.scale)
 		#dist2 = getattr(tfp.distributions, self.distribution)(self.normal2.distribution.loc, self.normal2.distribution.scale)
 		#dist3 = getattr(tfp.distributions, self.distribution)(self.normal3.distribution.loc, self.normal3.distribution.scale)
-		dist1 = getattr(tfp.distributions, self.distribution)(self.loc1, self.scale1)
-		dist2 = getattr(tfp.distributions, self.distribution)(self.loc2, self.scale2)
-		dist3 = getattr(tfp.distributions, self.distribution)(self.loc3, self.scale3)
+		dist1 = getattr(tfp.distributions, self.distribution)(self.loc1, rate=self.scale1)
+		dist2 = getattr(tfp.distributions, self.distribution)(self.loc2, rate=self.scale2)
+		dist3 = getattr(tfp.distributions, self.distribution)(self.loc3, rate=self.scale3)
 		rand_coefs1 = dist1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs2 = dist2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs3 = dist3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
+		print(rand_coefs1)
+		print(rand_coefs2)
+		print(rand_coefs3)
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal2, self.normal2_prior)))
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
