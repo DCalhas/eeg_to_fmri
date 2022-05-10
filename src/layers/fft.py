@@ -508,9 +508,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			rand_coefs2=cartesian_dist2.sample()#creating random coefficients with random angles and coordinates
 			rand_coefs3=cartesian_dist3.sample()#creating random coefficients with random angles and coordinates
 		elif(self.distribution=="VonMisesFisher"):#learn the angles of the frequency space as well??
-			angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1*2*np.pi, self.angular_scale1)
-			angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2*2*np.pi, self.angular_scale2)
-			angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3*2*np.pi, self.angular_scale3)
+			angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1, self.angular_scale1)
+			angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2, self.angular_scale2)
+			angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3, self.angular_scale3)
 			rand_coefs1=tf.squeeze(tf.matmul(angular_dist1.sample(), tf.transpose(self.real_angle)), axis=-1)#filter real part of the 2D sphere
 			rand_coefs2=tf.squeeze(tf.matmul(angular_dist2.sample(), tf.transpose(self.real_angle)), axis=-1)#filter real part of the 2D sphere
 			rand_coefs3=tf.squeeze(tf.matmul(angular_dist3.sample(), tf.transpose(self.real_angle)), axis=-1)#filter real part of the 2D sphere
