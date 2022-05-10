@@ -351,9 +351,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(distribution==None):
 			distribution="Normal"
-			
+
 		constraint=None
-		initializer=tf.initializers.GlorotUniform()
+		loc_initializer=tf.initializers.GlorotUniform()
 		scale_initializer=tf.initializers.Ones()
 		if(self.distribution=="VonMises"):
 			constraint=tf.keras.constraints.NonNeg()
