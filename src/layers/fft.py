@@ -458,7 +458,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		dist1 = getattr(tfp.distributions, self.distribution)(self.normal1.distribution.loc, self.normal1.distribution.scale)
 		rand_coefs1 = dist1.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		print(rand_coefs1.shape)
-		
+
 		rand_coefs2 = dist2.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		rand_coefs3 = dist3.sample()#sample coefficients $c \sim \mathcal{N}(\mu,\sigma)$
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal1, self.normal1_prior)))
@@ -466,8 +466,10 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		#self.add_loss(tf.identity(tfp.distributions.kl_divergence(self.normal3, self.normal3_prior)))
 		
 		if(self.dependent):
+			print(x_cond.shape)
 			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
 			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
+			print(x_cond.shape)
 			#attention?
 			x_cond = tf.nn.softmax(x_cond)
 			rand_coefs1 = tf.matmul(x_cond, rand_coefs1)#shape = [None, F] = [Batch, F]
