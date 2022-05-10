@@ -410,9 +410,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 									trainable=True)
 
 
-		self.normal1 = tfp.layers.default_mean_field_normal_fn(loc_constraint=loc_constraint)(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_posterior', True, self.add_weight)
-		self.normal2 = tfp.layers.default_mean_field_normal_fn(loc_constraint=loc_constraint)(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_posterior', True, self.add_weight)
-		self.normal3 = tfp.layers.default_mean_field_normal_fn(loc_constraint=loc_constraint)(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_posterior', True, self.add_weight)
+		self.normal1 = tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_posterior', True, self.add_weight)
+		self.normal2 = tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_posterior', True, self.add_weight)
+		self.normal3 = tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_posterior', True, self.add_weight)
 		self.normal1_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]], 'normal1_prior', True, self.add_weight)
 		self.normal2_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]], 'normal2_prior', True, self.add_weight)
 		self.normal3_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 'normal3_prior', True, self.add_weight)
