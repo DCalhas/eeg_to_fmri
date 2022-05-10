@@ -86,7 +86,7 @@ if(variational):
 	assert variational_coefs, "Need to be specified number of coefs, always upsampling for now, set issue to allow better implementation"
 	setting+="_variational"
 if(type(variational_dist) is str):
-	assert variational_dist in ["Normal", "VonMises"]
+	assert variational_dist in ["Normal", "VonMisesFisher"]
 	setting+="_"+variational_dist
 if(type(variational_dependent_h) is int):
 	assert variational, "Needs variational flag set to True"

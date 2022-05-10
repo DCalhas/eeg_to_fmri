@@ -349,13 +349,13 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.posterior_dimension = posterior_dimension
 		self.distribution = distribution
 
-		if(distribution==None):
-			distribution="Normal"
+		if(distribution is None):
+			distribution="Normal"#default
 
 		constraint=None
 		loc_initializer=tf.initializers.GlorotUniform()
 		scale_initializer=tf.initializers.Ones()
-		if(self.distribution=="VonMises"):
+		if(self.distribution=="VonMisesFisher"):
 			constraint=tf.keras.constraints.NonNeg()
 
 		if(self.coefs_perturb):
