@@ -354,7 +354,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			constraint=tf.keras.constraints.NonNeg()
 
 		if(self.coefs_perturb):
-			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=loc_constraint)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
+			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
 			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_weight)
 		if(self.dependent):
 			self.w = self.add_weight('W',
