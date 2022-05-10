@@ -380,13 +380,13 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(self.distribution=="VonMisesFisher"):
 			self.angular_loc1 = self.add_weight('angular_loc1_posterior',
-										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], 2],
+										shape=[self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], posterior_dimension],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
 			self.angular_scale1 = self.add_weight('angular_scale1_posterior',
-										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
+										shape=[self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
 										initializer=scale_initializer,
 										constraint=constraint,
 										dtype=tf.float32,
@@ -394,36 +394,30 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 
 			self.angular_loc2 = self.add_weight('angular_loc2_posterior',
-										shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], 2],
+										shape=[self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], , posterior_dimension],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
 			self.angular_scale2 = self.add_weight('angular_scale2_posterior',
-										shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
+										shape=[self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
 										initializer=scale_initializer,
 										constraint=constraint,
 										dtype=tf.float32,
 										trainable=True)
 
 			self.angular_loc3 = self.add_weight('angular_loc3_posterior',
-										shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2], 2],
+										shape=[self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2], posterior_dimension],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
 			self.angular_scale3 = self.add_weight('angular_scale3_posterior',
-										shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
+										shape=[self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=scale_initializer,
 										constraint=constraint,
 										dtype=tf.float32,
 										trainable=True)
-
-			self.real_angle = self.add_weight('angular_scale3_posterior',
-										shape=[1,2],
-										initializer=tf.constant_initializer(np.array([[1.,1.]])),
-										dtype=tf.float32,
-										trainable=False)
 
 		if(self.distribution=="VonMises"):
 			self.cartesian_loc1 = self.add_weight('cartesian_loc1_posterior',
@@ -512,9 +506,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1, self.angular_scale1)
 			angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2, self.angular_scale2)
 			angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3, self.angular_scale3)
-			rand_coefs1=tf.squeeze(tf.matmul(angular_dist1.sample(), tf.transpose(self.real_angle)), axis=-1)#filter real part of the 2D sphere
-			rand_coefs2=tf.squeeze(tf.matmul(angular_dist2.sample(), tf.transpose(self.real_angle)), axis=-1)#filter real part of the 2D sphere
-			rand_coefs3=tf.squeeze(tf.matmul(angular_dist3.sample(), tf.transpose(self.real_angle)), axis=-1)#filter real part of the 2D sphere
+			rand_coefs1=tf.tranpose(angular_dist1.sample())
+			rand_coefs2=tf.tranpose(angular_dist2.sample())
+			rand_coefs3=tf.tranpose(angular_dist3.sample())
 		else:
 			raise NotImplementedError
 
