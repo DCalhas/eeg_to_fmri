@@ -506,9 +506,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1, self.angular_scale1)
 			angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2, self.angular_scale2)
 			angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3, self.angular_scale3)
-			rand_coefs1=tf.tranpose(angular_dist1.sample())
-			rand_coefs2=tf.tranpose(angular_dist2.sample())
-			rand_coefs3=tf.tranpose(angular_dist3.sample())
+			rand_coefs1=tf.transpose(angular_dist1.sample())
+			rand_coefs2=tf.transpose(angular_dist2.sample())
+			rand_coefs3=tf.transpose(angular_dist3.sample())
 		else:
 			raise NotImplementedError
 
