@@ -369,7 +369,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 								shape=[self.in1*self.in2*self.in3, posterior_dimension],
 								initializer=tf.initializers.GlorotUniform(),
 								dtype=tf.float32,
-								trainable=True)
+								trainable=True)scale_initializer
 
 		self.padded_idct3 = padded_iDCT3D(in1+rand1, in2+rand2, in3+rand3, out1, out2, out3)
 
@@ -419,7 +419,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 										trainable=True)
 
 			self.real_angle = self.add_weight('angular_scale3_posterior',
-										initializer=tf.constant_initializer(p.array([[1.,0.]])),
+										initializer=tf.constant_initializer(np.array([[1.,0.]])),
 										dtype=tf.float32,
 										trainable=False)
 
