@@ -86,7 +86,7 @@ if(variational):
 	assert variational_coefs, "Need to be specified number of coefs, always upsampling for now, set issue to allow better implementation"
 	setting+="_variational"
 if(type(variational_dist) is str):
-	assert variational_dist in ["Normal", "Gamma"]
+	assert variational_dist in ["Normal", "VonMises"]
 	setting+="_"+variational_dist
 if(type(variational_dependent_h) is int):
 	assert variational, "Needs variational flag set to True"
@@ -172,7 +172,8 @@ if(type(resolution_decoder) is float):
 model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
 							batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
 							conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
-							inverse_DFT=variational, DFT=variational, variational_iDFT=variational, variational_coefs=variational_coefs, 
+							inverse_DFT=variational, DFT=variational, variational_dist=variational_dist,
+							variational_iDFT=variational, variational_coefs=variational_coefs, 
 							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
 							aleatoric_uncertainty=aleatoric_uncertainty, low_resolution_decoder=type(resolution_decoder) is float, 
 							resolution_decoder=_resolution_decoder, seed=None, 
