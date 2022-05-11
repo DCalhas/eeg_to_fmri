@@ -503,10 +503,13 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			rand_coefs2=cartesian_dist2.sample()#creating random coefficients with random angles and coordinates
 			rand_coefs3=cartesian_dist3.sample()#creating random coefficients with random angles and coordinates
 		elif(self.distribution=="VonMisesFisher"):#learn the angles of the frequency space as well??
+			tf.print(self.angular_loc1, self.angular_scale1)
 			angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1, self.angular_scale1)
 			angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2, self.angular_scale2)
 			angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3, self.angular_scale3)
+			tf.print(angular_dist1)
 			rand_coefs1=tf.transpose(angular_dist1.sample())
+			tf.print(rand_coefs1)
 			rand_coefs2=tf.transpose(angular_dist2.sample())
 			rand_coefs3=tf.transpose(angular_dist3.sample())
 		else:
