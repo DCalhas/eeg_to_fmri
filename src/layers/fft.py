@@ -4,6 +4,8 @@ import tensorflow_probability as tfp
 
 import numpy as np
 
+from layers import fourier_features #to import _get_default_scale
+
 
 
 
@@ -360,6 +362,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		scale_initializer=tf.initializers.Ones()
 		if(self.distribution=="VonMisesFisher" or self.distribution=="VonMises"):
 			constraint=tf.keras.constraints.NonNeg()
+			scale_initializer=tf.initializers.constant_initializer(0.01)
 
 		if(self.coefs_perturb):
 			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
@@ -421,7 +424,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 										dtype=tf.float32,
 										trainable=True)
 
-		if(self.distribution=="VonMises"):
+			#if(self.distribution=="VonMises"):
 			self.cartesian_loc1 = self.add_weight('cartesian_loc1_posterior',
 										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
 										initializer=loc_initializer,
@@ -462,6 +465,14 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 										dtype=tf.float32,
 										trainable=True)
 
+
+			self.scale = self.add_weight(name='scale',
+												shape=(1,),
+												dtype=tf.float32, 
+												initializer= tf.constant_initializer(fourier_features._get_default_scale(tf.initializers.GlorotUniform(), self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2])),
+												constraint='NonNeg',
+												trainable=True)
+
 	def call(self, x):
 
 		rand_paddings1 = [[0,0],
@@ -501,9 +512,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			cartesian_dist1 = tfp.distributions.VonMises(self.cartesian_loc1, self.cartesian_scale1)
 			cartesian_dist2 = tfp.distributions.VonMises(self.cartesian_loc2, self.cartesian_scale2)
 			cartesian_dist3 = tfp.distributions.VonMises(self.cartesian_loc3, self.cartesian_scale3)
-			rand_coefs1=cartesian_dist1.sample()#creating random coefficients with random angles and coordinates
-			rand_coefs2=cartesian_dist2.sample()#creating random coefficients with random angles and coordinates
-			rand_coefs3=cartesian_dist3.sample()#creating random coefficients with random angles and coordinates
+			rand_coefs1=cartesian_dist1.sample()
+			rand_coefs2=cartesian_dist2.sample()
+			rand_coefs3=cartesian_dist3.sample()
 		elif(self.distribution=="VonMisesFisher"):#learn the angles of the frequency space as well??
 			angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1, self.angular_scale1)
 			angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2, self.angular_scale2)
@@ -511,6 +522,16 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			rand_coefs1=angular_dist1.sample()
 			rand_coefs2=angular_dist2.sample()
 			rand_coefs3=angular_dist3.sample()
+
+			cartesian_dist1 = tfp.distributions.VonMises(self.cartesian_loc1, self.cartesian_scale1)
+			cartesian_dist2 = tfp.distributions.VonMises(self.cartesian_loc2, self.cartesian_scale2)
+			cartesian_dist3 = tfp.distributions.VonMises(self.cartesian_loc3, self.cartesian_scale3)
+			rand_coefs1=rand_coefs1*tf.cos(cartesian_dist1.sample())#creating random coefficients with random angles and coordinates
+			rand_coefs2=rand_coefs2*tf.cos(cartesian_dist2.sample())#creating random coefficients with random angles and coordinates
+			rand_coefs3=rand_coefs3*tf.cos(cartesian_dist3.sample())#creating random coefficients with random angles and coordinates
+			#rand_coefs1=rand_coefs1*tf.cos(self.scale*cartesian_dist1.sample())#creating random coefficients with random angles and coordinates
+			#rand_coefs2=rand_coefs2*tf.cos(self.scale*cartesian_dist2.sample())#creating random coefficients with random angles and coordinates
+			#rand_coefs3=rand_coefs3*tf.cos(self.scale*cartesian_dist3.sample())#creating random coefficients with random angles and coordinates
 		else:
 			raise NotImplementedError
 

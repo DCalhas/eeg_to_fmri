@@ -35,7 +35,6 @@ parser.add_argument('-fourier_features', action="store_true", help="Fourier feat
 parser.add_argument('-random_fourier', action="store_true", help="Use random fourier features projection")
 parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 parser.add_argument('-batch_size', default=4, type=int, help="Batch size")
-parser.add_argument('-learning_rate', default=0.001, type=float, help="Learning rate")#to remove
 parser.add_argument('-na_path_eeg', default=str(Path.home())+"/eeg_to_fmri/na_models_eeg", type=str, help="Neural architectures path for the EEG encoder.")
 parser.add_argument('-na_path_fmri', default=str(Path.home())+"/eeg_to_fmri/na_models_fmri", type=str, help="Neural architectures path for the fMRI encoder.")
 parser.add_argument('-gpu_mem', default=4000, type=int, help="GPU memory limit")
@@ -60,7 +59,6 @@ random_fourier=opt.random_fourier
 conditional_attention_style=opt.conditional_attention_style
 epochs=opt.epochs
 batch_size=opt.batch_size
-learning_rate=opt.learning_rate
 na_path_eeg=opt.na_path_eeg
 na_path_fmri=opt.na_path_fmri
 gpu_mem=opt.gpu_mem
