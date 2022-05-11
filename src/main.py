@@ -86,10 +86,10 @@ if(variational):
 if(type(variational_dist) is str):
 	assert variational_dist in ["Normal", "VonMises"]
 	setting+="_"+variational_dist
+if(variational_dependent_h is None):
+	variational_dependent_h=1
 if(variational_dependent_h > 1 and variational):
 	setting+="_dependent_h_"+str(variational_dependent_h)
-else:
-	variational_dependent_h = 1
 if(type(variational_coefs) is str):
 	assert variational, "Only done with variational flag set to True"
 	variational_coefs=tuple(map(int ,variational_coefs.split(",")))
