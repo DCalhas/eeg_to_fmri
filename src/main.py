@@ -133,7 +133,7 @@ train_data, test_data = process_utils.load_data_eeg_fmri(dataset, n_individuals,
 
 #setup shapes and data loaders
 eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]
-train_set = tf.data.Dataset.from_tensor_slices(train_data).batch(batch_size)
+train_set = tf.data.Dataset.from_tensor_slices(train_data).shuffle(1).batch(batch_size)
 test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
 
 #load model
