@@ -88,6 +88,8 @@ if(type(variational_dist) is str):
 	setting+="_"+variational_dist
 if(variational_dependent_h > 1 and variational):
 	setting+="_dependent_h_"+str(variational_dependent_h)
+else:
+	variational_dependent_h = 1
 if(type(variational_coefs) is str):
 	assert variational, "Only done with variational flag set to True"
 	variational_coefs=tuple(map(int ,variational_coefs.split(",")))
