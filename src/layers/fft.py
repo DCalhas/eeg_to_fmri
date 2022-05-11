@@ -526,12 +526,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			cartesian_dist1 = tfp.distributions.VonMises(self.cartesian_loc1, self.cartesian_scale1)
 			cartesian_dist2 = tfp.distributions.VonMises(self.cartesian_loc2, self.cartesian_scale2)
 			cartesian_dist3 = tfp.distributions.VonMises(self.cartesian_loc3, self.cartesian_scale3)
-			rand_coefs1=rand_coefs1*tf.cos(cartesian_dist1.sample())#creating random coefficients with random angles and coordinates
-			rand_coefs2=rand_coefs2*tf.cos(cartesian_dist2.sample())#creating random coefficients with random angles and coordinates
-			rand_coefs3=rand_coefs3*tf.cos(cartesian_dist3.sample())#creating random coefficients with random angles and coordinates
-			#rand_coefs1=rand_coefs1*tf.cos(self.scale*cartesian_dist1.sample())#creating random coefficients with random angles and coordinates
-			#rand_coefs2=rand_coefs2*tf.cos(self.scale*cartesian_dist2.sample())#creating random coefficients with random angles and coordinates
-			#rand_coefs3=rand_coefs3*tf.cos(self.scale*cartesian_dist3.sample())#creating random coefficients with random angles and coordinates
+			rand_coefs1=rand_coefs1*tf.cos(self.scale*cartesian_dist1.sample())#creating random coefficients with random angles and coordinates
+			rand_coefs2=rand_coefs2*tf.cos(self.scale*cartesian_dist2.sample())#creating random coefficients with random angles and coordinates
+			rand_coefs3=rand_coefs3*tf.cos(self.scale*cartesian_dist3.sample())#creating random coefficients with random angles and coordinates
 		else:
 			raise NotImplementedError
 
