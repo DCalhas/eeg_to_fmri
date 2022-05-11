@@ -360,7 +360,6 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		scale_initializer=tf.initializers.Ones()
 		if(self.distribution=="VonMisesFisher" or self.distribution=="VonMises"):
 			constraint=tf.keras.constraints.NonNeg()
-			scale_initializer=tf.constant_initializer(0.5)
 
 		if(self.coefs_perturb):
 			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
@@ -380,13 +379,14 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(self.distribution=="VonMisesFisher"):
 			self.angular_loc1 = self.add_weight('angular_loc1_posterior',
-										shape=[self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], posterior_dimension],
+										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
 			self.angular_scale1 = self.add_weight('angular_scale1_posterior',
-										shape=[self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
+										#shape=[self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
+										shape=[posterior_dimension],
 										initializer=scale_initializer,
 										constraint=constraint,
 										dtype=tf.float32,
@@ -394,26 +394,28 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 
 			self.angular_loc2 = self.add_weight('angular_loc2_posterior',
-										shape=[self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], posterior_dimension],
+										shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
 			self.angular_scale2 = self.add_weight('angular_scale2_posterior',
-										shape=[self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
+										#shape=[self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
+										shape=[posterior_dimension],
 										initializer=scale_initializer,
 										constraint=constraint,
 										dtype=tf.float32,
 										trainable=True)
 
 			self.angular_loc3 = self.add_weight('angular_loc3_posterior',
-										shape=[self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2], posterior_dimension],
+										shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
 			self.angular_scale3 = self.add_weight('angular_scale3_posterior',
-										shape=[self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
+										#shape=[self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
+										shape=[posterior_dimension],
 										initializer=scale_initializer,
 										constraint=constraint,
 										dtype=tf.float32,
@@ -503,15 +505,12 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			rand_coefs2=cartesian_dist2.sample()#creating random coefficients with random angles and coordinates
 			rand_coefs3=cartesian_dist3.sample()#creating random coefficients with random angles and coordinates
 		elif(self.distribution=="VonMisesFisher"):#learn the angles of the frequency space as well??
-			tf.print(self.angular_loc1, self.angular_scale1)
 			angular_dist1 = tfp.distributions.VonMisesFisher(self.angular_loc1, self.angular_scale1)
 			angular_dist2 = tfp.distributions.VonMisesFisher(self.angular_loc2, self.angular_scale2)
 			angular_dist3 = tfp.distributions.VonMisesFisher(self.angular_loc3, self.angular_scale3)
-			tf.print(angular_dist1)
-			rand_coefs1=tf.transpose(angular_dist1.sample())
-			tf.print(rand_coefs1)
-			rand_coefs2=tf.transpose(angular_dist2.sample())
-			rand_coefs3=tf.transpose(angular_dist3.sample())
+			rand_coefs1=angular_dist1.sample()
+			rand_coefs2=angular_dist2.sample()
+			rand_coefs3=angular_dist3.sample()
 		else:
 			raise NotImplementedError
 
