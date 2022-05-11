@@ -362,7 +362,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		scale_initializer=tf.initializers.Ones()
 		if(self.distribution=="VonMisesFisher" or self.distribution=="VonMises"):
 			constraint=tf.keras.constraints.NonNeg()
-			scale_initializer=tf.initializers.constant_initializer(0.01)
+			#scale_initializer=tf.constant_initializer(0.01)
 
 		if(self.coefs_perturb):
 			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
