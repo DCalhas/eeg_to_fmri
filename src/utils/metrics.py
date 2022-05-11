@@ -205,4 +205,17 @@ class Sharpness:
 
 		
 
+"""
+
+	Inputs:
+		* tf.data.Dataset
+		* tf.keras.Model
+"""
+def sharpness(dataset, model):
+
+	mtr_sharpness=None
+	sh=0.0
+
+	for x,y in dataset.repeat(1):
+		raise NotImplementedError
 
