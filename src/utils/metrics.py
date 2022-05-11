@@ -2,9 +2,13 @@ import numpy as np
 
 import tensorflow as tf
 
+import tensorflow_probability as tfp
+
 from scipy.stats import ttest_1samp
 
 from utils import bnn_utils
+
+from layers import fft
 
 
 """
@@ -143,3 +147,62 @@ def fid(data, model):
 def ttest_1samp_r(a, m, axis=0, **kwargs):
 
 	return 1-ttest_1samp(a, m, axis=axis, **kwargs).pvalue
+
+
+"""
+Metric for uncertainty
+
+Keskar et al. 2017
+https://arxiv.org/pdf/1609.04836.pdf - On large-batch training for deep learning: Generalization gap and sharp minima 
+
+Example:
+
+>>> import tensorflow as tf
+>>> import tensorflow_probability as tfp
+>>> from utils.metrics import Sharpness
+>>> fmri=tf.ones((1,64,64,30,1))
+>>> eeg=tf.ones((1,64,134,10,1))
+>>> model=None
+>>> sharpness=Sharpness(eeg.shape[1:-1], fmri.shape[1:-1], model)
+>>> sharpness(eeg, fmri)
+"""
+class Sharpness:
+
+
+	"""
+		Inputs: 
+			* tuple - len=3
+			* tuple - len=3
+			* tf.keras.Model
+			* tuple
+		Outputs:
+			* tf.tensor
+	"""
+	def __init__(self, x_shape, y_shape, model, top_resolution=(14,14,7)):
+
+		assert len(x_shape)==3 and len(y_shape)==3
+
+		self.x_shape=x_shape
+		self.y_shape=y_shape
+		self.model=model
+		self.top_resolution=top_resolution
+		self.dct = fft.DCT3D(*y_shape)
+		self.idct = fft.iDCT3D(*self.top_resolution)
+		self.flatten = tf.keras.layers.Flatten()
+		self.A = tf.initializers.RandomNormal()((x_shape[0]*x_shape[1]*x_shape[2], top_resolution[0]*top_resolution[1]*top_resolution[2]))
+
+	def __call__(self, X, Y):
+		y = self.flatten(self.idct(self.dct(Y[:,:,:,:,0])[:,:self.top_resolution[0],:self.top_resolution[1],:self.top_resolution[2]]))
+		A_y = tf.matmul(y, tf.transpose(self.A))
+		A_y = tf.expand_dims(tf.reshape(A_y, (tf.shape(A_y)[0],)+self.x_shape), axis=-1)
+		
+		raise NotImplementedError
+
+		y_hat = self.model(X)
+		
+		#return ((model(X-A_y)-y_hat)/y_hat)*100
+		return tf.math.abs(((self.model(X-A_y)-y_hat)/y_hat)*100)
+
+		
+
+
