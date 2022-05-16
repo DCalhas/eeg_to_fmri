@@ -357,13 +357,10 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(distribution is None):
 			distribution="Normal"#default
 
-		constraint=None
 		loc_initializer=tf.initializers.GlorotUniform()
 		scale_initializer=tf.initializers.Ones()
-		if(self.distribution=="VonMises"):
-			constraint=tf.keras.constraints.NonNeg()
-			#scale_initializer=tf.constant_initializer(0.01)
-
+		constraint=tf.keras.constraints.NonNeg()
+		
 		if(self.coefs_perturb):
 			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
 			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_weight)

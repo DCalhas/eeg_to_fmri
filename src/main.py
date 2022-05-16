@@ -101,8 +101,6 @@ if(type(resolution_decoder) is float):
 	assert resolution_decoder > 1, "Resolution decoder needs to be \in [1,+\infty]"
 	assert variational, "For now only done with variational implementation"
 	setting+="_res_"+"{:.1f}".format(resolution_decoder)
-if(aleatoric_uncertainty):
-	assert variational, "For now only done with variational implementation"
 
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
