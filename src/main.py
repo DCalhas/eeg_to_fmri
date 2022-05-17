@@ -177,7 +177,7 @@ model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_cha
 							n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
 model.build(eeg_shape, fmri_shape)
 model.compile(optimizer=optimizer)
-loss_fn = list(losses_utils.LOSS_FNS.values())[int(variational)]#if variational get loss fn at index 1
+loss_fn = list(losses_utils.LOSS_FNS.values())[int(aleatoric_uncertainty)]#if variational get loss fn at index 1
 
 #train model
 history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
@@ -187,8 +187,8 @@ if(mode=="metrics"):
 	if(not os.path.exists(metrics_path+"/"+ setting+"/metrics")):
 		os.makedirs(metrics_path+"/"+ setting+"/metrics")
 
-	rmse_pop = metrics.rmse(test_set, model, variational=variational, T=T)
-	ssim_pop = metrics.ssim(test_set, model, variational=variational, T=T)
+	rmse_pop = metrics.rmse(test_set, model, variational=aleatoric_uncertainty, T=T)
+	ssim_pop = metrics.ssim(test_set, model, variational=aleatoric_uncertainty, T=T)
 	print("RMSE: ", np.mean(rmse_pop), "\pm", np.std(rmse_pop))
 	print("SSIM: ", np.mean(ssim_pop), "\pm", np.std(ssim_pop))
 	#compute p values against saved metrics
