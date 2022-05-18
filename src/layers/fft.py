@@ -419,13 +419,6 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 										trainable=True)
 
 
-			#self.scale = self.add_weight(name='scale',
-			#							shape=(1,),
-			#							dtype=tf.float32, 
-			#							initializer= tf.constant_initializer(fourier_features._get_default_scale(tf.initializers.GlorotUniform(), self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2])),
-			#							constraint='NonNeg',
-			#							trainable=True)
-
 	def call(self, x):
 
 		rand_paddings1 = [[0,0],
@@ -459,15 +452,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			cartesian_dist1 = tfp.distributions.VonMises(self.cartesian_loc1, self.cartesian_scale1)
 			cartesian_dist2 = tfp.distributions.VonMises(self.cartesian_loc2, self.cartesian_scale2)
 			cartesian_dist3 = tfp.distributions.VonMises(self.cartesian_loc3, self.cartesian_scale3)
-			rand_coefs1=cartesian_dist1.sample()
-			rand_coefs2=cartesian_dist2.sample()
-			rand_coefs3=cartesian_dist3.sample()
+			rand_coefs1=tf.cos(cartesian_dist1.sample())
+			rand_coefs2=tf.cos(cartesian_dist2.sample())
+			rand_coefs3=tf.cos(cartesian_dist3.sample())
 
 		if(self.dependent):
 			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
 			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
 			#attention?
-			x_cond = tf.nn.softmax(x_cond)
+			#x_cond = tf.nn.softmax(x_cond)
 			rand_coefs1 = tf.matmul(x_cond, rand_coefs1)#shape = [None, F] = [Batch, F]
 			rand_coefs2 = tf.matmul(x_cond, rand_coefs2)#shape = [None, F] = [Batch, F]
 			rand_coefs3 = tf.matmul(x_cond, rand_coefs3)#shape = [None, F] = [Batch, F]
