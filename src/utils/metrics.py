@@ -197,20 +197,20 @@ class Sharpness:
 		A_y = tf.expand_dims(tf.reshape(A_y, (tf.shape(A_y)[0],)+self.x_shape), axis=-1)
 		
 		y_hat = self.model(X,Y)
-        
-        if(type(y_hat) is list):
-            y_hat=y_hat[0]
-            if(type(y_hat) is list):
-                y_hat=y_hat[0]
-        
-        y_hat_Ay = self.model(X-A_y, Y)
-        if(type(y_hat_Ay) is list):
-            y_hat_Ay=y_hat_Ay[0]
-            if(type(y_hat_Ay) is list):
-                y_hat_Ay=y_hat_Ay[0]
-                
-        #return ((model(X-A_y)-y_hat)/y_hat)*100
-        return tf.reduce_mean(tf.math.abs(((y_hat_Ay-y_hat)/(1+y_hat))*100))
+		
+		if(type(y_hat) is list):
+			y_hat=y_hat[0]
+			if(type(y_hat) is list):
+				y_hat=y_hat[0]
+		
+		y_hat_Ay = self.model(X-A_y, Y)
+		if(type(y_hat_Ay) is list):
+			y_hat_Ay=y_hat_Ay[0]
+			if(type(y_hat_Ay) is list):
+				y_hat_Ay=y_hat_Ay[0]
+				
+		#return ((model(X-A_y)-y_hat)/y_hat)*100
+		return tf.reduce_mean(tf.math.abs(((y_hat_Ay-y_hat)/(1+y_hat))*100))
 
 
 
@@ -223,12 +223,12 @@ class Sharpness:
 def sharpness(dataset, model):
 
 	mtr_sharpness=None
-    sh=np.array([], dtype=np.float64)
-    
-    for x,y in dataset.repeat(1):
-        if(mtr_sharpness is None):
-            mtr_sharpness=Sharpness(x.shape[1:-1], y.shape[1:-1], model)
-        
-        sh = np.append(sh, [mtr_sharpness(x,y).numpy()], axis=0)
-        
-    return sh
+	sh=np.array([], dtype=np.float64)
+	
+	for x,y in dataset.repeat(1):
+		if(mtr_sharpness is None):
+			mtr_sharpness=Sharpness(x.shape[1:-1], y.shape[1:-1], model)
+		
+		sh = np.append(sh, [mtr_sharpness(x,y).numpy()], axis=0)
+		
+	return sh
