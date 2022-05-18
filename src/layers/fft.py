@@ -460,7 +460,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
 			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
 			#attention?
-			#x_cond = tf.nn.softmax(x_cond)
+			x_cond = tf.nn.softmax(x_cond)
 			rand_coefs1 = tf.matmul(x_cond, rand_coefs1)#shape = [None, F] = [Batch, F]
 			rand_coefs2 = tf.matmul(x_cond, rand_coefs2)#shape = [None, F] = [Batch, F]
 			rand_coefs3 = tf.matmul(x_cond, rand_coefs3)#shape = [None, F] = [Batch, F]
