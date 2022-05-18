@@ -189,8 +189,12 @@ if(mode=="metrics"):
 
 	rmse_pop = metrics.rmse(test_set, model, variational=aleatoric_uncertainty, T=T)
 	ssim_pop = metrics.ssim(test_set, model, variational=aleatoric_uncertainty, T=T)
+	if(aleatoric_uncertainty):
+		sharpness = metrics.sharpness(test_set, model)
 	print("RMSE: ", np.mean(rmse_pop), "\pm", np.std(rmse_pop))
 	print("SSIM: ", np.mean(ssim_pop), "\pm", np.std(ssim_pop))
+	if(aleatoric_uncertainty):
+		print("SHARPNESS: ", np.mean(sharpness), "\pm", np.std(sharpness))
 	#compute p values against saved metrics
 	for f in os.listdir(metrics_path):
 		if("rmse" in f):
