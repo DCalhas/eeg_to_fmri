@@ -202,6 +202,21 @@ Well I do not know, but I can specify how the different datasets are being setup
 
 ## Acknowledgements
 
+
+## Cite this repository
+
+If you use this software in your work, please cite it using the following metadata:
+
+```
+@article{calhas2022eeg,
+  title={EEG to fMRI Synthesis Benefits from Attentional Graphs of Electrode Relationships},
+  author={Calhas, David and Henriques, Rui},
+  journal={arXiv preprint arXiv:2203.03481},
+  year={2022}
+}
+```
+
+
 ## License
 
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
