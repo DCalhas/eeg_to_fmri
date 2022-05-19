@@ -52,6 +52,16 @@ The main.py file located at src/main.py is the script used for retrieve the resu
 >	- *T*: An integer specifying the [Monte Carlo iterations](https://en.wikipedia.org/wiki/Monte_Carlo_method) to gather the results of variational models.
 >	- *seed*: An integer specifying the random seed to use for random generator.
 
+#### Examples:
+
+The command to retrieve metrics of the EEG to fMRI model on the NODDI dataset, with **topographical attention**, **random fourier features**:
+```
+python main.py metrics 01 -topographical_attention -fourier_features -random_fourier
+```
+Another example of retrieving the plots of each fMRI synthesized view with the EEG to fMRI model trained on the CN-EPFL dataset, with no topographical attention and no fourier feature projection:
+```
+python main.py quality 03
+```
 
 ## Acknowledgements
 
