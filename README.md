@@ -190,6 +190,7 @@ $W$ represents the attention weights, that are then normalized according to $E =
 
 #### Resnet Block Module
 
+This module allows an easy integration of neural architecture specifications that were generated automatically, according to the methodology described in this [paper](https://openreview.net/forum?id=TCvkaP15O7e).
 
 ## Default model training and test run
 
