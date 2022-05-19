@@ -62,6 +62,49 @@ Another example of retrieving the plots of each fMRI synthesized view with the E
 ```
 python main.py quality 03
 ```
+With the latter however you will not be saving the results, so do not forget to add the **save_metrics** flag and the **metrics_path** specification:
+```
+python main.py quality 03 -save_metrics -metrics_path /tmp/.
+```
+
+### Layers
+
+In this section we will go over the layers that were implemented in this repository.
+
+#### FFT Module
+
+This module implements various [Discrete Cosine Transform](https://en.wikipedia.org/wiki/Discrete_cosine_transform) layers in tensorflow, namely:
+
+- Discrete Cosine Transform 3-Dimensional
+- inverse Discrete Cosine Transform 3-Dimensional
+
+
+#### Random Fourier Module
+
+
+
+#### Topographical Attention Module
+
+
+
+#### Mask Module
+
+
+
+#### Resnet Block Module
+
+
+
+
+
+## Default model training and test run
+
+TODO
+
+
+## How do I test this research on my dataset?
+
+Well I do not know, but I can specify how the different datasets are being setup. Please feel free to replicate upon this.
 
 ## Acknowledgements
 
