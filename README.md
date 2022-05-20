@@ -186,11 +186,25 @@ $W$ represents the attention weights, that are then normalized according to $E =
 
 #### Mask Module
 
+In this module one can find implementations of layers that performs segmentation over a 3-dimensional MRI volume representation.
 
+##### *MRICircleMask* MRI Volume Circle Mask
+
+This is a naive implementation of a 3D circle brain mask that is fixed for all instances.
+
+> Arguments:
+>	- *input_shape*: tuple, giving the dimensions of the fMRI volume, can be of length 5 (meaning the batch dimension is included along with the channels dimension, the channels dimension here refers to the the convolutional filters dimension) or of length 4 (meaning the batch dimension is not included);
+>	- *radius*: float, specifying the size of the circle brain mask;
+>
+> Methods:
+>	- *call*: returns the input representation filtered with the circle 3D mask designed in this layer;
 
 #### Resnet Block Module
 
 This module allows an easy integration of neural architecture specifications that were generated automatically, according to the methodology described in this [paper](https://openreview.net/forum?id=TCvkaP15O7e).
+
+
+
 
 ## Default model training and test run
 
