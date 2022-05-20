@@ -223,7 +223,7 @@ This layer specifically incorporates kernel and stride size information for each
 >	- *kwargs*: dict, additional arguments;
 >
 > Methods:
->	- *__init__*: initializes the class;
+>	- *\_\_init\_\_*: initializes the class;
 >	- *set_layers*: resembles the build method of a tf.keras.layers.Layer;
 >	- *call*: returns the output of a forward pass of a complete resnet-18 block;
 >	- *lrp*: propagates relevances from the output to the input of this layer block;
