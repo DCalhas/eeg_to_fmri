@@ -82,7 +82,7 @@ This module implements various [Discrete Cosine Transform](https://en.wikipedia.
 
 ##### *DCT3D* Discrete Cosine Transform 3-Dimensional
 
-Implements the discrete cosine transform according to $`X \in \mathbb{R}^N: X_k = \mathcal{F}(x)_k = \sum_{n=0}^{N-1} x_n cos\left[ \frac{\pi (2n+1)k}{2N} \right], \forall k \in \{0, \dots, N-1 \}`$.
+Implements the discrete cosine transform according to $X \in \mathbb{R}^N: X_k = \mathcal{F}(x)_k = \sum_{n=0}^{N-1} x_n cos\left[ \frac{\pi (2n+1)k}{2N} \right], \forall k \in \{0, \dots, N-1 \}$.
 
 > Arguments:
 >	- *N1*: int, specifying the first dimension;
@@ -97,7 +97,7 @@ Implements the discrete cosine transform according to $`X \in \mathbb{R}^N: X_k 
 
 ##### *iDCT3D* Inverse Discrete Cosine Transform 3-Dimensional
 
-Implements the discrete cosine transform according to $`x_k = \mathcal{F}^{-1}(X)_k = X_0 + 2\sum_{n=0}^{N-1} X_n cos\left[ \frac{\pi n(2k+1)}{2N} \right], \forall k \in \{0, \dots, N-1 \}`$.
+Implements the discrete cosine transform according to $x_k = \mathcal{F}^{-1}(X)_k = X_0 + 2\sum_{n=0}^{N-1} X_n cos\left[ \frac{\pi n(2k+1)}{2N} \right], \forall k \in \{0, \dots, N-1 \}$.
 
 > Arguments:
 >	- *N1*: int, specifying the first dimension;
