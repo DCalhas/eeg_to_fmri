@@ -231,6 +231,12 @@ This layer specifically incorporates kernel and stride size information for each
 >	- *from_config*: returns a *ResBlock* instanced class with the configuration received;
 
 
+## Models
+
+### EEG to fMRI
+
+
+
 ## Default model training and test run
 
 TODO
