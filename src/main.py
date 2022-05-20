@@ -187,6 +187,7 @@ if(mode=="metrics"):
 	if(not os.path.exists(metrics_path+"/"+ setting+"/metrics")):
 		os.makedirs(metrics_path+"/"+ setting+"/metrics")
 
+	res_pop = metrics.residues(test_set, model, variational=aleatoric_uncertainty, T=T)
 	rmse_pop = metrics.rmse(test_set, model, variational=aleatoric_uncertainty, T=T)
 	ssim_pop = metrics.ssim(test_set, model, variational=aleatoric_uncertainty, T=T)
 	if(aleatoric_uncertainty):
@@ -204,6 +205,8 @@ if(mode=="metrics"):
 			other_pop_ssim = np.load(metrics_path+"/"+f, allow_pickle=True)
 			print("p-value against", f.split("/")[-1][:-4], ttest_ind(ssim_pop, other_pop_ssim).pvalue)
 	if(save_metrics):
+		with open(metrics_path+"/"+setting+"/metrics"+"/res_"+"seed_"+str(seed)+".npy", 'wb') as f:
+			np.save(f, res_pop)
 		with open(metrics_path+"/"+setting+"/metrics"+"/rmse_"+"seed_"+str(seed)+".npy", 'wb') as f:
 			np.save(f, rmse_pop)
 		with open(metrics_path+"/"+setting+"/metrics"+"/ssim_"+"seed_"+str(seed)+".npy", 'wb') as f:

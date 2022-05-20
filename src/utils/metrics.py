@@ -91,6 +91,37 @@ def rmse(data, model, variational=False, T=10):
 
 
 """
+rmse:
+	Inputs:
+		* data - tf.data.DataLoader
+		* model - tf.keras.Model
+		* variational - bool
+		* T - int
+	Outputs:
+		* Residues values - list
+		* Residues mean - float
+"""
+def residues(data, model, variational=False, T=10):
+	_residues = []
+
+	for instance_x, instance_y in data.repeat(1):
+		if(variational):
+			y_pred = bnn_utils.predict_MC(model, (instance_x, instance_y), T=T)
+		else:
+			y_pred = model(instance_x, instance_y)
+
+		if(type(y_pred) is list):
+			if(type(y_pred[0]) is list):
+				y_pred = y_pred[0][0]
+			else:
+				y_pred = y_pred[0]
+
+		_residues += [(y_pred-instance_y)]
+
+	return _residues
+
+
+"""
 fid:
 	Inputs:
 		* data - tf.data.DataLoader

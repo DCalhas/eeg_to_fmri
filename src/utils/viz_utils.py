@@ -735,7 +735,6 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
         C0 = np.full_like(Cp1, Cp1*Cp2*((Cp1)+(Cp2))/2)
         Cp2_ = np.triu(Cp2)
         np.fill_diagonal(Cp2_, 0)
-        Cp2_
         p_values_range=Cp2#place holder that can stay to emulate pvalues
         Legend = np.dstack((np.concatenate((p_values_range*Cp1, Cp2), axis=1)[:,::-1],
                             np.concatenate((Cp2, p_values_range*Cp1[:,::-1], ), axis=1)[:,::-1],
