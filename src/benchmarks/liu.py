@@ -43,7 +43,7 @@ class Liu_et_al(tf.keras.Model):
 		self.variational=variational
 		self.fn=tf.keras.layers.Conv1D
 		if(self.variational):
-			self.fn=tfp.layers.Conv1DFlipout
+			self.fn=tfp.layers.Convolution1DFlipout
 
 		self.build_model()
 
