@@ -365,7 +365,17 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
 			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_weight)
 		if(self.dependent):
-			self.w = self.add_weight('W',
+			self.w1 = self.add_weight('W1',
+								shape=[self.in1*self.in2*self.in3, posterior_dimension],
+								initializer=tf.initializers.GlorotUniform(),
+								dtype=tf.float32,
+								trainable=True)
+			self.w2 = self.add_weight('W2',
+								shape=[self.in1*self.in2*self.in3, posterior_dimension],
+								initializer=tf.initializers.GlorotUniform(),
+								dtype=tf.float32,
+								trainable=True)
+			self.w3 = self.add_weight('W3',
 								shape=[self.in1*self.in2*self.in3, posterior_dimension],
 								initializer=tf.initializers.GlorotUniform(),
 								dtype=tf.float32,
@@ -457,13 +467,16 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			rand_coefs3=tf.cos(cartesian_dist3.sample())
 
 		if(self.dependent):
-			x_cond = tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w)
-			x_cond = tf.squeeze(x_cond, axis=1)#shape = [None, H] = [Batch, dependent_dimension]
+			x_cond1 = tf.squeeze(tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w1), axis=1)
+			x_cond2 = tf.squeeze(tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w2), axis=1)
+			x_cond3 = tf.squeeze(tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w3), axis=1)
 			#attention?
-			x_cond = tf.nn.softmax(x_cond)
-			rand_coefs1 = tf.matmul(x_cond, rand_coefs1)#shape = [None, F] = [Batch, F]
-			rand_coefs2 = tf.matmul(x_cond, rand_coefs2)#shape = [None, F] = [Batch, F]
-			rand_coefs3 = tf.matmul(x_cond, rand_coefs3)#shape = [None, F] = [Batch, F]
+			x_cond1 = tf.nn.softmax(x_cond1)
+			x_cond2 = tf.nn.softmax(x_cond2)
+			x_cond3 = tf.nn.softmax(x_cond3)
+			rand_coefs1 = tf.matmul(x_cond1, rand_coefs1)#shape = [None, F] = [Batch, F]
+			rand_coefs2 = tf.matmul(x_cond2, rand_coefs2)#shape = [None, F] = [Batch, F]
+			rand_coefs3 = tf.matmul(x_cond3, rand_coefs3)#shape = [None, F] = [Batch, F]
 
 		rand_coefs1 = tf.reshape(rand_coefs1, (tf.shape(rand_coefs1)[0],)+self.shape_normal1)
 		rand_coefs2 = tf.reshape(rand_coefs2, (tf.shape(rand_coefs2)[0],)+self.shape_normal2)
