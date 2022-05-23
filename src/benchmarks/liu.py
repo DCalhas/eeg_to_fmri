@@ -1,6 +1,8 @@
 import tensorflow as tf
 
-from utils import data_utils, fmri_utils, eeg_utils
+import tensorflow_probability as tfp
+
+from utils import data_utils, fmri_utils, eeg_utils, losses_utils
 
 import numpy as np
 
@@ -26,7 +28,7 @@ class Liu_et_al(tf.keras.Model):
 	max number of channels to run on the personal computer is 4
 	standard number is 16
 	"""
-	def __init__(self, eeg_shape, fmri_shape, n_channels=4, latent_dim=256):
+	def __init__(self, eeg_shape, fmri_shape, n_channels=4, latent_dim=256, variational=False):
 		super(Liu_et_al, self).__init__()
 
 		self.eeg_shape = eeg_shape
@@ -37,6 +39,11 @@ class Liu_et_al(tf.keras.Model):
 
 		self.n_channels=n_channels
 		self.latent_dim=latent_dim
+
+		self.variational=variational
+		self.fn=tf.keras.layers.Conv1D
+		if(self.variational):
+			self.fn=tfp.keras.layers.Conv1DFlipout
 
 		self.build_model()
 
@@ -62,11 +69,14 @@ class Liu_et_al(tf.keras.Model):
 		x = tf.keras.layers.Reshape((self.time_dimension,self.latent_dim))(x)
 		#now goes to the time slicing part 16*16*7=1792
 		for i in range(5):
-			x = tf.keras.layers.Conv1D(self.latent_dim*self.n_channels, kernel_size=1, strides=1)(x)
-		x = tf.keras.layers.Conv1D(self.spatial_dimension, kernel_size=1, strides=1)(x)
+			x = self.function(self.latent_dim*self.n_channels, kernel_size=1, strides=1)(x)
+		x = self.function(self.spatial_dimension, kernel_size=1, strides=1)(x)
 
 		x = tf.keras.layers.Reshape(self.fmri_shape)(x)
 		
+		if(self.variational):
+			x = [x, tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)]
+
 		self.nn=tf.keras.Model(input_shape, x)
 
 	"""
@@ -129,3 +139,11 @@ class Liu_et_al(tf.keras.Model):
 
 	def __evaluate__(self, test_set, metric_fn):
 		raise NotImplementedError
+
+	def get_loss(self):
+		if(self.variational):
+			return self.variational_loss
+		return losses_utils.mae
+
+	def variational_loss(self, y_true, y_pred):
+		return tf.reduce_mean((1/(y_pred[1]+losses_utils.NON_DIVISION_ZERO))*tf.math.abs(y_pred[0] - y_true)+tf.math.log(2*(y_pred[1]+losses_utils.NON_DIVISION_ZERO)), axis=(1,2,3))
