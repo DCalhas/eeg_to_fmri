@@ -37,6 +37,8 @@ fs_12=1024
 
 media_directory="/mnt/datasets/"
 dataset_03="ds002158"
+dataset_04="ds002336"
+dataset_05="ds002338"
 dataset_10="ds004000"
 dataset_11="ds002778"
 
@@ -112,6 +114,16 @@ def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run
 		complete_path = path + vhdr_file
 
 		return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+
+
+def get_eeg_instance_04(individual, path_eeg=media_directory+dataset_04+"/"):
+
+	raise NotImplementedError
+
+def get_eeg_instance_05(individual, path_eeg=media_directory+dataset_05+"/"):
+
+	raise NotImplementedError
+
 
 def get_eeg_instance_10(individual, path_eeg=media_directory+dataset_10+"/", proposer=False, preprocessed=False):
 

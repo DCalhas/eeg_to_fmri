@@ -35,6 +35,8 @@ dataset_path = home + '/eeg_to_fmri'
 
 media_directory="/mnt/datasets/"
 dataset_03="ds002158"
+dataset_04="ds002336"
+dataset_05="ds002338"
 
 ##########################################################################################################################
 #
@@ -223,6 +225,15 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
                                                         np.swapaxes(np.swapaxes(np.swapaxes(idct(dct(img).numpy()[:, :downsample_shape[0], :downsample_shape[1], :downsample_shape[2]]).numpy(), 0, 3), 0,2), 0,1))
 
     return fmri_individuals
+
+
+def get_individuals_paths_04(path_fmri=media_directory+dataset_04+"/", number_individuals=None):
+
+    raise NotImplementedError
+
+def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_individuals=None):
+
+    raise NotImplementedError
     
 ##########################################################################################################################
 #
