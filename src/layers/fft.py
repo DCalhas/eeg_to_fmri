@@ -388,46 +388,18 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.shape_normal3 = (self.in1+self.rand1, self.in2+self.rand2, self.rand3)
 
 		if(self.distribution=="VonMises"):
-			self.cartesian_loc1 = self.add_weight('cartesian_loc1_posterior',
-										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
+			self.cartesian_loc = self.add_weight('cartesian_loc_posterior',
+										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
-			self.cartesian_scale1 = self.add_weight('cartesian_scale1_posterior',
-										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]],
+			self.cartesian_scale = self.add_weight('cartesian_scale_posterior',
+										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=scale_initializer,
 										constraint=constraint,
 										dtype=tf.float32,
 										trainable=True)
-
-
-			self.cartesian_loc2 = self.add_weight('cartesian_loc2_posterior',
-										shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
-										initializer=loc_initializer,
-										constraint=None,
-										dtype=tf.float32,
-										trainable=True)
-			self.cartesian_scale2 = self.add_weight('cartesian_scale2_posterior',
-										shape=[posterior_dimension, self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]],
-										initializer=scale_initializer,
-										constraint=constraint,
-										dtype=tf.float32,
-										trainable=True)
-
-			self.cartesian_loc3 = self.add_weight('cartesian_loc3_posterior',
-										shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-										initializer=loc_initializer,
-										constraint=None,
-										dtype=tf.float32,
-										trainable=True)
-			self.cartesian_scale3 = self.add_weight('cartesian_scale3_posterior',
-										shape=[posterior_dimension, self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-										initializer=scale_initializer,
-										constraint=constraint,
-										dtype=tf.float32,
-										trainable=True)
-
 
 	def call(self, x):
 
@@ -459,12 +431,13 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		
 		#https://github.com/tensorflow/probability/blob/88d217dfe8be49050362eb14ba3076c0dc0f1ba6/tensorflow_probability/python/distributions/normal.py#L174
 		if(self.distribution=="VonMises"):
-			cartesian_dist1 = tfp.distributions.VonMises(self.cartesian_loc1, self.cartesian_scale1)
-			cartesian_dist2 = tfp.distributions.VonMises(self.cartesian_loc2, self.cartesian_scale2)
-			cartesian_dist3 = tfp.distributions.VonMises(self.cartesian_loc3, self.cartesian_scale3)
-			rand_coefs1=tf.cos(cartesian_dist1.sample())
-			rand_coefs2=tf.cos(cartesian_dist2.sample())
-			rand_coefs3=tf.cos(cartesian_dist3.sample())
+			cartesian_dist = tfp.distributions.VonMises(self.cartesian_loc, self.cartesian_scale)
+			rand_coefs=tf.cos(cartesian_dist.sample())
+			rand_coefs1, rand_coefs2, rand_coefs3 = tf.split(rand_coefs, 
+															[self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2],
+															self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2],
+															self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], 
+															axis=-1)
 
 		if(self.dependent):
 			x_cond1 = tf.squeeze(tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w1), axis=1)
@@ -481,7 +454,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		rand_coefs1 = tf.reshape(rand_coefs1, (tf.shape(rand_coefs1)[0],)+self.shape_normal1)
 		rand_coefs2 = tf.reshape(rand_coefs2, (tf.shape(rand_coefs2)[0],)+self.shape_normal2)
 		rand_coefs3 = tf.reshape(rand_coefs3, (tf.shape(rand_coefs3)[0],)+self.shape_normal3)
-			
+		
 		if(self.coefs_perturb):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
 			x = x*dist_normal.sample()
