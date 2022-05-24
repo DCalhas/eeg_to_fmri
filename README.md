@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
-[![Code: Documentation](https://img.shields.io/badge/code-documentation-green)](https://github.com/DCalhas/eeg_to_fmri/DOCUMENTATION.md)
+[![Code: Documentation](https://img.shields.io/badge/code-documentation-green)](https://github.com/DCalhas/eeg_to_fmri/blob/master/DOCUMENTATION.md)
 
 
 
