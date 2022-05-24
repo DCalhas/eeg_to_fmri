@@ -22,6 +22,8 @@ home = str(Path.home())
 TR_01=2.160
 TR_02=2.000
 TR_03=1.280
+TR_04=2.000
+TR_05=2.000
 
 fmri_shape_01=(64,64,30)
 fmri_shape_02=(64,64,32)
@@ -40,8 +42,8 @@ dataset_05="ds002338"
 
 ##########################################################################################################################
 #
-#                                 READING UTILS
-#         
+#                         READING UTILS
+#       
 ##########################################################################################################################
 def get_fmri_instance(individual=0, path_fmri=dataset_path+'/datasets/01/fMRI/'):
 
@@ -148,8 +150,8 @@ def get_individuals_paths_02(path_fmri=dataset_path+"/datasets/02/", task=1, run
     
     #target_shape = image.load_img(path_fmri + file_individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').shape
     #target_shape = (int(target_shape[0]/resolution_factor), 
-    #       int(target_shape[1]/resolution_factor), 
-    #       int(target_shape[2]/resolution_factor))
+    #      int(target_shape[1]/resolution_factor), 
+    #      int(target_shape[2]/resolution_factor))
     
     affine = np.zeros((4,4))
     
@@ -162,9 +164,9 @@ def get_individuals_paths_02(path_fmri=dataset_path+"/datasets/02/", task=1, run
         shape=img.shape[:-1]
         
         #fmri_image = image.resample_img(img, 
-        #              target_affine=new_affine,
-        #              target_shape=target_shape,
-        #              interpolation='nearest')
+        #           target_affine=new_affine,
+        #           target_shape=target_shape,
+        #           interpolation='nearest')
 
         fmri_individuals += [img]
     
@@ -227,18 +229,60 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
     return fmri_individuals
 
 
-def get_individuals_paths_04(path_fmri=media_directory+dataset_04+"/", number_individuals=None):
+def get_individuals_paths_04(path_fmri=media_directory+dataset_04+"/", number_individuals=None, task="eegfmriNF", downsample=True, downsample_shape=(64,64,30)):
+    
+    assert task in ["eegNF", "eegfmriNF", "fmriNF", "motorloc"]
+    
+    fmri_individuals = []
+    dir_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f)) and "sub" in path_fmri+f])
+    
+    if(downsample):
+        import sys
+        sys.path.append("..")
+        from layers import fft
+        dct=None
+        idct=None
+        
+    for i in range(number_individuals):
+        task_file=sorted([f for f in listdir(path_fmri+dir_individuals[i]+'/func/') if isfile(path_fmri+dir_individuals[i]+'/func/'+f) and task in path_fmri+dir_individuals[i]+'/func/'+f])
+        if(not len(task_file)):
+            continue
+        file_path= path_fmri+dir_individuals[i]+'/func/' + task_file[1]
+        
+        fmri_individuals += [image.load_img(file_path)]
 
-    raise NotImplementedError
+        if(downsample):
+            img = np.swapaxes(np.swapaxes(np.swapaxes(fmri_individuals[-1].get_fdata(), 0, 3), 1,2), 1,3)
+            if(dct is None and idct is None):
+                dct = fft.DCT3D(*img.shape[1:])
+                idct = fft.iDCT3D(*downsample_shape)
+            fmri_individuals[-1] = image.new_img_like(fmri_individuals[-1], 
+                                                        np.swapaxes(np.swapaxes(np.swapaxes(idct(dct(img).numpy()[:, :downsample_shape[0], :downsample_shape[1], :downsample_shape[2]]).numpy(), 0, 3), 0,2), 0,1))
+            
+    return fmri_individuals
+    
+def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_individuals=None, task="MIpost"):
 
-def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_individuals=None):
+    assert task in ["1dNF_run-01", "1dNF_run-02", "1dNF_run-03", "MIpost", "MIpre"]
+    
+    fmri_individuals = []
+    dir_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f)) and "sub" in path_fmri+f])
+    
+    for i in range(number_individuals):
+        
+        task_file=sorted([f for f in listdir(path_fmri+dir_individuals[i]+'/func/') if isfile(path_fmri+dir_individuals[i]+'/func/'+f) and task in path_fmri+dir_individuals[i]+'/func/'+f])
+        if(not len(task_file)):
+            continue
+        file_path= path_fmri+dir_individuals[i]+'/func/' + task_file[1]
+        
+        fmri_individuals += [image.load_img(file_path)]
 
-    raise NotImplementedError
+    return fmri_individuals
     
 ##########################################################################################################################
 #
-#                                 FMRI UTILS
-#         
+#                         FMRI UTILS
+#       
 ##########################################################################################################################
 # masked_data shape is (timepoints, voxels). We can plot the first 150
 # timepoints from two voxels
@@ -296,8 +340,8 @@ def get_nifti_from_set(data, mask):
 
 ##########################################################################################################################
 #
-#                                 EXTRACTION OF ROI TIME SERIES
-#         
+#                         EXTRACTION OF ROI TIME SERIES
+#       
 ##########################################################################################################################
 ###### Canonical ICA
 

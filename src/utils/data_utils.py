@@ -27,6 +27,8 @@ number_individuals = 16
 n_individuals_01=10
 n_individuals_02=10
 n_individuals_03=20
+n_individuals_04=10
+n_individuals_05=17
 n_individuals_10=43
 n_individuals_11=31
 
