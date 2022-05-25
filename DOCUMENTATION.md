@@ -228,6 +228,7 @@ This layer specifically incorporates kernel and stride size information for each
 The models implemented in this repository are:
 
 - **EEG to fMRI** at [models.eeg_to_fmri.EEG_to_fMRI](https://github.com/DCalhas/eeg_to_fmri/blob/ddaa57fe0225d298b45bd09ab77c71add0e168ed/src/models/eeg_to_fmri.py#L78);
+- **fMRI AE** at [models.fmri_ae.fMRI_AE](https://github.com/DCalhas/eeg_to_fmri/blob/5af97ee5d4891ecea11a93268f9121fa4963d4b4/src/models/fmri_ae.py#L43);
 - **Linear Classifier** at [models.classifiers.LinearClassifier](https://github.com/DCalhas/eeg_to_fmri/blob/ddaa57fe0225d298b45bd09ab77c71add0e168ed/src/models/classifiers.py#L5);
 - **EEG View Classifier** at [models.classifiers.view_EEG_classifier](https://github.com/DCalhas/eeg_to_fmri/blob/ddaa57fe0225d298b45bd09ab77c71add0e168ed/src/models/classifiers.py#L27);
 
@@ -256,14 +257,15 @@ This class implements the EEG to fMRI Synthesis model proposed in this [paper](h
 >	- *DFT*: bool, similarly, this flag enables the use of the [DCT3D](https://github.com/DCalhas/eeg_to_fmri/blob/feeef2cb2f0c1c38587df225962b72b4c67f8932/src/layers/fft.py#L27) layer;
 > 	- *variational_iDFT*: bool, similarly, this flag enables the use of the [variational_iDCT3D](https://github.com/DCalhas/eeg_to_fmri/blob/feeef2cb2f0c1c38587df225962b72b4c67f8932/src/layers/fft.py#L323) layer;
 >	- *aleatoric_uncertainty*: bool, specifies the use of [tfp.layers.DenseFlipout](https://www.tensorflow.org/probability/api_docs/python/tfp/layers/DenseFlipout) as a Decoder (if DFT is False) and/or the an additional output to represent $\hat{\sigma}(x_i)$, by doing ```tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)```;
->
-
-
-variational_coefs=None, variational_dist=None,
-                variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
-                resolution_decoder=None, low_resolution_decoder=False,
-                topographical_attention=False, seed=None, fmri_args=None):
-
+>	- *variational_coefs*: tuple, specifies the number of additional coefficients to add to the resolution, should be a tuple (R_1, R_2, R_3) with \forall i \in \{1, 2, 3\}: R_i < M_i-N_i, where M is the upsampled resolution and N the downsampled;
+>	- *variational_dist*: str, specifies the distribution from which to sample the coefficients. Currently only the Von Mises is supported;
+>	- *variational_iDFT_dependent*: bool, specifies if the high sampled resolutions have a dependency, implemented from an attention mechanism, from the lower resolutions;
+>	- *variational_iDFT_dependent_dim*: int, specifies the dimension of the attention mechanism. This simplifies to a sum of sinusoids, i.e. a sum of the number of sinusoids specified by this argument;
+>	- *resolution_decoder*: float, specifies the downsampled resolution;
+>	- *low_resolution_decoder*: bool, flag to set the low resolution decoder mechanism to true;
+>	- *topographical_attention*: bool, specifies if the topographical attention mechanism is used;
+>	- *seed*: int, specifies the seed from which the random generator starts;
+>	- *fmri_args*: tuple, contains the arguments given to the fMRI encoder part of the model. Please refer to the fmri_ae documentation;	
 
 #### Neural Architecture Specification
 
@@ -289,3 +291,13 @@ model = EEG_to_fMRI((7,7,7),
 					EEG_SHAPE,**(None,))
 
 ```
+
+
+### fMRI AE
+
+
+### Linear Classifier
+
+
+### EEG View Classifier
+
