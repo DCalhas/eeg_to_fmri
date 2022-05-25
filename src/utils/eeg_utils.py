@@ -120,7 +120,7 @@ def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run
 		return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 
 
-def get_eeg_instance_04(individual, path_eeg=media_directory+dataset_04+"/", task="eegfmriNF", preprocessed=True):
+def get_eeg_instance_04(individual, path_eeg=media_directory+dataset_04+"/derivatives/", task="eegfmriNF", preprocessed=True):
 
 	assert task in ["eegNF", "eegfmriNF", "fmriNF", "motorloc"]
 	
@@ -137,7 +137,7 @@ def get_eeg_instance_04(individual, path_eeg=media_directory+dataset_04+"/", tas
 
 	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 
-def get_eeg_instance_05(individual, path_eeg=media_directory+dataset_05+"/", task="MIpost", preprocessed=True):
+def get_eeg_instance_05(individual, path_eeg=media_directory+dataset_05+"/derivatives/", task="MIpost", preprocessed=True):
 
 	assert task in ["1dNF_run-01", "1dNF_run-02", "1dNF_run-03", "MIpost", "MIpre"]
 	
