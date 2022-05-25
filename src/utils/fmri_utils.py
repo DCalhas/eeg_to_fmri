@@ -23,7 +23,7 @@ TR_01=2.160
 TR_02=2.000
 TR_03=1.280
 TR_04=2.000
-TR_05=2.000
+TR_05=1.000
 
 fmri_shape_01=(64,64,30)
 fmri_shape_02=(64,64,32)
@@ -278,7 +278,7 @@ def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_in
         fmri_individuals += [image.load_img(file_path)]
 
     return fmri_individuals
-    
+
 ##########################################################################################################################
 #
 #                         FMRI UTILS
