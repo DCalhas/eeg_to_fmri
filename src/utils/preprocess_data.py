@@ -50,12 +50,10 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 		n_individuals_test = 4
 		n_volumes = 373-3#?
 	elif(dataset=="04"):
-		raise NotImplementedError
 		n_individuals_train = 8
 		n_individuals_test = 2
 		n_volumes = 318-3
 	elif(dataset=="05"):
-		raise NotImplementedError
 		n_individuals_train = 13
 		n_individuals_test = 4
 		n_volumes = 318-3

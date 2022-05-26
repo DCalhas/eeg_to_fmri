@@ -229,7 +229,7 @@ def get_individuals_paths_03(path_fmri=media_directory+dataset_03+"/",
     return fmri_individuals
 
 
-def get_individuals_paths_04(path_fmri=media_directory+dataset_04+"/", number_individuals=None, task="eegfmriNF", downsample=True, downsample_shape=(64,64,30)):
+def get_individuals_paths_04(path_fmri=media_directory+dataset_04+"/", number_individuals=None, task="eegfmriNF", downsample=True, downsample_shape=(64,64,30), resolution_factor=None):
     
     assert task in ["eegNF", "eegfmriNF", "fmriNF", "motorloc"]
     
@@ -261,7 +261,7 @@ def get_individuals_paths_04(path_fmri=media_directory+dataset_04+"/", number_in
             
     return fmri_individuals
     
-def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_individuals=None, task="MIpost"):
+def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_individuals=None, task="MIpost", resolution_factor=None):
 
     assert task in ["1dNF_run-01", "1dNF_run-02", "1dNF_run-03", "MIpost", "MIpre"]
     
