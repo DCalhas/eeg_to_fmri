@@ -451,8 +451,6 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			rand_coefs2 = tf.matmul(x_cond2, rand_coefs2)#shape = [None, F] = [Batch, F]
 			rand_coefs3 = tf.matmul(x_cond3, rand_coefs3)#shape = [None, F] = [Batch, F]
 
-		regularize_coefs = tf.concat([rand_coefs1, rand_coefs2, rand_coefs3], 1)
-
 		rand_coefs1 = tf.reshape(rand_coefs1, (tf.shape(rand_coefs1)[0],)+self.shape_normal1)
 		rand_coefs2 = tf.reshape(rand_coefs2, (tf.shape(rand_coefs2)[0],)+self.shape_normal2)
 		rand_coefs3 = tf.reshape(rand_coefs3, (tf.shape(rand_coefs3)[0],)+self.shape_normal3)
@@ -463,7 +461,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			
 		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
 		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
-		return self.padded_idct3(tf.pad(z, rand_paddings3, constant_values=1.0)*tf.pad(rand_coefs3, in_paddings3, constant_values=1.0)), regularize_coefs
+		return self.padded_idct3(tf.pad(z, rand_paddings3, constant_values=1.0)*tf.pad(rand_coefs3, in_paddings3, constant_values=1.0))
 		
 	def get_config(self):
 		return {

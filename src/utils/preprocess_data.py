@@ -52,7 +52,7 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 	elif(dataset=="04"):
 		n_individuals_train = 8
 		n_individuals_test = 2
-		n_volumes = 332-3
+		n_volumes = 210-3
 	elif(dataset=="05"):
 		n_individuals_train = 13
 		n_individuals_test = 4
