@@ -35,8 +35,6 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 															eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit,
 															dataset=dataset)
 
-	print(eeg_train.shape, fmri_train.shape)
-
 	eeg_channels=eeg_train.shape[1]
 
 	if(dataset=="01"):
@@ -54,11 +52,11 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 	elif(dataset=="04"):
 		n_individuals_train = 8
 		n_individuals_test = 2
-		n_volumes = 318-3
+		n_volumes = 332-3
 	elif(dataset=="05"):
 		n_individuals_train = 13
 		n_individuals_test = 4
-		n_volumes = 318-3
+		n_volumes = 332-3
 
 
 
