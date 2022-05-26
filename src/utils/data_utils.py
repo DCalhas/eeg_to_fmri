@@ -94,7 +94,6 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
 
     #setting mask and fMRI signals
     individuals_imgs = getattr(fmri_utils, "get_individuals_paths_"+dataset)(resolution_factor=fmri_resolution_factor, number_individuals=len(individuals))
-    #individuals_imgs, mask = fmri_utils.get_masked_epi(individuals_imgs)
     
     fmri_volumes = np.empty((len(individuals)*len(range(bold_shift, individuals_imgs[0].shape[-1])),) + individuals_imgs[0].get_fdata()[:,:,:,0].shape)
     j = 0

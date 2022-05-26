@@ -34,6 +34,7 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 															ind_volume_fit=ind_volume_fit, iqr_outlier=iqr,
 															eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit,
 															dataset=dataset)
+
 	eeg_channels=eeg_train.shape[1]
 
 	if(dataset=="01"):
@@ -93,6 +94,8 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 															n_volumes=n_volumes, 
 															n_individuals=n_individuals_test,
 															instances_per_individual=25)
+
+    return x_eeg, x_bold
 
 	eeg_train = np.expand_dims(eeg_train, axis=-1)
 	fmri_train = np.expand_dims(fmri_train, axis=-1)
