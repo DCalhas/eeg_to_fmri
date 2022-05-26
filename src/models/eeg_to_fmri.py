@@ -260,7 +260,7 @@ class EEG_to_fMRI(tf.keras.Model):
         if(inverse_DFT):
             if(variational_iDFT):
                 assert type(variational_coefs) is tuple
-                x = variational_iDCT3D(*(latent_shape + self.fmri_ae.in_shape[:3] + variational_coefs), 
+                x, coefs = variational_iDCT3D(*(latent_shape + self.fmri_ae.in_shape[:3] + variational_coefs), 
                                         coefs_perturb=True, dependent=variational_iDFT_dependent, posterior_dimension=variational_iDFT_dependent_dim, distribution=variational_dist)(x)
             else:
                 x = padded_iDCT3D(latent_shape[0], latent_shape[1], latent_shape[2],
@@ -284,7 +284,10 @@ class EEG_to_fMRI(tf.keras.Model):
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
 
         if(self.aleatoric_uncertainty):
-            self.decoder = tf.keras.Model(input_shape, [x, tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)])
+            if(inverse_DFT and variational_iDFT):
+                self.decoder = tf.keras.Model(input_shape, [x, tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x), coefs])
+            else:
+                self.decoder = tf.keras.Model(input_shape, [x, tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)])
         else:
             self.decoder = tf.keras.Model(input_shape, x)
 
