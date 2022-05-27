@@ -922,7 +922,7 @@ def plot_analysis_uncertainty(runs, res_img, evaluations, xlabel=r"$Var[res]$", 
                                                                 evaluations, threshold=1e-1, 
                                                                 threshold_q=threshold_q, epsilon=1e-1)))
 
-    fig = plt.figure(figsize=(5,10))
+    fig = plt.figure(figsize=(50,10))
     gs = GridSpec(2, 49, figure=fig, wspace=0.01, hspace=0.05)
     #colorbar
     cax = fig.add_subplot(gs[:,3:4])
