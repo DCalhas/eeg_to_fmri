@@ -287,7 +287,7 @@ def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_in
         if(downsample):
             img = np.swapaxes(np.swapaxes(np.swapaxes(fmri_individuals[-1].get_fdata(), 0, 3), 1,2), 1,3)
             if(dct is None and idct is None):
-                dct = fft.DCT3D(img.shape[1:])
+                dct = fft.DCT3D(*img.shape[1:])
                 idct = fft.padded_iDCT3D(*(downsample_shape[:2]+(img.shape[3],)+downsample_shape))
             fmri_individuals[-1] = image.new_img_like(fmri_individuals[-1], 
                                                         np.swapaxes(np.swapaxes(np.swapaxes(idct(dct(img).numpy()[:, :downsample_shape[0], :downsample_shape[1], :]).numpy(), 0, 3), 0,2), 0,1))
