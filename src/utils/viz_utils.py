@@ -987,7 +987,7 @@ def single_display_gt_pred_espistemic_aleatoric(im1, im2, im3, im4, name="defaul
     if(len(name)<10):
         axes.text(0.75,0.3,name,rotation="vertical",size=40)
     else:
-        axes.text(0.75,0.15,name,rotation="vertical",size=40)
+        axes.text(0.75,0.13,name,rotation="vertical",size=40)
     
     axes.axis("off")
     #ground truth
