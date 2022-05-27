@@ -357,8 +357,8 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(distribution is None):
 			distribution="Normal"#default
 
-		loc_initializer=tf.initializers.Ones()
-		scale_initializer=tf.initializers.GlorotUniform()
+		loc_initializer=tf.initializers.GlorotUniform()
+		scale_initializer=tf.initializers.Ones()
 		constraint=tf.keras.constraints.NonNeg()
 		
 		if(self.coefs_perturb):
@@ -431,7 +431,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		
 		#https://github.com/tensorflow/probability/blob/88d217dfe8be49050362eb14ba3076c0dc0f1ba6/tensorflow_probability/python/distributions/normal.py#L174
 		if(self.distribution=="VonMises"):
-			cartesian_dist = tfp.distributions.VonMises(self.cartesian_loc, tf.abs(self.cartesian_scale))
+			cartesian_dist = tfp.distributions.VonMises(self.cartesian_loc, self.cartesian_scale)
 			rand_coefs=tf.cos(cartesian_dist.sample())
 			rand_coefs1, rand_coefs2, rand_coefs3 = tf.split(rand_coefs, 
 															[self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2],
