@@ -965,6 +965,117 @@ def plot_analysis_uncertainty(runs, res_img, evaluations, xlabel=r"$Var[res]$", 
 
 
 
+"""
+Single display plot
+
+"""
+def single_display_gt_pred_espistemic_aleatoric(im1, im2, im3, im4, name="default", xslice=14, threshold=0.37, cmap=plt.cm.nipy_spectral, save=False, save_path=None, save_format="pdf"):
+    
+    def normalize_img(img, threshold=0.37):
+        img = (img[:,:,:,:]-np.amin(img[:,:,:,:]))/(np.amax(img[:,:,:,:])-np.amin(img[:,:,:,:]))
+        img[np.where(img < threshold)]= 1.001
+
+        return img
+    
+    cmap = copy.copy(mpl.cm.get_cmap(cmap))
+    cmap.set_over("w")
+
+    fig = plt.figure(figsize=(25,7))
+    gs = GridSpec(2, 9, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
+
+    axes = fig.add_subplot(gs[:,0])
+    if(len(name)<10):
+        axes.text(0.75,0.3,name,rotation="vertical",size=40)
+    else:
+        axes.text(0.75,0.15,name,rotation="vertical",size=40)
+    
+    axes.axis("off")
+    #ground truth
+    axes = fig.add_subplot(gs[:,1:3])
+    axes.imshow(rotate(im1[0,:,:,xslice,0], 90, axes=(0,1)),
+              cmap=cmap)
+    axes.axis("off")
+    #predicted view
+    axes = fig.add_subplot(gs[:,3:5])
+    axes.imshow(rotate(im2[0,:,:,xslice,0], 90, axes=(0,1)),
+              cmap=cmap)
+    axes.axis("off")
+    #epistemic uncertainty
+    axes = fig.add_subplot(gs[:,5:7])
+    axes.imshow(rotate(im3[0,:,:,xslice,0], 90, axes=(0,1)),
+              cmap=cmap)
+    axes.axis("off")
+    #aleatoric uncertainty
+    axes = fig.add_subplot(gs[:,7:9])
+    axes.imshow(rotate(im4[0,:,:,xslice,0], 90, axes=(0,1)),
+              cmap=cmap)
+    axes.axis("off")
+    
+    plt.rcParams["font.family"] = "serif"
+    plt.tight_layout()
+    
+    if(save):
+        fig.savefig(save_path, format=save_format)
+        
+    return fig
+
+"""
+Whole brain display - for Bayesian uncertainty Quantification
+"""
+def whole_display_gt_pred_espistemic_aleatoric(im1, im2, im3, im4, cmap=plt.cm.nipy_spectral, factor=5, save=False, save_path=None, save_format="pdf"):
+    cmap = copy.copy(mpl.cm.get_cmap(cmap))
+    cmap.set_over("w")
+
+    fig = plt.figure(figsize=(22,30))
+    gs = GridSpec(im1.shape[3]//factor, 9, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
+    
+    for xslice in reversed(range(factor,im1.shape[3],factor)):
+        
+        axes = fig.add_subplot(gs[(im1.shape[3]-xslice)//factor-1,0])
+        if(xslice==factor):
+            x_shift=0.2
+        else:
+            x_shift=0.15
+        axes.text(0.75,x_shift, "slice "+str(xslice)+"/"+str(im1.shape[3]), size=35, rotation="vertical")
+        axes.axis("off")
+        #ground truth
+        axes = fig.add_subplot(gs[(im1.shape[3]-xslice)//factor-1,1:3])
+        axes.imshow(rotate(im1[0,:,:,xslice,0], 90, axes=(0,1)),
+                  cmap=cmap)
+        if(xslice==im1.shape[3]-factor):
+            axes.set_title("Ground Truth", size=35)
+        axes.axis("off")
+        #predicted view
+        axes = fig.add_subplot(gs[(im1.shape[3]-xslice)//factor-1,3:5])
+        axes.imshow(rotate(im2[0,:,:,xslice,0], 90, axes=(0,1)),
+                  cmap=cmap)
+        if(xslice==im1.shape[3]-factor):
+            axes.set_title("Predicted", size=35)
+        axes.axis("off")
+        #epistemic uncertainty
+        axes = fig.add_subplot(gs[(im1.shape[3]-xslice)//factor-1,5:7])
+        axes.imshow(rotate(im3[0,:,:,xslice,0], 90, axes=(0,1)),
+                  cmap=cmap)
+        if(xslice==im1.shape[3]-factor):
+            axes.set_title("Epistemic", size=35)
+        axes.axis("off")
+        #aleatoric uncertainty
+        axes = fig.add_subplot(gs[(im1.shape[3]-xslice)//factor-1,7:9])
+        axes.imshow(rotate(im4[0,:,:,xslice,0], 90, axes=(0,1)),
+                  cmap=cmap)
+        if(xslice==im1.shape[3]-factor):
+            axes.set_title("Aleatoric", size=35)
+        axes.axis("off")
+
+    plt.rcParams["font.family"] = "serif"
+    plt.tight_layout()
+
+    if(save):
+        fig.savefig(save_path, format=save_format)
+        
+    return fig
+
+
 
 ##########################################################################################################
 #
