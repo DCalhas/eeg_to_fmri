@@ -919,7 +919,7 @@ def plot_analysis_uncertainty(runs, res_img, evaluations, xlabel=r"$Var[res]$", 
             for voxel3 in range(instance.shape[2]):
                 instance[voxel1,voxel2,voxel3] = np.array(list(_cmap_(np.abs(runs[:,voxel1,voxel2,voxel3,0]),
                                                                 img[voxel1,voxel2,voxel3,0],
-                                                                H, threshold=1e-1, 
+                                                                evaluations, threshold=1e-1, 
                                                                 threshold_q=threshold_q, epsilon=1e-1)))
 
     fig = plt.figure(figsize=(5,10))
