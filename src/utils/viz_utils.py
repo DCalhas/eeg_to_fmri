@@ -848,6 +848,7 @@ Examples:
 >>> from pathlib import Path
 >>>
 >>> home = str(Path.home())
+>>> 
 >>> n_individuals=getattr(data_utils, "n_individuals_"+dataset)
 >>> with tf.device('/CPU:0'):
 >>>     train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals,
@@ -876,7 +877,7 @@ Examples:
 
 
 """
-def plot_analysis_uncertainty(resolutions, res_img, evaluations, xlabel=r"$Var[res]$", ylabel=r"$H$", threshold=0.37, save=False, save_path=None, save_format="pdf"):
+def plot_analysis_uncertainty(runs, res_img, evaluations, xlabel=r"$Var[res]$", ylabel=r"$H$", threshold=0.37, save=False, save_path=None, save_format="pdf"):
     img = np.mean(res_img, axis=0)
 
     cp1 = np.linspace(0,1)
@@ -909,14 +910,14 @@ def plot_analysis_uncertainty(resolutions, res_img, evaluations, xlabel=r"$Var[r
         return (epsilon, epsilon, epsilon)
 
 
-    threshold_q=np.quantile(np.abs(sinusoids_res), 0.5)
+    threshold_q=np.quantile(np.abs(runs), 0.5)
     img = (img[:,:,:,:]-np.amin(img[:,:,:,:]))/(np.amax(img[:,:,:,:])-np.amin(img[:,:,:,:]))
     img[np.where(img < threshold)]= -1
     instance=np.zeros(res_img[0,:,:,:,0].shape+(3,))
     for voxel1 in range(instance.shape[0]):
         for voxel2 in range(instance.shape[1]):
             for voxel3 in range(instance.shape[2]):
-                instance[voxel1,voxel2,voxel3] = np.array(list(_cmap_(np.abs(sinusoids_res[:,voxel1,voxel2,voxel3,0]),
+                instance[voxel1,voxel2,voxel3] = np.array(list(_cmap_(np.abs(runs[:,voxel1,voxel2,voxel3,0]),
                                                                 img[voxel1,voxel2,voxel3,0],
                                                                 H, threshold=1e-1, 
                                                                 threshold_q=threshold_q, epsilon=1e-1)))
