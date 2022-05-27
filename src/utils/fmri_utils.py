@@ -261,13 +261,20 @@ def get_individuals_paths_04(path_fmri=media_directory+dataset_04+"/", number_in
             
     return fmri_individuals
     
-def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_individuals=None, task="MIpost", resolution_factor=None):
+def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_individuals=None, task="MIpost", downsample=True, downsample_shape=(64,64,30), resolution_factor=None):
 
     assert task in ["1dNF_run-01", "1dNF_run-02", "1dNF_run-03", "MIpost", "MIpre"]
     
     fmri_individuals = []
     dir_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f)) and "sub" in path_fmri+f])
     
+    if(downsample):
+        import sys
+        sys.path.append("..")
+        from layers import fft
+        dct=None
+        idct=None
+
     for i in range(number_individuals):
         
         task_file=sorted([f for f in listdir(path_fmri+dir_individuals[i]+'/func/') if isfile(path_fmri+dir_individuals[i]+'/func/'+f) and task in path_fmri+dir_individuals[i]+'/func/'+f])
@@ -277,6 +284,14 @@ def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_in
         
         fmri_individuals += [image.load_img(file_path)]
 
+        if(downsample):
+            img = np.swapaxes(np.swapaxes(np.swapaxes(fmri_individuals[-1].get_fdata(), 0, 3), 1,2), 1,3)
+            if(dct is None and idct is None):
+                dct = fft.DCT3D(*img.shape[1:])
+                idct = fft.padded_iDCT3D(*downsample_shape)
+            fmri_individuals[-1] = image.new_img_like(fmri_individuals[-1], 
+                                                        np.swapaxes(np.swapaxes(np.swapaxes(idct(dct(img).numpy()[:, :downsample_shape[0], :downsample_shape[1], :]).numpy(), 0, 3), 0,2), 0,1))
+            
     return fmri_individuals
 
 ##########################################################################################################################
