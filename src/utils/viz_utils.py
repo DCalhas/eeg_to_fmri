@@ -837,6 +837,133 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
 
 
 
+"""
+Plot from: Bayesian DCT Uncertainty Quantification
+
+Examples:
+
+>>> from utils import viz_utils, preprocess_data
+>>> import tensorflow as tf
+>>> import numpy as np
+>>> from pathlib import Path
+>>>
+>>> home = str(Path.home())
+>>> n_individuals=getattr(data_utils, "n_individuals_"+dataset)
+>>> with tf.device('/CPU:0'):
+>>>     train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals,
+...                                                interval_eeg=interval_eeg, 
+...                                                ind_volume_fit=False,
+...                                                standardize_fmri=True,
+...                                                iqr=False,
+...                                                verbose=True)
+>>>     eeg_train, fmri_train =train_data
+>>>     eeg_test, fmri_test = test_data
+>>>
+>>> H=[2,5,7,10,13,15,18,20]
+>>> sinusoids_res = np.zeros((8,64,64,30,1))
+>>> path_res = home+"/eeg_to_fmri/metrics/01_topographical_attention_random_fourier_features_attention_style_variational_VonMises_dependent_h_"
+>>> for sin in range(len(H)):
+>>>     sinusoids_res[sin] = np.mean(np.squeeze(np.load(path_res+str(H[sin])+"_30x30x15_res_2.0/metrics/res_seed_11.npy"), axis=1), axis=0)
+>>>
+>>> resolutions=["3x3x1","6x6x3","12x12x6","15x15x7","18x18x9","20x20x10","25x25x12","30x30x15"]
+>>> resolutions_res = np.zeros((8,64,64,30,1))
+>>> path_res = home+"/eeg_to_fmri/metrics/01_topographical_attention_random_fourier_features_attention_style_variational_VonMises_dependent_h_15_"
+>>> for res in range(len(resolutions)):
+>>>     resolutions_res[res] = np.mean(np.squeeze(np.load(path_res+resolutions[res]+"_res_2.0/metrics/res_seed_11.npy"), axis=1), axis=0)
+>>>
+>>> viz_utils.plot_analysis_uncertainty(sinusoids_res, fmri_train, H, xlabel=r"$Var[res]$", ylabel=r"$H$", threshold=0.37, save=False, save_path=None, save_format="pdf")
+>>> viz_utils.plot_analysis_uncertainty(resolutions_res, fmri_train, resolutions, xlabel=r"$Var[res]$", ylabel=r"$R$", threshold=0.37, save=False, save_path=None, save_format="pdf")
+
+
+"""
+def plot_analysis_uncertainty(resolutions, res_img, evaluations, xlabel=r"$Var[res]$", ylabel=r"$H$", threshold=0.37, save=False, save_path=None, save_format="pdf"):
+    img = np.mean(res_img, axis=0)
+
+    cp1 = np.linspace(0,1)
+    cp2 = np.linspace(0,1)
+    Cp1, Cp2 = np.meshgrid(cp1,cp2)
+    C0 = np.full_like(Cp1, Cp1*Cp2*((Cp1)+(Cp2))/2)
+    Cp2_ = np.triu(Cp2)
+    p_values_range=Cp2#place holder that can stay to emulate pvalues
+    Legend = np.dstack((
+                        (p_values_range*Cp1)[:,:][:,15:],
+                        (p_values_range*Cp1)[:,::-1][:,15:],
+                        Cp2[:,15:],
+                        ))
+    cmap=ListedColormap(Legend)
+
+    """
+    analysis \in \mathbb{R}^H
+    voxel \in \mathbb{R}
+
+    """
+    def _cmap_(analysis, voxel, list_range, threshold=0., threshold_q=1e-1, epsilon=1e-3):
+        if(voxel==-1):
+            return (0.999,0.999,0.999)
+
+        if(np.std(analysis) > threshold and analysis[np.argmin(analysis)] < threshold_q):
+            return (((np.argmin(analysis)+1)/analysis.shape[0])-(analysis[np.argmin(analysis)])-epsilon,
+                    1.-((np.argmin(analysis)+1)/analysis.shape[0])-(analysis[np.argmin(analysis)])-epsilon,
+                    1.-analysis[np.argmin(analysis)]-epsilon)
+
+        return (epsilon, epsilon, epsilon)
+
+
+    threshold_q=np.quantile(np.abs(sinusoids_res), 0.5)
+    img = (img[:,:,:,:]-np.amin(img[:,:,:,:]))/(np.amax(img[:,:,:,:])-np.amin(img[:,:,:,:]))
+    img[np.where(img < threshold)]= -1
+    instance=np.zeros(res_img[0,:,:,:,0].shape+(3,))
+    for voxel1 in range(instance.shape[0]):
+        for voxel2 in range(instance.shape[1]):
+            for voxel3 in range(instance.shape[2]):
+                instance[voxel1,voxel2,voxel3] = np.array(list(_cmap_(np.abs(sinusoids_res[:,voxel1,voxel2,voxel3,0]),
+                                                                img[voxel1,voxel2,voxel3,0],
+                                                                H, threshold=1e-1, 
+                                                                threshold_q=threshold_q, epsilon=1e-1)))
+
+    fig = plt.figure(figsize=(5,10))
+    gs = GridSpec(2, 49, figure=fig, wspace=0.01, hspace=0.05)
+    #colorbar
+    cax = fig.add_subplot(gs[:,3:4])
+    cax.imshow(rotate(Legend, 90, axes=(0,1)), extent=[0,100,0,100], aspect="auto")
+    cax.set_yticks([5 , 20, 30 , 42, 55, 65, 80 ,90])
+    cax.set_xticks([5,95])
+    cax.annotate('', xy=(1.4, 0), xycoords='axes fraction', xytext=(1.4, 1), arrowprops=dict(arrowstyle="<-, head_width=0.4", color='black'))
+    cax.set_xticklabels([r"<{:0.3f}".format(1e-3), r"$\infty$"], size=20)
+    cax.set_yticklabels(evaluations, size=20)
+    cax.set_xlabel(xlabel, size=20)
+    cax.set_ylabel(ylabel, size=20)
+    cax.yaxis.tick_left()
+    cax.yaxis.set_label_position("right")
+
+
+
+
+    #plot each slice in 2 Dimensional plot
+    row = 1
+    col = 5
+    factor=3
+    for axis in range((instance[:,:,:].shape[2])//factor):
+
+        axes = fig.add_subplot(gs[row:row+1,col*5:col*5+5])
+        img = rotate(instance[:,:,axis*factor,:], 90)
+        axes.imshow(img)
+        axes.axis("off")
+        col -= 1
+        if(col == 0):
+            col=5
+            row-=1
+
+    plt.rcParams["font.family"] = "serif"
+    fig.set_tight_layout(True)
+    
+    if(save):
+        fig.savefig(save_path, format=save_format)
+
+    return fig
+
+
+
 
 ##########################################################################################################
 #
