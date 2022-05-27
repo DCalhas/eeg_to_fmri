@@ -221,12 +221,16 @@ elif(mode=="uncertainty"):
 		os.makedirs(metrics_path+"/"+ setting+"/aleatoric")
 	if(not os.path.exists(metrics_path+"/"+ setting+"/quality")):
 		os.makedirs(metrics_path+"/"+ setting+"/quality")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/quality/single/")):
+		os.makedirs(metrics_path+"/"+ setting+"/quality/single")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/quality/whole/")):
+		os.makedirs(metrics_path+"/"+ setting+"/quality/whole")
 	
 	instance=0
 	for eeg, fmri in test_set.repeat(1):
-		viz_utils.plot_3D_representation_projected_slices(np.mean(bnn_utils.epistemic_uncertainty(model, (eeg, fmri), T=T), axis=0), threshold=threshold_plot, res_img=fmri.numpy()[0], slice_label=False, uncertainty=True, legend_colorbar="Epistemic", max_min_legend=["Certain","Uncertain"], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/epistemic"+"/" + str(instance)+"_instance.pdf")
-		viz_utils.plot_3D_representation_projected_slices(np.mean(bnn_utils.aleatoric_uncertainty(model, (eeg, fmri), T=T), axis=0), threshold=threshold_plot, res_img=fmri.numpy()[0], slice_label=False, uncertainty=True, legend_colorbar="Aleatoric", max_min_legend=["Certain","Uncertain"], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/aleatoric"+"/" + str(instance)+"_instance.pdf")
-		viz_utils.plot_3D_representation_projected_slices(np.mean(bnn_utils.predict_MC(model, (eeg, fmri), T=T), axis=0), threshold=threshold_plot, res_img=fmri.numpy()[0], slice_label=False, uncertainty=False, legend_colorbar="Haemodynamic", max_min_legend=["",""], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality"+"/" + str(instance)+"_instance.pdf")
+		ims = (instance_y.numpy(), bnn_utils.predict_MC(model, (eeg, fmri), T=T).numpy(), bnn_utils.epistemic_uncertainty(model, (eeg, fmri), T=T).numpy(), model(eeg, fmri)[0][1].numpy())
+		viz_utils.single_display_gt_pred_espistemic_aleatoric(*ims, name=["DenseFlipout", "DCTVariational"][int(variational and aleatoric_uncertainty)], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality/single"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
+		viz_utils.whole_display_gt_pred_espistemic_aleatoric(*ims, save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality/whole"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
 		instance+=1
 elif(mode=="residues"):
 	#create dir setting if not exists

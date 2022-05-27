@@ -1,44 +1,5 @@
-python uncertainty.py 01 combined_log_loss -learning_rate 0.001 -epochs 10 -outfilter 0 -out_file results_log/combined_log_loss_lr_0.001_epochs_10_outfilter_0.txt
-python uncertainty.py 01 combined_original_loss -learning_rate 0.001 -epochs 10 -outfilter 0 -out_file results_log/combined_original_loss_lr_0.001_epochs_10_outfilter_0.txt
-python uncertainty.py 01 gamma_prior_loss -learning_rate 0.001 -epochs 10 -MAP -outfilter 0 -out_file results_log/gamma_prior_loss_lr_0.001_epochs_10_outfilter_0.txt
-python uncertainty.py 01 combined_abs_diff_loss -learning_rate 0.00001 -epochs 10 -outfilter 0 -out_file results_log/combined_abs_diff_loss.001_epochs_10_outfilter_0.txt
-python uncertainty.py 01 combined_abs_non_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 0 -out_file results_log/combined_abs_non_balanced_loss_lr_0.001_epochs_10_outfilter_0.txt
-python uncertainty.py 01 combined_abs_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 0 -out_file results_log/combined_abs_balanced_loss_lr_0.001_epochs_10_outfilter_0.txt
-
-python uncertainty.py 01 combined_log_loss -learning_rate 0.001 -epochs 10 -outfilter 1 -out_file results_log/combined_log_loss_lr_0.001_epochs_10_outfilter_1.txt
-python uncertainty.py 01 combined_original_loss -learning_rate 0.001 -epochs 10 -outfilter 1 -out_file results_log/combined_original_loss_lr_0.001_epochs_10_outfilter_1.txt
-python uncertainty.py 01 gamma_prior_loss -learning_rate 0.001 -epochs 10 -MAP -outfilter 1 -out_file results_log/gamma_prior_loss_lr_0.001_epochs_10_outfilter_1.txt
-python uncertainty.py 01 combined_abs_diff_loss -learning_rate 0.00001 -epochs 10 -outfilter 1 -out_file results_log/combined_abs_diff_loss.001_epochs_10_outfilter_1.txt
-python uncertainty.py 01 combined_abs_non_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 1 -outfilter 0 -out_file results_log/combined_abs_non_balanced_loss_lr_0.001_epochs_10_outfilter_1.txt
-python uncertainty.py 01 combined_abs_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 1 -outfilter 0 -out_file results_log/combined_abs_balanced_loss_lr_0.001_epochs_10_outfilter_1.txt
-
-
-python uncertainty.py 01 combined_log_loss -learning_rate 0.001 -epochs 10 -outfilter 2 -out_file results_log/combined_log_loss_lr_0.001_epochs_10_outfilter_2.txt
-python uncertainty.py 01 combined_original_loss -learning_rate 0.001 -epochs 10 -outfilter 2 -out_file results_log/combined_original_loss_lr_0.001_epochs_10_outfilter_2.txt
-python uncertainty.py 01 gamma_prior_loss -learning_rate 0.001 -epochs 10 -MAP -outfilter 2 -out_file results_log/gamma_prior_loss_lr_0.001_epochs_10_outfilter_2.txt
-python uncertainty.py 01 combined_abs_diff_loss -learning_rate 0.00001 -epochs 10 -outfilter 2 -out_file results_log/combined_abs_diff_loss.001_epochs_10_outfilter_2.txt
-python uncertainty.py 01 combined_abs_non_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 2 -outfilter 0 -out_file results_log/combined_abs_non_balanced_loss_lr_0.001_epochs_10_outfilter_2.txt
-python uncertainty.py 01 combined_abs_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 2 -outfilter 0 -out_file results_log/combined_abs_balanced_loss_lr_0.001_epochs_10_outfilter_2.txt
-
-
-python uncertainty.py 01 combined_log_loss -learning_rate 0.001 -epochs 10 -outfilter 0 -iqr -out_file results_log/combined_log_loss_lr_0.001_epochs_10_outfilter_0_iqr.txt
-python uncertainty.py 01 combined_original_loss -learning_rate 0.001 -epochs 10 -outfilter 0 -iqr -out_file results_log/combined_original_loss_lr_0.001_epochs_10_outfilter_0_iqr.txt
-python uncertainty.py 01 gamma_prior_loss -learning_rate 0.001 -epochs 10 -MAP -outfilter 0 -iqr -out_file results_log/gamma_prior_loss_lr_0.001_epochs_10_outfilter_0_iqr.txt
-python uncertainty.py 01 combined_abs_diff_loss -learning_rate 0.00001 -epochs 10 -outfilter 0 -iqr -out_file results_log/combined_abs_diff_loss.001_epochs_10_outfilter_0_iqr.txt
-python uncertainty.py 01 combined_abs_non_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 0 -iqr -outfilter 0 -out_file results_log/combined_abs_non_balanced_loss_lr_0.001_epochs_10_outfilter_0_iqr.txt
-python uncertainty.py 01 combined_abs_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 0 -iqr -outfilter 0 -out_file results_log/combined_abs_balanced_loss_lr_0.001_epochs_10_outfilter_0_iqr.txt
-
-python uncertainty.py 01 combined_log_loss -learning_rate 0.001 -epochs 10 -outfilter 1 -iqr -out_file results_log/combined_log_loss_lr_0.001_epochs_10_outfilter_1_iqr.txt
-python uncertainty.py 01 combined_original_loss -learning_rate 0.001 -epochs 10 -outfilter 1 -iqr -out_file results_log/combined_original_loss_lr_0.001_epochs_10_outfilter_1_iqr.txt
-python uncertainty.py 01 gamma_prior_loss -learning_rate 0.001 -epochs 10 -MAP -outfilter 1 -iqr -out_file results_log/gamma_prior_loss_lr_0.001_epochs_10_outfilter_1_iqr.txt
-python uncertainty.py 01 combined_abs_diff_loss -learning_rate 0.00001 -epochs 10 -outfilter 1 -iqr -out_file results_log/combined_abs_diff_loss.001_epochs_10_outfilter_1_iqr.txt
-python uncertainty.py 01 combined_abs_non_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 1 -iqr -outfilter 0 -out_file results_log/combined_abs_non_balanced_loss_lr_0.001_epochs_10_outfilter_1_iqr.txt
-python uncertainty.py 01 combined_abs_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 1 -iqr -outfilter 0 -out_file results_log/combined_abs_balanced_loss_lr_0.001_epochs_10_outfilter_1_iqr.txt
-
-
-python uncertainty.py 01 combined_log_loss -learning_rate 0.001 -epochs 10 -outfilter 2 -iqr -out_file results_log/combined_log_loss_lr_0.001_epochs_10_outfilter_2_iqr.txt
-python uncertainty.py 01 combined_original_loss -learning_rate 0.001 -epochs 10 -outfilter 2 -iqr -out_file results_log/combined_original_loss_lr_0.001_epochs_10_outfilter_2_iqr.txt
-python uncertainty.py 01 gamma_prior_loss -learning_rate 0.001 -epochs 10 -MAP -outfilter 2 -iqr -out_file results_log/gamma_prior_loss_lr_0.001_epochs_10_outfilter_2_iqr.txt
-python uncertainty.py 01 combined_abs_diff_loss -learning_rate 0.00001 -epochs 10 -outfilter 2 -iqr -out_file results_log/combined_abs_diff_loss.001_epochs_10_outfilter_2_iqr.txt
-python uncertainty.py 01 combined_abs_non_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 2 -iqr -outfilter 0 -out_file results_log/combined_abs_non_balanced_loss_lr_0.001_epochs_10_outfilter_2_iqr.txt
-python uncertainty.py 01 combined_abs_balanced_loss -learning_rate 0.001 -epochs 10 -outfilter 2 -iqr -outfilter 0 -out_file results_log/combined_abs_balanced_loss_lr_0.001_epochs_10_outfilter_2_iqr.txt
+python -u main.py uncertainty 01 -fourier_features -random_fourier -topographical_attention -conditional_attention_style -variational -variational_dependent_h 10 -aleatoric_uncertainty -variational_dist VonMises -variational_coefs 30,30,15 -resolution_decoder 2 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 3000 -batch_size 4 -save_metrics -seed 2
+python -u main.py uncertainty 01 -fourier_features -random_fourier -topographical_attention -conditional_attention_style -variational -variational_dependent_h 10 -aleatoric_uncertainty -variational_dist VonMises -variational_coefs 30,30,15 -resolution_decoder 2 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 3000 -batch_size 4 -save_metrics -seed 3
+python -u main.py uncertainty 01 -fourier_features -random_fourier -topographical_attention -conditional_attention_style -variational -variational_dependent_h 10 -aleatoric_uncertainty -variational_dist VonMises -variational_coefs 30,30,15 -resolution_decoder 2 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 3000 -batch_size 4 -save_metrics -seed 5
+python -u main.py uncertainty 01 -fourier_features -random_fourier -topographical_attention -conditional_attention_style -variational -variational_dependent_h 10 -aleatoric_uncertainty -variational_dist VonMises -variational_coefs 30,30,15 -resolution_decoder 2 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 3000 -batch_size 4 -save_metrics -seed 7
+python -u main.py uncertainty 01 -fourier_features -random_fourier -topographical_attention -conditional_attention_style -variational -variational_dependent_h 10 -aleatoric_uncertainty -variational_dist VonMises -variational_coefs 30,30,15 -resolution_decoder 2 -na_path_eeg /home/ist_davidcalhas/eeg_to_fmri/na_models_eeg/na_specification_2 -na_path_fmri /home/ist_davidcalhas/eeg_to_fmri/na_models_fmri/na_specification_2 -verbose -gpu_mem 3000 -batch_size 4 -save_metrics -seed 11
