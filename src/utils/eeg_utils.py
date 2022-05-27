@@ -256,7 +256,9 @@ def compute_fft(channel, fs=128, limit=False, f_limit=134):
 	fft1 = fft(channel)
 
 	if(limit):
-		return fft1[range(f_limit)]
+		if(fft1.shape[0]>f_limit):
+			return fft1[range(f_limit)]
+		return np.append(fft1, np.zeros((f_limit-fft1.shape[0],), dtype=np.complex))
 	return fft1[range(int(N/2))]
 
 def raw_eeg(eeg, channel=0, fs=250):
