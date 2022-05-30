@@ -25,6 +25,7 @@ parser.add_argument('mode',
 parser.add_argument('dataset', choices=['01', '02', '03'], help="Which dataset to load")
 parser.add_argument('-topographical_attention', action="store_true", help="Topographical attention on EEG channels")
 parser.add_argument('-conditional_attention_style', action="store_true", help="Conditional attention style on the latent space")
+parser.add_argument('-padded', action="store_true", help="Fill higher resolutions with zero for the upsampling method.")
 parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
 parser.add_argument('-variational_coefs', default=None, type=None, help="Number of extra stochastic resolution coefficients")
 parser.add_argument('-variational_dependent_h', default=None, type=int, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
@@ -48,6 +49,7 @@ opt = parser.parse_args()
 mode=opt.mode
 dataset=opt.dataset
 topographical_attention=opt.topographical_attention
+padded=opt.padded
 variational=opt.variational
 variational_coefs=opt.variational_coefs
 variational_dependent_h=opt.variational_dependent_h
@@ -80,6 +82,10 @@ if(fourier_features):
 if(conditional_attention_style):
 	assert topographical_attention, "To run conditional_attention_style, topographical_attention needs to be active"
 	setting+="_attention_style"
+if(padded):
+	assert not variational, "No variational model along with padded version of filling with zeros"
+	assert type(resolution_decoder) is float, "There needs to be a specification of the lower resolution"
+	setting+="_padded"
 if(variational):
 	assert variational_coefs, "Need to be specified number of coefs, always upsampling for now, set issue to allow better implementation"
 	setting+="_variational"
@@ -167,7 +173,7 @@ if(type(resolution_decoder) is float):
 model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
 							batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
 							conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
-							inverse_DFT=variational, DFT=variational, variational_dist=variational_dist,
+							inverse_DFT=variational or padded, DFT=variational or padded, variational_dist=variational_dist,
 							variational_iDFT=variational, variational_coefs=variational_coefs, 
 							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
 							aleatoric_uncertainty=aleatoric_uncertainty, low_resolution_decoder=type(resolution_decoder) is float, 
