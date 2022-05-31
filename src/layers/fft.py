@@ -539,15 +539,13 @@ class SpectralDropout(tf.keras.layers.Layer):
 
 
 class RandomizeFrequencies(tf.keras.layers.Layer):
-"""
-Randomize the predicted frequencies and estimate the rest
-Just like in fMRI enhancement
+	"""
+	Randomize the predicted frequencies and estimate the rest
+	Just like in fMRI enhancement
 
-This is just like a padding, but instead of being reflected on the sides, 
-it specifies the positions of the X in the new representation in a random initialized order
-"""
-
-
+	This is just like a padding, but instead of being reflected on the sides, 
+	it specifies the positions of the X in the new representation in a random initialized order
+	"""
 	def __init__(self, in_shape, out_shape, dim):
 
 		assert dim in [1,2,3], "This layer only operates for 3D representations"
@@ -561,20 +559,20 @@ it specifies the positions of the X in the new representation in a random initia
 
 	
 	def call(self, X, C):
-	"""
-	list of all splits of both X and C
+		"""
+		list of all splits of both X and C
 
-		>>> from layers.fft import RandomizeFrequencies
-		>>> import tensorflow as tf
-		>>> a = tf.random.uniform((1,2,2,2))
-		>>> b = tf.random.uniform((1,2,2,2))
-		>>> randomize = RandomizeFrequencies(2, 4, dim=1)
-		>>> randomize(a,b)
-		>>> randomize.shape1
-		>>> a
-		>>> b
+			>>> from layers.fft import RandomizeFrequencies
+			>>> import tensorflow as tf
+			>>> a = tf.random.uniform((1,2,2,2))
+			>>> b = tf.random.uniform((1,2,2,2))
+			>>> randomize = RandomizeFrequencies(2, 4, dim=1)
+			>>> randomize(a,b)
+			>>> randomize.shape1
+			>>> a
+			>>> b
 
-	"""
+		"""
 
 		Z=None
 		added=0
