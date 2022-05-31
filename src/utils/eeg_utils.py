@@ -35,6 +35,7 @@ fs_02=1000
 fs_03=5000
 fs_04=200
 fs_05=200
+fs_NEW=None
 fs_10=2048
 fs_11=512
 fs_12=1024
@@ -43,6 +44,7 @@ media_directory="/mnt/datasets/"
 dataset_03="ds002158"
 dataset_04="ds002336"
 dataset_05="ds002338"
+dataset_NEW="NEW"
 dataset_10="ds004000"
 dataset_11="ds002778"
 
@@ -153,6 +155,22 @@ def get_eeg_instance_05(individual, path_eeg=media_directory+dataset_05+"/deriva
 
 	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 
+"""
+Function that reads EEG data from a <NEW> dataset
+
+This function should return an EEG raw brainvision object, please refer to: https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw
+
+Inputs:
+	* int - individual, should be an integer \in [0,NUMBER_INDIVIDUALS_NEW]
+	* str - path_eeg, the path specification where the individuals are listed
+	* str - task, optional, depends on the dataset you are operating with
+	* bool - preprocessed, specifies if one is reading preprocessed data or not, feel free to implement it as you wish
+Outputs:
+	* mne.io.Raw - the EEG object
+"""
+def get_eeg_instance_NEW(individual, path_eeg=None, task=None, preprocessed=None):
+
+	raise NotImplementedError
 
 def get_eeg_instance_10(individual, path_eeg=media_directory+dataset_10+"/", proposer=False, preprocessed=False):
 

@@ -24,6 +24,7 @@ TR_02=2.000
 TR_03=1.280
 TR_04=2.000
 TR_05=1.000
+TR_NEW=None
 
 fmri_shape_01=(64,64,30)
 fmri_shape_02=(64,64,32)
@@ -39,6 +40,7 @@ media_directory="/mnt/datasets/"
 dataset_03="ds002158"
 dataset_04="ds002336"
 dataset_05="ds002338"
+dataset_NEW="NEW"
 
 ##########################################################################################################################
 #
@@ -293,6 +295,25 @@ def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_in
                                                         np.swapaxes(np.swapaxes(np.swapaxes(idct(dct(img).numpy()[:, :downsample_shape[0], :downsample_shape[1], :]).numpy(), 0, 3), 0,2), 0,1))
             
     return fmri_individuals
+
+def get_individuals_paths_NEW(path_fmri=None, resolution_factor=None, number_individuals=None):
+    """
+        Function that reads fMRI data from a <NEW> dataset
+
+        This function should return the fMRI instances (nibabel.nifti1.Nifti1Image) of a dataset, please refer to: https://nipy.org/nibabel/reference/nibabel.nifti1.html#nibabel.nifti1.Nifti1Image
+
+        Inputs:
+            * str - path_fmri, the path specification where the individuals are listed
+            * float - resolution_factor, specifies the resolution of the fMRI, optional argument to implement, but mandatory as arg
+            * int - number_individuals, should be an integer \in [0,NUMBER_INDIVIDUALS_NEW]
+        Optional inputs to add:
+            * str - task, specifies the task of the dataset
+            * bool - downsample, for some datasets one might want to mutate the resolution to a desirable one
+        Outputs:
+            * list(nibabel.nifti1.Nifti1Image) - the list of fMRI instances, size of list is equal to number_individuals
+    """
+
+    raise NotImplementedError
 
 ##########################################################################################################################
 #
