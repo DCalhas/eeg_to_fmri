@@ -100,6 +100,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 inverse_DFT=False, DFT=False, aleatoric_uncertainty=False,
                 variational_iDFT=False, variational_coefs=None, variational_dist=None,
                 variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
+                variational_random_padding=False,
                 resolution_decoder=None, low_resolution_decoder=False,
                 topographical_attention=False, seed=None, fmri_args=None):
         super(EEG_to_fMRI, self).__init__()
@@ -124,6 +125,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.variational_iDFT_dependent=variational_iDFT_dependent
         self.variational_iDFT_dependent_dim=variational_iDFT_dependent_dim
         self.variational_dist=variational_dist
+        self.variational_random_padding=variational_random_padding
         self.resolution_decoder=resolution_decoder
         self.low_resolution_decoder=low_resolution_decoder
         self.topographical_attention=topographical_attention
@@ -155,6 +157,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             variational_iDFT_dependent=variational_iDFT_dependent,
                             variational_iDFT_dependent_dim=variational_iDFT_dependent_dim,
                             variational_dist=variational_dist,
+                            variational_random_padding=variational_random_padding,
                             outfilter=self.fmri_ae.outfilter, seed=seed)
 
     def build_encoder(self, latent_shape, input_shape, na_spec, n_channels, 
@@ -203,6 +206,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             low_resolution_decoder=False, resolution_decoder=None, 
                             variational_iDFT=False, variational_coefs=None, variational_dist=None,
                             variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
+                            variational_random_padding=False,
                             dropout=False, outfilter=0, seed=None):
 
         x = tf.keras.layers.Flatten()(output_encoder)
@@ -254,14 +258,16 @@ class EEG_to_fMRI(tf.keras.Model):
             x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
             x = tf.keras.layers.Reshape(latent_shape)(x)
-        if(DFT):
+        if(DFT and not variational_random_padding):#if random padding of frequencies there should not be special waves defined
             #convert to Discrete cosine transform low resolution coefficients
             x = DCT3D(latent_shape[0], latent_shape[1], latent_shape[2])(x)
         if(inverse_DFT):
             if(variational_iDFT):
                 assert type(variational_coefs) is tuple
                 x = variational_iDCT3D(*(latent_shape + self.fmri_ae.in_shape[:3] + variational_coefs), 
-                                        coefs_perturb=True, dependent=variational_iDFT_dependent, posterior_dimension=variational_iDFT_dependent_dim, distribution=variational_dist)(x)
+                                        coefs_perturb=True, dependent=variational_iDFT_dependent, 
+                                        posterior_dimension=variational_iDFT_dependent_dim, distribution=variational_dist,
+                                        random_padding=variational_random_padding)(x)
             else:
                 x = padded_iDCT3D(latent_shape[0], latent_shape[1], latent_shape[2],
                             out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(x)
@@ -341,6 +347,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 "variational_iDFT_dependent": self.variational_iDFT_dependent,
                 "variational_iDFT_dependent_dim": self.variational_iDFT_dependent_dim,
                 "variational_dist": self.variational_dist,
+                "variational_random_padding": self.variational_random_padding,
                 "resolution_decoder": self.resolution_decoder,
                 "low_resolution_decoder": self.low_resolution_decoder,
                 "topographical_attention": self.topographical_attention,

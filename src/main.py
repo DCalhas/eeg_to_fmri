@@ -30,6 +30,7 @@ parser.add_argument('-variational', action="store_true", help="Variational imple
 parser.add_argument('-variational_coefs', default=None, type=None, help="Number of extra stochastic resolution coefficients")
 parser.add_argument('-variational_dependent_h', default=None, type=int, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
 parser.add_argument('-variational_dist', default="Normal", type=str, help="Distribution used for the high resolution coefficients")
+parser.add_argument('-variational_random_padding', action="store_true", help="Whether to randomize positions in the DCT frequency space instead of predicting low resolution coefficients")
 parser.add_argument('-resolution_decoder', default=None, type=float, help="Resolution decoder intermediary before final transformation in decoder -- used in uncertainty")
 parser.add_argument('-aleatoric_uncertainty', action="store_true", help="Aleatoric uncertainty flag")
 parser.add_argument('-fourier_features', action="store_true", help="Fourier features flag")
@@ -54,6 +55,7 @@ variational=opt.variational
 variational_coefs=opt.variational_coefs
 variational_dependent_h=opt.variational_dependent_h
 variational_dist=opt.variational_dist
+variational_random_padding=opt.variational_random_padding
 resolution_decoder=opt.resolution_decoder
 aleatoric_uncertainty=opt.aleatoric_uncertainty
 fourier_features=opt.fourier_features
@@ -107,7 +109,9 @@ if(type(resolution_decoder) is float):
 	assert resolution_decoder > 1, "Resolution decoder needs to be \in [1,+\infty]"
 	assert variational, "For now only done with variational implementation"
 	setting+="_res_"+"{:.1f}".format(resolution_decoder)
-
+if(variational_random_padding):
+	assert variational, "Only done with variational flag set to True"
+	setting+="_random_padding"
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
 
@@ -177,7 +181,7 @@ model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_cha
 							variational_iDFT=variational, variational_coefs=variational_coefs, 
 							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
 							aleatoric_uncertainty=aleatoric_uncertainty, low_resolution_decoder=type(resolution_decoder) is float, 
-							resolution_decoder=_resolution_decoder, seed=None, 
+							variational_random_padding=variational_random_padding, resolution_decoder=_resolution_decoder, seed=None, 
 							fmri_args = (latent_dimension, fmri_shape[1:], 
 							kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
 							n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
