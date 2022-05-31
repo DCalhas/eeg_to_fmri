@@ -107,7 +107,6 @@ if(type(variational_coefs) is str):
 	setting+="_"+str(variational_coefs[0])+"x"+str(variational_coefs[1])+"x"+str(variational_coefs[2])
 if(type(resolution_decoder) is float):
 	assert resolution_decoder > 1, "Resolution decoder needs to be \in [1,+\infty]"
-	assert variational, "For now only done with variational implementation"
 	setting+="_res_"+"{:.1f}".format(resolution_decoder)
 if(variational_random_padding):
 	assert variational, "Only done with variational flag set to True"
