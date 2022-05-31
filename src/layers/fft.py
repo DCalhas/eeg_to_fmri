@@ -353,7 +353,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.dependent = dependent
 		self.posterior_dimension = posterior_dimension
 		self.distribution = distribution
-		self.random_padding=self.random_padding
+		self.random_padding = random_padding
 
 		if(distribution is None):
 			distribution="Normal"#default
