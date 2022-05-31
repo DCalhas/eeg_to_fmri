@@ -521,3 +521,104 @@ class SpectralDropout(tf.keras.layers.Layer):
 
 	def call(self, X):
 		return X*self.mask_dist.sample()
+
+
+class RandomizeFrequencies(tf.keras.layers.Layer):
+"""
+Randomize the predicted frequencies and estimate the rest
+Just like in fMRI enhancement
+
+This is just like a padding, but instead of being reflected on the sides, 
+it specifies the positions of the X in the new representation in a random initialized order
+"""
+
+
+	def __init__(self, in_shape, out_shape, dim):
+
+		assert dim in [1,2,3], "This layer only operates for 3D representations"
+		assert out_shape > in_shape, "The output shape has to be bigger than the input"
+
+		super(RandomizeFrequencies, self).__init__()
+
+		self.out_shape=out_shape
+		self.shape1=np.sort(np.random.choice(np.arange(out_shape), size=in_shape, replace=False))
+		self.dim=dim
+
+	
+	def call(self, X, C):
+	"""
+	list of all splits of both X and C
+
+		>>> from layers.fft import RandomizeFrequencies
+		>>> import tensorflow as tf
+		>>> a = tf.random.uniform((1,2,2,2))
+		>>> b = tf.random.uniform((1,2,2,2))
+		>>> randomize = RandomizeFrequencies(2, 4, dim=1)
+		>>> randomize(a,b)
+		>>> randomize.shape1
+		>>> a
+		>>> b
+
+	"""
+
+		Z=None
+		added=0
+
+		for split in range(len(self.shape1)):			
+			print(Z)
+			print(split)
+
+			if(Z is None):
+				if(self.shape1[split]==0):
+					if(self.dim==1):
+						Z=X[:,split:split+1,:,:]
+					elif(self.dim==2):
+						Z=X[:,:,split:split+1,:]
+					elif(self.dim==3):
+						Z=X[:,:,:,split:split+1]
+					else:
+						raise NotImplementedError
+				else:
+					if(self.dim==1):
+						Z=tf.concat([C[:,:self.shape1[split],:,:], X[:,split:split+1,:,:]], axis=self.dim)
+					elif(self.dim==2):
+						Z=tf.concat([C[:,:,:self.shape1[split],:], X[:,:,split:split+1,:]], axis=self.dim)
+					elif(self.dim==3):
+						Z=tf.concat([C[:,:,:,:self.shape1[split]], X[:,:,:,split:split+1]], axis=self.dim)
+					else:
+						raise NotImplementedError
+					added+=self.shape1[split]
+
+			else:
+			
+				diff=self.shape1[split]-self.shape1[split-1]-1
+				if(self.dim==1):
+					Z=tf.concat([Z,C[:,added:added+diff,:,:]], axis=self.dim)
+				elif(self.dim==2):
+					Z=tf.concat([Z,C[:,:,added:added+diff,:]], axis=self.dim)
+				elif(self.dim==3):
+					Z=tf.concat([Z,C[:,:,:,added:added+diff]], axis=self.dim)
+				else:
+					raise NotImplementedError
+
+				added+=self.shape1[split]-self.shape1[split-1]-1
+
+				if(self.dim==1):
+					Z=tf.concat([Z,X[:,split:split+1,:,:]], axis=self.dim)
+				elif(self.dim==2):
+					Z=tf.concat([Z,X[:,:,split:split+1,:]], axis=self.dim)
+				elif(self.dim==3):
+					Z=tf.concat([Z,X[:,:,:,split:split+1]], axis=self.dim)
+				else:
+					raise NotImplementedError
+			
+		if(tf.shape(Z)[self.dim] < self.out_shape):
+			if(self.dim==1):
+				Z=tf.concat([Z,C[:,added:,:,:]], axis=self.dim)
+			elif(self.dim==2):
+				Z=tf.concat([Z,C[:,:,added:,:]], axis=self.dim)
+			elif(self.dim==3):
+				Z=tf.concat([Z,C[:,:,:,added:]], axis=self.dim)
+			else:
+				raise NotImplementedError
+		return Z
