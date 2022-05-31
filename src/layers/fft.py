@@ -577,10 +577,7 @@ class RandomizeFrequencies(tf.keras.layers.Layer):
 		Z=None
 		added=0
 
-		for split in range(len(self.shape1)):			
-			print(Z)
-			print(split)
-
+		for split in range(len(self.shape1)):
 			if(Z is None):
 				if(self.shape1[split]==0):
 					if(self.dim==1):
