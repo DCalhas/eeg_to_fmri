@@ -329,7 +329,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 	distribution variances
 	"""
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution=None):
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution=None, random_padding=False):
 
 		super(variational_iDCT3D, self).__init__()
 
@@ -353,6 +353,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.dependent = dependent
 		self.posterior_dimension = posterior_dimension
 		self.distribution = distribution
+		self.random_padding=self.random_padding
 
 		if(distribution is None):
 			distribution="Normal"#default
@@ -400,6 +401,11 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 										constraint=constraint,
 										dtype=tf.float32,
 										trainable=True)
+
+		if(self.random_padding):
+			self.random_pad1 = RandomizeFrequencies(self.in1, self.in1+self.rand1, dim=1)
+			self.random_pad2 = RandomizeFrequencies(self.in2, self.in2+self.rand2, dim=2)
+			self.random_pad3 = RandomizeFrequencies(self.in3, self.in3+self.rand3, dim=3)
 
 	def call(self, x):
 
@@ -459,9 +465,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
 			x = x*dist_normal.sample()
 			
-		z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
-		z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
-		return self.padded_idct3(tf.pad(z, rand_paddings3, constant_values=1.0)*tf.pad(rand_coefs3, in_paddings3, constant_values=1.0))
+		if(self.random_padding):
+			z = self.random_pad1(x,rand_coefs1)
+			z = self.random_pad2(z,rand_coefs2)
+			z = self.random_pad3(z,rand_coefs3)
+		else:
+			z = tf.pad(x, rand_paddings1, constant_values=1.0)*tf.pad(rand_coefs1, in_paddings1, constant_values=1.0)
+			z = tf.pad(z, rand_paddings2, constant_values=1.0)*tf.pad(rand_coefs2, in_paddings2, constant_values=1.0)
+			z = tf.pad(z, rand_paddings3, constant_values=1.0)*tf.pad(rand_coefs3, in_paddings3, constant_values=1.0)
+		return self.padded_idct3(z)
 		
 	def get_config(self):
 		return {
@@ -478,6 +490,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			"dependent": self.dependent,
 			"posterior_dimension": self.posterior_dimension,
 			"distribution": self.distribution,
+			"random_padding": self.random_padding,
 		}
 
 	@classmethod
@@ -521,6 +534,8 @@ class SpectralDropout(tf.keras.layers.Layer):
 
 	def call(self, X):
 		return X*self.mask_dist.sample()
+
+
 
 
 class RandomizeFrequencies(tf.keras.layers.Layer):
