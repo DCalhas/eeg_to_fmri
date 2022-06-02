@@ -7,7 +7,7 @@
 
 
 
-## Default model training and test run
+## Setup
 
 TODO
 
