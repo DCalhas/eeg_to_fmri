@@ -401,7 +401,6 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 										constraint=constraint,
 										dtype=tf.float32,
 										trainable=True)
-
 			self.biases = self.add_weight('biases',
 										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=loc_initializer,
@@ -454,9 +453,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			x_cond2 = tf.squeeze(tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w2), axis=1)
 			x_cond3 = tf.squeeze(tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w3), axis=1)
 			#attention?
-			x_cond1 = tf.nn.softmax(x_cond1)
-			x_cond2 = tf.nn.softmax(x_cond2)
-			x_cond3 = tf.nn.softmax(x_cond3)
+			x_cond1 = tf.nn.relu(x_cond1)
+			x_cond2 = tf.nn.relu(x_cond2)
+			x_cond3 = tf.nn.relu(x_cond3)
 			rand_coefs1 = tf.matmul(x_cond1, biases1*rand_coefs1)#shape = [None, F] = [Batch, F]
 			rand_coefs2 = tf.matmul(x_cond2, biases2*rand_coefs2)#shape = [None, F] = [Batch, F]
 			rand_coefs3 = tf.matmul(x_cond3, biases3*rand_coefs3)#shape = [None, F] = [Batch, F]
