@@ -404,7 +404,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 			self.biases = self.add_weight('biases',
 										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-										initializer=scale_initializer,
+										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
