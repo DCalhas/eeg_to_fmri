@@ -499,7 +499,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 	@classmethod
 	def from_config(cls, config):
-		return cls(**config)		
+		return cls(**config)
 
 
 
@@ -549,18 +549,29 @@ class RandomizeFrequencies(tf.keras.layers.Layer):
 
 	This is just like a padding, but instead of being reflected on the sides, 
 	it specifies the positions of the X in the new representation in a random initialized order
+
+	*dist* refers to the distribution used to order the coefficients
 	"""
-	def __init__(self, in_shape, out_shape, dim):
+	def __init__(self, in_shape, out_shape, dim, dist="Pareto"):
 
 		assert dim in [1,2,3], "This layer only operates for 3D representations"
 		assert out_shape > in_shape, "The output shape has to be bigger than the input"
 
 		super(RandomizeFrequencies, self).__init__()
 
+		self.in_shape=in_shape
 		self.out_shape=out_shape
-		self.shape1=np.sort(np.random.choice(np.arange(out_shape), size=in_shape, replace=False))
 		self.dim=dim
+		self.dist=dist
 
+		if(dist=="Pareto"):
+			def p(a, size):
+				_p=(size*1**size)/(a**2)[1:]
+				return np.exp(_p)/np.sum(np.exp(_p))
+		else:
+			raise NotImplementedError
+
+		self.shape1=np.sort(np.random.choice(np.arange(out_shape), p=p(np.arange(out_shape+1),1), size=in_shape, replace=False))
 	
 	def call(self, X, C):
 		"""
@@ -636,3 +647,15 @@ class RandomizeFrequencies(tf.keras.layers.Layer):
 			else:
 				raise NotImplementedError
 		return Z
+
+	def get_config(self):
+		return {
+			"in_shape": self.in_shape,
+			"out_shape": self.out_shape,
+			"dim": self.dim,
+			"dist": self.dist,
+		}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
