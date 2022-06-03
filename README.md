@@ -219,7 +219,7 @@ After this, you should be set to run the code and retrieve the results you desir
 
 Now you just need to run the [main.py](https://github.com/DCalhas/eeg_to_fmri/blob/master/src/main.py) file with your dataset identifier given as an argument. Please refer to the [documentation](https://github.com/DCalhas/eeg_to_fmri/blob/master/DOCUMENTATION.md), where you will find what you need to give as arguments, an example call is (open shell):
 
-```bashshell
+```shell
 cd eeg_to_fmri/src
 mkdir /tmp/eeg_to_fmri
 mkdir /tmp/eeg_to_fmri/metrics
