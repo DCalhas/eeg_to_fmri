@@ -221,6 +221,7 @@ Now you just need to run the [main.py](https://github.com/DCalhas/eeg_to_fmri/bl
 
 ```shell
 cd eeg_to_fmri/src
+conda activate eeg_fmri
 mkdir /tmp/eeg_to_fmri
 mkdir /tmp/eeg_to_fmri/metrics
 python main.py metrics NEW -na_path_eeg ../na_models_eeg/na_specification_2 -na_path_fmri ../na_models_fmri/na_specification_2 -save_metrics -metrics_path /tmp/eeg_to_fmri/metrics
