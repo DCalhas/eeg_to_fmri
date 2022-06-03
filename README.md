@@ -27,9 +27,40 @@ Testing a new dataset on this framework should not be too difficult. Do the foll
 
 Ideally you want this function to return an [mne.io.Raw](https://mne.tools/stable/generated/mne.io.Raw.html) object, that contains the EEG data. In this "tutorial" only this is the only supported option, however do it as you like most.
 
-```
-eeg = :o
+The inputs of this function are:
+- *individual* - int, the individual one wants to retrieve. This function is being executed inside a for loop, ```for individual in range(getattr(data_utils, "n_individuals_"+dataset)```, that goes through the range of individuals, **n_individuals_NEW**, you set in the data_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/data_utils.py#L32) file;
+- *path_eeg* - str, the path where your dataset is located, e.g. ```path_eeg="/tmp/NEW/"```, this may be an optional argument set as ```path_eeg="/tmp/"+dataset_NEW+"/"```;
+- *task* - str, can be set to None if it does not apply to your dataset;
 
+So given these inputs one can start by listing the directories of your dataset (now this can depend on how you organized the data, we assume that each individual has a folder dedicated to itself and the sorted names of the folders have the individual's folders first and after the auxiliary description ones, e.g. "info" for information about the dataset):
+
+
+```python
+individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
+
+individual = individuals[individual]
+
+path=path_eeg+individual+"/"
+path
+```
+
+```bash
+/tmp/NEW/sub-001/
+```
+
+Inside the path described above should be a set of files needed to load a eeg brainvision object. If you sort these files, likely 
+the ```.vhdr``` is the second option:
+
+```python
+brainvision_files = sorted([f for f in listdir(path) if isfile(join(path, f))])
+vhdr_file = brainvision_files[1]
+```
+
+Now one only needs to return the Brainvision object:
+
+```python
+complete_path = path + vhdr_file
+return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 ```
 
 #### Implementing the get_individuals_path_NEW function
