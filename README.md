@@ -23,7 +23,7 @@ Testing a new dataset on this framework should not be too difficult. Do the foll
 - additionally, you might want to define the list of channels (if your EEG electrode setup follows the [10-20 system](https://en.wikipedia.org/wiki/10%E2%80%9320_system_(EEG))), to retrieve more advanced analysis, such as EEG electrode relevance. This should be done in the beginning of the [eeg_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/eeg_utils.py) file;
 - last, but no least, comes the time to implement the two functions that read the EEG and fMRI recordings, corresponding to **get_eeg_instance_NEW**, at [eeg_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/eeg_utils.py#L171), and **get_indviduals_path_NEW**, at [fmri_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/fmri_utils.py#L299);
 
-### Dataset location and structure
+### Dataset structure
 
 In this example, we assume your dataset has the following structure (if it has a different structure please interpret the code provided in the next two sections and adapt it):
 
