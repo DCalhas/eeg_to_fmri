@@ -33,17 +33,18 @@ NEW
 |	..
 |	README.md
 └───EEG
-	└───sub-001
-		|	FILE.eeg
-		|	FILE.vhdr
-		|	FILE.vmrk
-	└───sub-002
-	...
+|	└───sub-001
+|	|	|	FILE.eeg
+|	|	|	FILE.vhdr
+|	|	|	FILE.vmrk
+|	└───sub-002
+|	...
 └───BOLD
 	└───sub-001
-		|	FILE.anat
-		|	FILE.nii.gz
+	|	|	FILE.anat
+	|	|	FILE.nii.gz
 	└───sub-002
+	...
 ```
 
 #### Implementing the get_eeg_instance_NEW function
