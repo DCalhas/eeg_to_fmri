@@ -44,7 +44,7 @@ def get_eeg_instance_NEW(individual, path_eeg="/tmp/"+dataset_NEW+"/", task=None
 	path=path_eeg+individual+"/"
 	print(path)#for debug purposes only, please remove this line after function is implemented
 ```
-
+The output of the last print (if ```individuals=["sub-001", "sub-002", ..., "sub-"+data_utils.n_individuals_NEW, ...]```):
 ```bash
 /tmp/NEW/sub-001/
 ```
