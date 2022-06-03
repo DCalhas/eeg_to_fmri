@@ -171,17 +171,6 @@ def get_individuals_paths_NEW(path_fmri="/tmp/NEW/BOLD/", resolution_factor=None
 	return fmri_individuals
 ```
 
-### Run the code and retrieve results
-
-Now you just need to run the [main.py](https://github.com/DCalhas/eeg_to_fmri/blob/master/src/main.py) file with your dataset identifier given as an argument. Please refer to the [documentation](https://github.com/DCalhas/eeg_to_fmri/blob/master/DOCUMENTATION.md), where you will find what you need to give as arguments, an example call is (open shell):
-
-```shell
-cd eeg_to_fmri/src
-mkdir /tmp/eeg_to_fmri
-mkdir /tmp/eeg_to_fmri/metrics
-python main.py metrics NEW -na_path_eeg ../na_models_eeg/na_specification_2 -na_path_fmri ../na_models_fmri/na_specification_2 -save_metrics -metrics_path /tmp/eeg_to_fmri/metrics
-```
-
 ##### My dataset has fMRI volumes with higher resolutions than accepted by this work. What should I do?
 
 Unfortunately, the model only accepts:
@@ -225,6 +214,17 @@ Import the modules to perform the DCT and either add or remove resolutions to fi
 ```
 
 After this, you should be set to run the code and retrieve the results you desire.
+
+### Run the code and retrieve results
+
+Now you just need to run the [main.py](https://github.com/DCalhas/eeg_to_fmri/blob/master/src/main.py) file with your dataset identifier given as an argument. Please refer to the [documentation](https://github.com/DCalhas/eeg_to_fmri/blob/master/DOCUMENTATION.md), where you will find what you need to give as arguments, an example call is (open shell):
+
+```shell
+cd eeg_to_fmri/src
+mkdir /tmp/eeg_to_fmri
+mkdir /tmp/eeg_to_fmri/metrics
+python main.py metrics NEW -na_path_eeg ../na_models_eeg/na_specification_2 -na_path_fmri ../na_models_fmri/na_specification_2 -save_metrics -metrics_path /tmp/eeg_to_fmri/metrics
+```
 
 ## Acknowledgements
 
