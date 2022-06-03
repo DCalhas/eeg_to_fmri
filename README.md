@@ -64,12 +64,31 @@ Now one only needs to return the Brainvision object:
 	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 ```
 
+In the end **get_eeg_instance_NEW** is:
+
+```python
+def get_eeg_instance_NEW(individual, path_eeg="/tmp/"+dataset_NEW+"/", task=None,):
+	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
+
+	individual = individuals[individual]
+
+	path=path_eeg+individual+"/"
+	
+	brainvision_files = sorted([f for f in listdir(path) if isfile(join(path, f))])
+	vhdr_file = brainvision_files[1]
+
+	complete_path = path + vhdr_file
+	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+```
+
 #### Implementing the get_individuals_path_NEW function
 
 
-```
-fmri = :o
-```
+
+
+
+
+
 
 ## Acknowledgements
 
