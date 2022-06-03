@@ -32,14 +32,14 @@ NEW
 |	.
 |	..
 |	README.md
-└─── 	EEG
+└───────EEG
 |	└───sub-001
 |	|	|	FILE.eeg
 |	|	|	FILE.vhdr
 |	|	|	FILE.vmrk
 |	└───sub-002
 |	...
-└─── 	BOLD
+└───────BOLD
 	└───sub-001
 	|	|	FILE.anat
 	|	|	FILE.nii.gz
