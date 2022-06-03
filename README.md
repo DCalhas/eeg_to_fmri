@@ -173,7 +173,7 @@ def get_individuals_paths_NEW(path_fmri="/tmp/NEW/BOLD/", resolution_factor=None
 
 ### Run the code and retrieve results
 
-Now you just need to run the [main.py]() file with your dataset identifier given as an argument. Please refer to the documentation, where you will find what you need to give as arguments, an example call is:
+Now you just need to run the [main.py](https://github.com/DCalhas/eeg_to_fmri/blob/master/src/main.py) file with your dataset identifier given as an argument. Please refer to the [documentation](https://github.com/DCalhas/eeg_to_fmri/blob/master/DOCUMENTATION.md), where you will find what you need to give as arguments, an example call is:
 
 ```shell
 mkdir /tmp/eeg_to_fmri
