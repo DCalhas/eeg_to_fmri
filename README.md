@@ -5,12 +5,28 @@
 
 [![Code: Documentation](https://img.shields.io/badge/code-documentation-green)](https://github.com/DCalhas/eeg_to_fmri/blob/master/DOCUMENTATION.md)
 
-
-
 ## Setup
 
-TODO
+Ideally, your machine has a Nvidia GPU and is running Linux.
 
+First of all, please install [anaconda](https://www.anaconda.com/) at ```$HOME/anaconda3/```. To setup the environment for this repository, please run the following commands:
+
+```shell
+git clone git@github.com:DCalhas/eeg_to_fmri.git
+cd eeg_to_fmri
+```
+
+Download [cudnn](https://developer.nvidia.com/cudnn):
+
+```shell
+wget https://developer.download.nvidia.com/compute/redist/cudnn/v8.0.1/cudnn-11.0-linux-x64-v8.0.1.13.tgz
+```
+
+Run the configuration file:
+
+```shell
+./config.sh
+```
 
 ## How do I test this research on my dataset?
 
