@@ -25,7 +25,26 @@ Testing a new dataset on this framework should not be too difficult. Do the foll
 
 ### Dataset location and structure
 
-TODO
+In this example, we assume your dataset has the following structure (if it has a different structure please interpret the code provided in the next two sections and adapt it):
+
+```
+NEW
+|	.
+|	..
+|	README.md
+└───EEG
+	└───sub-001
+		|	FILE.eeg
+		|	FILE.vhdr
+		|	FILE.vmrk
+	└───sub-002
+	...
+└───BOLD
+	└───sub-001
+		|	FILE.anat
+		|	FILE.nii.gz
+	└───sub-002
+```
 
 #### Implementing the get_eeg_instance_NEW function
 
@@ -190,7 +209,6 @@ Import the modules to perform the DCT and either add or remove resolutions to fi
 				idct = fft.iDCT3D(*downsample_shape)
 			fmri_individuals[-1] = image.new_img_like(fmri_individuals[-1], 
 														np.swapaxes(np.swapaxes(np.swapaxes(idct(dct(img).numpy()[:, :downsample_shape[0], :downsample_shape[1], :downsample_shape[2]]).numpy(), 0, 3), 0,2), 0,1))
-
 		return fmri_individuals
 ```
 
