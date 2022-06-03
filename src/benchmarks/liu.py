@@ -69,7 +69,7 @@ class Liu_et_al(tf.keras.Model):
 		x = tf.keras.layers.Reshape((self.time_dimension,self.latent_dim))(x)
 		#now goes to the time slicing part 16*16*7=1792
 		for i in range(5):
-			x = self.fn(self.latent_dim*self.n_channels, kernel_size=1, strides=1)(x)
+			x = tf.keras.layers.Conv1D(self.latent_dim*self.n_channels, kernel_size=1, strides=1)(x)
 		x = self.fn(self.spatial_dimension, kernel_size=1, strides=1)(x)
 
 		x = tf.keras.layers.Reshape(self.fmri_shape)(x)

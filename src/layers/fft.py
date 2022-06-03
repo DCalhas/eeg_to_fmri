@@ -512,7 +512,7 @@ tfp.distributions.Bernoulli(probs=p)
 >>> import tensorflow as tf
 >>> import tensorflow_probability as tfp
 >>> layer = SpectralDropout(64,64,30,0.5)
->>> layer(tf.ones(1, 64,64,30))
+>>> layer(tf.ones((1,64,64,30)))
 
 """
 class SpectralDropout(tf.keras.layers.Layer):
