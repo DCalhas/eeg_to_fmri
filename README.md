@@ -151,6 +151,51 @@ def get_individuals_paths_NEW(path_fmri="/tmp/NEW/BOLD/", resolution_factor=None
 	return fmri_individuals
 ```
 
+##### My dataset has fMRI volumes with higher resolutions than accepted by this work. What should I do?
+
+Unfortunately, the model only accepts:
+- EEG instances with 64 channels and a total of 134 frequency resolutions in a specified window of **TR_\***;
+- fMRI instances with 64x64x30 resolution.
+
+For the EEG, we do not have a specified studied solution, just pray that it works.
+
+For the fMRI, we found that mutating the resolution via Discrete Cosine Transform (DCT) spectral domain is a reasonable work around. To do this you only need to add the specified lines to the **get_individuals_paths_NEW** and a *downsample* and *downsample_shape* optional arguments to the function call:
+
+```python
+def get_individuals_paths_NEW(path_fmri="/tmp/NEW/BOLD/", resolution_factor=None, number_individuals=None, downsample=True, downsample_shape=(64,64,30)):
+	
+	...
+
+	if(downsample):
+		import sys
+		sys.path.append("..")
+		from layers import fft
+		dct=None
+		idct=None
+
+	...
+```
+
+Import the modules to perform the DCT and either add or remove resolutions to fit your data to the desired shapes. Then when you load the image, you should mutate it as:
+
+```python
+	
+		...
+		fmri_individuals += [image.load_img(file_path)]
+
+		if(downsample):
+			img = np.swapaxes(np.swapaxes(np.swapaxes(fmri_individuals[-1].get_fdata(), 0, 3), 1,2), 1,3)
+			if(dct is None and idct is None):
+				dct = fft.DCT3D(*img.shape[1:])
+				idct = fft.iDCT3D(*downsample_shape)
+			fmri_individuals[-1] = image.new_img_like(fmri_individuals[-1], 
+														np.swapaxes(np.swapaxes(np.swapaxes(idct(dct(img).numpy()[:, :downsample_shape[0], :downsample_shape[1], :downsample_shape[2]]).numpy(), 0, 3), 0,2), 0,1))
+
+		return fmri_individuals
+```
+
+After this, you should be set to run the code and retrieve the results you desire.
+
 ## Acknowledgements
 
 We would like to thank everyone at [INESC-ID](https://www.inesc-id.pt/) that accompanied the journey throughout my PhD. This work was supported by national funds through Fundação para a Ciência e Tecnologia ([FCT](https://www.fct.pt/index.phtml.pt)), under the Ph.D. Grant SFRH/BD/5762/2020 to David Calhas, ILU project DSAIPA/DS/0111/2018 and INESC-ID pluriannual UIDB/50021/2020.
