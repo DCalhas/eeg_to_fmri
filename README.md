@@ -7,14 +7,37 @@
 
 
 
-## Default model training and test run
+## Setup
 
 TODO
 
 
 ## How do I test this research on my dataset?
 
-Well I do not know, but I can specify how the different datasets are being setup. Please feel free to replicate upon this.
+Testing a new dataset on this framework should not be too difficult. Do the following (in the order you feel most comfortable):
+- define the number of individuals, **n_individuals_NEW**, that your dataset contains, this can be done in the [data_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/data_utils.py#L32) file;
+- additionally you may define new variables in the [data_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/data_utils.py) file, corresponding to **n_individuals_train_NEW** and **n_individuals_test_NEW**, which refer to the number of individuals used for the training and testing set, respectively;
+- define **dataset_NEW** variable in the [fmri_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/eeg_utils.py#L47) and [eeg_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/fmri_utils.py#L43) files. At this point you might be thinking: "Why is this guy defining the same variable in two different places?", well he ain't too smart tbh and he lazy af;
+- define the frequency, **fs_NEW**, at which the EEG recording was sampled, this can be done in the [eeg_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/eeg_utils.py#L38) file;
+- define the Time Response, **TR_NEW**, at which each fMRI volume was sampled, this can be done in the [fmri_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/fmri_utils.py#L27);
+- additionally, you might want to define the list of channels (if your EEG electrode setup follows the [10-20 system](https://en.wikipedia.org/wiki/10%E2%80%9320_system_(EEG))), to retrieve more advanced analysis, such as EEG electrode relevance. This should be done in the beginning of the [eeg_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/eeg_utils.py) file;
+- last, but no least, comes the time to implement the two functions that read the EEG and fMRI recordings, corresponding to **get_eeg_instance_NEW**, at [eeg_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/eeg_utils.py#L171), and **get_indviduals_path_NEW**, at [fmri_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/fmri_utils.py#L299);
+
+#### Implementing the get_eeg_instance_NEW function
+
+Ideally you want this function to return an [mne.io.Raw](https://mne.tools/stable/generated/mne.io.Raw.html) object, that contains the EEG data. In this "tutorial" only this is the only supported option, however do it as you like most.
+
+```
+eeg = :o
+
+```
+
+#### Implementing the get_individuals_path_NEW function
+
+
+```
+fmri = :o
+```
 
 ## Acknowledgements
 
