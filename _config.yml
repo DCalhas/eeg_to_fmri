@@ -1,11 +1,18 @@
 remote_theme: just-the-docs/just-the-docs
 
-
-logo: "/assets/figures/logo.png"
-
-
 search_enabled: true
 
+# Navigation Structure
+
+{: .no_toc }
+
+## Table of contents
+
+{: .no_toc .text-delta }
+
+1. TOC
+   {:toc}
+   
 
 layout: default
 title: Documentation
