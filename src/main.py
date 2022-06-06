@@ -152,7 +152,7 @@ elif(mode=="uncertainty"):
 	
 	instance=0
 	for eeg, fmri in test_set.repeat(1):
-		ims = (instance_y.numpy(), bnn_utils.predict_MC(model, (eeg, fmri), T=T).numpy(), bnn_utils.epistemic_uncertainty(model, (eeg, fmri), T=T).numpy(), model(eeg, fmri)[0][1].numpy())
+		ims = (fmri.numpy(), bnn_utils.predict_MC(model, (eeg, fmri), T=T).numpy(), bnn_utils.epistemic_uncertainty(model, (eeg, fmri), T=T).numpy(), model(eeg, fmri)[0][1].numpy())
 		viz_utils.single_display_gt_pred_espistemic_aleatoric(*ims, name=["DenseFlipout", "DCTVariational"][int(variational and aleatoric_uncertainty)], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality/single"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
 		viz_utils.whole_display_gt_pred_espistemic_aleatoric(*ims, save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality/whole"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
 		instance+=1
