@@ -41,6 +41,8 @@ fs_11=512
 fs_12=1024
 
 media_directory="/mnt/datasets/"
+dataset_01="ds000001"
+dataset_02="ds000116"
 dataset_03="ds002158"
 dataset_04="ds002336"
 dataset_05="ds002338"

@@ -29,14 +29,20 @@ TR_NEW=None
 fmri_shape_01=(64,64,30)
 fmri_shape_02=(64,64,32)
 fmri_shape_03=(64,64,30)
+fmri_shape_04=(64,64,30)
+fmri_shape_05=(64,64,30)
 
 n_volumes_01=300-3
 n_volumes_02=170-3
 n_volumes_03=370-3
+n_volumes_04=None
+n_volumes_05=None
 
 dataset_path = home + '/eeg_to_fmri'
 
 media_directory="/mnt/datasets/"
+dataset_01="ds000001"
+dataset_02="ds000116"
 dataset_03="ds002158"
 dataset_04="ds002336"
 dataset_05="ds002338"
