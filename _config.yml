@@ -5,3 +5,8 @@ logo: "/assets/figures/logo.png"
 
 
 search_enabled: true
+
+
+layout: default
+title: Documentation
+nav_order: 1
