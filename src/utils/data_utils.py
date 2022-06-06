@@ -24,6 +24,12 @@ n_partitions = 16
 number_channels = 64
 number_individuals = 16
 
+threshold_plot_01=0.37
+threshold_plot_02=0.37
+threshold_plot_03=0.37
+threshold_plot_04=0.37
+threshold_plot_05=0.37
+
 n_individuals_01=10
 n_individuals_02=10
 n_individuals_03=20

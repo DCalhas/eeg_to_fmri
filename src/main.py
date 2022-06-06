@@ -6,7 +6,7 @@ import numpy as np
 
 import pickle
 
-from utils import metrics, process_utils, train, losses_utils, viz_utils, lrp, eeg_utils, bnn_utils
+from utils import metrics, process_utils, train, losses_utils, viz_utils, lrp, data_utils, eeg_utils, fmri_utils, bnn_utils, assertion_utils
 
 from models.eeg_to_fmri import EEG_to_fMRI
 
@@ -47,70 +47,8 @@ parser.add_argument('-T', default=100, type=int, help="Monte Carlo Simulation nu
 parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
 opt = parser.parse_args()
 
-mode=opt.mode
-dataset=opt.dataset
-topographical_attention=opt.topographical_attention
-padded=opt.padded
-variational=opt.variational
-variational_coefs=opt.variational_coefs
-variational_dependent_h=opt.variational_dependent_h
-variational_dist=opt.variational_dist
-variational_random_padding=opt.variational_random_padding
-resolution_decoder=opt.resolution_decoder
-aleatoric_uncertainty=opt.aleatoric_uncertainty
-fourier_features=opt.fourier_features
-random_fourier=opt.random_fourier
-conditional_attention_style=opt.conditional_attention_style
-epochs=opt.epochs
-batch_size=opt.batch_size
-na_path_eeg=opt.na_path_eeg
-na_path_fmri=opt.na_path_fmri
-gpu_mem=opt.gpu_mem
-verbose=opt.verbose
-save_metrics=opt.save_metrics
-metrics_path=opt.metrics_path
-T=opt.T
-seed=opt.seed
+mode, dataset, topographical_attention, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting = assertion_utils.main(opt)
 
-#assertion
-setting=dataset
-if(topographical_attention):
-	setting+="_topographical_attention"
-if(random_fourier):
-	assert fourier_features, "To run random_fourier, fourier_features need to be active"
-	setting+="_random"
-if(fourier_features):
-	setting+="_fourier_features"
-if(conditional_attention_style):
-	assert topographical_attention, "To run conditional_attention_style, topographical_attention needs to be active"
-	setting+="_attention_style"
-if(padded):
-	assert not variational, "No variational model along with padded version of filling with zeros"
-	assert type(resolution_decoder) is float, "There needs to be a specification of the lower resolution"
-	setting+="_padded"
-if(variational):
-	assert variational_coefs, "Need to be specified number of coefs, always upsampling for now, set issue to allow better implementation"
-	setting+="_variational"
-if(type(variational_dist) is str):
-	assert variational_dist in ["Normal", "VonMises"]
-	setting+="_"+variational_dist
-if(variational_dependent_h is None):
-	variational_dependent_h=1
-if(variational_dependent_h > 1 and variational):
-	setting+="_dependent_h_"+str(variational_dependent_h)
-if(type(variational_coefs) is str):
-	assert variational, "Only done with variational flag set to True"
-	variational_coefs=tuple(map(int ,variational_coefs.split(",")))
-	assert len(variational_coefs) == 3, "Needs to specify all dimensions"
-	assert type(variational_coefs[0]) is int and type(variational_coefs[1]) is int and type(variational_coefs[2]) is int, "Integers"
-	assert variational_coefs[0] > 0 and variational_coefs[1] > 0 and variational_coefs[2] > 0, "Positive integers"
-	setting+="_"+str(variational_coefs[0])+"x"+str(variational_coefs[1])+"x"+str(variational_coefs[2])
-if(type(resolution_decoder) is float):
-	assert resolution_decoder > 1, "Resolution decoder needs to be \in [1,+\infty]"
-	setting+="_res_"+"{:.1f}".format(resolution_decoder)
-if(variational_random_padding):
-	assert variational, "Only done with variational flag set to True"
-	setting+="_random_padding"
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
 
@@ -119,24 +57,12 @@ if(not os.path.exists(metrics_path+"/"+ setting)):
 	os.makedirs(metrics_path+"/"+ setting)
 
 #load data
-raw_eeg=False#time or frequency features? raw-time nonraw-frequency
+raw_eeg=False
 resampling=False
-if(dataset=="01"):
-	n_volumes=300-3
-	n_individuals=10
-	threshold_plot=0.37
-if(dataset=="02"):
-	n_volumes=170-3
-	n_individuals=10
-	threshold_plot=0.05
-if(dataset=="03"):
-	n_volumes = 373-3#?
-	n_individuals=20
-	threshold_plot=0.05
-else:
-	raise NotImplementedError
-#parametrize the interval eeg?
 interval_eeg=10
+n_volumes=getattr(fmri_utils, "n_volumes_"+dataset)
+n_individuals=getattr(data_utils, "n_individuals_"+dataset)
+threshold_plot=getattr(data_utils, "threshold_plot_"+dataset)
 
 #return_test returns the test set, this is not active when running validation optimization
 #setup_tf sets the tensorflow memory growth on GPU, this should not be done when already set, which is the case
@@ -149,21 +75,8 @@ test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
 
 #load model
 #unroll hyperparameters
-theta = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1)
-learning_rate=0.002980911194116198
-weight_decay = float(theta[1])
-kernel_size = theta[2]
-stride_size = theta[3]
-batch_size=int(theta[4])
-latent_dimension=theta[5]
-n_channels=int(theta[6])
-max_pool=bool(theta[7])
-batch_norm=bool(theta[8])
-skip_connections=bool(theta[9])
-dropout=bool(theta[10])
-n_stacks=int(theta[11])
-outfilter=int(theta[12])
-local=True
+learning_rate,weight_decay ,kernel_size ,stride_size ,batch_size,latent_dimension,n_channels,max_pool,batch_norm,skip_connections,dropout,n_stacks,outfilter,local = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1, True)
+
 with open(na_path_eeg, "rb") as f:
 	na_specification_eeg = pickle.load(f)
 with open(na_path_fmri, "rb") as f:

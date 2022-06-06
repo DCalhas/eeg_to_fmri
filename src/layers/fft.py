@@ -388,14 +388,14 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.shape_normal2 = (self.in1+self.rand1, self.rand2, self.in3)
 		self.shape_normal3 = (self.in1+self.rand1, self.in2+self.rand2, self.rand3)
 
-		if(self.distribution=="VonMises"):
-			self.cartesian_loc = self.add_weight('cartesian_loc_posterior',
+		if(self.distribution in ["Normal", "VonMises"]):
+			self.loc = self.add_weight('loc_posterior',
 										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
-			self.cartesian_scale = self.add_weight('cartesian_scale_posterior',
+			self.scale = self.add_weight('scale_posterior',
 										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=scale_initializer,
 										constraint=constraint,
@@ -442,9 +442,10 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 				   [self.in3, 0]]
 		
 		#https://github.com/tensorflow/probability/blob/88d217dfe8be49050362eb14ba3076c0dc0f1ba6/tensorflow_probability/python/distributions/normal.py#L174
-		if(self.distribution=="VonMises"):
-			cartesian_dist = tfp.distributions.VonMises(self.cartesian_loc, self.cartesian_scale)
-			rand_coefs=tf.cos(cartesian_dist.sample())
+		if(self.distribution in ["Normal", "VonMises"]):
+			rand_coefs = getattr(tfp.distributions, self.distribution)(self.loc, self.scale).sample()
+			if(self.distribution=="VonMises"):
+				rand_coefs=tf.cos(rand_coefs)
 			rand_coefs1, rand_coefs2, rand_coefs3 = tf.split(rand_coefs, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], axis=-1)
 			biases1, biases2, biases3 = tf.split(self.biases, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], axis=-1)
 
