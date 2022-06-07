@@ -139,16 +139,16 @@ elif(mode=="uncertainty"):
 	#create dir setting if not exists
 	if(not os.path.exists(metrics_path+"/"+ setting+"/uncertainty")):
 		os.makedirs(metrics_path+"/"+ setting+"/uncertainty")
-	if(not os.path.exists(metrics_path+"/"+ setting+"/epistemic")):
-		os.makedirs(metrics_path+"/"+ setting+"/epistemic")
-	if(not os.path.exists(metrics_path+"/"+ setting+"/aleatoric")):
-		os.makedirs(metrics_path+"/"+ setting+"/aleatoric")
-	if(not os.path.exists(metrics_path+"/"+ setting+"/quality")):
-		os.makedirs(metrics_path+"/"+ setting+"/quality")
-	if(not os.path.exists(metrics_path+"/"+ setting+"/quality/single/")):
-		os.makedirs(metrics_path+"/"+ setting+"/quality/single")
-	if(not os.path.exists(metrics_path+"/"+ setting+"/quality/whole/")):
-		os.makedirs(metrics_path+"/"+ setting+"/quality/whole")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/uncertainty/epistemic")):
+		os.makedirs(metrics_path+"/"+ setting+"/uncertainty/epistemic")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/uncertainty/aleatoric")):
+		os.makedirs(metrics_path+"/"+ setting+"/uncertainty/aleatoric")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/uncertainty/quality")):
+		os.makedirs(metrics_path+"/"+ setting+"/uncertainty/quality")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/uncertainty/quality/single/")):
+		os.makedirs(metrics_path+"/"+ setting+"/uncertainty/quality/single")
+	if(not os.path.exists(metrics_path+"/"+ setting+"/uncertainty/quality/whole/")):
+		os.makedirs(metrics_path+"/"+ setting+"/uncertainty/quality/whole")
 	
 	instance=0
 	for eeg, fmri in test_set.repeat(1):
