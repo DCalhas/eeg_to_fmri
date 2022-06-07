@@ -117,6 +117,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.local=local
         self.fourier_features=fourier_features
         self.conditional_attention_style=conditional_attention_style
+        self.conditional_attention_style_prior=conditional_attention_style_prior
         self.random_fourier=random_fourier
         self.inverse_DFT=inverse_DFT
         self.DFT=DFT
@@ -339,6 +340,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 "local": self.local,
                 "fourier_features": self.fourier_features,
                 "conditional_attention_style": self.conditional_attention_style,
+                "conditional_attention_style_prior": self.conditional_attention_style_prior,
                 "random_fourier": self.random_fourier,
                 "inverse_DFT": self.inverse_DFT,
                 "DFT": self.DFT,
@@ -365,6 +367,10 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "EEG_to_fMRI": EEG_to_fMRI,
                 "ResBlock": ResBlock,
                 "fMRI_AE": fmri_ae.fMRI_AE,
+                "padded_iDCT3D": padded_iDCT3D, 
+                "DCT3D": DCT3D, 
+                "variational_iDCT3D": variational_iDCT3D, 
+                "iDCT3D": iDCT3D,
                 "RandomFourierFeatures": RandomFourierFeatures}
 
 
@@ -476,6 +482,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     bias_regularizer=regularizer,
                     trainable=True)(x)
         z = tf.keras.layers.ReLU()(z)
+
+        print(pretrained_model.layers[4].summary())
         
         #try smoothing feature selection
         z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
@@ -490,13 +498,16 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         z = MRICircleMask(z.shape)(z)#mask a circle
 
         #upsampling
-        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
-                    pretrained_model.layers[4].layers[16].units,
-                    kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[16].kernel.numpy()),
-                    bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[16].bias.numpy()),
-                    kernel_regularizer=regularizer,
-                    bias_regularizer=regularizer,
-                    trainable=False)(x)
+        if(type(pretrained_model.layers[4].layers[16]).__name__=="Dense"):
+            x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
+                        pretrained_model.layers[4].layers[16].units,
+                        kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[16].kernel.numpy()),
+                        bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[16].bias.numpy()),
+                        kernel_regularizer=regularizer,
+                        bias_regularizer=regularizer,
+                        trainable=False)(x)
+        elif(type(pretrained_model.layers[4].layers[17]).__name__=="DCT3D"):#variational option
+            raise NotImplementedError
 
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(x)
@@ -509,7 +520,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].bias.numpy()),
                                         padding=pretrained_model.layers[4].layers[18].padding,
                                         trainable=False)(x)
-        #x = MRICircleMask(z.shape)(x)#mask a circle
 
         self.decoder = tf.keras.Model(input_shape, z)
         self.q_decoder = tf.keras.Model(input_shape, x)

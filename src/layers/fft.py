@@ -9,37 +9,40 @@ from layers import fourier_features #to import _get_default_scale
 
 
 
-"""
-DCT3D - real Discrete Cosine Transform
 
-Performs the discrete cosine transform
-
-Example usage:
->>> import numpy as np
->>> import tensorflow as tf
->>> import tensorflow_probability as tfp
->>>
->>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
->>> N = x.shape[1]
->>> irdft = irDFT(N, out=N*2)
->>> irdft(x)
-"""
 class DCT3D(tf.keras.layers.Layer):
+	"""
+	DCT3D - real Discrete Cosine Transform
 
-	def __init__(self, N1, N2, N3):
+	Performs the discrete cosine transform
 
-		super(DCT3D, self).__init__()
+	Example usage:
+	>>> import numpy as np
+	>>> import tensorflow as tf
+	>>> import tensorflow_probability as tfp
+	>>>
+	>>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
+	>>> N = x.shape[1]
+	>>> irdft = irDFT(N, out=N*2)
+	>>> irdft(x)
+	"""
 
-		self.N1=N1
-		self.N2=N2
-		self.N3=N3
+	def __init__(self, N_1, N_2, N_3, **kwargs):
 
-		n1 = np.arange(N1)
-		k1 = n1.reshape((N1,1))
-		n2 = np.arange(N2)
-		k2 = n2.reshape((N2,1))
-		n3 = np.arange(N3)
-		k3 = n3.reshape((N3,1))
+		self.N_1=N_1
+		self.N_2=N_2
+		self.N_3=N_3
+
+		super(DCT3D, self).__init__(**kwargs)
+
+	def build(self, input_shape):
+
+		n1 = np.arange(self.N_1)
+		k1 = n1.reshape((self.N_1,1))
+		n2 = np.arange(self.N_2)
+		k2 = n2.reshape((self.N_2,1))
+		n3 = np.arange(self.N_3)
+		k3 = n3.reshape((self.N_3,1))
 
 		#variable initializer
 		self.n1 = self.add_weight('n1',
@@ -75,20 +78,20 @@ class DCT3D(tf.keras.layers.Layer):
 
 		self.N1 = self.add_weight('N1',
 								shape=[1],
-								initializer=tf.constant_initializer(N1),
+								initializer=tf.constant_initializer(self.N_1),
 								dtype=tf.float32,
 								trainable=False)
 		self.N2 = self.add_weight('N2',
 								shape=[1],
-								initializer=tf.constant_initializer(N2),
+								initializer=tf.constant_initializer(self.N_2),
 								dtype=tf.float32,
 								trainable=False)
 		self.N3 = self.add_weight('N3',
 								shape=[1],
-								initializer=tf.constant_initializer(N3),
+								initializer=tf.constant_initializer(self.N_3),
 								dtype=tf.float32,
 								trainable=False)
-		
+	
 	def call(self, x):
 		z3 = 2*tf.tensordot((tf.cos(np.pi*(2*self.n3+1)*self.k3/(2*self.N3))), x, axes=[[1], [3]])
 		z3 = tf.transpose(z3, [1,2,3,0])
@@ -102,9 +105,9 @@ class DCT3D(tf.keras.layers.Layer):
 
 	def get_config(self):
 		return {
-			'N1': self.N1,
-			'N2': self.N2,
-			'N3': self.N3,
+			'N_1': self.N_1,
+			'N_2': self.N_2,
+			'N_3': self.N_3,
 		}
 
 	@classmethod
@@ -112,38 +115,39 @@ class DCT3D(tf.keras.layers.Layer):
 		return cls(**config)
 
 	
-	
-"""
-DCT3D - real Discrete Cosine Transform
-
-Performs the discrete cosine transform
-
-Example usage:
->>> import numpy as np
->>> import tensorflow as tf
->>> import tensorflow_probability as tfp
->>>
->>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
->>> N = x.shape[1]
->>> irdft = irDFT(N, out=N*2)
->>> irdft(x)
-"""
 class iDCT3D(tf.keras.layers.Layer):
+	"""
+	DCT3D - real Discrete Cosine Transform
 
-	def __init__(self, N1, N2, N3):
+	Performs the discrete cosine transform
 
-		super(iDCT3D, self).__init__()
+	Example usage:
+	>>> import numpy as np
+	>>> import tensorflow as tf
+	>>> import tensorflow_probability as tfp
+	>>>
+	>>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
+	>>> N = x.shape[1]
+	>>> irdft = irDFT(N, out=N*2)
+	>>> irdft(x)
+	"""
 
-		self.N1=N1
-		self.N2=N2
-		self.N3=N3
+	def __init__(self, N_1, N_2, N_3, **kwargs):
 
-		n1 = np.arange(N1)
-		k1 = n1.reshape((N1,1))
-		n2 = np.arange(N2)
-		k2 = n2.reshape((N2,1))
-		n3 = np.arange(N3)
-		k3 = n3.reshape((N3,1))
+		self.N_1=N_1
+		self.N_2=N_2
+		self.N_3=N_3
+
+		super(iDCT3D, self).__init__(**kwargs)
+
+	def build(self, input_shape):
+
+		n1 = np.arange(self.N_1)
+		k1 = n1.reshape((self.N_1,1))
+		n2 = np.arange(self.N_2)
+		k2 = n2.reshape((self.N_2,1))
+		n3 = np.arange(self.N_3)
+		k3 = n3.reshape((self.N_3,1))
 
 		#variable initializer
 		self.n1 = self.add_weight('n1',
@@ -179,44 +183,44 @@ class iDCT3D(tf.keras.layers.Layer):
 
 		self.N1 = self.add_weight('N1',
 								shape=[1],
-								initializer=tf.constant_initializer(N1),
+								initializer=tf.constant_initializer(self.N_1),
 								dtype=tf.float32,
 								trainable=False)
 		self.N2 = self.add_weight('N2',
 								shape=[1],
-								initializer=tf.constant_initializer(N2),
+								initializer=tf.constant_initializer(self.N_2),
 								dtype=tf.float32,
 								trainable=False)
 		self.N3 = self.add_weight('N3',
 								shape=[1],
-								initializer=tf.constant_initializer(N3),
+								initializer=tf.constant_initializer(self.N_3),
 								dtype=tf.float32,
 								trainable=False)
 		
 		#remove this
-		norm3 = np.ones((N1,N2,N3))
+		norm3 = np.ones((self.N_1,self.N_2,self.N_3))
 		norm3[:,:,1:] = 2
-		norm2 = np.ones((N1,N2,N3))
+		norm2 = np.ones((self.N_1,self.N_2,self.N_3))
 		norm2[:,1:,:] = 2
-		norm1 = np.ones((N1,N2,N3))
+		norm1 = np.ones((self.N_1,self.N_2,self.N_3))
 		norm1[1:,:,:] = 2
 		
 		self.norm1 = self.add_weight('norm1',
-								shape=[N1,N2,N3],
+								shape=[self.N_1,self.N_2,self.N_3],
 								initializer=tf.constant_initializer(norm1),
 								dtype=tf.float32,
 								trainable=False)
 		self.norm2 = self.add_weight('norm2',
-								shape=[N1,N2,N3],
+								shape=[self.N_1,self.N_2,self.N_3],
 								initializer=tf.constant_initializer(norm2),
 								dtype=tf.float32,
 								trainable=False)
 		self.norm3 = self.add_weight('norm3',
-								shape=[N1,N2,N3],
+								shape=[self.N_1,self.N_2,self.N_3],
 								initializer=tf.constant_initializer(norm3),
 								dtype=tf.float32,
 								trainable=False)
-		
+
 	def call(self, x):
 		z3 = (1/(2*self.N3))*tf.tensordot((tf.cos(np.pi*self.n3*(2*self.k3+1)/(2*self.N3))), x*self.norm3, 
 										  axes=[[1], [3]])
@@ -233,9 +237,9 @@ class iDCT3D(tf.keras.layers.Layer):
 
 	def get_config(self):
 		return {
-			'N1': self.N1,
-			'N2': self.N2,
-			'N3': self.N3,
+			'N_1': self.N_1,
+			'N_2': self.N_2,
+			'N_3': self.N_3,
 		}
 
 	@classmethod
@@ -244,27 +248,24 @@ class iDCT3D(tf.keras.layers.Layer):
 
 
 
-
-"""
-DCT3D - real Discrete Cosine Transform
-
-Performs the discrete cosine transform
-
-Example usage:
->>> import numpy as np
->>> import tensorflow as tf
->>> import tensorflow_probability as tfp
->>>
->>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
->>> N = x.shape[1]
->>> irdft = irDFT(N, out=N*2)
->>> irdft(x)
-"""
 class padded_iDCT3D(tf.keras.layers.Layer):
+	"""
+	DCT3D - real Discrete Cosine Transform
 
-	def __init__(self, in1, in2, in3, out1, out2, out3):
+	Performs the discrete cosine transform
 
-		super(padded_iDCT3D, self).__init__()
+	Example usage:
+	>>> import numpy as np
+	>>> import tensorflow as tf
+	>>> import tensorflow_probability as tfp
+	>>>
+	>>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
+	>>> N = x.shape[1]
+	>>> irdft = irDFT(N, out=N*2)
+	>>> irdft(x)
+	"""
+
+	def __init__(self, in1, in2, in3, out1, out2, out3, **kwargs):
 		
 		assert out1 is not None
 		assert out3 is not None
@@ -277,9 +278,14 @@ class padded_iDCT3D(tf.keras.layers.Layer):
 		self.out1 = out1
 		self.out2 = out2
 		self.out3 = out3
+
+		super(padded_iDCT3D, self).__init__(**kwargs)
+
+
+	def build(self, input_shape):
 		
-		self.idct3 = iDCT3D(out1, out2, out3)
-		
+		self.idct3 = iDCT3D(self.out1, self.out2, self.out3)
+	
 	def call(self, x):
 		
 		paddings = [[0,0],
@@ -305,33 +311,32 @@ class padded_iDCT3D(tf.keras.layers.Layer):
 
 
 
-"""
-DCT3D - real Discrete Cosine Transform
-
-Performs the discrete cosine transform
-
-Example usage:
->>> import numpy as np
->>> import tensorflow as tf
->>> import tensorflow_probability as tfp
->>>
->>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
->>> N = x.shape[1]
->>> irdft = irDFT(N, out=N*2)
->>> irdft(x)
-"""
 class variational_iDCT3D(tf.keras.layers.Layer):
 	"""
-	in1 - int - first dimension input
+	DCT3D - real Discrete Cosine Transform
 
-	If Gamma is used please cite arXiv:1805.08498 - Figurnov et al. 2019
+	Performs the discrete cosine transform
 
-
-	distribution variances
+	Example usage:
+	>>> import numpy as np
+	>>> import tensorflow as tf
+	>>> import tensorflow_probability as tfp
+	>>>
+	>>> x = tf.constant(np.expand_dims(np.random.rand(16,10),axis=-1), dtype=tf.float32)
+	>>> N = x.shape[1]
+	>>> irdft = irDFT(N, out=N*2)
+	>>> irdft(x)
 	"""
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution=None, random_padding=False):
+	
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution=None, random_padding=False, **kwargs):
+		"""
+		in1 - int - first dimension input
 
-		super(variational_iDCT3D, self).__init__()
+		If Gamma is used please cite arXiv:1805.08498 - Figurnov et al. 2019
+
+
+		distribution variances
+		"""
 
 		assert out1 is not None
 		assert out3 is not None
@@ -355,8 +360,12 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.distribution = distribution
 		self.random_padding = random_padding
 
-		if(distribution is None):
-			distribution="Normal"#default
+		super(variational_iDCT3D, self).__init__(**kwargs)
+
+	def build(self, input_shape):
+
+		if(self.distribution is None):
+			self.distribution="Normal"#default
 
 		loc_initializer=tf.initializers.GlorotUniform()
 		scale_initializer=tf.initializers.Ones()
@@ -367,22 +376,22 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_weight)
 		if(self.dependent):
 			self.w1 = self.add_weight('W1',
-								shape=[self.in1*self.in2*self.in3, posterior_dimension],
+								shape=[self.in1*self.in2*self.in3, self.posterior_dimension],
 								initializer=tf.initializers.GlorotUniform(),
 								dtype=tf.float32,
 								trainable=True)
 			self.w2 = self.add_weight('W2',
-								shape=[self.in1*self.in2*self.in3, posterior_dimension],
+								shape=[self.in1*self.in2*self.in3, self.posterior_dimension],
 								initializer=tf.initializers.GlorotUniform(),
 								dtype=tf.float32,
 								trainable=True)
 			self.w3 = self.add_weight('W3',
-								shape=[self.in1*self.in2*self.in3, posterior_dimension],
+								shape=[self.in1*self.in2*self.in3, self.posterior_dimension],
 								initializer=tf.initializers.GlorotUniform(),
 								dtype=tf.float32,
 								trainable=True)
 
-		self.padded_idct3 = padded_iDCT3D(in1+rand1, in2+rand2, in3+rand3, out1, out2, out3)
+		self.padded_idct3 = padded_iDCT3D(self.in1+self.rand1, self.in2+self.rand2, self.in3+self.rand3, self.out1, self.out2, self.out3)
 
 		self.shape_normal1 = (self.rand1, self.in2, self.in3)
 		self.shape_normal2 = (self.in1+self.rand1, self.rand2, self.in3)
@@ -390,19 +399,19 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		if(self.distribution in ["Normal", "VonMises"]):
 			self.loc = self.add_weight('loc_posterior',
-										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
+										shape=[self.posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
 										trainable=True)
 			self.scale = self.add_weight('scale_posterior',
-										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
+										shape=[self.posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=scale_initializer,
 										constraint=constraint,
 										dtype=tf.float32,
 										trainable=True)
 			self.biases = self.add_weight('biases',
-										shape=[posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
+										shape=[self.posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
@@ -505,22 +514,24 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 
 
-"""
-Spectral Dropout Layer - Khan et al. 2019 - https://www.sciencedirect.com/science/article/pii/S0893608018302715
 
-tfp.distributions.Bernoulli(probs=p)
-
->>> import tensorflow as tf
->>> import tensorflow_probability as tfp
->>> layer = SpectralDropout(64,64,30,0.5)
->>> layer(tf.ones((1,64,64,30)))
-
-"""
 class SpectralDropout(tf.keras.layers.Layer):
 	"""
-	in1 - int - first dimension input
-	"""
+	Spectral Dropout Layer - Khan et al. 2019 - https://www.sciencedirect.com/science/article/pii/S0893608018302715
+
+	tfp.distributions.Bernoulli(probs=p)
+
+	>>> import tensorflow as tf
+	>>> import tensorflow_probability as tfp
+	>>> layer = SpectralDropout(64,64,30,0.5)
+	>>> layer(tf.ones((1,64,64,30)))
+
+	"""	
 	def __init__(self, in1, in2, in3, probs=None, dtype=tf.float32):
+		"""
+		in1 - int - first dimension input
+		"""
+
 		super(SpectralDropout, self).__init__()
 
 

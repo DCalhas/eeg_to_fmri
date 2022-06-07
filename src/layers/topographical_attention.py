@@ -16,7 +16,6 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		self.regularizer=regularizer
 		self.seed=seed
 
-		
 		super(Topographical_Attention, self).__init__(**kwargs)
 
 	def build(self, input_shape):
