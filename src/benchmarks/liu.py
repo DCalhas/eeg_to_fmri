@@ -178,7 +178,7 @@ if __name__ == "__main__":
 	parser.add_argument('-memory_limit', default=4000, type=int, help="GPU memory limit")
 	parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
 	parser.add_argument('-save', action="store_true", help="Save metrics")
-	parser.add_argument('-save_path', default=str(Path.home())+"/eeg_to_fmri/metrics", type=int, help="interval eeg")
+	parser.add_argument('-save_path', default=str(Path.home())+"/eeg_to_fmri/metrics", type=str, help="interval eeg")
 	opt = parser.parse_args()
 
 	dataset=opt.dataset
