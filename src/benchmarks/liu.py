@@ -175,6 +175,7 @@ if __name__ == "__main__":
 	parser.add_argument('dataset', choices=['01', '02', '03', '04', '05', 'NEW'], help="Which dataset to load")
 	parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
 	parser.add_argument('-interval_eeg', default=2, type=int, help="interval eeg")
+	parser.add_argument('-T', default=10, type=int, help="Monte Carlo Simulation number of samples taken to approximate.")
 	parser.add_argument('-memory_limit', default=4000, type=int, help="GPU memory limit")
 	parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
 	parser.add_argument('-save', action="store_true", help="Save metrics")
@@ -184,6 +185,7 @@ if __name__ == "__main__":
 	dataset=opt.dataset
 	variational=opt.variational
 	interval_eeg=opt.interval_eeg
+	T=opt.T
 	memory_limit=opt.memory_limit
 	seed=opt.seed
 
@@ -210,7 +212,7 @@ if __name__ == "__main__":
 
 	rmse_pop = metrics.rmse(test_set, model)
 	ssim_pop = metrics.ssim(test_set, model)
-	res_pop = metrics.residues(test_set, model, variational=aleatoric_uncertainty, T=T)
+	res_pop = metrics.residues(test_set, model, variational=variational, T=T)
 	print("RMSE: ", np.mean(rmse_pop), "\pm", np.std(rmse_pop))
 	print("SSIM: ", np.mean(ssim_pop), "\pm", np.std(ssim_pop))
 	print("RES: ", np.mean(res_pop), "\pm", np.std(res_pop))
