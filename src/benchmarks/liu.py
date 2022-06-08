@@ -147,3 +147,79 @@ class Liu_et_al(tf.keras.Model):
 
 	def variational_loss(self, y_true, y_pred):
 		return tf.reduce_mean((1/(y_pred[1]+losses_utils.NON_DIVISION_ZERO))*tf.math.abs(y_pred[0] - y_true)+tf.math.log(2*(y_pred[1]+losses_utils.NON_DIVISION_ZERO)), axis=(1,2,3))
+
+
+
+
+if __name__ == "__main__":
+
+	import sys
+
+	sys.path.append("..")
+
+	from utils import tf_config	
+
+	import GPyOpt
+
+	import argparse
+
+	from pathlib import Path
+
+	import os
+
+	from utils import train, metrics
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument('dataset', choices=['01', '02', '03', '04', '05', 'NEW'], help="Which dataset to load")
+	parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
+	parser.add_argument('-interval_eeg', default=2, type=int, help="interval eeg")
+	parser.add_argument('-memory_limit', default=4000, type=int, help="GPU memory limit")
+	parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
+	parser.add_argument('-save', action="store_true", help="Save metrics")
+	parser.add_argument('-save_path', default=str(Path.home())+"/eeg_to_fmri/metrics", type=int, help="interval eeg")
+	opt = parser.parse_args()
+
+	dataset=opt.dataset
+	variational=opt.variational
+	interval_eeg=opt.interval_eeg
+	memory_limit=opt.memory_limit
+	seed=opt.seed
+
+	setting=dataset+"_liu"
+	if(variational):
+		setting+="_variational"
+	setting+="_interval_"+str(interval_eeg)
+
+	tf_config.set_seed(seed=seed)
+	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
+
+	with tf.device('/CPU:0'):
+		model = Liu_et_al((len(getattr(eeg_utils, "channels_"+dataset)),interval_eeg),
+							getattr(fmri_utils, "fmri_shape_"+dataset)+(interval_eeg,),
+							variational=variational)
+		
+		optimizer = tf.keras.optimizers.Adam(0.001)
+		loss_fn = model.get_loss()
+
+		train_set, test_set = model.load_data(dataset, time_length=interval_eeg, batch_size=2)
+
+
+	train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=False, verbose=True)
+
+	rmse_pop = metrics.rmse(test_set, model)
+	ssim_pop = metrics.ssim(test_set, model)
+	res_pop = metrics.residues(test_set, model, variational=aleatoric_uncertainty, T=T)
+	print("RMSE: ", np.mean(rmse_pop), "\pm", np.std(rmse_pop))
+	print("SSIM: ", np.mean(ssim_pop), "\pm", np.std(ssim_pop))
+	print("RES: ", np.mean(res_pop), "\pm", np.std(res_pop))
+
+	#save
+	if(save):
+		if(not os.path.exists(save_path+"/"+setting)):
+			os.makedirs(save_path+"/"+setting)
+		with open(save_path+"/"+setting+"/res_"+"seed_"+str(seed)+".npy", 'wb') as f:
+			np.save(f, res_pop)
+		with open(save_path+"/"+setting+"/rmse_"+"seed_"+str(seed)+".npy", 'wb') as f:
+			np.save(f, rmse_pop)
+		with open(save_path+"/"+setting+"/ssim_"+"seed_"+str(seed)+".npy", 'wb') as f:
+			np.save(f, ssim_pop)
