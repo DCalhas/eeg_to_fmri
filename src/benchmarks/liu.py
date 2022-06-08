@@ -2,6 +2,12 @@ import tensorflow as tf
 
 import tensorflow_probability as tfp
 
+if __name__ == "__main__":
+
+	import sys
+
+	sys.path.append("..")
+
 from utils import data_utils, fmri_utils, eeg_utils, losses_utils
 
 import numpy as np
@@ -152,10 +158,6 @@ class Liu_et_al(tf.keras.Model):
 
 
 if __name__ == "__main__":
-
-	import sys
-
-	sys.path.append("..")
 
 	from utils import tf_config	
 
