@@ -189,6 +189,8 @@ if __name__ == "__main__":
 	interval_eeg=opt.interval_eeg
 	T=opt.T
 	memory_limit=opt.memory_limit
+	save=opt.save
+	save_path=opt.save
 	seed=opt.seed
 
 	setting=dataset+"_liu"
