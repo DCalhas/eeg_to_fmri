@@ -66,7 +66,7 @@ class Liu_et_al(tf.keras.Model):
 
 		#16x16x7x300 go through 12 layers that maintain dimension so kernel and stride should be both 1
 		#channel dimension becomes 16 so 300*16
-		for i in range(3):
+		for i in range(1):
 			x = tf.keras.layers.Conv3D(self.time_dimension*self.n_channels, kernel_size=1, strides=1)(x)
 		#channel dimension goes back to 1
 		x = tf.keras.layers.Conv3D(self.time_dimension, kernel_size=1, strides=1)(x)
@@ -74,7 +74,7 @@ class Liu_et_al(tf.keras.Model):
 		#reshape to perform convolution on the time dimension "Temporal Convolutional Layer"
 		x = tf.keras.layers.Reshape((self.time_dimension,self.latent_dim))(x)
 		#now goes to the time slicing part 16*16*7=1792
-		for i in range(3):
+		for i in range(1):
 			x = self.fn(self.latent_dim*self.n_channels, kernel_size=1, strides=1)(x)
 		x = tf.keras.layers.Conv1D(self.spatial_dimension, kernel_size=1, strides=1)(x)
 
@@ -174,7 +174,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('dataset', choices=['01', '02', '03', '04', '05', 'NEW'], help="Which dataset to load")
 	parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
-	parser.add_argument('-interval_eeg', default=2, type=int, help="interval eeg")
+	parser.add_argument('-interval_eeg', default=1, type=int, help="interval eeg")
 	parser.add_argument('-T', default=10, type=int, help="Monte Carlo Simulation number of samples taken to approximate.")
 	parser.add_argument('-memory_limit', default=4000, type=int, help="GPU memory limit")
 	parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
