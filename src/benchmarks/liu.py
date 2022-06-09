@@ -34,7 +34,7 @@ class Liu_et_al(tf.keras.Model):
 	max number of channels to run on the personal computer is 4
 	standard number is 16
 	"""
-	def __init__(self, eeg_shape, fmri_shape, n_channels=4, latent_dim=256, variational=False):
+	def __init__(self, eeg_shape, fmri_shape, n_channels=1, latent_dim=256, variational=False):
 		super(Liu_et_al, self).__init__()
 
 		self.eeg_shape = eeg_shape
@@ -171,6 +171,8 @@ if __name__ == "__main__":
 
 	from utils import train, metrics
 
+	import gc
+
 	parser = argparse.ArgumentParser()
 	parser.add_argument('dataset', choices=['01', '02', '03', '04', '05', 'NEW'], help="Which dataset to load")
 	parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
@@ -211,8 +213,11 @@ if __name__ == "__main__":
 	train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=False, verbose=True)
 
 	rmse_pop = metrics.rmse(test_set, model)
+	gc.collect()
 	ssim_pop = metrics.ssim(test_set, model)
+	gc.collect()
 	res_pop = metrics.residues(test_set, model, variational=variational, T=T)
+	gc.collect()
 	print("RMSE: ", np.mean(rmse_pop), "\pm", np.std(rmse_pop))
 	print("SSIM: ", np.mean(ssim_pop), "\pm", np.std(ssim_pop))
 	print("RES: ", np.mean(res_pop), "\pm", np.std(res_pop))
