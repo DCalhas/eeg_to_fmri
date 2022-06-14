@@ -837,6 +837,128 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
 
 
 
+def comparison_plot_uncertainty(res1, res2, pvalues, res_img, model1="Model1", model2="Model2", factor=3, h_resolution=1, v_resolution=1, threshold=0.37, slice_label=True, save=False, save_path=None, red_blue=False, save_format="pdf"):
+    """
+        
+    Inputs:
+        res1: Numpy.ndarray - of shape (X,Y,Z,1)
+        res2: Numpy.ndarray - of shape (X,Y,Z,1)
+        pvalues: Numpy.ndarray - of shape (X,Y,Z,1)
+        res_img: Numpy.ndarray - of shape (X,Y,Z,1)
+        factor: float - that resamples the Z axis slices
+        h_resolution: int - resolution in the horizontal dimension
+        v_resolution: int - resolution in the vertical dimension
+        save: bool - whether to save the figure
+        save_path: str - path to save the figure, save has to be True
+    Returns:
+        matplotlib.Figure - The figure to plot, no saving option implemented
+    """
+    label = "$Z_{"
+
+    #colormap definition
+    if(red_blue):
+        cp1 = np.linspace(0,1)
+        cp2 = np.linspace(0,1)
+        Cp1, Cp2 = np.meshgrid(cp1,cp2)
+        C0 = np.full_like(Cp1, Cp1*Cp2*((Cp1)+(Cp2))/2)
+        p_values_range=Cp2#place holder that can stay to emulate pvalues
+        Legend = np.dstack((np.concatenate((Cp2, p_values_range*Cp1[:,::-1], ), axis=1)[:,::-1],
+                            np.concatenate((C0,C0[:,::-1]), axis=1),
+                            np.concatenate((p_values_range*Cp1, Cp2), axis=1)[:,::-1]))
+        cmap=ListedColormap(Legend)
+    else:
+        cp1 = np.linspace(0,1)
+        cp2 = np.linspace(0,1)
+        Cp1, Cp2 = np.meshgrid(cp1,cp2)
+        C0 = np.full_like(Cp1, Cp1*Cp2*((Cp1)+(Cp2))/2)
+        Cp2_ = np.triu(Cp2)
+        np.fill_diagonal(Cp2_, 0)
+        p_values_range=Cp2#place holder that can stay to emulate pvalues
+        Legend = np.dstack((np.concatenate((p_values_range*Cp1, Cp2), axis=1)[:,::-1],
+                            np.concatenate((Cp2, p_values_range*Cp1[:,::-1], ), axis=1)[:,::-1],
+                            np.concatenate((Cp2, Cp2), axis=1)[:,::-1]))
+        cmap=ListedColormap(Legend)
+
+    #normalization
+    res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+    res_img[np.where(res_img < threshold)]= -1
+
+
+    #assign colors
+    instance =np.zeros(res1[:,:,:,0].shape+(3,))
+    res1=np.abs(res1)+1e-9
+    res2=np.abs(res2)+1e-9
+    res1[np.where(res1>1.0)]=0.9999#1.0
+    res2[np.where(res2>1.0)]=0.9999#1.0
+
+    def _cmap_(res1, res2, voxel, pvalue=0.0, red_blue=False):
+        if(voxel==-1):
+            return (0.999,0.999,0.999)
+        elif(pvalue>0.05):
+            pvalue=np.clip(pvalue, a_min=1e-9, a_max=0.2)
+            return (pvalue,pvalue,pvalue)
+        if(red_blue):
+            if(res1<res2):
+                return (1+1e-30-res1, 0.0001, pvalue+1e-9)
+            return (pvalue+1e-9, 0.0001, 1+1e-30-res2)
+        else:
+            if(res1<res2):
+                return (0.0001, 1+1e-30-res1, 1+1e-30-res1)
+            return (1+1e-30-res2, 0.0001, 1+1e-30-res2)
+
+    for voxel1 in range(instance.shape[0]):
+        for voxel2 in range(instance.shape[1]):
+            for voxel3 in range(instance.shape[2]):
+                instance[voxel1,voxel2,voxel3] = np.array(list(_cmap_(res1[voxel1,voxel2,voxel3,0], res2[voxel1,voxel2,voxel3,0], 
+                                                                res_img[voxel1,voxel2,voxel3,0],
+                                                                pvalue=pvalues[voxel1,voxel2,voxel3,0],
+                                                                red_blue=red_blue)))
+
+    fig = plt.figure(figsize=(22,17))
+    gs = GridSpec(41, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
+
+    #colorbar
+    cax = fig.add_subplot(gs[30:33,3:5])
+    cax.imshow(Legend, extent=[0,100,0,100], aspect="auto")
+    cax.set_xticks([])
+    cax.set_yticks([5,95])
+    cax.annotate('', xy=(0, -0.5), xycoords='axes fraction', xytext=(1, -0.5), 
+                arrowprops=dict(arrowstyle="<->, head_width=0.4", color='black'))
+    cax.annotate(model1, xy=(0, -0.56), xycoords='axes fraction', xytext=(-0.1, -0.56), size=20, color="red")
+    cax.annotate(model2, xy=(0, -0.56), xycoords='axes fraction', xytext=(1.03, -0.56), size=20, color="blue")
+    cax.set_yticklabels([r"$p=0.0$",r"$p=1.0$"], size=20)
+    
+
+    #plot each slice in 2 Dimensional plot
+    row = 1
+    col = 6
+    for axis in range((instance[:,:,:].shape[2])//factor):
+        if(row==1):
+            _row=20
+        else:
+            _row=10
+        axes = fig.add_subplot(gs[_row:_row+10,col])
+        img = rotate(instance[:,:,axis*factor,:], 90)
+        axes.imshow(img)
+        if(slice_label):
+            axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
+                 va="baseline", ha="left", multialignment="left",)
+        axes.axis("off")
+        col -= 1
+        if(col == 1):
+            col=6
+            row-=1
+
+    plt.rcParams["font.family"] = "serif"
+    fig.set_tight_layout(True)
+
+    if(save):
+        fig.savefig(save_path, format=save_format)
+
+    return fig
+
+
+
 """
 Plot from: Bayesian DCT Uncertainty Quantification
 
