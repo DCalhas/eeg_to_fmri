@@ -914,24 +914,24 @@ def comparison_plot_uncertainty(res1, res2, pvalues, res_img, model1="Model1", m
                                                                 pvalue=pvalues[voxel1,voxel2,voxel3,0],
                                                                 red_blue=red_blue)))
 
-    fig = plt.figure(figsize=(22,17))
-    gs = GridSpec(41, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
+    fig = plt.figure(figsize=(25,17))
+    gs = GridSpec(41, 5, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
 
     #colorbar
-    cax = fig.add_subplot(gs[30:33,3:5])
+    cax = fig.add_subplot(gs[30:33,2:3])
     cax.imshow(Legend, extent=[0,100,0,100], aspect="auto")
     cax.set_xticks([])
     cax.set_yticks([5,95])
     cax.annotate('', xy=(0, -0.5), xycoords='axes fraction', xytext=(1, -0.5), 
                 arrowprops=dict(arrowstyle="<->, head_width=0.4", color='black'))
-    cax.annotate(model1, xy=(0, -0.56), xycoords='axes fraction', xytext=(-0.1, -0.56), size=20, color="red")
+    cax.annotate(model1, xy=(0, -0.56), xycoords='axes fraction', xytext=(-0.4, -0.56), size=20, color="red")
     cax.annotate(model2, xy=(0, -0.56), xycoords='axes fraction', xytext=(1.03, -0.56), size=20, color="blue")
     cax.set_yticklabels([r"$p=0.0$",r"$p=1.0$"], size=20)
     
 
     #plot each slice in 2 Dimensional plot
     row = 1
-    col = 6
+    col = 4
     for axis in range((instance[:,:,:].shape[2])//factor):
         if(row==1):
             _row=20
@@ -945,8 +945,8 @@ def comparison_plot_uncertainty(res1, res2, pvalues, res_img, model1="Model1", m
                  va="baseline", ha="left", multialignment="left",)
         axes.axis("off")
         col -= 1
-        if(col == 1):
-            col=6
+        if(col == -1):
+            col=4
             row-=1
 
     plt.rcParams["font.family"] = "serif"
