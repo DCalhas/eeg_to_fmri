@@ -61,9 +61,6 @@ class Liu_et_al(tf.keras.Model):
 		#8*8*4=256
 		x = tf.keras.layers.Reshape((8,8,4,self.fmri_shape[-1]))(x)
 
-		#kernel size to map to fmri spatial dimension sizes
-		#x = tf.keras.layers.Conv3DTranspose(self.time_dimension, kernel_size=(9,9,4))(x)
-
 		#16x16x7x300 go through 12 layers that maintain dimension so kernel and stride should be both 1
 		#channel dimension becomes 16 so 300*16
 		for i in range(1):
