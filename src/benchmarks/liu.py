@@ -101,7 +101,7 @@ class Liu_et_al(tf.keras.Model):
 										coefs_perturb=True, dependent=self.variational_dependent, 
 										posterior_dimension=self.variational_dependent_h, distribution=self.variational_dist,)(x)
 			else:
-				x = fft.padded_iDCT3D(*self.fmri_shape,
+				x = fft.padded_iDCT3D(*self.fmri_shape[:-1],
 							out1=self.fmri_shape[0]+self.variational_coefs[0], out2=self.fmri_shape[1]+self.variational_coefs[1], out3=self.fmri_shape[2]+self.variational_coefs[2])(x)
 
 			x = tf.keras.layers.Reshape((self.fmri_shape[0]+self.variational_coefs[0], self.fmri_shape[1]+self.variational_coefs[1], self.fmri_shape[2]+self.variational_coefs[2], self.time_dimension))(x)
