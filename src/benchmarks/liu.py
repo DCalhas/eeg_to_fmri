@@ -96,7 +96,7 @@ class Liu_et_al(tf.keras.Model):
 			x = fft.DCT3D(self.fmri_shape[0], self.fmri_shape[1], self.fmri_shape[2])(x)
 			if(variationalDCT):
 				x = fft.variational_iDCT3D(*(self.fmri_shape[:-1] + \
-										(self.fmri_shape[0]+self.variational_coefs[0], fmri_shape[1]+self.variational_coefs[1], self.fmri_shape[2]+self.variational_coefs[2]) +\
+										(self.fmri_shape[0]+self.variational_coefs[0], self.fmri_shape[1]+self.variational_coefs[1], self.fmri_shape[2]+self.variational_coefs[2]) +\
 										self.variational_coefs), 
 										coefs_perturb=True, dependent=self.variational_dependent, 
 										posterior_dimension=self.variational_dependent_h, distribution=self.variational_dist,)(x)
