@@ -96,15 +96,15 @@ class Liu_et_al(tf.keras.Model):
 			x = fft.DCT3D(self.fmri_shape[0], self.fmri_shape[1], self.fmri_shape[2])(x)
 			if(variationalDCT):
 				x = fft.variational_iDCT3D(*(self.fmri_shape[:-1] + \
-										(fmri_shape[0]+variational_coefs[0], fmri_shape[1]+variational_coefs[1], fmri_shape[2]+variational_coefs[2]) +\
+										(self.fmri_shape[0]+self.variational_coefs[0], fmri_shape[1]+self.variational_coefs[1], self.fmri_shape[2]+self.variational_coefs[2]) +\
 										self.variational_coefs), 
 										coefs_perturb=True, dependent=self.variational_dependent, 
 										posterior_dimension=self.variational_dependent_h, distribution=self.variational_dist,)(x)
 			else:
 				x = fft.padded_iDCT3D(*self.fmri_shape,
-							out1=fmri_shape[0]+variational_coefs[0], out2=fmri_shape[1]+variational_coefs[1], out3=fmri_shape[2]+variational_coefs[2])(x)
+							out1=self.fmri_shape[0]+self.variational_coefs[0], out2=self.fmri_shape[1]+self.variational_coefs[1], out3=self.fmri_shape[2]+self.variational_coefs[2])(x)
 
-			x = tf.keras.layers.Reshape((fmri_shape[0]+variational_coefs[0], fmri_shape[1]+variational_coefs[1], fmri_shape[2]+variational_coefs[2], self.time_dimension))(x)
+			x = tf.keras.layers.Reshape((self.fmri_shape[0]+self.variational_coefs[0], self.fmri_shape[1]+self.variational_coefs[1], self.fmri_shape[2]+self.variational_coefs[2], self.time_dimension))(x)
 		else:
 			x = tf.keras.layers.Reshape(self.fmri_shape)(x)
 
