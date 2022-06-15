@@ -10,6 +10,8 @@ if __name__ == "__main__":
 
 from utils import data_utils, fmri_utils, eeg_utils, losses_utils
 
+from layers import fft
+
 import numpy as np
 
 """
@@ -34,7 +36,10 @@ class Liu_et_al(tf.keras.Model):
 	max number of channels to run on the personal computer is 4
 	standard number is 16
 	"""
-	def __init__(self, eeg_shape, fmri_shape, n_channels=1, latent_dim=256, variational=False):
+	def __init__(self, eeg_shape, fmri_shape, n_channels=1, latent_dim=256, 
+				variational=False, variationalDCT=False, padded=False,
+				variational_coefs=(32,32,15), variational_dependent=True, 
+				variational_dependent_h=20, variational_dist="VonMises"):
 		super(Liu_et_al, self).__init__()
 
 		self.eeg_shape = eeg_shape
@@ -47,9 +52,19 @@ class Liu_et_al(tf.keras.Model):
 		self.latent_dim=latent_dim
 
 		self.variational=variational
+		self.variationalDCT=variationalDCT
+		self.padded=padded
+		self.variational_coefs=variational_coefs
+		self.variational_dependent=variational_dependent
+		self.variational_dependent_h=variational_dependent_h
+		self.variational_dist=variational_dist
 		self.fn=tf.keras.layers.Conv1D
-		if(self.variational):
+		if(self.variational and not self.variationalDCT):
 			self.fn=tfp.layers.Convolution1DFlipout
+
+		if(variationalDCT):
+			self.spatial_dimension=(fmri_shape[0]-variational_coefs[0])*(fmri_shape[1]-variational_coefs[1])*(fmri_shape[2]-variational_coefs[2])
+			self.fmri_shape=(fmri_shape[0]-variational_coefs[0], fmri_shape[1]-variational_coefs[1], fmri_shape[2]-variational_coefs[2])
 
 		self.build_model()
 
@@ -75,8 +90,24 @@ class Liu_et_al(tf.keras.Model):
 			x = self.fn(self.latent_dim*self.n_channels, kernel_size=1, strides=1)(x)
 		x = tf.keras.layers.Conv1D(self.spatial_dimension, kernel_size=1, strides=1)(x)
 
-		x = tf.keras.layers.Reshape(self.fmri_shape)(x)
-		
+		x = tf.keras.layers.Reshape(self.fmri_shape[:-1])(x)
+
+		if(variationalDCT or padded):
+            x = fft.DCT3D(self.fmri_shape[0], self.fmri_shape[1], self.fmri_shape[2])(x)
+            if(variationalDCT):
+                x = fft.variational_iDCT3D(*(self.fmri_shape[:-1] + \
+                						(fmri_shape[0]+variational_coefs[0], fmri_shape[1]+variational_coefs[1], fmri_shape[2]+variational_coefs[2]) +\
+                						self.variational_coefs), 
+                                        coefs_perturb=True, dependent=self.variational_dependent, 
+                                        posterior_dimension=self.variational_dependent_h, distribution=self.variational_dist,)(x)
+            else:
+                x = fft.padded_iDCT3D(*self.fmri_shape,
+                            out1=fmri_shape[0]+variational_coefs[0], out2=fmri_shape[1]+variational_coefs[1], out3=fmri_shape[2]+variational_coefs[2])(x)
+
+			x = tf.keras.layers.Reshape((fmri_shape[0]+variational_coefs[0], fmri_shape[1]+variational_coefs[1], fmri_shape[2]+variational_coefs[2], self.time_dimension))(x)
+		else:
+			x = tf.keras.layers.Reshape(self.fmri_shape)(x)
+
 		if(self.variational):
 			x = [x, tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)]
 
@@ -173,6 +204,11 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('dataset', choices=['01', '02', '03', '04', '05', 'NEW'], help="Which dataset to load")
 	parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
+	parser.add_argument('-variationalDCT', action="store_true", help="Variational DCT implementation of the model")
+	parser.add_argument('-padded', action="store_true", help="Fill higher resolutions with zero for the upsampling method.")
+	parser.add_argument('-variational_coefs', default=(32,32,15), type=tuple, help="Number of extra stochastic resolution coefficients")
+	parser.add_argument('-variational_dependent_h', default=20, type=int, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
+	parser.add_argument('-variational_dist', default="VonMises", type=str, help="Distribution used for the high resolution coefficients")
 	parser.add_argument('-interval_eeg', default=1, type=int, help="interval eeg")
 	parser.add_argument('-T', default=10, type=int, help="Monte Carlo Simulation number of samples taken to approximate.")
 	parser.add_argument('-memory_limit', default=4000, type=int, help="GPU memory limit")
@@ -183,6 +219,11 @@ if __name__ == "__main__":
 
 	dataset=opt.dataset
 	variational=opt.variational
+	padded=opt.padded
+	variationalDCT=opt.variationalDCT
+	variational_coefs=opt.variational_coefs
+	variational_dependent_h=opt.variational_dependent_h
+	variational_dist=opt.variational_dist
 	interval_eeg=opt.interval_eeg
 	T=opt.T
 	memory_limit=opt.memory_limit
@@ -193,7 +234,17 @@ if __name__ == "__main__":
 	setting=dataset+"_liu"
 	if(variational):
 		setting+="_variational"
+	if(padded):
+		setting+="_padded"
+	if(variationalDCT):
+		if(variational_dist):
+			setting+="_"+variational_dist
+		if(variational_dependent_h):
+			setting+="_dependent_h_"+str(variational_dependent_h)
+		if(variational_coefs):
+			setting+="_"+str(variational_coefs[0])+"x"+str(variational_coefs[1])+"x"+str(variational_coefs[2])
 	setting+="_interval_"+str(interval_eeg)
+
 
 	tf_config.set_seed(seed=seed)
 	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
@@ -201,7 +252,11 @@ if __name__ == "__main__":
 	with tf.device('/CPU:0'):
 		model = Liu_et_al((len(getattr(eeg_utils, "channels_"+dataset)),interval_eeg),
 							getattr(fmri_utils, "fmri_shape_"+dataset)+(interval_eeg,),
-							variational=variational)
+							variational=variational, variationalDCT=variationalDCT, padded=padded,
+							variational_coefs=variational_coefs, 
+							variational_dependent=variational_dependent_h>1,
+							variational_dependent_h=variational_dependent_h,
+							variational_dist=variational_dist)
 		
 		optimizer = tf.keras.optimizers.Adam(0.001)
 		loss_fn = model.get_loss()
