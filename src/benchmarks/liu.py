@@ -64,7 +64,7 @@ class Liu_et_al(tf.keras.Model):
 
 		if(variationalDCT):
 			self.spatial_dimension=(fmri_shape[0]-variational_coefs[0])*(fmri_shape[1]-variational_coefs[1])*(fmri_shape[2]-variational_coefs[2])
-			self.fmri_shape=(fmri_shape[0]-variational_coefs[0], fmri_shape[1]-variational_coefs[1], fmri_shape[2]-variational_coefs[2])
+			self.fmri_shape=(fmri_shape[0]-variational_coefs[0], fmri_shape[1]-variational_coefs[1], fmri_shape[2]-variational_coefs[2], self.time_dimension)
 
 		self.build_model()
 
