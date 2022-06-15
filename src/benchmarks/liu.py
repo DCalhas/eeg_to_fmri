@@ -74,7 +74,7 @@ class Liu_et_al(tf.keras.Model):
 		
 		x = tf.keras.layers.Dense(self.latent_dim)(input_shape)
 		#8*8*4=256
-		x = tf.keras.layers.Reshape((8,8,4,self.fmri_shape[-1]))(x)
+		x = tf.keras.layers.Reshape((8,8,4,self.time_dimension))(x)
 
 		#16x16x7x300 go through 12 layers that maintain dimension so kernel and stride should be both 1
 		#channel dimension becomes 16 so 300*16
