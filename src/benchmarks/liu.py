@@ -228,7 +228,7 @@ if __name__ == "__main__":
 	T=opt.T
 	memory_limit=opt.memory_limit
 	save=opt.save
-	save_path=opt.save
+	save_path=opt.save_path
 	seed=opt.seed
 
 	setting=dataset+"_liu"
