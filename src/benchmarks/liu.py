@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
 	sys.path.append("..")
 
-from utils import data_utils, fmri_utils, eeg_utils, losses_utils
+from utils import data_utils, fmri_utils, eeg_utils, losses_utils, bnn_utils, viz_utils
 
 from layers import fft
 
@@ -202,6 +202,7 @@ if __name__ == "__main__":
 	import gc
 
 	parser = argparse.ArgumentParser()
+	parser.add_argument('mode', choices=['metrics', 'uncertainty'], help="What to compute")
 	parser.add_argument('dataset', choices=['01', '02', '03', '04', '05', 'NEW'], help="Which dataset to load")
 	parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
 	parser.add_argument('-variationalDCT', action="store_true", help="Variational DCT implementation of the model")
@@ -217,6 +218,7 @@ if __name__ == "__main__":
 	parser.add_argument('-save_path', default=str(Path.home())+"/eeg_to_fmri/metrics", type=str, help="interval eeg")
 	opt = parser.parse_args()
 
+	mode=opt.mode
 	dataset=opt.dataset
 	variational=opt.variational
 	padded=opt.padded
@@ -266,23 +268,52 @@ if __name__ == "__main__":
 
 	train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=False, verbose=True)
 
-	rmse_pop = metrics.rmse(test_set, model)
-	gc.collect()
-	ssim_pop = metrics.ssim(test_set, model)
-	gc.collect()
-	res_pop = metrics.residues(test_set, model, variational=variational, T=T)
-	gc.collect()
-	print("RMSE: ", np.mean(rmse_pop), "\pm", np.std(rmse_pop))
-	print("SSIM: ", np.mean(ssim_pop), "\pm", np.std(ssim_pop))
-	print("RES: ", np.mean(res_pop), "\pm", np.std(res_pop))
 
-	#save
-	if(save):
+	if(mode=="metrics"):
+		rmse_pop = metrics.rmse(test_set, model)
+		gc.collect()
+		ssim_pop = metrics.ssim(test_set, model)
+		gc.collect()
+		res_pop = metrics.residues(test_set, model, variational=variational, T=T)
+		gc.collect()
+		print("RMSE: ", np.mean(rmse_pop), "\pm", np.std(rmse_pop))
+		print("SSIM: ", np.mean(ssim_pop), "\pm", np.std(ssim_pop))
+		print("RES: ", np.mean(res_pop), "\pm", np.std(res_pop))
+
+		#save
+		if(save):
+			if(not os.path.exists(save_path+"/"+setting)):
+				os.makedirs(save_path+"/"+setting)
+			if(not os.path.exists(save_path+"/"+setting+"/"+mode)):
+				os.makedirs(save_path+"/"+setting+"/"+mode)
+			with open(save_path+"/"+setting+"/res_"+"seed_"+str(seed)+".npy", 'wb') as f:
+				np.save(f, res_pop)
+			with open(save_path+"/"+setting+"/rmse_"+"seed_"+str(seed)+".npy", 'wb') as f:
+				np.save(f, rmse_pop)
+			with open(save_path+"/"+setting+"/ssim_"+"seed_"+str(seed)+".npy", 'wb') as f:
+				np.save(f, ssim_pop)
+	elif(mode=="uncertainty"):
 		if(not os.path.exists(save_path+"/"+setting)):
 			os.makedirs(save_path+"/"+setting)
-		with open(save_path+"/"+setting+"/res_"+"seed_"+str(seed)+".npy", 'wb') as f:
-			np.save(f, res_pop)
-		with open(save_path+"/"+setting+"/rmse_"+"seed_"+str(seed)+".npy", 'wb') as f:
-			np.save(f, rmse_pop)
-		with open(save_path+"/"+setting+"/ssim_"+"seed_"+str(seed)+".npy", 'wb') as f:
-			np.save(f, ssim_pop)
+		if(not os.path.exists(save_path+"/"+setting+"/"+mode)):
+			os.makedirs(save_path+"/"+setting+"/"+mode)
+		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/epistemic")):
+			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/epistemic")
+		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/aleatoric")):
+			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/aleatoric")
+		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/quality")):
+			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/quality")
+		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/quality/single/")):
+			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/quality/single")
+		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/quality/whole/")):
+			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/quality/whole")
+		
+		instance=0
+		for eeg, fmri in test_set.repeat(1):
+			ims = (fmri.numpy(), bnn_utils.predict_MC(model, (eeg,), T=T).numpy(), bnn_utils.epistemic_uncertainty(model, (eeg,), T=T).numpy(), model(eeg)[1].numpy())
+			viz_utils.single_display_gt_pred_espistemic_aleatoric(*ims, name=["DenseFlipout", "DCTVariational"][int(variational and aleatoric_uncertainty)], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality/single"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
+			viz_utils.whole_display_gt_pred_espistemic_aleatoric(*ims, save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality/whole"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
+			instance+=1
+
+	else:
+		raise NotImplementedError
