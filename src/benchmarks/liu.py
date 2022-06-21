@@ -297,22 +297,22 @@ if __name__ == "__main__":
 			os.makedirs(save_path+"/"+setting)
 		if(not os.path.exists(save_path+"/"+setting+"/"+mode)):
 			os.makedirs(save_path+"/"+setting+"/"+mode)
-		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/epistemic")):
-			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/epistemic")
-		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/aleatoric")):
-			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/aleatoric")
-		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/quality")):
-			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/quality")
-		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/quality/single/")):
-			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/quality/single")
-		if(not os.path.exists(metrics_path+"/"+ setting+"/"+mode+"/quality/whole/")):
-			os.makedirs(metrics_path+"/"+ setting+"/"+mode+"/quality/whole")
+		if(not os.path.exists(save_path+"/"+ setting+"/"+mode+"/epistemic")):
+			os.makedirs(save_path+"/"+ setting+"/"+mode+"/epistemic")
+		if(not os.path.exists(save_path+"/"+ setting+"/"+mode+"/aleatoric")):
+			os.makedirs(save_path+"/"+ setting+"/"+mode+"/aleatoric")
+		if(not os.path.exists(save_path+"/"+ setting+"/"+mode+"/quality")):
+			os.makedirs(save_path+"/"+ setting+"/"+mode+"/quality")
+		if(not os.path.exists(save_path+"/"+ setting+"/"+mode+"/quality/single/")):
+			os.makedirs(save_path+"/"+ setting+"/"+mode+"/quality/single")
+		if(not os.path.exists(save_path+"/"+ setting+"/"+mode+"/quality/whole/")):
+			os.makedirs(save_path+"/"+ setting+"/"+mode+"/quality/whole")
 		
 		instance=0
 		for eeg, fmri in test_set.repeat(1):
 			ims = (fmri.numpy(), bnn_utils.predict_MC(model, (eeg,), T=T).numpy(), bnn_utils.epistemic_uncertainty(model, (eeg,), T=T).numpy(), model(eeg)[1].numpy())
-			viz_utils.single_display_gt_pred_espistemic_aleatoric(*ims, name=["DenseFlipout", "DCTVariational"][int(variational and aleatoric_uncertainty)], save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality/single"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
-			viz_utils.whole_display_gt_pred_espistemic_aleatoric(*ims, save=True, save_path=metrics_path+"/"+setting+"/uncertainty/quality/whole"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
+			viz_utils.single_display_gt_pred_espistemic_aleatoric(*ims, name=["DenseFlipout", "DCTVariational"][int(variational and aleatoric_uncertainty)], save=True, save_path=save_path+"/"+setting+"/uncertainty/quality/single"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
+			viz_utils.whole_display_gt_pred_espistemic_aleatoric(*ims, save=True, save_path=save_path+"/"+setting+"/uncertainty/quality/whole"+"/" + str(instance)+"_instance.pdf", save_format="pdf")
 			instance+=1
 
 	else:
