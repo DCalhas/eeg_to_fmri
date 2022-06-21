@@ -266,7 +266,7 @@ if __name__ == "__main__":
 		train_set, test_set = model.load_data(dataset, time_length=interval_eeg, batch_size=2)
 
 
-	train.train(train_set, model, optimizer, loss_fn, epochs=0, u_architecture=False, verbose=True)
+	train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=False, verbose=True)
 
 
 	if(mode=="metrics"):
