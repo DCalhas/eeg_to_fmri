@@ -476,9 +476,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			x_cond1 = tf.nn.softmax(x_cond1)
 			x_cond2 = tf.nn.softmax(x_cond2)
 			x_cond3 = tf.nn.softmax(x_cond3)
-			rand_coefs1 = tf.matmul(x_cond1, biases_real1*cos_rand_coefs1+im1*sin_rand_coefs1)#shape = [None, F] = [Batch, F]
-			rand_coefs2 = tf.matmul(x_cond2, biases_real2*cos_rand_coefs2+im2*sin_rand_coefs2)#shape = [None, F] = [Batch, F]
-			rand_coefs3 = tf.matmul(x_cond3, biases_real3*cos_rand_coefs3+im3*sin_rand_coefs3)#shape = [None, F] = [Batch, F]
+			rand_coefs1 = tf.matmul(x_cond1, biases_real1*cos_rand_coefs1+biases_im1*sin_rand_coefs1)#shape = [None, F] = [Batch, F]
+			rand_coefs2 = tf.matmul(x_cond2, biases_real2*cos_rand_coefs2+biases_im2*sin_rand_coefs2)#shape = [None, F] = [Batch, F]
+			rand_coefs3 = tf.matmul(x_cond3, biases_real3*cos_rand_coefs3+biases_im3*sin_rand_coefs3)#shape = [None, F] = [Batch, F]
 
 		rand_coefs1 = tf.reshape(rand_coefs1, (tf.shape(rand_coefs1)[0],)+self.shape_normal1)
 		rand_coefs2 = tf.reshape(rand_coefs2, (tf.shape(rand_coefs2)[0],)+self.shape_normal2)
