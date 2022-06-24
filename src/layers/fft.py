@@ -410,14 +410,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 										constraint=constraint,
 										dtype=tf.float32,
 										trainable=True)
-			self.biases_real = self.add_weight('biases_real',
-										shape=[self.posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-										initializer=loc_initializer,
-										constraint=None,
-										dtype=tf.float32,
-										trainable=True)
-
-			self.biases_im = self.add_weight('biases_im',
+			self.biases = self.add_weight('biases',
 										shape=[self.posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=loc_initializer,
 										constraint=None,
@@ -461,12 +454,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(self.distribution in ["Normal", "VonMises"]):
 			rand_coefs = getattr(tfp.distributions, self.distribution)(self.loc, self.scale).sample()
 			if(self.distribution=="VonMises"):
-				cos_rand_coefs=tf.cos(rand_coefs)
-				sin_rand_coefs=tf.cos(rand_coefs)
-			cos_rand_coefs1, cos_rand_coefs2, cos_rand_coefs3 = tf.split(cos_rand_coefs, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], axis=-1)
-			sin_rand_coefs1, sin_rand_coefs2, sin_rand_coefs3 = tf.split(sin_rand_coefs, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], axis=-1)
-			biases_real1, biases_real2, biases_real3 = tf.split(self.biases_real, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], axis=-1)
-			biases_im1, biases_im2, biases_im3 = tf.split(self.biases_im, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], axis=-1)
+				rand_coefs=tf.cos(rand_coefs)
+			rand_coefs1, rand_coefs2, rand_coefs3 = tf.split(rand_coefs, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], axis=-1)
+			biases1, biases2, biases3 = tf.split(self.biases, [self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2], self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2], self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]], axis=-1)
 
 		if(self.dependent):
 			x_cond1 = tf.squeeze(tf.matmul(tf.reshape(x, (tf.shape(x)[0], 1, tf.shape(x)[1]*tf.shape(x)[2]*tf.shape(x)[3],)), self.w1), axis=1)
@@ -476,9 +466,9 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			x_cond1 = tf.nn.softmax(x_cond1)
 			x_cond2 = tf.nn.softmax(x_cond2)
 			x_cond3 = tf.nn.softmax(x_cond3)
-			rand_coefs1 = tf.matmul(x_cond1, biases_real1*cos_rand_coefs1+biases_im1*sin_rand_coefs1)#shape = [None, F] = [Batch, F]
-			rand_coefs2 = tf.matmul(x_cond2, biases_real2*cos_rand_coefs2+biases_im2*sin_rand_coefs2)#shape = [None, F] = [Batch, F]
-			rand_coefs3 = tf.matmul(x_cond3, biases_real3*cos_rand_coefs3+biases_im3*sin_rand_coefs3)#shape = [None, F] = [Batch, F]
+			rand_coefs1 = tf.matmul(x_cond1, biases1*rand_coefs1)#shape = [None, F] = [Batch, F]
+			rand_coefs2 = tf.matmul(x_cond2, biases2*rand_coefs2)#shape = [None, F] = [Batch, F]
+			rand_coefs3 = tf.matmul(x_cond3, biases3*rand_coefs3)#shape = [None, F] = [Batch, F]
 
 		rand_coefs1 = tf.reshape(rand_coefs1, (tf.shape(rand_coefs1)[0],)+self.shape_normal1)
 		rand_coefs2 = tf.reshape(rand_coefs2, (tf.shape(rand_coefs2)[0],)+self.shape_normal2)
