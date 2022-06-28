@@ -14,32 +14,33 @@ from layers import fft
 
 import numpy as np
 
-"""
-IEEE-Conference on Neural Engineering
 
-This is a reproduction of the paper Liu et al. 2019, A Convolutional Neural Network for Transcoding Simultaneously Acquired EEG-fMRI Data
-
-Disclaimer: This is not the official implementation and can contain operations that were not inteded by the authors of the paper
-
-Example usage:
->>> from benchmarks import liu
->>> model = liu.Liu_et_al((64,10),(64,64,30,10))
->>> train_set, test_set = model.load_data("01",10)
-"""
 class Liu_et_al(tf.keras.Model):
-
 	"""
-	Inputs:
-		* eeg_shape - tuple (n_channels, time)
-		* fmri_shape - tuple (X,Y,Z,T)
+	IEEE-Conference on Neural Engineering
 
-	max number of channels to run on the personal computer is 4
-	standard number is 16
+	This is a reproduction of the paper Liu et al. 2019, A Convolutional Neural Network for Transcoding Simultaneously Acquired EEG-fMRI Data
+
+	Disclaimer: This is not the official implementation and can contain operations that were not inteded by the authors of the paper
+
+	Example usage:
+	>>> from benchmarks import liu
+	>>> model = liu.Liu_et_al((64,10),(64,64,30,10))
+	>>> train_set, test_set = model.load_data("01",10)
 	"""
+	
 	def __init__(self, eeg_shape, fmri_shape, n_channels=1, latent_dim=256, 
 				variational=False, variationalDCT=False, padded=False,
 				variational_coefs=(32,32,15), variational_dependent=True, 
 				variational_dependent_h=20, variational_dist="VonMises"):
+		"""
+		Inputs:
+			* eeg_shape - tuple (n_channels, time)
+			* fmri_shape - tuple (X,Y,Z,T)
+
+		max number of channels to run on the personal computer is 4
+		standard number is 16
+		"""
 		super(Liu_et_al, self).__init__()
 
 		self.eeg_shape = eeg_shape
@@ -113,20 +114,21 @@ class Liu_et_al(tf.keras.Model):
 
 		self.nn=tf.keras.Model(input_shape, x)
 
-	"""
-	input_shape: (channels,time,1)
-	output_shape: (X,Y,Z,time)
-	"""
+	
 	def call(self, x, *args):
+		"""
+		input_shape: (channels,time,1)
+		output_shape: (X,Y,Z,time)
+		"""
 		return self.nn(x)
-
-
-	"""
-	Each benchmark has its own type of features
-	Outputs:
-		*tuple - (tf.DataLoader, tf.DataLoader)
-	"""
+		
+	
 	def load_data(self, dataset, time_length=10, batch_size=4):
+		"""
+		Each benchmark has its own type of features
+		Outputs:
+			*tuple - (tf.DataLoader, tf.DataLoader)
+		"""
 		n_individuals=getattr(data_utils, "n_individuals_"+dataset)
 		
 		with tf.device('/CPU:0'):
@@ -181,8 +183,6 @@ class Liu_et_al(tf.keras.Model):
 
 	def variational_loss(self, y_true, y_pred):
 		return tf.reduce_mean((1/(y_pred[1]+losses_utils.NON_DIVISION_ZERO))*tf.math.abs(y_pred[0] - y_true)+tf.math.log(2*(y_pred[1]+losses_utils.NON_DIVISION_ZERO)), axis=(1,2,3))
-
-
 
 
 if __name__ == "__main__":
