@@ -108,7 +108,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
     
     fmri_volumes = np.empty((len(individuals)*len(range(bold_shift, individuals_imgs[0].shape[-1])),) + individuals_imgs[0].get_fdata()[:,:,:,0].shape)
     j = 0
-    recording_time = np.amin([getattr(fmri_utils, "n_volumes_"+dataset), len(range(bold_shift, individuals_imgs[0].shape[-1]))])
+    recording_time = np.amin([getattr(fmri_utils, "n_volumes_"+dataset), individuals_imgs[0].shape[-1]])
     #clean fMRI signal
     for i in range(len(individuals_imgs)):
         individuals_imgs[i] = individuals_imgs[i].get_fdata()
