@@ -150,11 +150,11 @@ class Liu_et_al(tf.keras.Model):
 		x_eeg = np.empty((n_individuals*int(n_volumes/time_length),)+(eeg_train.shape[1], time_length))
 		x_fmri = np.empty((n_individuals*int(n_volumes/time_length),)+fmri_train.shape[1:]+(time_length,))
 
-
-
 		print(eeg_train.shape)
 		print(fmri_train.shape)
 		instance=0
+
+		np.amin()
 		for individual in range(n_individuals):
 			for index_volume in range(individual*(n_volumes), individual*(n_volumes)+n_volumes-time_length, time_length):
 				x_eeg[instance] = np.transpose(eeg_train[index_volume:index_volume+time_length], (1,0))
@@ -171,6 +171,9 @@ class Liu_et_al(tf.keras.Model):
 		fmri_train = fmri_train.astype('float32')
 		eeg_test = eeg_test.astype('float32')
 		fmri_test = fmri_test.astype('float32')
+
+		print(eeg_train.shape)
+		print(fmri_train.shape)
 
 		return tf.data.Dataset.from_tensor_slices((eeg_train, fmri_train)).batch(batch_size), tf.data.Dataset.from_tensor_slices((eeg_test, fmri_test)).batch(1)
 
