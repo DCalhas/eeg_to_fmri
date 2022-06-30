@@ -150,6 +150,10 @@ class Liu_et_al(tf.keras.Model):
 		x_eeg = np.empty((n_individuals*int(n_volumes/time_length),)+(eeg_train.shape[1], time_length))
 		x_fmri = np.empty((n_individuals*int(n_volumes/time_length),)+fmri_train.shape[1:]+(time_length,))
 
+
+
+		print(eeg_train.shape)
+		print(fmri_train.shape)
 		instance=0
 		for individual in range(n_individuals):
 			for index_volume in range(individual*(n_volumes), individual*(n_volumes)+n_volumes-time_length, time_length):
