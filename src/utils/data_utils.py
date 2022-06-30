@@ -105,7 +105,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
     #setting mask and fMRI signals
     individuals_imgs = getattr(fmri_utils, "get_individuals_paths_"+dataset)(resolution_factor=fmri_resolution_factor, number_individuals=len(individuals))
     recording_time = np.amin([getattr(fmri_utils, "n_volumes_"+dataset), individuals_imgs[0].shape[-1]])
-    fmri_volumes = np.empty((len(individuals)*(recording_time-bold_shift),) + individuals_imgs[0].get_fdata()[:,:,:,0].shape)
+    fmri_volumes = np.empty((len(individuals)*(recording_time),) + individuals_imgs[0].get_fdata()[:,:,:,0].shape)
     j = 0
     #clean fMRI signal
     for i in range(len(individuals_imgs)):
@@ -115,9 +115,9 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
             initial_j=j
             iqr = outlier_utils.IQR()
             iqr.fit(individuals_imgs[i][:,:,:,bold_shift:])
-            individuals_imgs[i] = iqr.transform(individuals_imgs[i][:,:,:,bold_shift:recording_time], channels_last=True)
+            individuals_imgs[i] = iqr.transform(individuals_imgs[i][:,:,:,bold_shift:recording_time+bold_shift], channels_last=True)
         else:
-            individuals_imgs[i] = individuals_imgs[i][:,:,:,bold_shift:recording_time]
+            individuals_imgs[i] = individuals_imgs[i][:,:,:,bold_shift:recording_time+bold_shift]
         print(individuals_imgs[i].shape)
         scaler = StandardScaler(copy=True)
         if(not ind_volume_fit):
@@ -186,9 +186,9 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
             f_resample=1
 
         if(raw_eeg):
-            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,int(((bold_shift))*fs_sample*f_resample):int(((recording_time))*fs_sample*f_resample)], (1,0))))
+            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,int(((bold_shift))*fs_sample*f_resample):int(((recording_time+bold_shift))*fs_sample*f_resample)], (1,0))))
         else:
-            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[bold_shift:recording_time]))
+            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[bold_shift:recording_time+bold_shift]))
 
     #return individuals_eegs, individuals_imgs, mask, fmri_scalers
     return individuals_eegs, individuals_imgs, fmri_scalers
