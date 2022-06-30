@@ -175,9 +175,9 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
             x_instance = np.array(x_instance)
 
         if(not type(individuals_eegs) is np.ndarray):
-            if(raw_eeg):
+            if(raw_eeg):#x_instance.shape[0]==len(eeg_utils.channels)
                 individuals_eegs = np.empty((0,) +(x_instance.shape[0],))
-            else:
+            else:#x_instance.shape[0]==len(eeg_utils.channels) and x_instance.shape[1]==freq_limit
                 individuals_eegs = np.empty((0,) + (x_instance.shape[0], x_instance.shape[1]))
 
         if(raw_eeg_resample):#placeholder because eeg was already resampled
@@ -237,8 +237,7 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
             fs_sample=1
             f_resample=1
 
-        #number of ECG channels differ for some individuals
-        x_instance=x_instance[:132]
+        x_instance=x_instance[:132]#number of ECG channels differ for some individuals
         if(raw_eeg):
             individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,:int(((recording_time))*fs_sample*f_resample)], (1,0))))
         else:
