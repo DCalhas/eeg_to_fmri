@@ -140,6 +140,7 @@ class Liu_et_al(tf.keras.Model):
 														ind_volume_fit=False,
 														iqr_outlier=False,
 														raw_eeg_resample=True,
+														bold_shift=getattr(fmri_utils, "bold_shift_"+dataset),
 														eeg_resample=getattr(fmri_utils, "TR_"+dataset), 
 														fmri_resolution_factor=1)
 
@@ -169,7 +170,7 @@ class Liu_et_al(tf.keras.Model):
 		fmri_train = fmri_train.astype('float32')
 		eeg_test = eeg_test.astype('float32')
 		fmri_test = fmri_test.astype('float32')
-		
+
 		return tf.data.Dataset.from_tensor_slices((eeg_train, fmri_train)).batch(batch_size), tf.data.Dataset.from_tensor_slices((eeg_test, fmri_test)).batch(1)
 
 	def __train__(self, train_set, loss_fn, opt):
