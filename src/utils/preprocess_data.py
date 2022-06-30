@@ -26,7 +26,7 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 		eeg_f_limit=135
 
 	eeg_train, fmri_train, scalers = data_utils.load_data(list(range(n_individuals)), raw_eeg=raw_eeg, n_voxels=None, 
-															bold_shift=3, n_partitions=25, 
+															bold_shift=getattr(fmri_utils, "bold_shift_"+dataset), n_partitions=25, 
 															mutate_bands=False,
 															by_partitions=False, partition_length=14, 
 															f_resample=f_resample, fmri_resolution_factor=1, 

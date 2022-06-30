@@ -95,7 +95,7 @@ def load_data_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, ra
 """
 """
 
-def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.160, start_cutoff=3, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit=134, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
+def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.160, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit=134, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
     TR = 1/TR
 
     X = []
@@ -118,7 +118,6 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
             individuals_imgs[i] = iqr.transform(individuals_imgs[i][:,:,:,bold_shift:recording_time+bold_shift], channels_last=True)
         else:
             individuals_imgs[i] = individuals_imgs[i][:,:,:,bold_shift:recording_time+bold_shift]
-        print(individuals_imgs[i].shape)
         scaler = StandardScaler(copy=True)
         if(not ind_volume_fit):
             reshaped_individual = individuals_imgs[i].flatten().reshape(-1,1)
@@ -323,8 +322,6 @@ def get_data_roi(individuals, raw_eeg=False, masker=None, start_cutoff=3, bold_s
 
                 y += list(fmri_resampled[:,start_bold:end_bold].reshape(1, fmri_resampled[:,start_bold:end_bold].shape[0], fmri_resampled[:,start_bold:end_bold].shape[1]))
 
-        print(np.array(y).shape)
-
     X = np.array(X)
     y = np.array(y)
 
@@ -351,15 +348,17 @@ def create_eeg_bold_pairs(eeg, bold, raw_eeg=False, fs_sample_eeg=250, fs_sample
 
 
 
-"""
-Inputs:
-    * n_individuals - int
-    * data - np.ndarray(T, channels, freqs)
-    * labels - np.ndarray(individuals, 2)
-    * recording_time - int
-    * interval_eeg - int
-"""
+
+
 def create_clf_pairs(n_individuals, data, labels, raw_eeg=False, recording_time=90, interval_eeg=10):
+    """
+    Inputs:
+        * n_individuals - int
+        * data - np.ndarray(T, channels, freqs)
+        * labels - np.ndarray(individuals, 2)
+        * recording_time - int
+        * interval_eeg - int
+    """
     if(raw_eeg):
         X = np.empty(((n_individuals*recording_time)//interval_eeg, data.shape[1], interval_eeg))
     else:

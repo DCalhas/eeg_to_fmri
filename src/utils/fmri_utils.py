@@ -32,11 +32,17 @@ fmri_shape_03=(64,64,30)
 fmri_shape_04=(64,64,30)
 fmri_shape_05=(64,64,30)
 
-n_volumes_01=300-3
-n_volumes_02=170-3
-n_volumes_03=370-3
-n_volumes_04=180-3
-n_volumes_05=332-3
+bold_shift_01=3
+bold_shift_02=3
+bold_shift_03=6
+bold_shift_04=3
+bold_shift_05=6
+
+n_volumes_01=300-bold_shift_01
+n_volumes_02=170-bold_shift_02
+n_volumes_03=370-bold_shift_03
+n_volumes_04=180-bold_shift_04
+n_volumes_05=332-bold_shift_05
 
 dataset_path = home + '/eeg_to_fmri'
 
