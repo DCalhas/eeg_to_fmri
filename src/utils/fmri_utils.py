@@ -35,7 +35,7 @@ fmri_shape_05=(64,64,30)
 n_volumes_01=300-3
 n_volumes_02=170-3
 n_volumes_03=370-3
-n_volumes_04=210-3
+n_volumes_04=150-3
 n_volumes_05=332-3
 
 dataset_path = home + '/eeg_to_fmri'
