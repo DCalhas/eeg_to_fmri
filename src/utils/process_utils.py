@@ -411,10 +411,16 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 							topographical_attention=True,
 							conditional_attention_style=True,
 							conditional_attention_style_prior=False,
-							inverse_DFT=False, DFT=False,
-							variational_iDFT=False,
+							inverse_DFT=True, DFT=True,
+							variational_iDFT=True,
 							variational_coefs=(15,15,15),
-							low_resolution_decoder=False,
+							variational_iDFT_dependent=True, 
+							variational_iDFT_dependent_dim=15,
+							variational_dist="VonMises",
+							variational_random_padding=False,
+							low_resolution_decoder=True,
+							resolution_decoder=(30,30,15),
+							aleatoric_uncertainty=True,
 							local=True, seed=None, 
 							fmri_args = (latent_dimension, fmri_train.shape[1:], 
 							kernel_size, stride_size, n_channels, 
@@ -435,6 +441,14 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 	print("I: Saving synthesis network at", save_path)
 
 	model.save(save_path, save_format="tf", save_traces=False)
+
+
+	#remove lines
+	from models import classifiers
+	linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(save_path,custom_objects=eeg_to_fmri.custom_objects), 
+																(132,134,10,1), activation=tf.keras.activations.relu, 
+																#X_train.shape[1:], activation=tf.keras.activations.relu, 
+																regularizer=tf.keras.regularizers.l1_l2(l1=0.0, l2=0.0))
 
 
 def create_labels(view, dataset, path):
