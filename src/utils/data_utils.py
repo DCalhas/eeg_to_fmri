@@ -102,7 +102,6 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
     y = []
     fmri_scalers = []
 
-
     #setting mask and fMRI signals
     individuals_imgs = getattr(fmri_utils, "get_individuals_paths_"+dataset)(resolution_factor=fmri_resolution_factor, number_individuals=len(individuals))
     recording_time = np.amin([getattr(fmri_utils, "n_volumes_"+dataset), individuals_imgs[0].shape[-1]])
@@ -119,6 +118,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
             individuals_imgs[i] = iqr.transform(individuals_imgs[i][:,:,:,bold_shift:recording_time], channels_last=True)
         else:
             individuals_imgs[i] = individuals_imgs[i][:,:,:,bold_shift:recording_time]
+        print(individuals_imgs[i].shape)
         scaler = StandardScaler(copy=True)
         if(not ind_volume_fit):
             reshaped_individual = individuals_imgs[i].flatten().reshape(-1,1)
