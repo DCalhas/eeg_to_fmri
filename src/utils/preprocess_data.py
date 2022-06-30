@@ -37,28 +37,9 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 
 	eeg_channels=eeg_train.shape[1]
 
-	if(dataset=="01"):
-		n_individuals_train = 8
-		n_individuals_test = 2
-		n_volumes = 300-3
-	elif(dataset=="02"):
-		n_individuals_train = 8
-		n_individuals_test = 2
-		n_volumes = 170-3#?
-	elif(dataset=="03"):
-		n_individuals_train = 16
-		n_individuals_test = 4
-		n_volumes = 373-3#?
-	elif(dataset=="04"):
-		n_individuals_train = 8
-		n_individuals_test = 2
-		n_volumes = 210-3
-	elif(dataset=="05"):
-		n_individuals_train = 13
-		n_individuals_test = 4
-		n_volumes = 332-3
-
-
+	n_individuals_train = getattr(data_utils, "n_individuals_train_"+dataset)
+	n_individuals_test = getattr(data_utils, "n_individuals_test_"+dataset)
+	n_volumes = getattr(fmri_utils, "n_volumes_"+dataset)
 
 	if(raw_eeg):
 		eeg_test = eeg_train[n_individuals_train*(n_volumes)*int(f_resample*getattr(eeg_utils, "fs_"+dataset)):(n_individuals_train+n_individuals_test)*n_volumes*int(f_resample*getattr(eeg_utils, "fs_"+dataset))]
