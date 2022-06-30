@@ -153,8 +153,6 @@ class Liu_et_al(tf.keras.Model):
 		print(eeg_train.shape)
 		print(fmri_train.shape)
 		instance=0
-
-		np.amin()
 		for individual in range(n_individuals):
 			for index_volume in range(individual*(n_volumes), individual*(n_volumes)+n_volumes-time_length, time_length):
 				x_eeg[instance] = np.transpose(eeg_train[index_volume:index_volume+time_length], (1,0))
