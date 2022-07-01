@@ -42,7 +42,7 @@ n_volumes_01=300-bold_shift_01
 n_volumes_02=170-bold_shift_02
 n_volumes_03=370-bold_shift_03
 n_volumes_04=180-bold_shift_04
-n_volumes_05=332-bold_shift_05
+n_volumes_05=300-bold_shift_05
 
 dataset_path = home + '/eeg_to_fmri'
 
