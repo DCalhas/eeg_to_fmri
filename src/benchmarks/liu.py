@@ -144,6 +144,8 @@ class Liu_et_al(tf.keras.Model):
 														eeg_resample=getattr(fmri_utils, "TR_"+dataset), 
 														fmri_resolution_factor=1)
 
+		print(eeg_train.shape)
+		print(fmri_train.shape)
 		n_individuals_train = getattr(data_utils, "n_individuals_train_"+dataset)
 		n_individuals_test = getattr(data_utils, "n_individuals_test_"+dataset)
 		n_volumes = getattr(fmri_utils, "n_volumes_"+dataset)
