@@ -10,6 +10,7 @@ def main(opt):
 	"""
 	mode=opt.mode
 	dataset=opt.dataset
+	TRs=opt.TRs
 	topographical_attention=opt.topographical_attention
 	padded=opt.padded
 	variational=opt.variational
@@ -35,6 +36,8 @@ def main(opt):
 
 	#assertion
 	setting=dataset
+	if(TRs>1):
+		raise NotImplementedError
 	if(topographical_attention):
 		setting+="_topographical_attention"
 	if(random_fourier):
@@ -54,7 +57,8 @@ def main(opt):
 		setting+="_variational"
 	if(type(variational_dist) is str):
 		assert variational_dist in ["Normal", "VonMises"]
-		setting+="_"+variational_dist
+		if(variational):
+			setting+="_"+variational_dist
 	if(variational_dependent_h is None):
 		variational_dependent_h=1
 	if(variational_dependent_h > 1 and variational):
@@ -75,4 +79,4 @@ def main(opt):
 
 
 
-	return mode, dataset, topographical_attention, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting
+	return mode, dataset, TRs, topographical_attention, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting
