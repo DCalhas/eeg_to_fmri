@@ -42,6 +42,10 @@ if __name__ == "__main__":
 	
 	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability = assertion_utils.clf_cv(opt)
 
+#create directory to save
+if(not os.path.exists(path_labels+"/"+ setting)):
+	os.makedirs(path_labels+"/"+ setting)
+
 #train neural network synthesis
 if(view=="fmri"):
 	process_utils.launch_process(process_utils.train_synthesis, 
