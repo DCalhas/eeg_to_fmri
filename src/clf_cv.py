@@ -23,7 +23,6 @@ if __name__ == "__main__":
 	parser.add_argument('-dataset_synth', default="01", type=str, help="Which dataset to load for synthesis")
 	parser.add_argument('-feature_selection', action="store_true", help="Perform feature selection with low resolution")
 	parser.add_argument('-segmentation_mask', action="store_true", help="Apply a brain segmentatino mask")
-	parser.add_argument('-save_explainability', action="store_true", help="save explainability features")
 	parser.add_argument('-folds', default=5, type=int, help="Folds to consider in CV hyperparameter optimization")
 	parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 	parser.add_argument('-gpu_mem', default=1500, type=int, help="GPU memory limit")
