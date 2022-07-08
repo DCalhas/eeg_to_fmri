@@ -380,7 +380,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(self.normal_loc_initializer==None):#default initializers
 			self.normal_loc_initializer=tf.initializers.random_normal(stddev=0.1)
 		if(self.normal_scale_initializer==None):
-			self.normal_scale_initializer=tf1.initializers.random_normal(mean=-3., stddev=0.1)
+			self.normal_scale_initializer=tf.initializers.random_normal(mean=-3., stddev=0.1)
 		if(self.loc_posterior_initializer==None):
 			self.loc_posterior_initializer=tf.initializers.GlorotUniform()
 		if(self.scale_posterior_initializer==None):
