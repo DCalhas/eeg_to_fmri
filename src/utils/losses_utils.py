@@ -450,10 +450,10 @@ list: y_pred - from classifier.linearCLF viewer []
 np.ndarray: y_true
 """
 def entropy_mae_loss(y_true, y_pred):
-    sigma_c = y_pred[3]
-    sigma_r = y_pred[4]
+    sigma_c = y_pred[-2]
+    sigma_r = y_pred[-1]
 
-    regression = tf.keras.losses.MeanSquaredError()(y_pred[1],y_pred[2])
+    regression = tf.keras.losses.MeanSquaredError()(y_pred[1].numpy(),y_pred[1].numpy()*y_pred[2])#do not select to many features
     classification = tf.keras.losses.MeanSquaredError()(y_true, tf.keras.activations.softmax(y_pred[0]))
     return (1/sigma_r)*regression + (1/sigma_c)*classification + tf.math.log(sigma_c*sigma_r)
 

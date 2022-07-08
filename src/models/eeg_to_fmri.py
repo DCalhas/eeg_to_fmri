@@ -585,5 +585,5 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         if(self.feature_selection):
             z_mask=1.-self.decoder(x1)
-            return [z.numpy()*z_mask, z_mask, sigma_1, sigma_2]
+            return [z, z_mask, sigma_1, sigma_2]
         return [z, sigma_1, sigma_2]
