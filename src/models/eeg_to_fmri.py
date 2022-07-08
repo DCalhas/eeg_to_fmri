@@ -374,7 +374,8 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "iDCT3D": iDCT3D,
                 "RandomFourierFeatures": RandomFourierFeatures,
                 "Latent_EEG_Spatial_Attention": Latent_EEG_Spatial_Attention,
-                "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention}
+                "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention,
+                "DenseFlipout": fp.layers.DenseFlipout}
 
 class pretrained_EEG_to_fMRI(tf.keras.Model):
     """
