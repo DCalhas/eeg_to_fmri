@@ -30,6 +30,7 @@ if __name__ == "__main__":
 	parser.add_argument('-variational_dist', default="Normal", type=str, help="Distribution used for the high resolution coefficients")
 	parser.add_argument('-variational_random_padding', action="store_true", help="Whether to randomize positions in the DCT frequency space instead of predicting low resolution coefficients")
 	parser.add_argument('-resolution_decoder', default=None, type=float, help="Resolution decoder intermediary before final transformation in decoder -- used in uncertainty")
+	parser.add_argument('-aleatoric_uncertainty', action="store_true", help="Aleatoric uncertainty flag")
 	parser.add_argument('-folds', default=5, type=int, help="Folds to consider in CV hyperparameter optimization")
 	parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 	parser.add_argument('-gpu_mem', default=1500, type=int, help="GPU memory limit")
