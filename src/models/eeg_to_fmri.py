@@ -490,7 +490,12 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         print(pretrained_model.layers[4].layers[17].__dict__)
 
         if(type(pretrained_model.layers[4].layers[18]).__name__=="DCT3D"):
-            print(variational)
+            #reshape
+            z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
+                        pretrained_model.layers[4].layers[17].target_shape)(z)
+            #initialize DCT3D layer
+            z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[18]).__name__)(
+                        **pretrained_model.layers[4].layers[18].get_config())(z)
         else:
             print("Go previous route")
         
