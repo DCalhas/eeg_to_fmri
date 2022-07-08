@@ -419,7 +419,7 @@ def train_synthesis(dataset, epochs, padded, variational, variational_coefs, var
 							n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
 		model.build(eeg_train.shape, fmri_train.shape)
 		optimizer = tf.keras.optimizers.Adam(learning_rate)
-		loss_fn = losses_utils.mae_cosine
+		loss_fn = list(losses_utils.LOSS_FNS.values())[int(aleatoric_uncertainty)]#if variational get loss fn at index 1
 		train_set = tf.data.Dataset.from_tensor_slices((eeg_train, fmri_train)).batch(batch_size)
 
 	print("I: Starting pretraining of synthesis network")
