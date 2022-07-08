@@ -484,52 +484,63 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     bias_regularizer=regularizer,
                     trainable=False)(x)
         z = tf.keras.layers.ReLU()(x)
+        #layer, please remove this for reproducibility sake and generalization
+        index=16
+        index+=1
 
         if(type(pretrained_model.layers[4].layers[18]).__name__=="DCT3D"):
             #reshape
-            x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
-                        pretrained_model.layers[4].layers[17].target_shape)(x)
+            x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
+                        pretrained_model.layers[4].layers[index].target_shape)(x)
+            
+            #remove this
+            index+=1
             #initialize DCT3D layer
-            x = DCT3D(**pretrained_model.layers[4].layers[18].get_config())(x)
-            if(type(pretrained_model.layers[4].layers[19]).__name__=="variational_iDCT3D"):
-                x = variational_iDCT3D(**pretrained_model.layers[4].layers[19].get_config(), 
-                                        normal_loc_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].normal.distribution.loc.numpy()),
-                                        normal_scale_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].normal.distribution.scale.numpy()),
-                                        w1_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w1.numpy()),
-                                        w2_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w2.numpy()),
-                                        w3_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w3.numpy()),
-                                        loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].loc.numpy()),
-                                        scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].scale.numpy()),
-                                        biases_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].biases.numpy()),
+            x = DCT3D(**pretrained_model.layers[4].layers[index].get_config())(x)
+            #remove this
+            index+=1
+            if(type(pretrained_model.layers[4].layers[index]).__name__=="variational_iDCT3D"):
+                x = variational_iDCT3D(**pretrained_model.layers[4].layers[index].get_config(), 
+                                        normal_loc_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].normal.distribution.loc.numpy()),
+                                        normal_scale_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].normal.distribution.scale.numpy()),
+                                        w1_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].w1.numpy()),
+                                        w2_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].w2.numpy()),
+                                        w3_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].w3.numpy()),
+                                        loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].loc.numpy()),
+                                        scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].scale.numpy()),
+                                        biases_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].biases.numpy()),
                                         trainable=True)(x)
-            elif(type(pretrained_model.layers[4].layers[19]).__name__=="padded_iDCT3D"):
-                x = padded_iDCT3D(**pretrained_model.layers[4].layers[19].get_config())(x)
+            elif(type(pretrained_model.layers[4].layers[index]).__name__=="padded_iDCT3D"):
+                x = padded_iDCT3D(**pretrained_model.layers[4].layers[index].get_config())(x)
 
-        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
-            pretrained_model.layers[4].layers[17].target_shape)(x)
-        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[18]).__name__)(
-                                        filters=pretrained_model.layers[4].layers[18].filters, 
-                                        kernel_size=pretrained_model.layers[4].layers[18].kernel_size, 
-                                        strides=pretrained_model.layers[4].layers[18].strides,
-                                        kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].kernel.numpy()),
-                                        bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].bias.numpy()),
-                                        padding=pretrained_model.layers[4].layers[18].padding,
+            #remove this
+            index+=1
+
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
+            pretrained_model.layers[4].layers[index].target_shape)(x)
+
+        #remove this
+        index+=1
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
+                                        filters=pretrained_model.layers[4].layers[index].filters, 
+                                        kernel_size=pretrained_model.layers[4].layers[index].kernel_size, 
+                                        strides=pretrained_model.layers[4].layers[index].strides,
+                                        kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel.numpy()),
+                                        bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].bias.numpy()),
+                                        padding=pretrained_model.layers[4].layers[index].padding,
                                         trainable=False)(x)
         
         if(feature_selection):
-            raise NotImplementedError
-            #try smoothing feature selection
-            #z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
-            #z = DCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
-            #shape_smoothing=(5,5,3)
-            #z = z*tf.keras.layers.ZeroPadding3D(padding=((0, z.shape[1]-shape_smoothing[0]), (0, z.shape[2]-shape_smoothing[1]), (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))[:,:,:,:,0]
-            #z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
-            #z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
-            #            pretrained_model.layers[4].layers[17].target_shape)(z)
+            try smoothing feature selection
+            z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index-1]).__name__)(pretrained_model.layers[4].layers[index-1].target_shape[:-1])(z)
+            z = DCT3D(*pretrained_model.layers[4].layers[index-1].target_shape[:-1])(z)
+            shape_smoothing=(5,5,3)
+            z = z*tf.keras.layers.ZeroPadding3D(padding=((0, z.shape[1]-shape_smoothing[0]), (0, z.shape[2]-shape_smoothing[1]), (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))[:,:,:,:,0]
+            z = iDCT3D(*pretrained_model.layers[4].layers[index-1].target_shape[:-1])(z)
+            z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index-1]).__name__)(pretrained_model.layers[4].layers[index-1].target_shape)(z)
         if(segmentation_mask):
-            raise NotImplementedError
             #perform brain segmentation with mask
-            #z = MRICircleMask(z.shape)(z)#mask a circle
+            z = MRICircleMask(z.shape)(z)#mask a circle
 
         self.decoder = tf.keras.Model(input_shape, z)
         self.q_decoder = tf.keras.Model(input_shape, x)
