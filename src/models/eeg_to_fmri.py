@@ -583,6 +583,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #l0 norm - close to because of ReLU activation
         #self.add_loss(tf.reduce_mean(-z_mask, axis=(1,2,3)))#it should select all and omit only regions that are important
 
-        if(feature_selection):
+        if(self.feature_selection):
             return [z, 1.-self.decoder(x1), sigma_1, sigma_2]
         return [z, sigma_1, sigma_2]
