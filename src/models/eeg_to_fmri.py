@@ -496,7 +496,15 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             #initialize DCT3D layer
             z = DCT3D(**pretrained_model.layers[4].layers[18].get_config())(z)
             if(type(pretrained_model.layers[4].layers[19]).__name__=="variational_iDCT3D"):
-                z = variational_iDCT3D(**pretrained_model.layers[4].layers[19].get_config())(z)
+                z = variational_iDCT3D(**pretrained_model.layers[4].layers[19].get_config(), 
+                                        normal_loc_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].normal.distribution.loc.numpy()),
+                                        normal_scale_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].normal.distribution.scale.numpy()),
+                                        w1_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w1.numpy()),
+                                        w2_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w2.numpy()),
+                                        w3_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w3.numpy()),
+                                        loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].loc_posterior_initializer.numpy()),
+                                        scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].scale_posterior_initializer.numpy()),
+                                        biases_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].biases_initializer.numpy()),)(z)
             elif(type(pretrained_model.layers[4].layers[19]).__name__=="padded_iDCT3D"):
                 z = padded_iDCT3D(**pretrained_model.layers[4].layers[19].get_config())(z)
 
