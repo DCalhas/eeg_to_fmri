@@ -504,10 +504,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         trainable=True)(x)
             elif(type(pretrained_model.layers[4].layers[19]).__name__=="padded_iDCT3D"):
                 x = padded_iDCT3D(**pretrained_model.layers[4].layers[19].get_config())(x)
-        else:
 
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
-                    pretrained_model.layers[4].layers[17].target_shape)(x)
+            pretrained_model.layers[4].layers[17].target_shape)(x)
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[18]).__name__)(
                                         filters=pretrained_model.layers[4].layers[18].filters, 
                                         kernel_size=pretrained_model.layers[4].layers[18].kernel_size, 
