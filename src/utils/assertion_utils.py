@@ -119,6 +119,9 @@ def clf_cv(opt):
 	if(variational):
 		assert variational_coefs, "Need to be specified number of coefs, always upsampling for now, set issue to allow better implementation"
 		setting+="_variational"
+	if(aleatoric_uncertainty):
+		if(not variational):
+			setting+="_variational_flipout"
 	if(type(variational_dist) is str):
 		assert variational_dist in ["Normal", "VonMises"]
 		if(variational):
