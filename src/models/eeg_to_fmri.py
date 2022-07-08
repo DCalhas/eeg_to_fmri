@@ -381,7 +381,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
     """
 
-    def __init__(self, model, input_shape, activation=None, regularizer=None, seed=None):
+    def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
         """
         """
 
@@ -391,7 +391,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         
         input_shape, x, attention_scores = self.build_encoder(model, activation=tf.keras.activations.linear, regularizer=regularizer, seed=seed)
         
-        self.build_decoder(model, input_shape, x, activation=activation, attention_scores=attention_scores, regularizer=regularizer, seed=seed)
+        self.build_decoder(model, input_shape, x, activation=activation, attention_scores=attention_scores, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
 
     def build_encoder(self, pretrained_model, activation=None, regularizer=None, seed=None):
 
@@ -442,7 +442,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         return input_shape, x, attention_scores
     
-    def build_decoder(self, pretrained_model, input_shape, output_encoder, activation=None, attention_scores=None, regularizer=None, seed=None):
+    def build_decoder(self, pretrained_model, input_shape, output_encoder, activation=None, attention_scores=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
         x = tf.keras.layers.Flatten()(output_encoder)
 
         if("Fourier" in type(pretrained_model.layers[4].layers[11]).__name__):
@@ -477,26 +477,22 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[15]).__name__)()(x)
 
         #split flow in two
-        z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
                     pretrained_model.layers[4].layers[16].units,
                     activation=None,
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=False)(x)
-        z = tf.keras.layers.ReLU()(z)
-
-        print(pretrained_model.layers[4].summary())
-        print(pretrained_model.layers[4].layers[17])
-        print(pretrained_model.layers[4].layers[17].__dict__)
+        z = tf.keras.layers.ReLU()(x)
 
         if(type(pretrained_model.layers[4].layers[18]).__name__=="DCT3D"):
             #reshape
-            z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
-                        pretrained_model.layers[4].layers[17].target_shape)(z)
+            x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
+                        pretrained_model.layers[4].layers[17].target_shape)(x)
             #initialize DCT3D layer
-            z = DCT3D(**pretrained_model.layers[4].layers[18].get_config())(z)
+            x = DCT3D(**pretrained_model.layers[4].layers[18].get_config())(x)
             if(type(pretrained_model.layers[4].layers[19]).__name__=="variational_iDCT3D"):
-                z = variational_iDCT3D(**pretrained_model.layers[4].layers[19].get_config(), 
+                x = variational_iDCT3D(**pretrained_model.layers[4].layers[19].get_config(), 
                                         normal_loc_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].normal.distribution.loc.numpy()),
                                         normal_scale_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].normal.distribution.scale.numpy()),
                                         w1_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w1.numpy()),
@@ -505,40 +501,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].loc.numpy()),
                                         scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].scale.numpy()),
                                         biases_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].biases.numpy()),
-                                        trainable=True)(z)
+                                        trainable=True)(x)
             elif(type(pretrained_model.layers[4].layers[19]).__name__=="padded_iDCT3D"):
-                z = padded_iDCT3D(**pretrained_model.layers[4].layers[19].get_config())(z)
-
+                x = padded_iDCT3D(**pretrained_model.layers[4].layers[19].get_config())(x)
         else:
-            print("Go previous route")
-        
-        #try smoothing feature selection
-        #z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
-        #z = DCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
-        #shape_smoothing=(5,5,3)
-        #z = z*tf.keras.layers.ZeroPadding3D(padding=((0, z.shape[1]-shape_smoothing[0]), (0, z.shape[2]-shape_smoothing[1]), (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))[:,:,:,:,0]
-        #z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
-        #z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
-        #            pretrained_model.layers[4].layers[17].target_shape)(z)
-        
-        #perform brain segmentation with mask
-        #z = MRICircleMask(z.shape)(z)#mask a circle
-
-        #upsampling
-        if(type(pretrained_model.layers[4].layers[16]).__name__=="Dense"):
-            x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
-                        pretrained_model.layers[4].layers[16].units,
-                        kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[16].kernel.numpy()),
-                        bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[16].bias.numpy()),
-                        kernel_regularizer=regularizer,
-                        bias_regularizer=regularizer,
-                        trainable=False)(x)
-        elif(type(pretrained_model.layers[4].layers[17]).__name__=="DCT3D"):#variational option
-            raise NotImplementedError
 
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                     pretrained_model.layers[4].layers[17].target_shape)(x)
-
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[18]).__name__)(
                                         filters=pretrained_model.layers[4].layers[18].filters, 
                                         kernel_size=pretrained_model.layers[4].layers[18].kernel_size, 
@@ -547,6 +516,21 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[18].bias.numpy()),
                                         padding=pretrained_model.layers[4].layers[18].padding,
                                         trainable=False)(x)
+        
+        if(feature_selection):
+            raise NotImplementedError
+            #try smoothing feature selection
+            #z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
+            #z = DCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
+            #shape_smoothing=(5,5,3)
+            #z = z*tf.keras.layers.ZeroPadding3D(padding=((0, z.shape[1]-shape_smoothing[0]), (0, z.shape[2]-shape_smoothing[1]), (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))[:,:,:,:,0]
+            #z = iDCT3D(*pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
+            #z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
+            #            pretrained_model.layers[4].layers[17].target_shape)(z)
+        if(segmentation_mask):
+            raise NotImplementedError
+            #perform brain segmentation with mask
+            #z = MRICircleMask(z.shape)(z)#mask a circle
 
         self.decoder = tf.keras.Model(input_shape, z)
         self.q_decoder = tf.keras.Model(input_shape, x)
