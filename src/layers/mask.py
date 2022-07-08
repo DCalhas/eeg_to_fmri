@@ -37,3 +37,40 @@ class MRICircleMask(tf.keras.layers.Layer):
 		
 	def call(self, X):
 		return X*self.mask
+
+
+class LearnedMask(tf.keras.layers.Layer):
+
+
+
+	def __init__(self, fmri_shape, seed=None, **kwargs):
+
+		self.fmri_shape=fmri_shape
+		self.seed=seed
+
+		super(LearnedMask, self).__init__(**kwargs)
+
+	def build(self, input_shape):
+
+		self.L = self.add_weight('L',
+								shape=list(*self.fmri_shape)+[2],
+								initializer=tf.initializers.GlorotUniform(seed=self.seed),
+								dtype=tf.float32,
+								trainable=True)
+
+	def call(self, X):
+
+		tf.nn.softmax(self.L, axis=-1)
+
+
+		raise NotImplementedError
+
+	def get_config():
+		return {
+			'fmri_shape': self.fmri_shape,
+			'seed': self.seed,
+		}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)

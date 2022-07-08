@@ -328,7 +328,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 	>>> irdft(x)
 	"""
 	
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution=None, random_padding=False, **kwargs):
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution=None, random_padding=False, normal_loc_initializer=None, normal_scale_initializer=None, w1_initializer=None, w2_initializer=None, w3_initializer=None, loc_posterior_initializer=None, scale_posterior_initializer=None, biases_initializer=None, trainable=True, **kwargs):
 		"""
 		in1 - int - first dimension input
 
@@ -359,6 +359,15 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.posterior_dimension = posterior_dimension
 		self.distribution = distribution
 		self.random_padding = random_padding
+		self.normal_loc_initializer=normal_loc_initializer
+		self.normal_scale_initializer=normal_scale_initializer
+		self.w1_initializer=w1_initializer
+		self.w2_initializer=w2_initializer
+		self.w3_initializer=w3_initializer
+		self.loc_posterior_initializer=loc_posterior_initializer
+		self.scale_posterior_initializer=scale_posterior_initializer
+		self.biases_initializer=biases_initializer
+		self.trainable=trainable
 
 		super(variational_iDCT3D, self).__init__(**kwargs)
 
@@ -367,29 +376,44 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(self.distribution is None):
 			self.distribution="Normal"#default
 
-		loc_initializer=tf.initializers.GlorotUniform()
-		scale_initializer=tf.initializers.Ones()
+		#process initializers
+		if(self.normal_loc_initializer==None):#default initializers
+			self.normal_loc_initializer=tf.initializers.random_normal(stddev=0.1)
+		if(self.normal_scale_initializer==None):
+			self.normal_scale_initializer=tf1.initializers.random_normal(mean=-3., stddev=0.1)
+		if(self.loc_posterior_initializer==None):
+			self.loc_posterior_initializer=tf.initializers.GlorotUniform()
+		if(self.scale_posterior_initializer==None):
+			self.scale_posterior_initializer=tf.initializers.Ones()
+		if(self.biases_initializer==None):
+			self.biases_initializer=tf.initializers.Ones()
+		if(self.w1_initializer==None):
+			self.w1_initializer=tf.initializers.GlorotUniform()
+		if(self.w2_initializer==None):
+			self.w2_initializer=tf.initializers.GlorotUniform()
+		if(self.w3_initializer==None):
+			self.w3_initializer=tf.initializers.GlorotUniform()
+
 		constraint=tf.keras.constraints.NonNeg()
 		
 		if(self.coefs_perturb):
-			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', True, self.add_weight)
-			self.normal_prior = tfp.layers.default_multivariate_normal_fn(tf.float32, [self.in1, self.in2, self.in3], 'normal_prior', True, self.add_weight)
+			self.normal= tfp.layers.default_mean_field_normal_fn(loc_constraint=constraint, loc_initializer=self.normal_loc_initializer, untransformed_scale_initializer=self.normal_scale_initializer)(tf.float32, [self.in1, self.in2, self.in3], 'normal_posterior', self.trainable, self.add_weight)
 		if(self.dependent):
 			self.w1 = self.add_weight('W1',
 								shape=[self.in1*self.in2*self.in3, self.posterior_dimension],
-								initializer=tf.initializers.GlorotUniform(),
+								initializer=self.w1_initializer,
 								dtype=tf.float32,
-								trainable=True)
+								trainable=self.trainable)
 			self.w2 = self.add_weight('W2',
 								shape=[self.in1*self.in2*self.in3, self.posterior_dimension],
-								initializer=tf.initializers.GlorotUniform(),
+								initializer=self.w2_initializer,
 								dtype=tf.float32,
-								trainable=True)
+								trainable=self.trainable)
 			self.w3 = self.add_weight('W3',
 								shape=[self.in1*self.in2*self.in3, self.posterior_dimension],
-								initializer=tf.initializers.GlorotUniform(),
+								initializer=self.w3_initializer,
 								dtype=tf.float32,
-								trainable=True)
+								trainable=self.trainable)
 
 		self.padded_idct3 = padded_iDCT3D(self.in1+self.rand1, self.in2+self.rand2, self.in3+self.rand3, self.out1, self.out2, self.out3)
 
@@ -400,22 +424,22 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(self.distribution in ["Normal", "VonMises"]):
 			self.loc = self.add_weight('loc_posterior',
 										shape=[self.posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-										initializer=loc_initializer,
+										initializer=self.loc_posterior_initializer,
 										constraint=None,
 										dtype=tf.float32,
-										trainable=True)
+										trainable=self.trainable)
 			self.scale = self.add_weight('scale_posterior',
 										shape=[self.posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
-										initializer=scale_initializer,
+										initializer=self.scale_posterior_initializer,
 										constraint=constraint,
 										dtype=tf.float32,
-										trainable=True)
+										trainable=self.trainable)
 			self.biases = self.add_weight('biases',
 										shape=[self.posterior_dimension, self.shape_normal1[0]*self.shape_normal1[1]*self.shape_normal1[2]+self.shape_normal2[0]*self.shape_normal2[1]*self.shape_normal2[2]+self.shape_normal3[0]*self.shape_normal3[1]*self.shape_normal3[2]],
 										initializer=loc_initializer,
 										constraint=None,
 										dtype=tf.float32,
-										trainable=True)
+										trainable=self.trainable)
 
 		if(self.random_padding):
 			self.random_pad1 = RandomizeFrequencies(self.in1, self.in1+self.rand1, dim=1)
