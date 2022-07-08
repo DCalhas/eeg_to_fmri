@@ -487,7 +487,12 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         print(pretrained_model.layers[4].summary())
         print(pretrained_model.layers[4].layers[17])
-        print(pretrained_model.layers[4].layers[17].__dict__())
+        print(pretrained_model.layers[4].layers[17].__dict__)
+
+        if(type(pretrained_model.layers[4].layers[18]).__name__=="DCT3D"):
+            print(variational)
+        else:
+            print("Go previous route")
         
         #try smoothing feature selection
         #z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(pretrained_model.layers[4].layers[17].target_shape[:-1])(z)
