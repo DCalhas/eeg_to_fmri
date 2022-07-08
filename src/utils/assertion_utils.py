@@ -121,6 +121,7 @@ def clf_cv(opt):
 		setting+="_variational"
 	if(aleatoric_uncertainty):
 		if(not variational):
+			raise NotImplementedError, "tfp.layers.DenseFlipout does not serialize"
 			setting+="_variational_flipout"
 	if(type(variational_dist) is str):
 		assert variational_dist in ["Normal", "VonMises"]
