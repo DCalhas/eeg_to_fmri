@@ -434,23 +434,23 @@ def train_synthesis(dataset, epochs, padded, variational, variational_coefs, var
 	model.save(save_path, save_format="tf", save_traces=False)
 
 
-def create_labels(view, dataset, path):
+def create_labels(view, dataset, path, setting):
 
 	import numpy as np
 
 	y_pred = np.empty((0,), dtype="float32")
 	y_true = np.empty((0,), dtype="float32")
 
-	np.save(path+view+"_y_pred.npy", y_pred, allow_pickle=True)
-	np.save(path+view+"_y_true.npy", y_true, allow_pickle=True)
+	np.save(path+setting+"_"+view+"_y_pred.npy", y_pred, allow_pickle=True)
+	np.save(path+setting+"_"+view+"_y_true.npy", y_true, allow_pickle=True)
 
-def append_labels(view, path, y_true, y_pred):
+def append_labels(view, path, y_true, y_pred, setting):
 	import numpy as np
-	np.save(path+view+"_y_pred.npy",np.append(np.load(path+view+"_y_pred.npy", allow_pickle=True), y_pred), allow_pickle=True)
-	np.save(path+view+"_y_true.npy",np.append(np.load(path+view+"_y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
+	np.save(path+setting+"_"+view+"_y_pred.npy",np.append(np.load(path+view+"_y_pred.npy", allow_pickle=True), y_pred), allow_pickle=True)
+	np.save(path+setting+"_"+view+"_y_true.npy",np.append(np.load(path+view+"_y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
+def setup_data_loocv(setting, view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
 
 	from utils import preprocess_data
 
@@ -467,7 +467,7 @@ def setup_data_loocv(view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_expl
 
 		#validate
 		launch_process(loocv,
-					(i, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection, segmentation_mask))
+					(i, setting, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection, segmentation_mask))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -616,7 +616,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 	return optimizer.x_opt
 
-def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
+def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
 	
 	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
@@ -662,15 +662,15 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 	#get predictionsf
 	hits, y_true, y_pred = predict(test_set, linearCLF)
 	#save predictions
-	append_labels(view, path_labels, y_true, y_pred)
+	append_labels(view, path_labels, y_true, y_pred, setting)
 	#save views of fmri
 	if(view=="fmri"):
 		if(fold==0):
-			np.save(path_labels+"views.npy", linearCLF.view(X_test)[0].numpy(), allow_pickle=True)
-			np.save(path_labels+"views_relu_regions.npy", linearCLF.view.decoder(X_test).numpy(), allow_pickle=True)
+			np.save(path_labels+setting+"_views.npy", linearCLF.view(X_test)[0].numpy(), allow_pickle=True)
+			np.save(path_labels+setting+"_views_relu_regions.npy", linearCLF.view.decoder(X_test).numpy(), allow_pickle=True)
 		else:
-			np.save(path_labels+"views.npy", np.append(np.load(path_labels+"views.npy", allow_pickle=True), linearCLF.view(X_test)[0].numpy(), axis=0), allow_pickle=True)
-			np.save(path_labels+"views_relu_regions.npy", np.append(np.load(path_labels+"views_relu_regions.npy", allow_pickle=True), linearCLF.view.decoder(X_test).numpy(), axis=0), allow_pickle=True)
+			np.save(path_labels+setting+"_views.npy", np.append(np.load(path_labels+setting+"_views.npy", allow_pickle=True), linearCLF.view(X_test)[0].numpy(), axis=0), allow_pickle=True)
+			np.save(path_labels+setting+"_views_relu_regions.npy", np.append(np.load(path_labels+setting+"_views_relu_regions.npy", allow_pickle=True), linearCLF.view.decoder(X_test).numpy(), axis=0), allow_pickle=True)
 	
 	print("Finished fold", fold)
 
@@ -684,19 +684,19 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 		attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 		#save explainability
 		if(fold==0):
-			np.save(path_labels+"R.npy", R, allow_pickle=True)
-			np.save(path_labels+"attention_scores.npy", attention_scores, allow_pickle=True)
+			np.save(path_labels+setting+"_R.npy", R, allow_pickle=True)
+			np.save(path_labels+setting+"_attention_scores.npy", attention_scores, allow_pickle=True)
 		else:
-			np.save(path_labels+"R.npy", np.append(np.load(path_labels+"R.npy", allow_pickle=True), R, axis=0), allow_pickle=True)
-			np.save(path_labels+"attention_scores.npy", np.append(np.load(path_labels+"attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
+			np.save(path_labels+setting+"_R.npy", np.append(np.load(path_labels+setting+"_R.npy", allow_pickle=True), R, axis=0), allow_pickle=True)
+			np.save(path_labels+setting+"_attention_scores.npy", np.append(np.load(path_labels+setting+"_attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
 
 
-def compute_acc_metrics(view, path):
+def compute_acc_metrics(view, path, setting):
 
 	import numpy as np
 
-	y_pred = np.load(path+view+"_y_pred.npy", allow_pickle=True)
-	y_true = np.load(path+view+"_y_true.npy", allow_pickle=True)
+	y_pred = np.load(path+setting+"_"+view+"_y_pred.npy", allow_pickle=True)
+	y_true = np.load(path+setting+"_"+view+"_y_true.npy", allow_pickle=True)
 
 	#true positive
 	tp = len(np.where(y_pred[np.where(y_true==1.0)] >= 0.5)[0])
