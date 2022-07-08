@@ -405,7 +405,7 @@ def train_synthesis(dataset, epochs, padded, variational, variational_coefs, var
 		#placeholder not pretty please correct me
 		_resolution_decoder=None
 		if(type(resolution_decoder) is float):
-			_resolution_decoder=(int(fmri_shape[1]/resolution_decoder),int(fmri_shape[2]/resolution_decoder),int(fmri_shape[3]/resolution_decoder))
+			_resolution_decoder=(int(fmri_train.shape[1]/resolution_decoder),int(fmri_train.shape[2]/resolution_decoder),int(fmri_train.shape[3]/resolution_decoder))
 		model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
 							weight_decay=weight_decay, skip_connections=True,
 							batch_norm=True, #dropout=False,
