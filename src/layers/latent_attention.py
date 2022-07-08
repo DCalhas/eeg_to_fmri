@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 
 """
+
 import tensorflow as tf
 from layers.latent_attention import Latent_EEG_Spatial_Attention, Latent_fMRI_Spatial_Attention
 

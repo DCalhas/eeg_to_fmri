@@ -13,6 +13,7 @@ from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention
 from layers.resnet_block import ResBlock, pretrained_ResBlock
 from layers.mask import MRICircleMask
+from layers.latent_attention import Latent_EEG_Spatial_Attention, Latent_fMRI_Spatial_Attention
 
 from pathlib import Path
 import shutil
@@ -191,10 +192,10 @@ class EEG_to_fMRI(tf.keras.Model):
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],
                         skip_connections=skip_connections, seed=seed)(x)
         
-        x = tf.keras.layers.Flatten()(x)
+        x = tf.keras.layers.Flatten()(x)#TODO: if TRs > 1 this should be changed
         x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)#placeholder
-        x = tf.keras.layers.Reshape(latent_shape)(x)
+                                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)#TODO: TRs > 1 should only be on spatial dim
+        x = tf.keras.layers.Reshape(latent_shape)(x)#TODO: take into account TRs as last dim
 
         self.eeg_encoder = tf.keras.Model(input_shape, x)
         self.fmri_encoder = self.fmri_ae.encoder
@@ -210,7 +211,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             variational_random_padding=False,
                             dropout=False, outfilter=0, seed=None):
 
-        x = tf.keras.layers.Flatten()(output_encoder)
+        x = tf.keras.layers.Flatten()(output_encoder)#TODO: does it make sense in TRs>1?
 
         if(fourier_features):
             if(random_fourier):
@@ -222,7 +223,7 @@ class EEG_to_fMRI(tf.keras.Model):
         else:
             self.latent_resolution = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                             kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                                                            name="dense")
+                                                            name="dense")#TODO: does it make sense in TRs>1?
         if(conditional_attention_style):
             if(conditional_attention_style_prior):
                 self.latent_style = self.add_weight(name='style_prior',
@@ -361,7 +362,7 @@ class EEG_to_fMRI(tf.keras.Model):
     def from_config(cls, config):
         return cls(**config)
 
-
+        
 
 custom_objects={"Topographical_Attention": Topographical_Attention,
                 "EEG_to_fMRI": EEG_to_fMRI,
@@ -371,18 +372,19 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "DCT3D": DCT3D, 
                 "variational_iDCT3D": variational_iDCT3D, 
                 "iDCT3D": iDCT3D,
-                "RandomFourierFeatures": RandomFourierFeatures}
+                "RandomFourierFeatures": RandomFourierFeatures,
+                "Latent_EEG_Spatial_Attention": Latent_EEG_Spatial_Attention,
+                "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention}
 
-
-"""
-
-"""
 class pretrained_EEG_to_fMRI(tf.keras.Model):
-
+    """
 
     """
-    """
+
     def __init__(self, model, input_shape, activation=None, regularizer=None, seed=None):
+        """
+        """
+
         super(pretrained_EEG_to_fMRI, self).__init__()
 
         self._input_shape = input_shape
@@ -447,13 +449,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                             pretrained_model.layers[4].layers[11].units,
                                             scale=pretrained_model.layers[4].layers[11].kernel_scale.numpy(),
-                                            trainable=True, name="latent_projection")
+                                            trainable=False, name="latent_projection")
         else:
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
                                                 pretrained_model.layers[4].layers[11].units,
                                                 kernel_regularizer=regularizer,
                                                 bias_regularizer=regularizer,
-                                                trainable=True, name="latent_projection")
+                                                trainable=False, name="latent_projection")
             
         attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
         self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(
@@ -480,7 +482,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     activation=None,
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
-                    trainable=True)(x)
+                    trainable=False)(x)
         z = tf.keras.layers.ReLU()(z)
 
         print(pretrained_model.layers[4].summary())
@@ -495,7 +497,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     pretrained_model.layers[4].layers[17].target_shape)(z)
         
         #perform brain segmentation with mask
-        z = MRICircleMask(z.shape)(z)#mask a circle
+        #z = MRICircleMask(z.shape)(z)#mask a circle
 
         #upsampling
         if(type(pretrained_model.layers[4].layers[16]).__name__=="Dense"):
@@ -537,12 +539,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         self.decoder.build(input_shape=input_shape)
         self.built=True
 
-    """
-        Random behaviour of GPU with tf functions does not reproduce the same results
-        Call this function when getting results
-    """
     #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
     def call(self, x1):
+        """
+            Random behaviour of GPU with tf functions does not reproduce the same results
+            Call this function when getting results
+        """
+
         #l0 norm??? counts of
         z = self.q_decoder(x1).numpy()
         z_mask = 1.-self.decoder(x1)

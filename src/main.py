@@ -23,6 +23,7 @@ parser.add_argument('mode',
 					choices=['metrics', 'residues', 'uncertainty', 'mean_residues', 'quality', 'attention_graph', 'mean_attention_graph', 'lrp_eeg_channels', 'lrp_eeg_fmri'],
 					help="What to compute")
 parser.add_argument('dataset', choices=['01', '02', '03', '04', '05', 'NEW'], help="Which dataset to load")
+parser.add_argument('-TRs', default=1, type=int, help="Number of volumes to predict")
 parser.add_argument('-topographical_attention', action="store_true", help="Topographical attention on EEG channels")
 parser.add_argument('-conditional_attention_style', action="store_true", help="Conditional attention style on the latent space")
 parser.add_argument('-padded', action="store_true", help="Fill higher resolutions with zero for the upsampling method.")
@@ -47,7 +48,7 @@ parser.add_argument('-T', default=100, type=int, help="Monte Carlo Simulation nu
 parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
 opt = parser.parse_args()
 
-mode, dataset, topographical_attention, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting = assertion_utils.main(opt)
+mode, dataset, TRs, topographical_attention, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting = assertion_utils.main(opt)
 
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)

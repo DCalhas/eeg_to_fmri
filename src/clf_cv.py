@@ -23,7 +23,7 @@ if __name__ == "__main__":
 	parser.add_argument('-dataset_synth', default="01", type=str, help="Which dataset to load for synthesis")
 	parser.add_argument('-folds', default=5, type=int, help="Folds to consider in CV hyperparameter optimization")
 	parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
-	parser.add_argument('-gpu_mem', default=3000, type=int, help="GPU memory limit")
+	parser.add_argument('-gpu_mem', default=1500, type=int, help="GPU memory limit")
 	parser.add_argument('-path_save_network', default="/tmp/network_synthesis", type=str, help="Path to save neural network synthesis architecture")
 	parser.add_argument('-path_labels', default="/tmp/", type=str, help="Path to save labels of classification task, should be a directory")
 	parser.add_argument('-save_explainability', action="store_true", help="save explainability features")
@@ -45,6 +45,7 @@ if __name__ == "__main__":
 if(view=="fmri"):
 	process_utils.launch_process(process_utils.train_synthesis, 
 								(dataset_synth, epochs, path_save_network, gpu_mem, seed))
+	exit(1)
 
 #create predictions and true labels
 process_utils.launch_process(process_utils.create_labels,
