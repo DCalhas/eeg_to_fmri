@@ -531,7 +531,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         trainable=False)(x)
         
         if(feature_selection):
-            try smoothing feature selection
+            #try smoothing feature selection
             z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index-1]).__name__)(pretrained_model.layers[4].layers[index-1].target_shape[:-1])(z)
             z = DCT3D(*pretrained_model.layers[4].layers[index-1].target_shape[:-1])(z)
             shape_smoothing=(5,5,3)
