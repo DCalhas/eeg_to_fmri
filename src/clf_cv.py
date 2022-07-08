@@ -21,6 +21,9 @@ if __name__ == "__main__":
 	parser.add_argument('dataset_clf', choices=['10', '11'], help="Which dataset to load for classification")
 	parser.add_argument('view', choices=['raw', 'stft', 'fmri'], help="Which view to consider for classification")
 	parser.add_argument('-dataset_synth', default="01", type=str, help="Which dataset to load for synthesis")
+	parser.add_argument('-feature_selection', action="store_true", help="Perform feature selection with low resolution")
+	parser.add_argument('-segmentation_mask', action="store_true", help="Apply a brain segmentatino mask")
+	parser.add_argument('-save_explainability', action="store_true", help="save explainability features")
 	parser.add_argument('-folds', default=5, type=int, help="Folds to consider in CV hyperparameter optimization")
 	parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 	parser.add_argument('-gpu_mem', default=1500, type=int, help="GPU memory limit")
@@ -32,6 +35,8 @@ if __name__ == "__main__":
 
 	dataset_synth=opt.dataset_synth
 	dataset_clf=opt.dataset_clf
+	feature_selection=opt.feature_selection
+	segmentation_mask=opt.segmentation_mask
 	view=opt.view
 	folds=opt.folds
 	epochs=opt.epochs
@@ -52,7 +57,7 @@ process_utils.launch_process(process_utils.create_labels,
 							(view, dataset_clf, path_labels))
 
 #create predictions and true labels
-process_utils.setup_data_loocv(view, dataset_clf, folds, epochs, gpu_mem, seed, save_explainability, path_save_network, path_labels)
+process_utils.setup_data_loocv(view, dataset_clf, folds, epochs, gpu_mem, seed, save_explainability, path_save_network, path_labels, feature_selection, segmentation_mask)
 
 #report classification metrics
 process_utils.launch_process(process_utils.compute_acc_metrics, 

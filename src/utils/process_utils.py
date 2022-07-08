@@ -467,7 +467,7 @@ def append_labels(view, path, y_true, y_pred):
 	np.save(path+view+"_y_true.npy",np.append(np.load(path+view+"_y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_explainability, path_network, path_labels):
+def setup_data_loocv(view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
 
 	from utils import preprocess_data
 
@@ -480,11 +480,11 @@ def setup_data_loocv(view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_expl
 
 	for i in range(dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
-		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network)
+		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask)
 
 		#validate
 		launch_process(loocv,
-					(i, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, save_explainability, path_network, path_labels))
+					(i, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection, segmentation_mask))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -537,7 +537,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network):
+def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network, feature_selection=False, segmentation_mask=False):
 	import GPyOpt
 	
 	iteration=0
@@ -595,7 +595,8 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 					loss_fn=losses_utils.entropy_mae_loss
 					linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
 																X_train.shape[1:], activation=tf.keras.activations.relu, 
-																regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
+																regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg),
+																feature_selection=feature_selection, segmentation_mask=segmentation_mask)
 				else:
 					loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
@@ -632,7 +633,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 	return optimizer.x_opt
 
-def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels):
+def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
 	
 	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
@@ -663,7 +664,8 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 			loss_fn=losses_utils.entropy_mae_loss
 			linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
 														X_train.shape[1:], activation=tf.keras.activations.relu, 
-														regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
+														regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer),
+														feature_selection=feature_selection, segmentation_mask=segmentation_mask))
 		else:
 			loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
