@@ -665,7 +665,7 @@ def loocv(fold, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_
 			linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
 														X_train.shape[1:], activation=tf.keras.activations.relu, 
 														regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer),
-														feature_selection=feature_selection, segmentation_mask=segmentation_mask))
+														feature_selection=feature_selection, segmentation_mask=segmentation_mask)
 		else:
 			loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
