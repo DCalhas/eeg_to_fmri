@@ -502,9 +502,10 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         w1_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w1.numpy()),
                                         w2_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w2.numpy()),
                                         w3_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].w3.numpy()),
-                                        loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].loc_posterior_initializer.numpy()),
-                                        scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].scale_posterior_initializer.numpy()),
-                                        biases_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].biases_initializer.numpy()),)(z)
+                                        loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].loc.numpy()),
+                                        scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].scale.numpy()),
+                                        biases_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[19].biases.numpy()),
+                                        trainable=True)(z)
             elif(type(pretrained_model.layers[4].layers[19]).__name__=="padded_iDCT3D"):
                 z = padded_iDCT3D(**pretrained_model.layers[4].layers[19].get_config())(z)
 
