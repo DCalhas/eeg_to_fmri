@@ -110,7 +110,7 @@ def clf_cv(opt):
 	path_labels=opt.path_labels
 	save_explainability=opt.save_explainability
 
-	setting=dataset_clf+"synth_"+dataset_synth
+	setting=dataset_clf+"_synth_"+dataset_synth
 
 	if(padded):
 		assert not variational, "No variational model along with padded version of filling with zeros"
@@ -140,5 +140,9 @@ def clf_cv(opt):
 	if(variational_random_padding):
 		assert variational, "Only done with variational flag set to True"
 		setting+="_random_padding"
+	if(feature_selection):
+		setting+="_feature_selection"
+	if(segmentation_mask):
+		setting+="_segmentation_mask"
 
 	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability
