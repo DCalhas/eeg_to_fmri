@@ -407,24 +407,12 @@ def train_synthesis(dataset, epochs, padded, variational, variational_coefs, var
 		if(type(resolution_decoder) is float):
 			_resolution_decoder=(int(fmri_train.shape[1]/resolution_decoder),int(fmri_train.shape[2]/resolution_decoder),int(fmri_train.shape[3]/resolution_decoder))
 		model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
-							weight_decay=weight_decay, skip_connections=True,
-							batch_norm=True, #dropout=False,
-							fourier_features=True,
-							random_fourier=True,
-							topographical_attention=True,
-							conditional_attention_style=True,
-							conditional_attention_style_prior=False,
-							inverse_DFT=variational or padded, 
-							DFT=variational or padded,
-							variational_iDFT=variational, 
-							variational_coefs=variational_coefs, 
-							variational_iDFT_dependent=variational_dependent_h>1, 
-							variational_iDFT_dependent_dim=variational_dependent_h,
-							aleatoric_uncertainty=aleatoric_uncertainty, 
-							low_resolution_decoder=type(resolution_decoder) is float, 
-							variational_random_padding=variational_random_padding, 
-							resolution_decoder=_resolution_decoder,
-							local=True, seed=None, 
+							weight_decay=weight_decay, skip_connections=True, batch_norm=True, fourier_features=True, random_fourier=True,
+							topographical_attention=True, conditional_attention_style=True, conditional_attention_style_prior=False,
+							inverse_DFT=variational or padded, DFT=variational or padded, variational_iDFT=variational, variational_coefs=variational_coefs, 
+							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h, aleatoric_uncertainty=aleatoric_uncertainty, 
+							low_resolution_decoder=type(resolution_decoder) is float, variational_random_padding=variational_random_padding, 
+							resolution_decoder=_resolution_decoder, local=True, seed=None, 
 							fmri_args = (latent_dimension, fmri_train.shape[1:], 
 							kernel_size, stride_size, n_channels, 
 							max_pool, batch_norm, weight_decay, skip_connections,
@@ -444,14 +432,6 @@ def train_synthesis(dataset, epochs, padded, variational, variational_coefs, var
 	print("I: Saving synthesis network at", save_path)
 
 	model.save(save_path, save_format="tf", save_traces=False)
-
-
-	#remove lines
-	from models import classifiers
-	linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(save_path,custom_objects=eeg_to_fmri.custom_objects), 
-																(132,134,10,1), activation=tf.keras.activations.relu, 
-																#X_train.shape[1:], activation=tf.keras.activations.relu, 
-																regularizer=tf.keras.regularizers.l1_l2(l1=0.0, l2=0.0))
 
 
 def create_labels(view, dataset, path):
