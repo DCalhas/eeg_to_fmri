@@ -574,7 +574,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             Call this function when getting results
         """
         
-        z = self.q_decoder(x1).numpy()
+        z = self.q_decoder(x1)
         
         #weight of tasks
         sigma_1 = self.sigma_1(x1)
