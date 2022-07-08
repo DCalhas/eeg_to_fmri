@@ -494,8 +494,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[17]).__name__)(
                         pretrained_model.layers[4].layers[17].target_shape)(z)
             #initialize DCT3D layer
-            z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[18]).__name__)(
-                        **pretrained_model.layers[4].layers[18].get_config())(z)
+            z = DCT3D(**pretrained_model.layers[4].layers[18].get_config())(z)
+            if(type(pretrained_model.layers[4].layers[19]).__name__=="variational_iDCT3D"):
+
+                z = variational_iDCT3D(**pretrained_model.layers[4].layers[19].get_config())(z)
+            elif(type(pretrained_model.layers[4].layers[19]).__name__=="padded_iDCT3D"):
+                z = padded_iDCT3D(**pretrained_model.layers[4].layers[19].get_config())(z)
+
         else:
             print("Go previous route")
         
