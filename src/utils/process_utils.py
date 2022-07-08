@@ -395,12 +395,12 @@ def train_synthesis(dataset, epochs, save_path, gpu_mem, seed):
 	with tf.device('/CPU:0'):
 		
 		train_data, _ = preprocess_data.dataset(dataset, 
-														n_individuals=getattr(data_utils, "n_individuals_"+dataset),
-														interval_eeg=interval_eeg, 
-														ind_volume_fit=False,
-														standardize_fmri=True,
-														iqr=False,
-														verbose=True)
+												n_individuals=getattr(data_utils, "n_individuals_"+dataset),
+												interval_eeg=interval_eeg, 
+												ind_volume_fit=False,
+												standardize_fmri=True,
+												iqr=False,
+												verbose=True)
 		eeg_train, fmri_train = train_data
 		
 		model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
