@@ -93,6 +93,7 @@ def clf_cv(opt):
 	dataset_clf=opt.dataset_clf
 	feature_selection=opt.feature_selection
 	segmentation_mask=opt.segmentation_mask
+	style_prior=opt.style_prior
 	padded=opt.padded
 	variational=opt.variational
 	variational_coefs=opt.variational_coefs
@@ -112,6 +113,8 @@ def clf_cv(opt):
 
 	setting=dataset_clf+"_synth_"+dataset_synth
 
+	if(style_prior):
+		setting+="_style_prior"
 	if(padded):
 		assert not variational, "No variational model along with padded version of filling with zeros"
 		assert type(resolution_decoder) is float, "There needs to be a specification of the lower resolution"
@@ -149,4 +152,4 @@ def clf_cv(opt):
 	if(segmentation_mask):
 		setting+="_segmentation_mask"
 
-	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability
+	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability

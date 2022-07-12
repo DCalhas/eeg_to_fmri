@@ -350,7 +350,7 @@ def cross_validation_eeg_fmri(score, fourier_features, random_fourier,
 	score.value = (score.value-1.0)/n_folds
 
 
-def train_synthesis(dataset, epochs, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, save_path, gpu_mem, seed):
+def train_synthesis(dataset, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, save_path, gpu_mem, seed):
 	#imports
 	import tensorflow as tf
 
@@ -408,7 +408,7 @@ def train_synthesis(dataset, epochs, padded, variational, variational_coefs, var
 			_resolution_decoder=(int(fmri_train.shape[1]/resolution_decoder),int(fmri_train.shape[2]/resolution_decoder),int(fmri_train.shape[3]/resolution_decoder))
 		model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
 							weight_decay=weight_decay, skip_connections=True, batch_norm=True, fourier_features=True, random_fourier=True,
-							topographical_attention=True, conditional_attention_style=True, conditional_attention_style_prior=False,
+							topographical_attention=True, conditional_attention_style=True, conditional_attention_style_prior=style_prior,
 							inverse_DFT=variational or padded, DFT=variational or padded, variational_iDFT=variational, variational_coefs=variational_coefs, 
 							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h, aleatoric_uncertainty=aleatoric_uncertainty, 
 							low_resolution_decoder=type(resolution_decoder) is float, variational_random_padding=variational_random_padding, 
@@ -432,7 +432,6 @@ def train_synthesis(dataset, epochs, padded, variational, variational_coefs, var
 	print("I: Saving synthesis network at", save_path)
 
 	model.save(save_path, save_format="tf", save_traces=False)
-
 
 def create_labels(view, dataset, path, setting):
 
@@ -515,7 +514,7 @@ def views(model, test_set, y):
 
 	dev_views = np.empty((0,)+getattr(fmri_utils, "fmri_shape_01")+(1,))
 	for x, _ in test_set.repeat(1):
-		dev_views = np.append(dev_views, model.view(x), axis=0)
+		dev_views = np.append(dev_views, model.view(x)[0], axis=0)
 	
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
@@ -680,7 +679,7 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 		explainer=lrp.LRP(linearCLF.clf)
 		R=lrp.explain(explainer, views(linearCLF, test_set, y_test), verbose=True)
 		#explain to EEG channels
-		explainer=lrp.LRP_EEG(linearCLF.view)
+		explainer=lrp.LRP_EEG(linearCLF.view.q_decoder)
 		attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 		#save explainability
 		if(fold==0):

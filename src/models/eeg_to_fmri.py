@@ -14,6 +14,7 @@ from layers.topographical_attention import Topographical_Attention
 from layers.resnet_block import ResBlock, pretrained_ResBlock
 from layers.mask import MRICircleMask
 from layers.latent_attention import Latent_EEG_Spatial_Attention, Latent_fMRI_Spatial_Attention
+from layers.style import Style
 
 from pathlib import Path
 import shutil
@@ -224,23 +225,20 @@ class EEG_to_fMRI(tf.keras.Model):
             self.latent_resolution = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                             kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
                                                             name="dense")#TODO: does it make sense in TRs>1?
+        
+        x = self.latent_resolution(x)
+        
         if(conditional_attention_style):
             if(conditional_attention_style_prior):
-                self.latent_style = self.add_weight(name='style_prior',
-                                                      shape=(latent_shape[0]*latent_shape[1]*latent_shape[2],),
-                                                      initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                                                      trainable=True)
+                x = Style(initializer="glorot_uniform", trainable=True, seed=seed, name='style_prior')(x)
             else:
                 attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
                 self.latent_style = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                         use_bias=False,
                                                         name="conditional_attention_style_dense",
                                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(attention_scores)
+                x = x*self.latent_style
 
-        x = self.latent_resolution(x)
-        
-        if(conditional_attention_style):
-            x = x*self.latent_style
 
         if(dropout):
             x = tf.keras.layers.Dropout(0.5)(x)
@@ -373,6 +371,7 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "variational_iDCT3D": variational_iDCT3D, 
                 "iDCT3D": iDCT3D,
                 "RandomFourierFeatures": RandomFourierFeatures,
+                "Style": Style,
                 "Latent_EEG_Spatial_Attention": Latent_EEG_Spatial_Attention,
                 "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention,
                 "DenseFlipout": tfp.layers.DenseFlipout}
@@ -446,61 +445,76 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     
     def build_decoder(self, pretrained_model, input_shape, output_encoder, activation=None, attention_scores=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
         x = tf.keras.layers.Flatten()(output_encoder)
-
+        print(pretrained_model.layers[4].summary())
         if("Fourier" in type(pretrained_model.layers[4].layers[11]).__name__):
-            self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
-                                            pretrained_model.layers[4].layers[11].units,
-                                            scale=pretrained_model.layers[4].layers[11].kernel_scale.numpy(),
+            index=11
+        elif("Style" in type(pretrained_model.layers[4].layers[11]).__name__):
+            index=10
+        else:
+            raise NotImplementedError
+
+        if("Fourier" in type(pretrained_model.layers[4].layers[index]).__name__):
+            self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[index]).__name__](
+                                            pretrained_model.layers[4].layers[index].units,
+                                            scale=pretrained_model.layers[4].layers[index].kernel_scale.numpy(),
                                             trainable=False, name="latent_projection")
         else:
-            self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[11]).__name__](
-                                                pretrained_model.layers[4].layers[11].units,
+            self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[index]).__name__](
+                                                pretrained_model.layers[4].layers[index].units,
                                                 kernel_regularizer=regularizer,
                                                 bias_regularizer=regularizer,
                                                 trainable=False, name="latent_projection")
-            
-        attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
-        self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[12]).__name__)(
-                                    pretrained_model.layers[4].layers[12].units,
-                                    activation=tf.keras.activations.linear,
-                                    kernel_regularizer=regularizer,
-                                    bias_regularizer=regularizer,
-                                    use_bias=pretrained_model.layers[4].layers[12].use_bias,
-                                    name="conditional_attention_style_dense",
-                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                                    trainable=True)(attention_scores)
-
+        index+=1
+        #project sinusoids
         x = self.latent_resolution(x)
-        x = x*self.latent_style
         
-        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[14]).__name__)(
-                    pretrained_model.layers[4].layers[14].target_shape)(x)
+        if(pretrained_model.layers[4].layers[index].name=="conditional_attention_style_dense"):
+            attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
+            self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
+                                        pretrained_model.layers[4].layers[index].units,
+                                        activation=tf.keras.activations.linear,
+                                        kernel_regularizer=regularizer,
+                                        bias_regularizer=regularizer,
+                                        use_bias=pretrained_model.layers[4].layers[index].use_bias,
+                                        name="conditional_attention_style_dense",
+                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
+                                        trainable=True)(attention_scores)
+            #add style features from attention graph or prior learned style
+            x = x*self.latent_style
+        elif(pretrained_model.layers[4].layers[index].name=="style_prior"):
+            x = Style(initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].latent_style.numpy()), trainable=False, seed=None, name='style_prior')(x)
+        else:
+            raise NotImplementedError
 
-        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[15]).__name__)()(x)
+        index+=1        
+        
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
+                    pretrained_model.layers[4].layers[index].target_shape)(x)
+        index+=1
+
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)()(x)
+        index+=1
 
         #split flow in two
-        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[16]).__name__)(
-                    pretrained_model.layers[4].layers[16].units,
+        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
+                    pretrained_model.layers[4].layers[index].units,
                     activation=None,
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=False)(x)
-
-        #layer, please remove this for reproducibility sake and generalization
-        index=16
         index+=1
 
-        if(type(pretrained_model.layers[4].layers[18]).__name__=="DCT3D"):
+        if(type(pretrained_model.layers[4].layers[index+1]).__name__=="DCT3D"):
             #reshape
             x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
                         pretrained_model.layers[4].layers[index].target_shape)(x)
-            
-            #remove this
             index+=1
+
             #initialize DCT3D layer
             x = DCT3D(**pretrained_model.layers[4].layers[index].get_config())(x)
             #remove this
             index+=1
+
             if(type(pretrained_model.layers[4].layers[index]).__name__=="variational_iDCT3D"):
                 x = variational_iDCT3D(**pretrained_model.layers[4].layers[index].get_config(), 
                                         normal_loc_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].normal.distribution.loc.numpy()),
@@ -514,8 +528,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         trainable=True)(x)
             elif(type(pretrained_model.layers[4].layers[index]).__name__=="padded_iDCT3D"):
                 x = padded_iDCT3D(**pretrained_model.layers[4].layers[index].get_config())(x)
-
-            #remove this
             index+=1
 
 
