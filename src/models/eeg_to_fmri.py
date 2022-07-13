@@ -381,7 +381,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
     """
 
-    def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
+    def __init__(self, model, input_shape, activation=tf.keras.activations.linear, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
         """
         """
 
@@ -390,7 +390,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         self._input_shape = input_shape
         self.feature_selection=feature_selection
         
-        input_shape, x, attention_scores = self.build_encoder(model, activation=tf.keras.activations.linear, regularizer=regularizer, seed=seed)
+        input_shape, x, attention_scores = self.build_encoder(model, activation=activation, regularizer=regularizer, seed=seed)
         
         self.build_decoder(model, input_shape, x, activation=activation, attention_scores=attention_scores, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
 
