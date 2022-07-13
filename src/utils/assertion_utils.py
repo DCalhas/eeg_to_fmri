@@ -152,4 +152,7 @@ def clf_cv(opt):
 	if(segmentation_mask):
 		setting+="_segmentation_mask"
 
+	if(view!="fmri"):
+		setting=dataset_clf+"_"+view
+		
 	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability
