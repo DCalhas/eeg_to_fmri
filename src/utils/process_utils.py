@@ -449,7 +449,7 @@ def append_labels(view, path, y_true, y_pred, setting):
 	np.save(path+setting+"/y_true.npy",np.append(np.load(path+setting+"/y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(setting, view, dataset, n_folds_cv, epochs, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
+def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
 
 	from utils import preprocess_data
 
@@ -460,7 +460,7 @@ def setup_data_loocv(setting, view, dataset, n_folds_cv, epochs, gpu_mem, seed, 
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
-	for i in range(dataset_clf_wrapper.n_individuals):
+	for i in range(fold, dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
 		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask)
 

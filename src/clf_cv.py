@@ -32,6 +32,7 @@ if __name__ == "__main__":
 	parser.add_argument('-variational_random_padding', action="store_true", help="Whether to randomize positions in the DCT frequency space instead of predicting low resolution coefficients")
 	parser.add_argument('-resolution_decoder', default=None, type=float, help="Resolution decoder intermediary before final transformation in decoder -- used in uncertainty")
 	parser.add_argument('-aleatoric_uncertainty', action="store_true", help="Aleatoric uncertainty flag")
+	parser.add_argument('-fold', default=0, type=int, help="Fold to start leave one out at - useful when bizantine fault error occurs and restart at state (fold)")
 	parser.add_argument('-folds', default=5, type=int, help="Folds to consider in CV hyperparameter optimization")
 	parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 	parser.add_argument('-gpu_mem', default=1500, type=int, help="GPU memory limit")
@@ -57,7 +58,7 @@ process_utils.launch_process(process_utils.create_labels,
 							(view, dataset_clf, path_labels, setting))
 
 #create predictions and true labels
-process_utils.setup_data_loocv(setting, view, dataset_clf, folds, epochs, gpu_mem, seed, save_explainability, path_save_network, path_labels, feature_selection, segmentation_mask)
+process_utils.setup_data_loocv(setting, view, dataset_clf, fold, folds, epochs, gpu_mem, seed, save_explainability, path_save_network, path_labels, feature_selection, segmentation_mask)
 
 #report classification metrics
 process_utils.launch_process(process_utils.compute_acc_metrics, 
