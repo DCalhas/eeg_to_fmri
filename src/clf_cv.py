@@ -42,7 +42,7 @@ if __name__ == "__main__":
 	parser.add_argument('-seed', default=42, type=int, help="Seed for random state")
 	opt = parser.parse_args()
 	
-	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability = assertion_utils.clf_cv(opt)
+	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability = assertion_utils.clf_cv(opt)
 
 #create directory to save
 if(not os.path.exists(path_labels+"/"+ setting)):

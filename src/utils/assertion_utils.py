@@ -104,6 +104,7 @@ def clf_cv(opt):
 	aleatoric_uncertainty=opt.aleatoric_uncertainty
 	view=opt.view
 	folds=opt.folds
+	fold=opt.fold
 	epochs=opt.epochs
 	gpu_mem=opt.gpu_mem
 	path_save_network=opt.path_save_network
@@ -155,4 +156,4 @@ def clf_cv(opt):
 	if(view!="fmri"):
 		setting=dataset_clf+"_"+view
 		
-	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability
+	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability
