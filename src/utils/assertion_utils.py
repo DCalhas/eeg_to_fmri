@@ -12,6 +12,7 @@ def main(opt):
 	dataset=opt.dataset
 	TRs=opt.TRs
 	topographical_attention=opt.topographical_attention
+	channel_organization=opt.channel_organization
 	padded=opt.padded
 	variational=opt.variational
 	variational_coefs=opt.variational_coefs
@@ -40,6 +41,8 @@ def main(opt):
 		raise NotImplementedError
 	if(topographical_attention):
 		setting+="_topographical_attention"
+	if(channel_organization):
+		setting+="_channel_organization"
 	if(random_fourier):
 		assert fourier_features, "To run random_fourier, fourier_features need to be active"
 		setting+="_random"
@@ -79,7 +82,7 @@ def main(opt):
 
 
 
-	return mode, dataset, TRs, topographical_attention, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting
+	return mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting
 
 def clf_cv(opt):
 	"""

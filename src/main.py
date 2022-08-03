@@ -25,6 +25,7 @@ parser.add_argument('mode',
 parser.add_argument('dataset', choices=['01', '02', '03', '04', '05', 'NEW'], help="Which dataset to load")
 parser.add_argument('-TRs', default=1, type=int, help="Number of volumes to predict")
 parser.add_argument('-topographical_attention', action="store_true", help="Topographical attention on EEG channels")
+parser.add_argument('-channel_organization', action="store_true", help="Organization of EEG channels, without surpressing information from any channel")
 parser.add_argument('-conditional_attention_style', action="store_true", help="Conditional attention style on the latent space")
 parser.add_argument('-padded', action="store_true", help="Fill higher resolutions with zero for the upsampling method.")
 parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
@@ -48,7 +49,7 @@ parser.add_argument('-T', default=100, type=int, help="Monte Carlo Simulation nu
 parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
 opt = parser.parse_args()
 
-mode, dataset, TRs, topographical_attention, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting = assertion_utils.main(opt)
+mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting = assertion_utils.main(opt)
 
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
@@ -92,8 +93,8 @@ if(type(resolution_decoder) is float):
 model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
 							batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
 							conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
-							inverse_DFT=variational or padded, DFT=variational or padded, variational_dist=variational_dist,
-							variational_iDFT=variational, variational_coefs=variational_coefs, 
+							organize_channels=channel_organization, inverse_DFT=variational or padded, DFT=variational or padded, 
+							variational_dist=variational_dist, variational_iDFT=variational, variational_coefs=variational_coefs, 
 							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
 							aleatoric_uncertainty=aleatoric_uncertainty, low_resolution_decoder=type(resolution_decoder) is float, 
 							variational_random_padding=variational_random_padding, resolution_decoder=_resolution_decoder, seed=None, 

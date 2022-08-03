@@ -104,7 +104,8 @@ class EEG_to_fMRI(tf.keras.Model):
                 variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
                 variational_random_padding=False,
                 resolution_decoder=None, low_resolution_decoder=False,
-                topographical_attention=False, seed=None, fmri_args=None):
+                topographical_attention=False, organize_channels=False,
+                 seed=None, fmri_args=None):
         super(EEG_to_fMRI, self).__init__()
 
         self.training=True
@@ -132,6 +133,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.resolution_decoder=resolution_decoder
         self.low_resolution_decoder=low_resolution_decoder
         self.topographical_attention=topographical_attention
+        self.organize_channels=organize_channels
         self.aleatoric_uncertainty=aleatoric_uncertainty
         self.seed=seed
         self.fmri_args=fmri_args
@@ -146,6 +148,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             skip_connections=skip_connections, local=local, 
                             batch_norm=batch_norm, 
                             topographical_attention=topographical_attention,
+                            organize_channels=organize_channels,
                             seed=seed)
         self.build_decoder(input_shape, x, latent_shape, inverse_DFT=inverse_DFT, DFT=DFT,
                             attention_scores=attention_scores, 
@@ -167,7 +170,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             dropout=False, weight_decay=0.000, 
                             skip_connections=False, batch_norm=True, 
                             local=True, topographical_attention=False,
-                            seed=None):
+                            organize_channels=False, seed=None):
 
         attention_scores=None
 
@@ -178,7 +181,7 @@ class EEG_to_fMRI(tf.keras.Model):
             #reshape to flattened features to apply attention mechanism
             x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
             #topographical attention
-            x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2])(x)
+            x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels)(x)
             #reshape back to original shape
             x = tf.keras.layers.Reshape(self._input_shape)(x)
             previous_block_x = x
@@ -352,6 +355,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 "resolution_decoder": self.resolution_decoder,
                 "low_resolution_decoder": self.low_resolution_decoder,
                 "topographical_attention": self.topographical_attention,
+                "organize_channels": self.organize_channels,
                 "aleatoric_uncertainty": self.aleatoric_uncertainty,
                 "seed": self.seed,
                 "fmri_args": self.fmri_args}
@@ -403,7 +407,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #reshape to flattened features to apply attention mechanism
         x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
         #topographical attention
-        x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], regularizer=regularizer)(x)
+        x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=pretrained_model.organize_channels, regularizer=regularizer)(x)
+
         #reshape back to original shape
         x = tf.keras.layers.Reshape(self._input_shape)(x)
         previous_block_x = x
