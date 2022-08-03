@@ -44,8 +44,8 @@ class Topographical_Attention(tf.keras.layers.Layer):
 		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
 		self.attention_scores=W
 
-		if(self.organize_channels):
-			self.losses=[self.organize_regularization(W)]#### COMPUTE GRADIENTS W.R.T. self.A, acitivity regularizer is not possible
+		#if(self.organize_channels):
+			#self.losses=[self.organize_regularization(W)]#### COMPUTE GRADIENTS W.R.T. self.A, acitivity regularizer is not possible
 		#tf.print(tf.reduce_sum(self.organize_regularization(W)))
 
 		return tf.linalg.matmul(W, X), self.attention_scores
