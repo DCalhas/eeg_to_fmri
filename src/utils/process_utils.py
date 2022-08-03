@@ -679,15 +679,15 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 		explainer=lrp.LRP(linearCLF.clf)
 		R=lrp.explain(explainer, views(linearCLF, test_set, y_test), verbose=True)
 		#explain to EEG channels
-		explainer=lrp.LRP_EEG(linearCLF.view.q_decoder)
-		attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
+		#explainer=lrp.LRP_EEG(linearCLF.view.q_decoder)
+		#attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 		#save explainability
 		if(fold==0):
 			np.save(path_labels+setting+"/R.npy", R, allow_pickle=True)
-			np.save(path_labels+setting+"/attention_scores.npy", attention_scores, allow_pickle=True)
+			#np.save(path_labels+setting+"/attention_scores.npy", attention_scores, allow_pickle=True)
 		else:
 			np.save(path_labels+setting+"/R.npy", np.append(np.load(path_labels+setting+"/R.npy", allow_pickle=True), R, axis=0), allow_pickle=True)
-			np.save(path_labels+setting+"/attention_scores.npy", np.append(np.load(path_labels+setting+"/attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
+			#np.save(path_labels+setting+"/attention_scores.npy", np.append(np.load(path_labels+setting+"/attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
 
 
 def compute_acc_metrics(view, path, setting):
