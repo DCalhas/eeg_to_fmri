@@ -2,11 +2,11 @@ from multiprocessing import Process
 
 import os
 
-def process_setup_tensorflow(memory_limit, seed=42):
+def process_setup_tensorflow(memory_limit, seed=42, run_eagerly=False):
 	from utils import tf_config
 
 	tf_config.set_seed(seed=seed)
-	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
+	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit, run_eagerly=run_eagerly)
 
 def launch_process(function, args):
 	p = Process(target=function, args=args)

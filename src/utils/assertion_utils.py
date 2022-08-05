@@ -34,6 +34,7 @@ def main(opt):
 	metrics_path=opt.metrics_path
 	T=opt.T
 	seed=opt.seed
+	run_eagerly=opt.run_eagerly
 
 	#assertion
 	setting=dataset
@@ -42,6 +43,7 @@ def main(opt):
 	if(topographical_attention):
 		setting+="_topographical_attention"
 	if(channel_organization):
+		assert run_eagerly
 		setting+="_channel_organization"
 	if(random_fourier):
 		assert fourier_features, "To run random_fourier, fourier_features need to be active"
@@ -82,7 +84,7 @@ def main(opt):
 
 
 
-	return mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting
+	return mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting
 
 def clf_cv(opt):
 	"""
@@ -111,6 +113,7 @@ def clf_cv(opt):
 	epochs=opt.epochs
 	gpu_mem=opt.gpu_mem
 	path_save_network=opt.path_save_network
+	run_eagerly=opt.run_eagerly
 	seed=opt.seed
 	path_labels=opt.path_labels
 	save_explainability=opt.save_explainability
@@ -159,4 +162,4 @@ def clf_cv(opt):
 	if(view!="fmri"):
 		setting=dataset_clf+"_"+view
 		
-	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,path_labels,save_explainability
+	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability

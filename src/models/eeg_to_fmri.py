@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Dense#globals get attr
 
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
-from layers.topographical_attention import Topographical_Attention
+from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
 from layers.resnet_block import ResBlock, pretrained_ResBlock
 from layers.mask import MRICircleMask
 from layers.latent_attention import Latent_EEG_Spatial_Attention, Latent_fMRI_Spatial_Attention
@@ -181,7 +181,11 @@ class EEG_to_fMRI(tf.keras.Model):
             #reshape to flattened features to apply attention mechanism
             x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
             #topographical attention
-            x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels)(x)
+            x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2])(x)
+            if(organize_channels):
+                attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)
+            #x = Topographical_Attention_Reduction()(x, attention_scores)
+            #x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels)(x)
             #reshape back to original shape
             x = tf.keras.layers.Reshape(self._input_shape)(x)
             previous_block_x = x
@@ -292,10 +296,11 @@ class EEG_to_fMRI(tf.keras.Model):
             x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3,
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
 
+        output=x
         if(self.aleatoric_uncertainty):
-            self.decoder = tf.keras.Model(input_shape, [x, tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)])
-        else:
-            self.decoder = tf.keras.Model(input_shape, x)
+            output=[output]+[tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)]
+
+        self.decoder = tf.keras.Model(input_shape, output)
 
     def build(self, input_shape1, input_shape2):
         self.eeg_encoder.build(input_shape=input_shape1)

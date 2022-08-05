@@ -7,18 +7,19 @@ import numpy as np
 from utils import print_utils
 
 def apply_gradient(model, optimizer, loss_fn, x, y, return_logits=False, call_fn=None):
-    with tf.GradientTape() as tape:
+    with tf.GradientTape(persistent=True) as tape:
         if(type(x) is tuple):
             if(call_fn is None):
-                logits=model(*x)
+                logits=model(*x, training=True)
             else:
                 logits=call_fn(model, *x)
         else:
             if(call_fn is None):
-                logits=model(x)
+                logits=model(x, training=True)
             else:
                 raise NotImplementedError
-        loss = loss_fn(y, logits)
+        regularization=tf.math.add_n(model.losses)
+        loss = loss_fn(y, logits)+regularization
     gradients = tape.gradient(loss, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     if(return_logits):
@@ -123,6 +124,7 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architectur
         n_batches = 0
         
         for batch_set in train_set.repeat(1):
+
             batch_loss = train_step(model, batch_set, opt, loss_fn, u_architecture=u_architecture).numpy()
             loss += batch_loss
             n_batches += 1
