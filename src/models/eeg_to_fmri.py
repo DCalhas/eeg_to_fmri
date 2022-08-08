@@ -546,6 +546,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             pretrained_model.layers[4].layers[index].target_shape)(x)
 
         #feature selection occurs here
+        z = None
         if(feature_selection):
             z = tf.keras.layers.ReLU()(x)
 
@@ -570,20 +571,23 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index-1]).__name__)(pretrained_model.layers[4].layers[index-1].target_shape)(z)
         if(segmentation_mask):
             #perform brain segmentation with mask
-            z = MRICircleMask(z.shape)(z)#mask a circle
+            z = MRICircleMask([x,z][int(feature_selection)].shape)([x,z][int(feature_selection)])#mask a circle
 
-        if(feature_selection):
+        if(feature_selection or segmentation_mask):
             self.decoder = tf.keras.Model(input_shape, z)
+
+            sigma_2 = tf.keras.layers.Flatten()(x)
+            sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
+            self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
+
         self.q_decoder = tf.keras.Model(input_shape, x)
         
         #predict uncertainty here?
         #task weight
         sigma_1 = tf.keras.layers.Flatten()(x)
-        sigma_2 = tf.keras.layers.Flatten()(x)
         sigma_1 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_1)
-        sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
         self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
-        self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
+        
 
     def build(self, input_shape):
         self.decoder.build(input_shape=input_shape)
@@ -595,17 +599,16 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             Random behaviour of GPU with tf functions does not reproduce the same results
             Call this function when getting results
         """
-        
         z = self.q_decoder(x1)
         
         #weight of tasks
         sigma_1 = self.sigma_1(x1)
-        sigma_2 = self.sigma_2(x1)
-
+        
         #l0 norm - close to because of ReLU activation
         #self.add_loss(tf.reduce_mean(-z_mask, axis=(1,2,3)))#it should select all and omit only regions that are important
 
-        if(self.feature_selection):
+        if(self.feature_selection or self.segmentation_mask):
+            sigma_2 = self.sigma_2(x1)#weight of tasks
             z_mask=1.-self.decoder(x1)
             return [z, z_mask, sigma_1, sigma_2]
-        return [z, sigma_1, sigma_2]
+        return [z, sigma_1]
