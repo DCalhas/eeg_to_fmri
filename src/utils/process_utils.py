@@ -687,7 +687,7 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 			attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 		#save explainability
 		if(fold==0):
-			np.save(path_labels+setting+"/R.npy", R, allow_pickle=Trueif(not style_prior):)
+			np.save(path_labels+setting+"/R.npy", R, allow_pickle=True)
 			if(not style_prior):
 				raise NotImplementedError
 				np.save(path_labels+setting+"/attention_scores.npy", attention_scores, allow_pickle=True)
