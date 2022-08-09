@@ -185,7 +185,8 @@ class EEG_to_fMRI(tf.keras.Model):
             if(organize_channels):
                 attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)
             #x = Topographical_Attention_Reduction()(x, attention_scores)
-            #x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels)(x)
+            #x, attention_scores = Topographical_Attif(organize_channels):
+                attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)ention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels)(x)
             #reshape back to original shape
             x = tf.keras.layers.Reshape(self._input_shape)(x)
             previous_block_x = x
@@ -390,20 +391,23 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
     """
 
-    def __init__(self, model, input_shape, activation=tf.keras.activations.linear, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
+    def __init__(self, model, input_shape, activation=tf.keras.activations.linear, regularizer=None, feature_selection=False, segmentation_mask=False, organize_channels=False, seed=None):
         """
         """
-
-        super(pretrained_EEG_to_fMRI, self).__init__()
+        if(organize_channels):
+            raise NotImplementedError
 
         self._input_shape = input_shape
         self.feature_selection=feature_selection
-        
-        input_shape, x, attention_scores = self.build_encoder(model, activation=activation, regularizer=regularizer, seed=seed)
+        self.organize_channels=organize_channels
+
+        input_shape, x, attention_scores = self.build_encoder(model, activation=activation, regularizer=regularizer, organize_channels=organize_channels, seed=seed)
         
         self.build_decoder(model, input_shape, x, activation=activation, attention_scores=attention_scores, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
 
-    def build_encoder(self, pretrained_model, activation=None, regularizer=None, seed=None):
+        super(pretrained_EEG_to_fMRI, self).__init__()
+
+    def build_encoder(self, pretrained_model, activation=None, regularizer=None, organize_channels=False, seed=None):
 
         attention_scores=None
         input_shape = tf.keras.layers.Input(shape=self._input_shape)
@@ -412,7 +416,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #reshape to flattened features to apply attention mechanism
         x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
         #topographical attention
-        x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=pretrained_model.organize_channels, regularizer=regularizer)(x)
+        x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels, regularizer=regularizer)(x)
+        if(organize_channels):
+                attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)
 
         #reshape back to original shape
         x = tf.keras.layers.Reshape(self._input_shape)(x)
