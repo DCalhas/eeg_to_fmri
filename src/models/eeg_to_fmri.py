@@ -186,7 +186,6 @@ class EEG_to_fMRI(tf.keras.Model):
                 attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)
             #x = Topographical_Attention_Reduction()(x, attention_scores)
             #x, attention_scores = Topographical_Attif(organize_channels):
-                attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)ention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels)(x)
             #reshape back to original shape
             x = tf.keras.layers.Reshape(self._input_shape)(x)
             previous_block_x = x
@@ -418,7 +417,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #topographical attention
         x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels, regularizer=regularizer)(x)
         if(organize_channels):
-                attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)
+            raise NotImplementedError
+            attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)
 
         #reshape back to original shape
         x = tf.keras.layers.Reshape(self._input_shape)(x)
