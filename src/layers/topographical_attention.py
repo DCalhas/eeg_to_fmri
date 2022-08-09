@@ -1,19 +1,56 @@
 import tensorflow as tf
 
-"""
-Topographical_Attention:
+from regularizers.activity_regularizers import OrganizeChannels
 
-	Int channels
-	Int features reduce over number of features
+class Topographical_Attention_Scores_Regularization(tf.keras.layers.Layer):
 
-"""
+	def __init__(self, **kwargs):
+		
+		super(Topographical_Attention_Scores_Regularization, self).__init__(activity_regularizer=OrganizeChannels(), **kwargs)
+		
+	def get_config(self):
+		return {}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
+
+class Topographical_Attention_Reduction(tf.keras.layers.Layer):
+	def __init__(self, **kwargs):
+		
+		super(Topographical_Attention_Reduction, self).__init__(**kwargs)
+
+		
+	def call(self, X, W):
+		"""
+		Reduction by multiplication, layers should be simple, it is good practice
+		""" 
+
+		return tf.linalg.matmul(W, X)
+
+	def get_config(self):
+		return {}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
+
+
 class Topographical_Attention(tf.keras.layers.Layer):
+	"""
+	Topographical_Attention:
 
-	def __init__(self, channels, features, organize_channels=False, regularizer=None, seed=None, **kwargs):
+		Int channels
+		Int features reduce over number of features
+
+	"""
+
+	def __init__(self, channels, features, regularizer=None, seed=None, **kwargs):
 
 		self.channels=channels
 		self.features=features
-		self.organize_channels=organize_channels
 		self.regularizer=regularizer
 		self.seed=seed
 
@@ -87,34 +124,10 @@ class Topographical_Attention(tf.keras.layers.Layer):
 
 		return R
 
-	def organize_regularization(self,x):
-		"""
-		minimization of this term allows the matrix to be heterogeneous row and column wise, that is every channel is selected and it reorders
-		Example in numpy:
-
-		>>> a=np.array([[0.99,0.005,0.005],[0.005,0.99,0.005],[0.005,0.005,0.99]])
-		>>> b=np.array([[0.005,0.99,0.005],[0.005,0.99,0.005],[0.005,0.005,0.99]])
-		>>> c=np.array([[0.7,0.1,0.2],[0.005,0.99,0.005],[0.005,0.005,0.99]])
-		>>> 
-		>>> -np.log(np.sum(a, axis=0))
-		<<< array([-0., -0., -0.])
-		>>> -np.log(np.sum(b, axis=0))
-		<<< array([ 4.19970508, -0.68561891, -0.        ])
-		>>> -np.log(np.sum(c, axis=0))
-		<<< array([ 0.34249031, -0.09075436, -0.17814619])
-
-		a: is the optimal objective that minimizes this term
-		b: is the wrong and has the highest penalty for selecting a channel more than once
-		c: is the suboptimal objective that still has room to improve in terms of 
-		"""
-
-		return -tf.math.log(tf.reduce_sum(x, axis=-2)+1e-9)#it is the -2 axis because we need to know if a channel is being selected more than once
-
 	def get_config(self):
 		return {
 			'channels': self.channels,
 			'features': self.features,
-			'organize_channels': organize_channels,
 			'seed': self.seed,
 		}
 

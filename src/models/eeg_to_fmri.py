@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Dense#globals get attr
 
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
-from layers.topographical_attention import Topographical_Attention
+from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
 from layers.resnet_block import ResBlock, pretrained_ResBlock
 from layers.mask import MRICircleMask
 from layers.latent_attention import Latent_EEG_Spatial_Attention, Latent_fMRI_Spatial_Attention
@@ -181,7 +181,11 @@ class EEG_to_fMRI(tf.keras.Model):
             #reshape to flattened features to apply attention mechanism
             x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
             #topographical attention
-            x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels)(x)
+            x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2])(x)
+            if(organize_channels):
+                attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)
+            #x = Topographical_Attention_Reduction()(x, attention_scores)
+            #x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], organize_channels=organize_channels)(x)
             #reshape back to original shape
             x = tf.keras.layers.Reshape(self._input_shape)(x)
             previous_block_x = x
@@ -292,10 +296,11 @@ class EEG_to_fMRI(tf.keras.Model):
             x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3,
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
 
+        output=x
         if(self.aleatoric_uncertainty):
-            self.decoder = tf.keras.Model(input_shape, [x, tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)])
-        else:
-            self.decoder = tf.keras.Model(input_shape, x)
+            output=[output]+[tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)]
+
+        self.decoder = tf.keras.Model(input_shape, output)
 
     def build(self, input_shape1, input_shape2):
         self.eeg_encoder.build(input_shape=input_shape1)
@@ -541,6 +546,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             pretrained_model.layers[4].layers[index].target_shape)(x)
 
         #feature selection occurs here
+        z = None
         if(feature_selection):
             z = tf.keras.layers.ReLU()(x)
 
@@ -565,20 +571,23 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             z = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index-1]).__name__)(pretrained_model.layers[4].layers[index-1].target_shape)(z)
         if(segmentation_mask):
             #perform brain segmentation with mask
-            z = MRICircleMask(z.shape)(z)#mask a circle
+            z = MRICircleMask([x,z][int(feature_selection)].shape)([x,z][int(feature_selection)])#mask a circle
 
-        if(feature_selection):
+        if(feature_selection or segmentation_mask):
             self.decoder = tf.keras.Model(input_shape, z)
+
+            sigma_2 = tf.keras.layers.Flatten()(x)
+            sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
+            self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
+
         self.q_decoder = tf.keras.Model(input_shape, x)
         
         #predict uncertainty here?
         #task weight
         sigma_1 = tf.keras.layers.Flatten()(x)
-        sigma_2 = tf.keras.layers.Flatten()(x)
         sigma_1 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_1)
-        sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
         self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
-        self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
+        
 
     def build(self, input_shape):
         self.decoder.build(input_shape=input_shape)
@@ -590,17 +599,16 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             Random behaviour of GPU with tf functions does not reproduce the same results
             Call this function when getting results
         """
-        
         z = self.q_decoder(x1)
         
         #weight of tasks
         sigma_1 = self.sigma_1(x1)
-        sigma_2 = self.sigma_2(x1)
-
+        
         #l0 norm - close to because of ReLU activation
         #self.add_loss(tf.reduce_mean(-z_mask, axis=(1,2,3)))#it should select all and omit only regions that are important
 
-        if(self.feature_selection):
+        if(self.feature_selection or self.segmentation_mask):
+            sigma_2 = self.sigma_2(x1)#weight of tasks
             z_mask=1.-self.decoder(x1)
             return [z, z_mask, sigma_1, sigma_2]
-        return [z, sigma_1, sigma_2]
+        return [z, sigma_1]

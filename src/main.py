@@ -46,13 +46,14 @@ parser.add_argument('-verbose', action="store_true", help="Verbose")
 parser.add_argument('-save_metrics', action="store_true", help="save metrics to compare afterwards")
 parser.add_argument('-metrics_path', default=str(Path.home())+"/eeg_to_fmri/metrics", type=str, help="Metrics save path.")
 parser.add_argument('-T', default=100, type=int, help="Monte Carlo Simulation number of samples taken to approximate.")
+parser.add_argument('-run_eagerly', action="store_true", help="Run eagerly, if not it runs in graph mode. This is important for activity regularization")
 parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
 opt = parser.parse_args()
 
-mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, setting = assertion_utils.main(opt)
+mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting = assertion_utils.main(opt)
 
 #set seed and configuration of memory
-process_utils.process_setup_tensorflow(gpu_mem, seed=seed)
+process_utils.process_setup_tensorflow(gpu_mem, seed=seed, run_eagerly=run_eagerly)
 
 #create dir setting if not exists
 if(not os.path.exists(metrics_path+"/"+ setting)):
@@ -70,40 +71,42 @@ threshold_plot=getattr(data_utils, "threshold_plot_"+dataset)
 #setup_tf sets the tensorflow memory growth on GPU, this should not be done when already set, which is the case
 train_data, test_data = process_utils.load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, gpu_mem, return_test=True, setup_tf=False)
 
-#setup shapes and data loaders
-eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]
-train_set = tf.data.Dataset.from_tensor_slices(train_data).shuffle(1).batch(batch_size)
-test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
+with tf.device('/CPU:0'):
+	#setup shapes and data loaders
+	eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]
+	train_set = tf.data.Dataset.from_tensor_slices(train_data).shuffle(1).batch(batch_size)
+	test_set = tf.data.Dataset.from_tensor_slices(test_data).batch(1)
 
-#load model
-#unroll hyperparameters
-learning_rate,weight_decay ,kernel_size ,stride_size ,batch_size,latent_dimension,n_channels,max_pool,batch_norm,skip_connections,dropout,n_stacks,outfilter,local = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1, True)
+	#load model
+	#unroll hyperparameters
+	#learning_rate,weight_decay ,kernel_size ,stride_size ,batch_size,latent_dimension,n_channels,max_pool,batch_norm,skip_connections,dropout,n_stacks,outfilter,local = (0.002980911194116198, 0.0004396489214334123, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1, True)
+	learning_rate,weight_decay ,kernel_size ,stride_size ,batch_size,latent_dimension,n_channels,max_pool,batch_norm,skip_connections,dropout,n_stacks,outfilter,local = (0.002980911194116198, 0.0, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1, True)
 
-with open(na_path_eeg, "rb") as f:
-	na_specification_eeg = pickle.load(f)
-with open(na_path_fmri, "rb") as f:
-	na_specification_fmri = pickle.load(f)
-optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+	with open(na_path_eeg, "rb") as f:
+		na_specification_eeg = pickle.load(f)
+	with open(na_path_fmri, "rb") as f:
+		na_specification_fmri = pickle.load(f)
+	optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-#placeholder not pretty please correct me
-_resolution_decoder=None
-if(type(resolution_decoder) is float):
-	_resolution_decoder=(int(fmri_shape[1]/resolution_decoder),int(fmri_shape[2]/resolution_decoder),int(fmri_shape[3]/resolution_decoder))
+	#placeholder not pretty please correct me
+	_resolution_decoder=None
+	if(type(resolution_decoder) is float):
+		_resolution_decoder=(int(fmri_shape[1]/resolution_decoder),int(fmri_shape[2]/resolution_decoder),int(fmri_shape[3]/resolution_decoder))
 
-model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
-							batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
-							conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
-							organize_channels=channel_organization, inverse_DFT=variational or padded, DFT=variational or padded, 
-							variational_dist=variational_dist, variational_iDFT=variational, variational_coefs=variational_coefs, 
-							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
-							aleatoric_uncertainty=aleatoric_uncertainty, low_resolution_decoder=type(resolution_decoder) is float, 
-							variational_random_padding=variational_random_padding, resolution_decoder=_resolution_decoder, seed=None, 
-							fmri_args = (latent_dimension, fmri_shape[1:], 
-							kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
-							n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
-model.build(eeg_shape, fmri_shape)
-model.compile(optimizer=optimizer)
-loss_fn = list(losses_utils.LOSS_FNS.values())[int(aleatoric_uncertainty)]#if variational get loss fn at index 1
+	model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
+								batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
+								conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
+								organize_channels=channel_organization, inverse_DFT=variational or padded, DFT=variational or padded, 
+								variational_dist=variational_dist, variational_iDFT=variational, variational_coefs=variational_coefs, 
+								variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
+								aleatoric_uncertainty=aleatoric_uncertainty, low_resolution_decoder=type(resolution_decoder) is float, 
+								variational_random_padding=variational_random_padding, resolution_decoder=_resolution_decoder, seed=None, 
+								fmri_args = (latent_dimension, fmri_shape[1:], 
+								kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
+								n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
+	model.build(eeg_shape, fmri_shape)
+	model.compile(optimizer=optimizer)
+	loss_fn = list(losses_utils.LOSS_FNS.values())[int(aleatoric_uncertainty)]#if variational get loss fn at index 1
 
 #train model
 history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
@@ -196,7 +199,7 @@ elif(mode=='lrp_eeg_channels'):
 		if(not os.path.exists(metrics_path+"/"+ setting+"/explainability")):
 			os.makedirs(metrics_path+"/"+ setting+"/explainability")
 
-		explainer = lrp.LRP_EEG(model, conditional_attention_style=conditional_attention_style)
+		explainer = lrp.LRP_EEG(model.decoder, conditional_attention_style=conditional_attention_style)
 		attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 
 		for percentile in [98, 99, 99.5, 99.7, 99.9]:
@@ -207,7 +210,7 @@ elif(mode=='lrp_eeg_fmri'):
 		os.makedirs(metrics_path+"/"+ setting+"/explainability")
 
 	#explain eeg
-	explainer = lrp.LRP_EEG(model)
+	explainer = lrp.LRP_EEG(model.decoder)
 	R=lrp.explain(explainer, test_set, eeg=True, fmri=False, verbose=True)
 
 	viz_utils.R_channels(R, test_data[0], ch_names=eeg_utils.channels_01, save=True, save_path=metrics_path+"/"+setting+"/explainability"+"/eeg_channels_" + "seed_"+str(seed)+".pdf")

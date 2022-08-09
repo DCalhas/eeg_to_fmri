@@ -8,16 +8,20 @@ source $HOME/anaconda3/bin/activate
 conda create -n eeg_fmri python=3.8
 source $HOME/anaconda3/etc/profile.d/conda.sh
 conda activate eeg_fmri
-conda install -c anaconda cudatoolkit==11.0.221
+conda install -c conda-forge cudatoolkit==11.2
 
 #download cudnn
-tar -xzvf cudnn-11.0-linux-x64-v8.0.1.13.tgz
-mv cuda/include/cudnn*.h ../anaconda3/envs/eeg_fmri/include/
-mv cuda/lib64/libcudnn* ../anaconda3/envs/eeg_fmri/lib/
+if [ ! -f cudnn-11.2-linux-x64-v8.1.1.33.tgz ]
+then
+    wget https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.1.1.33/11.2_20210301/cudnn-11.2-linux-x64-v8.1.1.33.tgz
+fi
+tar -xzvf cudnn-11.2-linux-x64-v8.1.1.33.tgz
+mv cuda/include/cudnn*.h $CONDA_PREFIX/include/
+mv cuda/lib64/libcudnn* $CONDA_PREFIX/lib/
 rm -r cuda
-chmod a+r ../anaconda3/envs/eeg_fmri/include/cudnn*.h ../anaconda3/envs/eeg_fmri/lib/libcudnn*
+chmod a+r $CONDA_PREFIX/include/cudnn*.h $CONDA_PREFIX/lib/libcudnn*
 
-pip install tensorflow-gpu==2.4.0
+pip install tensorflow-gpu==2.9
 pip install -r requirements.txt
 
 echo "I: Setting up datasets directory"

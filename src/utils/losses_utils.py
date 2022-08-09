@@ -445,11 +445,12 @@ cosine:
 def cosine(x1, x2):
     return 1.0 - tf.tensordot(x1,x2, [[1,2,3],[3,2,1]])/(tf.norm(x1, ord=2)*tf.norm(x2, ord=2))
 
-"""
-list: y_pred - from classifier.linearCLF viewer []
-np.ndarray: y_true
-"""
+
 def entropy_mae_loss(y_true, y_pred):
+    """
+    list: y_pred - from classifier.linearCLF viewer []
+    np.ndarray: y_true
+    """
     sigma_c = y_pred[-2]
     sigma_r = y_pred[-1]
 
@@ -457,15 +458,27 @@ def entropy_mae_loss(y_true, y_pred):
     classification = tf.keras.losses.MeanSquaredError()(y_true, tf.keras.activations.softmax(y_pred[0]))
     return (1/sigma_r)*regression + (1/sigma_c)*classification + tf.math.log(sigma_c*sigma_r)
 
-"""
-laplace_Loss:
-    Inputs:
-        * y_true - tf.Tensor
-        * y_pred - [[tf.Tensor, tf.Tensor], tf.Tensor, tf.Tensor]
-    Returns:
-        * tf.Tensor
-"""
+
+def nll_loss(y_true, y_pred):
+    """
+    list: y_pred - from classifier.linearCLF viewer []
+    np.ndarray: y_true
+    """
+    sigma_c = y_pred[-1]
+
+    classification = tf.keras.losses.MeanSquaredError()(y_true, tf.keras.activations.softmax(y_pred[0]))
+    return (1/sigma_c)*classification + tf.math.log(sigma_c)
+
+
 def Laplacian_Loss(y_true, y_pred):
+    """
+    laplace_Loss:
+        Inputs:
+            * y_true - tf.Tensor
+            * y_pred - [[tf.Tensor, tf.Tensor], tf.Tensor, tf.Tensor]
+        Returns:
+            * tf.Tensor
+    """
 
     laplace_loss = tf.reduce_mean((1/(y_pred[0][1]+NON_DIVISION_ZERO))*tf.math.abs(y_pred[0][0] - y_true)+tf.math.log(2*(y_pred[0][1]+NON_DIVISION_ZERO)), axis=(1,2,3))
     return laplace_loss + cosine(y_pred[1], y_pred[2])

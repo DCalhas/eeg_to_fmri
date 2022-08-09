@@ -2,11 +2,11 @@ from multiprocessing import Process
 
 import os
 
-def process_setup_tensorflow(memory_limit, seed=42):
+def process_setup_tensorflow(memory_limit, seed=42, run_eagerly=False):
 	from utils import tf_config
 
 	tf_config.set_seed(seed=seed)
-	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
+	tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit, run_eagerly=run_eagerly)
 
 def launch_process(function, args):
 	p = Process(target=function, args=args)
@@ -350,7 +350,7 @@ def cross_validation_eeg_fmri(score, fourier_features, random_fourier,
 	score.value = (score.value-1.0)/n_folds
 
 
-def train_synthesis(dataset, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, save_path, gpu_mem, seed):
+def train_synthesis(dataset, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, save_path, gpu_mem, seed, run_eagerly):
 	#imports
 	import tensorflow as tf
 
@@ -360,7 +360,7 @@ def train_synthesis(dataset, epochs, style_prior, padded, variational, variation
 
 	interval_eeg=10
 	tf_config.set_seed(seed=seed)#02 20
-	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
+	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly)
 
 	from pathlib import Path
 
@@ -449,7 +449,7 @@ def append_labels(view, path, y_true, y_pred, setting):
 	np.save(path+setting+"/y_true.npy",np.append(np.load(path+setting+"/y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
+def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False):
 
 	from utils import preprocess_data
 
@@ -462,11 +462,11 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, 
 
 	for i in range(fold, dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
-		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask)
+		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask)
 
 		#validate
 		launch_process(loocv,
-					(i, setting, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection, segmentation_mask))
+					(i, setting, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -519,7 +519,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_labels, path_network, feature_selection=False, segmentation_mask=False):
+def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=False, segmentation_mask=False):
 	import GPyOpt
 	
 	iteration=0
@@ -550,7 +550,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 		l1_reg, l2_reg, batch_size, learning_rate = (theta)
 
 		tf_config.set_seed(seed=seed)
-		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
+		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly)
 
 		dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 		train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
@@ -574,7 +574,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
 				
 				if(view=="fmri"):
-					loss_fn=losses_utils.entropy_mae_loss
+					loss_fn=[losses_utils.nll_loss, losses_utils.entropy_mae_loss][int(feature_selection or segmentation_mask)]
 					linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
 																X_train.shape[1:], activation=tf.keras.activations.relu, 
 																regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg),
@@ -615,7 +615,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, path_la
 
 	return optimizer.x_opt
 
-def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
+def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False):
 	
 	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
@@ -628,7 +628,7 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 	from sklearn.utils import shuffle
 
 	tf_config.set_seed(seed=seed)
-	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem)
+	tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly)
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
@@ -666,10 +666,12 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 	if(view=="fmri"):
 		if(fold==0):
 			np.save(path_labels+setting+"/views.npy", linearCLF.view(X_test)[0].numpy(), allow_pickle=True)
-			np.save(path_labels+setting+"/views_relu_regions.npy", linearCLF.view.decoder(X_test).numpy(), allow_pickle=True)
+			if(feature_selection or segmentation_mask):
+				np.save(path_labels+setting+"/views_relu_regions.npy", linearCLF.view.decoder(X_test).numpy(), allow_pickle=True)
 		else:
 			np.save(path_labels+setting+"/views.npy", np.append(np.load(path_labels+setting+"/views.npy", allow_pickle=True), linearCLF.view(X_test)[0].numpy(), axis=0), allow_pickle=True)
-			np.save(path_labels+setting+"/views_relu_regions.npy", np.append(np.load(path_labels+setting+"/views_relu_regions.npy", allow_pickle=True), linearCLF.view.decoder(X_test).numpy(), axis=0), allow_pickle=True)
+			if(feature_selection or segmentation_mask):
+				np.save(path_labels+setting+"/views_relu_regions.npy", np.append(np.load(path_labels+setting+"/views_relu_regions.npy", allow_pickle=True), linearCLF.view.decoder(X_test).numpy(), axis=0), allow_pickle=True)
 	
 	print("Finished fold", fold)
 
@@ -679,15 +681,21 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 		explainer=lrp.LRP(linearCLF.clf)
 		R=lrp.explain(explainer, views(linearCLF, test_set, y_test), verbose=True)
 		#explain to EEG channels
-		#explainer=lrp.LRP_EEG(linearCLF.view.q_decoder)
-		#attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
+		if(not style_prior):
+			raise NotImplementedError
+			explainer=lrp.LRP_EEG(linearCLF.view.q_decoder, attention=True, conditional_attention_style=False)
+			attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 		#save explainability
 		if(fold==0):
-			np.save(path_labels+setting+"/R.npy", R, allow_pickle=True)
-			#np.save(path_labels+setting+"/attention_scores.npy", attention_scores, allow_pickle=True)
+			np.save(path_labels+setting+"/R.npy", R, allow_pickle=Trueif(not style_prior):)
+			if(not style_prior):
+				raise NotImplementedError
+				np.save(path_labels+setting+"/attention_scores.npy", attention_scores, allow_pickle=True)
 		else:
 			np.save(path_labels+setting+"/R.npy", np.append(np.load(path_labels+setting+"/R.npy", allow_pickle=True), R, axis=0), allow_pickle=True)
-			#np.save(path_labels+setting+"/attention_scores.npy", np.append(np.load(path_labels+setting+"/attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
+			if(not style_prior):
+				raise NotImplementedError
+				np.save(path_labels+setting+"/attention_scores.npy", np.append(np.load(path_labels+setting+"/attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
 
 
 def compute_acc_metrics(view, path, setting):
