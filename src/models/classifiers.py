@@ -41,7 +41,7 @@ class view_EEG_classifier(tf.keras.Model):
 
     def build(self, input_shape):
         self.view.build(input_shape)
-        self.clf.build(self.view.decoder.output_shape)
+        self.clf.build(self.view.q_decoder.output_shape)
     
     def call(self, X):
         z = self.view(X)
