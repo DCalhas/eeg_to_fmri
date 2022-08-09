@@ -401,6 +401,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         self._input_shape = input_shape
         self.feature_selection=feature_selection
+        self.segmentation_mask=segmentation_mask
         self.organize_channels=organize_channels
 
         input_shape, x, attention_scores = self.build_encoder(model, activation=activation, regularizer=regularizer, organize_channels=organize_channels, seed=seed)
