@@ -643,7 +643,7 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
 
 		if(view=="fmri"):
-			loss_fn=losses_utils.entropy_mae_loss
+			loss_fn=[losses_utils.nll_loss, losses_utils.entropy_mae_loss][int(feature_selection or segmentation_mask)]
 			linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
 														X_train.shape[1:], activation=tf.keras.activations.relu, 
 														regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer),
