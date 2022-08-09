@@ -395,7 +395,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         """
 
         super(pretrained_EEG_to_fMRI, self).__init__()
-        
+
         if(organize_channels):
             raise NotImplementedError
 
@@ -599,7 +599,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         
 
     def build(self, input_shape):
-        self.decoder.build(input_shape=input_shape)
+        self.q_decoder.build(input_shape=input_shape)
+        if(self.feature_selection or self.segmentation_mask):
+            self.decoder.build(input_shape=input_shape)
         self.built=True
 
     #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
