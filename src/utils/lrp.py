@@ -29,16 +29,17 @@ def explain(explainer, dataset, eeg=True, eeg_attention=False, fmri=False, verbo
 
 	return R
 
-"""
-lrp - Layer-wise  Relevance Propagation
-	Inputs:
-		* x - tf.Tensor input of layer
-		* y - tf.Tensor output of layer
-		* layer - tf.keras.layers.Layer layer
-	Outputs:
-		* tf.Tensor - containing relevances
-"""
+
 def lrp(x, y, layer, multiply=None):
+	"""
+	lrp - Layer-wise  Relevance Propagation
+		Inputs:
+			* x - tf.Tensor input of layer
+			* y - tf.Tensor output of layer
+			* layer - tf.keras.layers.Layer layer
+		Outputs:
+			* tf.Tensor - containing relevances
+	"""
 	if(type(layer) is tf.keras.layers.Reshape or type(layer) is tf.keras.layers.BatchNormalization):
 		return tf.reshape(y, x.shape)
 
@@ -69,37 +70,41 @@ def lrp(x, y, layer, multiply=None):
 	return R
 
 
-"""
-LRP_EEG: propagates relevances through a model of type models.eeg_to_fmri.EEG_to_fMRI
-"""
+
 class LRP_EEG(tf.keras.layers.Layer):
 	"""
-		Inputs:
-			* model: models.eeg_to_fmri.EEG_to_fMRI
+	LRP_EEG: propagates relevances through a model of type models.eeg_to_fmri.EEG_to_fMRI
 	"""
+	
 	def __init__(self, model, attention=False, conditional_attention_style=False):
-		super(LRP_EEG, self).__init__()
+		"""
+			Inputs:
+				* model: models.eeg_to_fmri.EEG_to_fMRI.decoder
+		"""
+		assert type(model).__name__=="tf.keras.Model" or type(model).__name__=="Functional"
 		
 		self.model = model
 		self.eeg_attention = attention
 		self.layer_bias=0
 		self.explain_conditional=conditional_attention_style
+
+		super(LRP_EEG, self).__init__()
 		
-	"""
-		Inputs:
-			* X: list(tf.Tensor)
-		Outputs:
-			* tf.Tensor - output of model
-	"""
+	
 	def forward(self, X):
+		"""
+			Inputs:
+				* X: list(tf.Tensor)
+			Outputs:
+				* tf.Tensor - output of model
+		"""
 
 		self.activations = []
 		z = X
 		
 		if(self.explain_conditional):
-			encoder=True
 			self.conditional_activations=[]
-			for layer in self.model.decoder.layers:
+			for layer in self.model.layers:
 				if("topo" in layer.name):
 					self.conditional_activations+=[z]
 					z,attention_scores=layer(z)
@@ -112,7 +117,6 @@ class LRP_EEG(tf.keras.layers.Layer):
 					self.conditional_activations+=[attention_scores_dense]
 				elif("multiply" in layer.name):
 					z = layer(z, attention_scores_dense)
-					encoder=False
 				else:
 					z = layer(z)
 				
@@ -120,7 +124,7 @@ class LRP_EEG(tf.keras.layers.Layer):
 
 		else:
 			
-			for layer in self.model.decoder.layers:
+			for layer in self.model.layers:
 				#we are ignoring the relevance of the attention scores through the conditional style flow
 				if("conditional_attention_style_flatten" in layer.name):
 					attention_scores_flatten=layer(attention_scores)
@@ -140,16 +144,17 @@ class LRP_EEG(tf.keras.layers.Layer):
 		
 		return z
 	
-	"""
-		Inputs:
-			* X - tf.Tensor
-			* R - tf.Tensor
-			* model - eeg_to_fmri.EEG_to_fMRI
-			* activations - list
-		Outputs: 
-			* tf.Tensor
-	"""
+	
 	def propagate(self, X, R, model, activations):
+		"""
+			Inputs:
+				* X - tf.Tensor
+				* R - tf.Tensor
+				* model - eeg_to_fmri.EEG_to_fMRI
+				* activations - list
+			Outputs: 
+				* tf.Tensor
+		"""
 
 		if(self.explain_conditional):
 			#we are ignoring the relevance of the attention scores through the conditional style flow
@@ -187,51 +192,55 @@ class LRP_EEG(tf.keras.layers.Layer):
 			
 		return R
 			
-	"""
-		Inputs:
-			* X - tf.Tensor
-			* R - tf.Tensor
-		Outputs: 
-			* tf.Tensor
-	"""
+	
 	def backward(self, X, R):
+		"""
+			Inputs:
+				* X - tf.Tensor
+				* R - tf.Tensor
+			Outputs: 
+				* tf.Tensor
+		"""
 		
-		return self.propagate(X, R, self.model.decoder, self.activations)
+		return self.propagate(X, R, self.model, self.activations)
 		
 
-	"""
-		Inptus
-			* X - tf.Tensor
-		Outputs: 
-			* tf.Tensor
-	"""
+	
 	def call(self, X):
+		"""
+			Inptus
+				* X - tf.Tensor
+			Outputs: 
+				* tf.Tensor
+		"""
 		
 		y = self.forward(X)
 		
 		if(self.eeg_attention):
-			assert type(self.model.decoder.layers[2]) is Topographical_Attention
+			assert type(self.model.layers[2]) is Topographical_Attention
 			return self.backward(X, y)
 		return self.backward(X, y)
 
 	
 class LRP(tf.keras.layers.Layer):
-	"""
-		Inputs:
-			* model: tf.keras.Model
-	"""
+	
 	def __init__(self, model):
+		"""
+			Inputs:
+				* model: tf.keras.Model
+		"""
 		super(LRP, self).__init__()
 		
 		self.model = model
 		
-	"""
-		Inputs:
-			* X: tf.Tensor
-		Outputs:
-			* tf.Tensor - output of model
-	"""
+	
 	def forward(self, X):
+		"""
+			Inputs:
+				* X: tf.Tensor
+			Outputs:
+				* tf.Tensor - output of model
+		"""
 
 		self.activations = []
 
@@ -243,16 +252,17 @@ class LRP(tf.keras.layers.Layer):
 			
 		return z
 	
-	"""
-		Inputs:
-			* X - tf.Tensor
-			* R - tf.Tensor
-			* model - tf.keras.Model
-			* activations - list
-		Outputs: 
-			* tf.Tensor
-	"""
+	
 	def propagate(self, X, R, model, activations):
+		"""
+			Inputs:
+				* X - tf.Tensor
+				* R - tf.Tensor
+				* model - tf.keras.Model
+				* activations - list
+			Outputs: 
+				* tf.Tensor
+		"""
 		for layer in range(len(model.layers))[::-1]:
 			if(hasattr(model.layers[layer], "lrp")):
 				R = model.layers[layer].lrp(activations[layer-1], R)
@@ -264,24 +274,26 @@ class LRP(tf.keras.layers.Layer):
 		
 		return R
 			
-	"""
-		Inputs:
-			* X - tf.Tensor
-			* R - tf.Tensor
-		Outputs: 
-			* tf.Tensor
-	"""
+	
 	def backward(self, X, R):
+		"""
+			Inputs:
+				* X - tf.Tensor
+				* R - tf.Tensor
+			Outputs: 
+				* tf.Tensor
+		"""
 		
 		return self.propagate(X, R, self.model, self.activations)
 
-	"""
-		Inptus
-			* X - tf.Tensor
-		Outputs: 
-			* tf.Tensor
-	"""
+	
 	def call(self, X):
+		"""
+			Inptus
+				* X - tf.Tensor
+			Outputs: 
+				* tf.Tensor
+		"""
 		
 		y = self.forward(X)
 		

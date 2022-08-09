@@ -449,7 +449,7 @@ def append_labels(view, path, y_true, y_pred, setting):
 	np.save(path+setting+"/y_true.npy",np.append(np.load(path+setting+"/y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
+def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False):
 
 	from utils import preprocess_data
 
@@ -466,7 +466,7 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, 
 
 		#validate
 		launch_process(loocv,
-					(i, setting, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask))
+					(i, setting, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -615,7 +615,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 
 	return optimizer.x_opt
 
-def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False):
+def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False):
 	
 	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
@@ -666,10 +666,12 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 	if(view=="fmri"):
 		if(fold==0):
 			np.save(path_labels+setting+"/views.npy", linearCLF.view(X_test)[0].numpy(), allow_pickle=True)
-			np.save(path_labels+setting+"/views_relu_regions.npy", linearCLF.view.decoder(X_test).numpy(), allow_pickle=True)
+			if(feature_selection or segmentation_mask):
+				np.save(path_labels+setting+"/views_relu_regions.npy", linearCLF.view.decoder(X_test).numpy(), allow_pickle=True)
 		else:
 			np.save(path_labels+setting+"/views.npy", np.append(np.load(path_labels+setting+"/views.npy", allow_pickle=True), linearCLF.view(X_test)[0].numpy(), axis=0), allow_pickle=True)
-			np.save(path_labels+setting+"/views_relu_regions.npy", np.append(np.load(path_labels+setting+"/views_relu_regions.npy", allow_pickle=True), linearCLF.view.decoder(X_test).numpy(), axis=0), allow_pickle=True)
+			if(feature_selection or segmentation_mask):
+				np.save(path_labels+setting+"/views_relu_regions.npy", np.append(np.load(path_labels+setting+"/views_relu_regions.npy", allow_pickle=True), linearCLF.view.decoder(X_test).numpy(), axis=0), allow_pickle=True)
 	
 	print("Finished fold", fold)
 
@@ -679,15 +681,21 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 		explainer=lrp.LRP(linearCLF.clf)
 		R=lrp.explain(explainer, views(linearCLF, test_set, y_test), verbose=True)
 		#explain to EEG channels
-		#explainer=lrp.LRP_EEG(linearCLF.view.q_decoder)
-		#attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
+		if(not style_prior):
+			raise NotImplementedError
+			explainer=lrp.LRP_EEG(linearCLF.view.q_decoder, attention=True, conditional_attention_style=False)
+			attention_scores=lrp.explain(explainer, test_set, eeg=True, eeg_attention=True, fmri=False, verbose=True)
 		#save explainability
 		if(fold==0):
-			np.save(path_labels+setting+"/R.npy", R, allow_pickle=True)
-			#np.save(path_labels+setting+"/attention_scores.npy", attention_scores, allow_pickle=True)
+			np.save(path_labels+setting+"/R.npy", R, allow_pickle=Trueif(not style_prior):)
+			if(not style_prior):
+				raise NotImplementedError
+				np.save(path_labels+setting+"/attention_scores.npy", attention_scores, allow_pickle=True)
 		else:
 			np.save(path_labels+setting+"/R.npy", np.append(np.load(path_labels+setting+"/R.npy", allow_pickle=True), R, axis=0), allow_pickle=True)
-			#np.save(path_labels+setting+"/attention_scores.npy", np.append(np.load(path_labels+setting+"/attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
+			if(not style_prior):
+				raise NotImplementedError
+				np.save(path_labels+setting+"/attention_scores.npy", np.append(np.load(path_labels+setting+"/attention_scores.npy", allow_pickle=True), attention_scores, axis=0), allow_pickle=True)
 
 
 def compute_acc_metrics(view, path, setting):
