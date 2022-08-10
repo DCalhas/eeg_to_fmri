@@ -591,12 +591,10 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 			y_pred=np.append(y_pred, tf.keras.activations.softmax(linearCLF(X_test)).numpy()[:,1])
 			y_true=np.append(y_true, y_test[:,1])
 			if(view=="fmri"):
-				ssim=np.append(ssim, metrics.ssim(tf.data.Dataset.from_tensor_slices((X_test, linearCLF.view.q_decoder(X_test))).batch(1), linearCLF.view, two_inputs=False))
-			print("Fold", fold+1, "with Acc:", np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")), ", SSIM:", np.mean(ssim))
+			print("Fold", fold+1, "with Acc:", np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")))
 
 		acc = np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32"))
-		ssim = np.mean(ssim)
-		value[0]=1. - (0.5*acc + 0.5*ssim) + np.abs(acc-ssim)
+		value[0]=1. - acc
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
