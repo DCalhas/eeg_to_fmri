@@ -590,7 +590,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 			#evaluate according to final AUC in validation sets
 			y_pred=np.append(y_pred, tf.keras.activations.softmax(linearCLF(X_test)).numpy()[:,1])
 			y_true=np.append(y_true, y_test[:,1])
-			if(view=="fmri"):
+			
 			print("Fold", fold+1, "with Acc:", np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")))
 
 		acc = np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32"))
