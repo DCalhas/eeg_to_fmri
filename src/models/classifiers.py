@@ -19,19 +19,18 @@ class LinearClassifier(tf.keras.Model):
         return self.linear(self.flatten(X))
 
 
-"""
-classifier of synthesized EEG view
-
-"""
-
 class view_EEG_classifier(tf.keras.Model):
+    """
+    classifier of synthesized EEG view
 
     """
-    Inputs:
-        - EEG_to_fMRI: model
-        - tupel: input_shape, eeg input shape
-    """
+    
     def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
+        """
+        Inputs:
+            - EEG_to_fMRI: model
+            - tupel: input_shape, eeg input shape
+        """
         super(view_EEG_classifier, self).__init__()
 
         self.training=True
@@ -45,7 +44,10 @@ class view_EEG_classifier(tf.keras.Model):
 
     def build(self, input_shape):
         self.view.build(input_shape)
-        self.clf.build(self.view.q_decoder.output_shape)
+        if(view.aleatoric):
+            self.clf.build(self.view.q_decoder.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
+        else:
+            self.clf.build(self.view.q_decoder.output_shape)
     
     def call(self, X):
         z = self.view(X)

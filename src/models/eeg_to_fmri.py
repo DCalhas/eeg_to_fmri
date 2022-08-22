@@ -524,6 +524,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     trainable=False)(x)
         index+=1
 
+        self.aleatoric=False
         if(type(pretrained_model.layers[4].layers[index+1]).__name__=="DCT3D"):
             #reshape
             x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
@@ -546,6 +547,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].scale.numpy()),
                                         biases_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].biases.numpy()),
                                         trainable=True)(x)
+                self.aleatoric=True
             elif(type(pretrained_model.layers[4].layers[index]).__name__=="padded_iDCT3D"):
                 x = padded_iDCT3D(**pretrained_model.layers[4].layers[index].get_config())(x)
             index+=1
@@ -590,6 +592,11 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
             self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
 
+        if(self.aleatoric):
+            sigma_1 = tf.keras.layers.Flatten()(x)
+            sigma_1 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_1)
+            self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
+
         self.q_decoder = tf.keras.Model(input_shape, x)
         
 
@@ -605,10 +612,15 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             Random behaviour of GPU with tf functions does not reproduce the same results
             Call this function when getting results
         """
-        z = self.q_decoder(x1)
         
+        if(self.aleatoric):
+            z=[tf.concat(self.q_decoder(x1),self.sigma_1(x1),axis=-1)]
+        else:
+            z = [self.q_decoder(x1)]
+
         if(self.feature_selection or self.segmentation_mask):
             sigma_2 = self.sigma_2(x1)#weight of tasks
             z_mask=1.-self.decoder(x1)
-            return [z, z_mask, sigma_1, sigma_2]
-        return [z]
+            return z+[z_mask, sigma_1, sigma_2]
+        
+        return z
