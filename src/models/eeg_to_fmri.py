@@ -397,7 +397,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         print(pretrained_EEG_to_fMRI)
         print(self)
         print(model)
-        super(pretrained_EEG_to_fMRI, self).__init__()
+        #super(pretrained_EEG_to_fMRI, self).__init__()
 
         if(organize_channels):
             raise NotImplementedError
@@ -410,7 +410,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         input_shape, x, attention_scores = self.build_encoder(model, activation=activation, regularizer=regularizer, organize_channels=organize_channels, seed=seed)
         
         self.build_decoder(model, input_shape, x, activation=activation, attention_scores=attention_scores, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
-
+        super(pretrained_EEG_to_fMRI, self).__init__()
         
 
     def build_encoder(self, pretrained_model, activation=None, regularizer=None, organize_channels=False, seed=None):
@@ -597,7 +597,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
 
         if(self.aleatoric):#we want the uncertainty from the pretrained model
-            print(pretrained_model.layers[4])
+            index+=1
             sigma_1 = tf.keras.layers.Dense(pretrained_model.layers[4].layers[index].units,
                                             activation=tf.keras.activations.linear,
                                             kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel.numpy()),
