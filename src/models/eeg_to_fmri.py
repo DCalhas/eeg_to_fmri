@@ -395,8 +395,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         """
         init method
         """
-        print(pretrained_EEG_to_fMRI)
-        print(self)
 
         super(pretrained_EEG_to_fMRI, self)
         super(pretrained_EEG_to_fMRI, self).__init__()
