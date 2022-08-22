@@ -466,7 +466,7 @@ def nll_loss(y_true, y_pred):
     """
     sigma_c = y_pred[-1]
 
-    classification = tf.keras.losses.MeanSquaredError()(y_true, tf.keras.activations.softmax(y_pred[0]))
+    classification = tf.keras.losses.MeanSquaredError()(y_true, tf.nn.softmax(y_pred[0]))
     return (1/sigma_c)*classification + tf.math.log(sigma_c)
 
 

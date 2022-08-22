@@ -515,10 +515,11 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)()(x)
         index+=1
 
-        #split flow in two
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
                     pretrained_model.layers[4].layers[index].units,
-                    activation=None,
+                    activation=tf.keras.activations.linear,
+                    kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel.numpy()),
+                    bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].bias.numpy()),
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=False)(x)
@@ -592,9 +593,15 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
             self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
 
-        if(self.aleatoric):
-            sigma_1 = tf.keras.layers.Flatten()(x)
-            sigma_1 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_1)
+        if(self.aleatoric):#we want the uncertainty from the pretrained model
+            print(tf.keras.layers, type(pretrained_model.layers[4])
+            sigma_1 = tf.keras.layers.Dense(pretrained_model.layers[4].layers[index].units,
+                                            activation=tf.keras.activations.linear,
+                                            kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel.numpy()),
+                                            bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].bias.numpy()),
+                                            kernel_regularizer=regularizer,
+                                            bias_regularizer=regularizer,
+                                            trainable=False,)(x)
             self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
 
         self.q_decoder = tf.keras.Model(input_shape, x)
@@ -614,7 +621,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         """
         
         if(self.aleatoric):
-            z=[tf.concat(self.q_decoder(x1),self.sigma_1(x1),axis=-1)]
+            sigma_1=self.sigma_1(x1)
+            self.add_loss(sigma_1)#minimize the uncertainty
+            z=[tf.concat([self.q_decoder(x1),sigma_1],axis=-1)]
         else:
             z = [self.q_decoder(x1)]
 
