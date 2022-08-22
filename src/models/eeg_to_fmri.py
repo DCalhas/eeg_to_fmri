@@ -391,9 +391,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     """
 
     def __init__(self, model, input_shape, activation=tf.keras.activations.linear, regularizer=None, feature_selection=False, segmentation_mask=False, organize_channels=False, seed=None):
-        """
-        """
-
         super(pretrained_EEG_to_fMRI, self).__init__()
 
         if(organize_channels):
