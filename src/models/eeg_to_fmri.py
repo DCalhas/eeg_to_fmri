@@ -390,7 +390,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     """
     pretrained_EEG_to_fMRI
     """
-    
+
     def __init__(self, model, input_shape, activation=tf.keras.activations.linear, regularizer=None, feature_selection=False, segmentation_mask=False, organize_channels=False, seed=None):
         """
         init method
@@ -626,7 +626,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         
         if(self.aleatoric):
             sigma_1=self.sigma_1(x1)
-            self.add_loss(sigma_1)#minimize the uncertainty
+            self.add_loss(tf.reduce_mean(sigma_1))#minimize the uncertainty
             z=[tf.concat([self.q_decoder(x1),sigma_1],axis=-1)]
         else:
             z = [self.q_decoder(x1)]
