@@ -594,7 +594,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
 
         if(self.aleatoric):#we want the uncertainty from the pretrained model
-            print(tf.keras.layers, type(pretrained_model.layers[4])
+            print(pretrained_model.layers[4])
             sigma_1 = tf.keras.layers.Dense(pretrained_model.layers[4].layers[index].units,
                                             activation=tf.keras.activations.linear,
                                             kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel.numpy()),
