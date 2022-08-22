@@ -385,17 +385,17 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention,
                 "DenseFlipout": tfp.layers.DenseFlipout}
 
-class pretrained_EEG_to_fMRI(tf.keras.Model):
-    """
-    pretrained_EEG_to_fMRI
-    """
 
+class pretrained_EEG_to_fMRI(tf.keras.Model):
+    
     def __init__(self, model, input_shape, activation=tf.keras.activations.linear, regularizer=None, feature_selection=False, segmentation_mask=False, organize_channels=False, seed=None):
         """
         init method
         """
         print(pretrained_EEG_to_fMRI)
         print(self)
+
+        super(pretrained_EEG_to_fMRI, self)
         super(pretrained_EEG_to_fMRI, self).__init__()
 
         if(organize_channels):
