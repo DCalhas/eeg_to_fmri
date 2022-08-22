@@ -394,7 +394,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         """
         init method
         """
-        super(self,pretrained_EEG_to_fMRI).__init__()
+        print(pretrained_EEG_to_fMRI)
+        print(self)
+        super(pretrained_EEG_to_fMRI, self).__init__()
 
         if(organize_channels):
             raise NotImplementedError
