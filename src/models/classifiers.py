@@ -40,8 +40,6 @@ class PolynomialClassifier(tf.keras.Model):
         for p in range(self.degree-1):
             x+=[x[-1]*X]
 
-        print(tf.concat(x, -1).shape)
-
         return self.linear(self.flatten(tf.concat(x, -1)))
 
 
