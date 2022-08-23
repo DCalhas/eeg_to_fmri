@@ -625,7 +625,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         
         if(self.aleatoric):
             sigma_1=self.sigma_1(x1)
-            self.add_loss(tf.reduce_mean(sigma_1))#minimize the uncertainty
+            #self.add_loss(tf.reduce_mean(sigma_1))#minimize the uncertainty
             z=[tf.concat([self.q_decoder(x1),sigma_1],axis=-1)]
         else:
             z = [self.q_decoder(x1)]
