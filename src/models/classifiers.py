@@ -93,7 +93,7 @@ class ContrastiveClassifier(tf.keras.Model):
         super(ContrastiveClassifier, self).__init__()
 
         self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
-        #self.clf = LinearClassifier()
+        self.clf = LinearClassifier()
 
         self.flatten1 = tf.keras.layers.Flatten()
         self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
@@ -102,6 +102,10 @@ class ContrastiveClassifier(tf.keras.Model):
 
     def build(self, input_shape):
         self.view.build(input_shape)
+        if(self.view.aleatoric):
+            self.clf.build(self.view.q_decoder.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
+        else:
+            self.clf.build(self.view.q_decoder.output_shape)
 
 
     def call(self, X, training=False):
@@ -118,6 +122,6 @@ class ContrastiveClassifier(tf.keras.Model):
             s2=self.flatten1(z2)
             s2=self.linear(s2)
 
-            return [1.-self.dot([s1,s2])/(tf.norm(s1,axis=1)*tf.norm(s2,axis=1)), clf(z1), clf(z2)]
+            return [1.-self.dot([s1,s2])/(tf.norm(s1,axis=1)*tf.norm(s2,axis=1)), self.clf(z1), self.clf(z2)]
 
         return self.clf(self.view(X)[0])
