@@ -26,8 +26,9 @@ class ContrastiveLoss(tf.keras.losses.Loss):
 
     def call(self, y_true, y_pred):
         distance=y_pred
+        pair=tf.argmax(y_true, axis=1).astype(np.float32)
 
-        return tf.argmax(y_true, axis=1)*distance + (1-tf.argmax(y_true, axis=1))*(0.5*tf.math.maximum(0, self.m - distance))
+        return pair*distance + (1-pair)*(0.5*tf.math.maximum(0, self.m - distance))
 
 
 class ContrastiveClassificationLoss(tf.keras.losses.Loss):
