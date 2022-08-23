@@ -27,7 +27,27 @@ class ContrastiveLoss(tf.keras.losses.Loss):
     def call(self, y_true, y_pred):
         distance=y_pred
 
-        return y_true*distance + (1-y_true)*(0.5*tf.math.maximum(0, self.m - distance))
+        return tf.argmax(y_true, axis=1)*distance + (1-tf.argmax(y_true, axis=1))*(0.5*tf.math.maximum(0, self.m - distance))
+
+
+class ContrastiveClassificationLoss(tf.keras.losses.Loss):
+
+    def __init__(self, m=0.5, **kwargs):
+
+        super(ContrastiveClassificationLoss, self).__init__(**kwargs)
+
+        self.contrastive=ContrastiveLoss(m=m)
+        self.nll=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+
+    def call(self, y_true, y_pred):
+
+        print(y_true)
+
+
+        print(y_pred)
+        raise NotImplementedError
+    
+
 
 
 ######################################################################################################################
