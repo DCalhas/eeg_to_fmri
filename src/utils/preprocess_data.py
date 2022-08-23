@@ -331,8 +331,8 @@ class DatasetContrastive:
 				negative-=1
 
 			if(self.clf):
-				self.y1 = np.concatenate((self.y1, self.labels[i1:i1+1]), axis=0)
-				self.y2 = np.concatenate((self.y2, self.labels[i2:i2+1]), axis=0)
+				self.y1 = np.concatenate((self.y1, self.labels[i1:i1+1].astype(np.float32)), axis=0)
+				self.y2 = np.concatenate((self.y2, self.labels[i2:i2+1].astype(np.float32)), axis=0)
 
 			self.data = np.concatenate((self.data, np.expand_dims(np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0), axis=0)), axis=0)
 
