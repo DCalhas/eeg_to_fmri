@@ -284,3 +284,5 @@ class DatasetContrastive:
 		self.y=data[1]
 
 	def pairwise(self,):
+		raise NotImplementedError
+		
