@@ -98,6 +98,8 @@ class ContrastiveClassifier(tf.keras.Model):
         self.flatten1 = tf.keras.layers.Flatten()
         self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
 
+        self.dot = tf.keras.layers.Dot(axes=1)
+
     def build(self, input_shape):
         self.view.build(input_shape)
 
@@ -116,6 +118,6 @@ class ContrastiveClassifier(tf.keras.Model):
             z2=self.flatten1(z2)
             z2=self.linear(z2)
 
-            return 1.-tf.matmul(z1, tf.transpose(z2))/(tf.norm(z1,axis=1)*tf.norm(z2,axis=1))
+            return 1.-self.dot(z1,z2)/(tf.norm(z1,axis=1)*tf.norm(z2,axis=1))
 
         return self.clf(self.view(X)[0])
