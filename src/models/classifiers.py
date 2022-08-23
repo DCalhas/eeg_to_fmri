@@ -118,6 +118,6 @@ class ContrastiveClassifier(tf.keras.Model):
             s2=self.flatten1(z2)
             s2=self.linear(s2)
 
-            return [1.-self.dot([z1,z2])/(tf.norm(z1,axis=1)*tf.norm(z2,axis=1)), clf(z1), clf(z2)]
+            return [1.-self.dot([s1,s2])/(tf.norm(s1,axis=1)*tf.norm(s2,axis=1)), clf(z1), clf(z2)]
 
         return self.clf(self.view(X)[0])
