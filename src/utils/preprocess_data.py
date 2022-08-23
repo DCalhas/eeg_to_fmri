@@ -299,7 +299,7 @@ class DatasetContrastive:
 		positive=self.pairs
 		negative=self.pairs
 		
-		while(positive>0 and negative>0)
+		while(positive>0 and negative>0):
 			indices = np.random.choice(np.arange(0,self.X.shape[0]), size=2, replace=False)
 			
 			print(indices)
@@ -316,7 +316,7 @@ class DatasetContrastive:
 				self.y = np.concatentate((self.y, np.zeros((1,1), dtype=np.float32)), axis=0)
 
 			print(np.concatentate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0).shape)
-			
+
 			self.data = np.concatentate((self.data, np.concatentate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0)), axis=0)
 
 		return self.data, self.y
