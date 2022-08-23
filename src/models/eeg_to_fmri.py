@@ -391,7 +391,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     pretrained_EEG_to_fMRI
     """
 
-    def __init__(self, model, input_shape, activation=tf.keras.activations.linear, regularizer=None, feature_selection=False, segmentation_mask=False, organize_channels=False, seed=None):
+    def __init__(self, model, input_shape, activation=tf.keras.activations.linear, regularizer=None, feature_selection=False, segmentation_mask=False, latent_contrastive=False, organize_channels=False, seed=None):
         """
         init method
         """
@@ -405,6 +405,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         self._input_shape = input_shape
         self.feature_selection=feature_selection
         self.segmentation_mask=segmentation_mask
+        self.latent_contrastive=latent_contrastive
         self.organize_channels=organize_channels
 
         input_shape, x, attention_scores = self.build_encoder(model, activation=activation, regularizer=regularizer, organize_channels=organize_channels, seed=seed)
@@ -611,6 +612,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         
 
     def build(self, input_shape):
+        self.eeg_encoder.build(input_shape=input_shape)
         self.q_decoder.build(input_shape=input_shape)
         if(self.feature_selection or self.segmentation_mask):
             self.decoder.build(input_shape=input_shape)
@@ -629,6 +631,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             z=[tf.concat([self.q_decoder(x1),sigma_1],axis=-1)]
         else:
             z = [self.q_decoder(x1)]
+
+        if(self.latent_contrastive):
+            z+=[self.eeg_encoder(x1)]
 
         if(self.feature_selection or self.segmentation_mask):
             sigma_2 = self.sigma_2(x1)#weight of tasks
