@@ -283,6 +283,7 @@ class DatasetContrastive:
 		self.y=None
 
 		self.batch=batch
+		self.clf=clf
 
 	
 	def shuffle(self):
