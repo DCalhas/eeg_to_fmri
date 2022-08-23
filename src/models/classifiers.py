@@ -102,9 +102,8 @@ class ContrastiveClassifier(tf.keras.Model):
         self.view.build(input_shape)
 
 
-    def call(self, X):
-
-        if(tf.rank(X)==5):
+    def call(self, X, training=False):
+        if(training):
             x=tf.split(X, 2, axis=1)
             x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
 
