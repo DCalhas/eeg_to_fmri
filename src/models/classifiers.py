@@ -90,6 +90,8 @@ class ContrastiveClassifier(tf.keras.Model):
 
     def __init__(self, model, input_shape, dimension, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
 
+        super(ContrastiveClassifier, self).__init__()
+
         self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
 
         self.flatten1 = tf.keras.layers.Flatten()
@@ -103,7 +105,8 @@ class ContrastiveClassifier(tf.keras.Model):
             self.clf.build(self.view.q_decoder.output_shape)
 
 
-    def call(self, x1, x2):
+    def call(self, X):
+        print(X)
 
         z1 = self.view(x1)[0]
         z2 = self.view(x2)[0]
