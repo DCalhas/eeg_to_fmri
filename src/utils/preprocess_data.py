@@ -268,8 +268,12 @@ class Dataset_CLF_CV:
 
 class DatasetContrastive:
 
-	def __init__(self, X, labels, batch=4):
+	def __init__(self, X, labels, batch=4, clf=False):
+		"""
 
+			arguemnt clf specifies if one also gives the labels of the data in the tensorflow.data.Dataset
+
+		"""
 		self.X = X
 		self.labels = labels
 
@@ -298,7 +302,12 @@ class DatasetContrastive:
 			self.shuffle()
 
 		self.data=np.empty((0,2,)+self.X.shape[1:], dtype=np.float32)
-		self.y=np.empty((0,1), dtype=np.float32)
+		
+		self.y=np.empty((0,2), dtype=np.float32)
+
+		if(self.clf):
+			self.y1=np.empty((0,2), dtype=np.float32)
+			self.y2=np.empty((0,2), dtype=np.float32)
 
 		positive=self.pairs
 		negative=self.pairs
@@ -312,15 +321,22 @@ class DatasetContrastive:
 			if(np.all(self.labels[i1]==self.labels[i2])):
 				if(positive==0):
 					continue
-				self.y = np.concatenate((self.y, np.ones((1,1), dtype=np.float32)), axis=0)
+				self.y = np.concatenate((self.y, np.array([[0.0, 1.0]], dtype=np.float32)), axis=0)
 				positive-=1
 			else:
 				if(negative==0):
 					continue
-				self.y = np.concatenate((self.y, np.zeros((1,1), dtype=np.float32)), axis=0)
+				self.y = np.concatenate((self.y, np.array([[1.0, 0.0]], dtype=np.float32)), axis=0)
 				negative-=1
 
+			if(self.clf):
+				self.y1 = np.concatenate((self.y1, self.labels[i1]), axis=0)
+				self.y2 = np.concatenate((self.y2, self.labels[i2]), axis=0)
+
 			self.data = np.concatenate((self.data, np.expand_dims(np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0), axis=0)), axis=0)
+
+		if(self.clf):
+			return self.data, np.concatenate((np.expand_dims(self.y), np.concatenate((np.expand_dims(self.y1), np.expand_dims(self.y2)), axis=0)), axis=0)
 
 		return self.data, self.y
 
