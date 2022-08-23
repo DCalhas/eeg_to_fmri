@@ -46,6 +46,10 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
 
         y_contrast,y_clf1,y_clf2=tuple(tf.split(y_true, 3, axis=1))
 
+        y_contrast=tf.squeeze(y_contrast, axis=1)
+        y_clf1=tf.squeeze(y_clf1, axis=1)
+        y_clf2=tf.squeeze(y_clf2, axis=1)
+
 
         print(self.contrastive(y_contrast, y_pred[0]))
         print(self.nll(y_clf1, y_pred[1]))
