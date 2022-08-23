@@ -159,8 +159,6 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             s1=self.flatten1(z1[1])
             s2=self.flatten1(z2[1])
 
-            raise NotImplementedError
-
             return [1.-self.dot([s1,s2])/(tf.norm(s1,axis=1)*tf.norm(s2,axis=1)), self.clf(z1[0]), self.clf(z2[0])]
 
         return self.clf(self.view(X)[0])
