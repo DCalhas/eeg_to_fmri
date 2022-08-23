@@ -266,7 +266,7 @@ class Dataset_CLF_CV:
 
 class DatasetContrastive:
 
-	def __init__(self, X, labels,):
+	def __init__(self, X, labels, batch=4):
 
 		self.X = X
 		self.labels = labels
@@ -275,6 +275,8 @@ class DatasetContrastive:
 
 		self.data=None
 		self.y=None
+
+		self.batch=batch
 
 	
 	def shuffle(self):
@@ -301,6 +303,7 @@ class DatasetContrastive:
 		
 		while(positive>0 or negative>0):
 			
+			#choice is done randomly throughout the dataset
 			indices = np.random.choice(np.arange(0,self.X.shape[0]), size=2, replace=False)
 			i1, i2 = (indices[0], indices[1])
 
@@ -320,3 +323,10 @@ class DatasetContrastive:
 		return self.data, self.y
 
 
+	def repeat(self, n):
+		"""
+
+		repeat n times the dataset, this is a wrapper for the train session
+		"""
+
+		return tf.data.Dataset.from_tensor_slices(self.pairwise).batch(self.batch).repeat(n)
