@@ -6,6 +6,8 @@ import numpy as np
 
 from sklearn.utils import shuffle
 
+import tensorflow as tf
+
 #should eeg_limit be true??
 def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_eeg=False, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
 
