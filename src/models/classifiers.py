@@ -62,7 +62,7 @@ class view_EEG_classifier(tf.keras.Model):
         
         self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
         #self.clf = LinearClassifier()
-        self.clf = PolynomialClassifier()
+        self.clf = PolynomialClassifier(degree=2)
         #sigma layers
         self.flatten=tf.keras.layers.Flatten()
         self.dense=tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)
@@ -115,4 +115,3 @@ class ContrastiveClassifier(tf.keras.Model):
         z2=self.linear(z2)
 
         return (z1**2-z2**2)**(1/2)
-
