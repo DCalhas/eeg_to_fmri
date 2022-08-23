@@ -50,7 +50,7 @@ class view_EEG_classifier(tf.keras.Model):
 
     """
     
-    def __init__(self, model, input_shape, activation=None, poly_degree=3, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
+    def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
         """
         Inputs:
             - EEG_to_fMRI: model
@@ -61,8 +61,8 @@ class view_EEG_classifier(tf.keras.Model):
         self.training=True
         
         self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
-        #self.clf = LinearClassifier()
-        self.clf = PolynomialClassifier(degree=poly_degree)
+        self.clf = LinearClassifier()
+        #self.clf = PolynomialClassifier(degree=poly_degree)
         #sigma layers
         self.flatten=tf.keras.layers.Flatten()
         self.dense=tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)

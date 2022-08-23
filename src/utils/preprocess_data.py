@@ -266,11 +266,15 @@ class Dataset_CLF_CV:
 
 class DatasetContrastive:
 
-	def __init__(self,):
+	def __init__(self, X, labels,):
 
+		self.X = X
+		self.labels = labels
 
-		raise NotImplementedError
+		self.pairs=self.X.shape[0]
 
+		self.data=None
+		self.y=None
 
 	
 	def shuffle(self):
@@ -279,10 +283,42 @@ class DatasetContrastive:
 
 		This should only be done in a CV setting with fold < individuals, i.e. please do not do this in a LOOCV setting
 		"""
-		data = shuffle(self.X, self.y)
+		data = shuffle(self.X, self.labels)
 		self.X=data[0]
-		self.y=data[1]
+		self.labels=data[1]
 
-	def pairwise(self,):
-		raise NotImplementedError
+	@property
+	def pairwise(self, shuffle=True):
 		
+		if(shuffle):
+			self.shuffle()
+
+		self.data=np.empty((0,2,)+self.X.shape[1:])
+		self.y=np.empty((0,1))
+
+		positive=self.pairs
+		negative=self.pairs
+		
+		while(positive>0 and negative>0)
+			indices = np.random.choice(np.arange(0,self.X.shape[0]), size=2, replace=False)
+			
+			print(indices)
+
+			i1, i2 = (indices[0], indices[1])
+
+			if(np.all(self.labels[i1]==self.labels[i2])):
+				if(positive==0):
+					continue
+				self.y = np.concatentate((self.y, np.ones((1,1), dtype=np.float32)), axis=0)
+			else:
+				if(negative==0):
+					continue
+				self.y = np.concatentate((self.y, np.zeros((1,1), dtype=np.float32)), axis=0)
+
+			print(np.concatentate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0).shape)
+			
+			self.data = np.concatentate((self.data, np.concatentate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0)), axis=0)
+
+		return self.data, self.y
+
+
