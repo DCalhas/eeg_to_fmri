@@ -102,7 +102,10 @@ class ContrastiveClassifier(tf.keras.Model):
 
 
     def call(self, X):
-        print(X)
+        x=tf.split(X, 2, axis=1)
+        x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
+
+        print(x1.shape, x2.shape)
 
         z1 = self.view(x1)[0]
         z2 = self.view(x2)[0]
