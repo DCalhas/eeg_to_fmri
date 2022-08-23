@@ -93,6 +93,7 @@ class ContrastiveClassifier(tf.keras.Model):
         super(ContrastiveClassifier, self).__init__()
 
         self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
+        #self.clf = LinearClassifier()
 
         self.flatten1 = tf.keras.layers.Flatten()
         self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
@@ -102,18 +103,20 @@ class ContrastiveClassifier(tf.keras.Model):
 
 
     def call(self, X):
-        x=tf.split(X, 2, axis=1)
-        x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
 
-        print(x1.shape, x2.shape)
+        if(tf.rank(X)==5):
+            x=tf.split(X, 2, axis=1)
+            x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
 
-        z1 = self.view(x1)[0]
-        z2 = self.view(x2)[0]
+            z1 = self.view(x1)[0]
+            z2 = self.view(x2)[0]
 
-        z1=self.flatten1(z1)
-        z1=self.linear(z1)
+            z1=self.flatten1(z1)
+            z1=self.linear(z1)
 
-        z2=self.flatten1(z2)
-        z2=self.linear(z2)
+            z2=self.flatten1(z2)
+            z2=self.linear(z2)
 
-        return (z1**2-z2**2)**(1/2)
+            return (z1**2-z2**2)**(1/2)
+
+        return self.clf(self.view(X)[0])
