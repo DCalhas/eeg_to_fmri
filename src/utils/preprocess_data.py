@@ -308,12 +308,12 @@ class DatasetContrastive:
 				if(positive==0):
 					continue
 				self.y = np.concatenate((self.y, np.ones((1,1), dtype=np.float32)), axis=0)
-				positive+=1
+				positive-=1
 			else:
 				if(negative==0):
 					continue
 				self.y = np.concatenate((self.y, np.zeros((1,1), dtype=np.float32)), axis=0)
-				negative+=1
+				negative-=1
 
 			self.data = np.concatenate((self.data, np.expand_dims(np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0), axis=0)), axis=0)
 
