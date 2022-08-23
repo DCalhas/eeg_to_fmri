@@ -297,8 +297,8 @@ class DatasetContrastive:
 		if(shuffle):
 			self.shuffle()
 
-		self.data=np.empty((0,2,)+self.X.shape[1:])
-		self.y=np.empty((0,1))
+		self.data=np.empty((0,2,)+self.X.shape[1:], dtype=np.float32)
+		self.y=np.empty((0,1), dtype=np.float32)
 
 		positive=self.pairs
 		negative=self.pairs
