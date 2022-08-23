@@ -16,10 +16,18 @@ NON_DIVISION_ZERO=1e-9
 #
 ######################################################################################################################
 
-def contrastive_loss(y_true, y_pred, margin=1.0):
-	square_pred = K.square(y_pred)
-	margin_square = K.square(K.maximum(margin - y_pred, 0))
-	return K.mean(y_true * square_pred + (1 - y_true) * margin_square)
+class ContrastiveLoss(tf.keras.losses.Loss):
+
+    def __init__(self, m=0.5, **kwargs):
+
+        super(ContrastiveLoss, self).__init__(**kwargs)
+
+        self.m=m
+
+    def call(self, y_true, y_pred):
+        distance=y_pred
+
+        return y_true*distance + (1-y_true)*(0.5*tf.math.maximum(0, self.m - distance))
 
 
 ######################################################################################################################
@@ -288,7 +296,7 @@ def get_ranked_bold(eeg, bold, corr_model=None, bold_network=None, top_k=5):
 
 ######################################################################################################################
 #
-#                                       CANONICAL CORRELATION ANALYSIS LOSSES
+#                              CANONICAL CORRELATION ANALYSIS LOSSES
 #
 ######################################################################################################################
 

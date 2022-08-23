@@ -18,7 +18,6 @@ class LinearClassifier(tf.keras.Model):
     def call(self, X):
         return self.linear(self.flatten(X))
 
-
 class view_EEG_classifier(tf.keras.Model):
     """
     classifier of synthesized EEG view
@@ -59,3 +58,35 @@ class view_EEG_classifier(tf.keras.Model):
             return [logits]+z+[sigma_1]
         return logits
         
+
+
+class ContrastiveClassifier(tf.keras.Model):
+
+    def __init__(self, model, input_shape, dimension, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
+
+        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
+
+        self.flatten1 = tf.keras.layers.Flatten()
+        self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
+
+    def build(self, input_shape):
+        self.view.build(input_shape)
+        if(self.view.aleatoric):
+            self.clf.build(self.view.q_decoder.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
+        else:
+            self.clf.build(self.view.q_decoder.output_shape)
+
+
+    def call(self, x1, x2):
+
+        z1 = self.view(x1)[0]
+        z2 = self.view(x2)[0]
+
+        z1=self.flatten1(z1)
+        z1=self.linear(z1)
+
+        z2=self.flatten1(z2)
+        z2=self.linear(z2)
+
+        return (z1**2-z2**2)**(1/2)
+
