@@ -41,10 +41,12 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
 
     def call(self, y_true, y_pred):
 
-        print(y_true)
+        y_contrast,y_clf1,y_clf2=tuple(tf.split(y_true, 3, axis=1))
 
 
-        print(y_pred)
+        print(self.contrastive(y_contrast, y_pred[0]))
+        print(self.nll(y_clf1, y_pred[1]))
+        print(self.nll(y_clf2, y_pred[2]))
         raise NotImplementedError
     
 
