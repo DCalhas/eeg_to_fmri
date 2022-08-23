@@ -50,11 +50,8 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
         y_clf1=tf.squeeze(y_clf1, axis=1)
         y_clf2=tf.squeeze(y_clf2, axis=1)
 
-
-        print(self.contrastive(y_contrast, y_pred[0]))
-        print(self.nll(y_clf1, y_pred[1]))
-        print(self.nll(y_clf2, y_pred[2]))
-        raise NotImplementedError
+        return self.contrastive(y_contrast, y_pred[0])+self.nll(y_clf1, y_pred[1])+self.nll(y_clf2, y_pred[2])
+        
     
 
 
