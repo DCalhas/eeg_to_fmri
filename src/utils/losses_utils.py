@@ -27,8 +27,6 @@ class ContrastiveLoss(tf.keras.losses.Loss):
     def call(self, y_true, y_pred):
         distance=y_pred
         similar=tf.argmax(y_true, axis=1).numpy().astype(np.float32)
-        print(similar.shape)
-        print(distance.shape)
 
         return similar*distance + (1-similar)*(0.5*tf.math.maximum(0, self.m - distance))
 
