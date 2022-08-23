@@ -18,6 +18,34 @@ class LinearClassifier(tf.keras.Model):
     def call(self, X):
         return self.linear(self.flatten(X))
 
+
+class PolynomialClassifier(tf.keras.Model):
+    """
+    
+    """
+
+    def __init__(self, n_classes=2, degree=3, regularizer=None):
+        super(PolynomialClassifier, self).__init__()
+
+        self.training=True
+        self.degree=degree
+        
+        self.flatten = tf.keras.layers.Flatten()
+        self.linear = tf.keras.layers.Dense(n_classes, use_bias=False, kernel_regularizer=regularizer)
+        
+    def call(self, X):
+        X = tf.expand_dims(X, -1)
+        x = [X**0, X]
+
+        for p in range(self.degree-1):
+            x+=[x[-1]*X]
+
+        print(tf.concat(x, -1).shape)
+
+        return self.linear(self.flatten(tf.concat(x, -1)))
+
+
+
 class view_EEG_classifier(tf.keras.Model):
     """
     classifier of synthesized EEG view
@@ -35,8 +63,8 @@ class view_EEG_classifier(tf.keras.Model):
         self.training=True
         
         self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
-        self.clf = LinearClassifier()
-
+        #self.clf = LinearClassifier()
+        self.clf = PolynomialClassifier()
         #sigma layers
         self.flatten=tf.keras.layers.Flatten()
         self.dense=tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)
