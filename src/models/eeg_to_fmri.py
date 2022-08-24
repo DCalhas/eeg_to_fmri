@@ -262,7 +262,11 @@ class EEG_to_fMRI(tf.keras.Model):
             latent_shape = resolution_decoder
 
             #upsampling
-            x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+            if(self.aleatoric_uncertainty and not variational_iDFT):#insert a new flag! instead of combination of flags
+                x = tfp.layers.DenseFlipout(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+            else:
+                x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
             x = tf.keras.layers.Reshape(latent_shape)(x)
         if(DFT and not variational_random_padding):#if random padding of frequencies there should not be special waves defined
@@ -518,7 +522,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)()(x)
         index+=1
 
-        x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
+        #upsampling layer
+        if(type(pretrained_model.layers[4].layers[index]).__name__=="Dense"):
+            x = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
                     pretrained_model.layers[4].layers[index].units,
                     activation=tf.keras.activations.linear,
                     kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel.numpy()),
@@ -526,6 +532,20 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
                     trainable=False)(x)
+        elif(type(pretrained_model.layers[4].layers[index]).__name__=="DenseFlipout"):
+            x = getattr(tfp.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
+                                pretrained_model.layers[4].layers[index].units,
+                                activation=tf.keras.activations.linear,
+                                kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel.numpy()),
+                                bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].bias.numpy()),
+                                kernel_regularizer=regularizer,
+                                bias_regularizer=regularizer,
+                                trainable=False)(x)
+
+            raise NotImplementedError
+        else:
+            raise NotImplementedError
+        
         index+=1
 
         self.aleatoric=False
@@ -544,9 +564,9 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                 x = variational_iDCT3D(**pretrained_model.layers[4].layers[index].get_config(), 
                                         normal_loc_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].normal.distribution.loc.numpy()),
                                         normal_scale_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].normal.distribution.scale.numpy()),
-                                        w1_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].w1.numpy()),
-                                        w2_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].w2.numpy()),
-                                        w3_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].w3.numpy()),
+                                        w1_initializer=None,
+                                        w2_initializer=None,
+                                        w3_initializer=None,
                                         loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].loc.numpy()),
                                         scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].scale.numpy()),
                                         biases_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].biases.numpy()),
