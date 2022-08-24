@@ -23,7 +23,7 @@ class DenseVariational(tf.keras.layers.Layer):
 		"""
 		# pylint: enable=g-doc-args
 		super(DenseVariational, self).__init__(
-				activity_regularizer=activity_regularizer
+				activity_regularizer=activity_regularizer,
 				**kwargs)
 
 		self.units=units
