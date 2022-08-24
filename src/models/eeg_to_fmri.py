@@ -246,7 +246,6 @@ class EEG_to_fMRI(tf.keras.Model):
                                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(attention_scores)
                 x = x*self.latent_style
 
-
         if(dropout):
             x = tf.keras.layers.Dropout(0.5)(x)
         x = tf.keras.layers.Reshape(latent_shape)(x)
@@ -373,8 +372,6 @@ class EEG_to_fMRI(tf.keras.Model):
     def from_config(cls, config):
         return cls(**config)
 
-
-
 custom_objects={"Topographical_Attention": Topographical_Attention,
                 "EEG_to_fMRI": EEG_to_fMRI,
                 "ResBlock": ResBlock,
@@ -402,6 +399,11 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         super(pretrained_EEG_to_fMRI, self)
         super(pretrained_EEG_to_fMRI, self).__init__()
+
+        if(feature_selection):
+            print("WARNING: Feature selection is deprecated for "+pretrained_EEG_to_fMRI.__name__)
+        if(segmentation_mask):
+            print("WARNING: Segmentation mask is deprecated for "+pretrained_EEG_to_fMRI.__name__)
 
         if(organize_channels):
             raise NotImplementedError
