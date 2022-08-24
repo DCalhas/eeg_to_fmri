@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+import tensorflow_probability as tf
+
 from models.eeg_to_fmri import pretrained_EEG_to_fMRI
 
 class LinearClassifier(tf.keras.Model):
@@ -7,13 +9,16 @@ class LinearClassifier(tf.keras.Model):
     
     
     """
-    def __init__(self, n_classes=2, regularizer=None):
+    def __init__(self, n_classes=2, regularizer=None, variational=False):
         super(LinearClassifier, self).__init__()
 
         self.training=True
         
         self.flatten = tf.keras.layers.Flatten()
-        self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
+        if(variational):
+            self.linear = tf.keras.layers.DenseFlipout(n_classes)
+        else:
+            self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
         
     def call(self, X):
         return self.linear(self.flatten(X))
@@ -130,14 +135,14 @@ class ViewContrastiveClassifier(tf.keras.Model):
 
 class ViewLatentContrastiveClassifier(tf.keras.Model):
 
-    def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, siamese_projection=False, siamese_projection_dimension=10, seed=None):
+    def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, siamese_projection=False, siamese_projection_dimension=10, variational=False, seed=None):
 
         super(ViewLatentContrastiveClassifier, self).__init__()
 
         self.siamese_projection=siamese_projection
 
         self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, latent_contrastive=True, seed=seed)
-        self.clf = LinearClassifier()
+        self.clf = LinearClassifier(variational=variational)
 
         self.flatten = tf.keras.layers.Flatten()
         
