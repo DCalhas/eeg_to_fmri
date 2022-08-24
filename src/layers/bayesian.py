@@ -11,7 +11,7 @@ class DenseVariational(tf.keras.layers.Layer):
 			activity_regularizer=None,
 			kernel_initializer="GlorotUniform",
 			bias_initializer="GlorotUniform",
-			use_bias=False,
+			use_bias=True,
 			trainable=True,
 			seed=None,
 			**kwargs):
@@ -84,9 +84,14 @@ class DenseVariational(tf.keras.layers.Layer):
 		epsilon_bias = getattr(tfp.distributions, self.distribution)(self.loc, self.scale).sample()
 
 		kernel=self.kernel_mu+self.kernel_sigma*epsilon_kernel
-		bias=self.bias_mu+self.bias_sigma*epsilon_bias
-
-		return tf.matmul(X, kernel)+bias
+		if(self.use_bias):
+			bias=self.bias_mu+self.bias_sigma*epsilon_bias
+			
+		output=tf.matmul(X, kernel)
+		if(self.use_bias):
+			output+=bias
+			
+		return output
 
 	def get_config(self):
 		"""Returns the config of the layer.
