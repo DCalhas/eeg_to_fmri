@@ -33,7 +33,7 @@ class ContrastiveLoss(tf.keras.losses.Loss):
 
 class ContrastiveClassificationLoss(tf.keras.losses.Loss):
 
-    def __init__(self, m=0.5, reduction=tf.keras.losses.Reduction.AUTO, **kwargs):
+    def __init__(self, m=0.5, reduction='auto', **kwargs):
 
         super(ContrastiveClassificationLoss, self).__init__(**kwargs)
 
