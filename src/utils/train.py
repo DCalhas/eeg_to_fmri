@@ -130,7 +130,7 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architectur
             n_batches += 1
             gc.collect()
 
-            print_utils.print_message("Batch ... with loss: " + str(batch_loss), file_output=file_output, verbose=verbose_batch)
+            print_utils.print_message("Batch "+str(n_batches)+" with loss: " + str(batch_loss), file_output=file_output, verbose=verbose_batch, end="\r")
 
         if(val_set is not None):
             val_loss.append(evaluate(val_set, model, loss_fn, u_architecture=u_architecture))
