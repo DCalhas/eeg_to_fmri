@@ -4,6 +4,8 @@ import tensorflow_probability as tfp
 
 from models.eeg_to_fmri import pretrained_EEG_to_fMRI
 
+from layers.bayesian import DenseVariational
+
 class LinearClassifier(tf.keras.Model):
     """
     
@@ -16,7 +18,7 @@ class LinearClassifier(tf.keras.Model):
         
         self.flatten = tf.keras.layers.Flatten()
         if(variational):
-            self.linear = tfp.layers.DenseFlipout(n_classes)
+            self.linear = DenseVariational(n_classes)
         else:
             self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
         
