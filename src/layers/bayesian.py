@@ -71,8 +71,6 @@ class DenseVariational(tf.keras.layers.Layer):
 		else:
 			self.bias = None
 
-		self.rand_coefs = getattr(tfp.distributions.Normal)
-
 		self.loc=0.0
 		self.scale=1.0
 		self.distribution="Normal"
