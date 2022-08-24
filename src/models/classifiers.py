@@ -130,14 +130,18 @@ class ViewContrastiveClassifier(tf.keras.Model):
 
 class ViewLatentContrastiveClassifier(tf.keras.Model):
 
-    def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
+    def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, siamese_projection=False, siamese_projection_dimension=10, seed=None):
 
         super(ViewLatentContrastiveClassifier, self).__init__()
+
+        self.siamese_projection
 
         self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, latent_contrastive=True, seed=seed)
         self.clf = LinearClassifier()
 
-        self.flatten1 = tf.keras.layers.Flatten()
+        self.flatten = tf.keras.layers.Flatten()
+        if(siamese_projection):
+            self.dense = tf.keras.layers.Dense(siamese_projection_dimension)
         self.dot = tf.keras.layers.Dot(axes=1)
 
     def build(self, input_shape):
@@ -156,8 +160,14 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             z1 = self.view(x1)#returns a list of [fmri view, latent_eeg]
             z2 = self.view(x2)
 
-            s1=self.flatten1(z1[1])
-            s2=self.flatten1(z2[1])
+            s1=self.flatten(z1[1])
+            s2=self.flatten(z2[1])
+
+            if(self.siamese_projection):
+                ss1=self.dense(self.flatten(z1[0]))
+                ss2=self.dense(self.flatten(z2[0]))
+                similarity=self.dot([ss1,ss2])/(tf.norm(ss1,axis=1)*tf.norm(ss2,axis=1))
+                return [1.-self.dot([s1,s2])/(tf.norm(s1,axis=1)*tf.norm(s2,axis=1))+1.-similarity, self.clf(z1[0]), self.clf(z2[0])]
 
             return [1.-self.dot([s1,s2])/(tf.norm(s1,axis=1)*tf.norm(s2,axis=1)), self.clf(z1[0]), self.clf(z2[0])]
 
