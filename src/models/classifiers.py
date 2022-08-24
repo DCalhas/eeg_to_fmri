@@ -140,8 +140,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
         self.clf = LinearClassifier()
 
         self.flatten = tf.keras.layers.Flatten()
-        if(siamese_projection):
-            self.dense = tf.keras.layers.Dense(siamese_projection_dimension)
+        
         self.dot = tf.keras.layers.Dot(axes=1, normalize=True)
 
     def build(self, input_shape):
@@ -164,8 +163,8 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             s2=self.flatten(z2[1])
 
             if(self.siamese_projection):
-                ss1=self.dense(self.flatten(z1[0]))
-                ss2=self.dense(self.flatten(z2[0]))
+                ss1=self.flatten(z1[0])
+                ss2=self.flatten(z2[0])
                 similarity=self.dot([ss1,ss2])
                 return [1.-self.dot([s1,s2])+1.-similarity, self.clf(z1[0]), self.clf(z2[0])]
 
