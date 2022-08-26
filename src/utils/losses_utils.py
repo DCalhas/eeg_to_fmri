@@ -54,8 +54,13 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
         self.nll=tf.keras.losses.CategoricalCrossentropy(from_logits=True, reduction=reduction)
 
     def call(self, y_true, y_pred):
-
         y_contrast,y_clf1,y_clf2 = separate_targets(y_true)
+
+        if(len(y_pred)>3):
+            """
+            Means that there are some latent contrastive losses to be induced
+            """
+            return self.contrastive(y_contrast, y_pred[0])+self.call(y_true, y_pred[1:])
 
         return self.contrastive(y_contrast, y_pred[0])+self.nll(y_clf1, y_pred[1])+self.nll(y_clf2, y_pred[2])
         

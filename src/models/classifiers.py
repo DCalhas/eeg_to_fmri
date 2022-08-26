@@ -237,8 +237,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             if(self.siamese_projection):
                 ss1=self.flatten(z1[0])
                 ss2=self.flatten(z2[0])
-                similarity=self.dot([ss1,ss2])
-                return [1.-self.dot([s1,s2])+1.-similarity, self.clf(z1[0]), self.clf(z2[0])]
+                return [1.-self.dot([s1,s2]), 1.-self.dot([ss1,ss2]), self.clf(z1[0]), self.clf(z2[0])]
 
             return [1.-self.dot([s1,s2]), self.clf(z1[0]), self.clf(z2[0])]
 
