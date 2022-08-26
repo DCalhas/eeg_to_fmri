@@ -31,14 +31,18 @@ class PolynomialClassifier(tf.keras.Model):
     
     """
 
-    def __init__(self, n_classes=2, degree=3, regularizer=None):
+    def __init__(self, n_classes=2, degree=3, regularizer=None, variational=False):
         super(PolynomialClassifier, self).__init__()
 
         self.training=True
         self.degree=degree
         
         self.flatten = tf.keras.layers.Flatten()
-        self.linear = tf.keras.layers.Dense(n_classes, use_bias=False, kernel_regularizer=regularizer)
+
+        if(variational):
+            self.linear = DenseVariational(n_classes, use_bias=False)
+        else:
+            self.linear = tf.keras.layers.Dense(n_classes, use_bias=False, kernel_regularizer=regularizer)
         
     def call(self, X):
         X = tf.expand_dims(X, -1)
@@ -51,13 +55,13 @@ class PolynomialClassifier(tf.keras.Model):
 
 
 
-class view_EEG_classifier(tf.keras.Model):
+class ViewClassifier(tf.keras.Model):
     """
     classifier of synthesized EEG view
 
     """
     
-    def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
+    def __init__(self, model, input_shape, degree=1, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, variational=False, seed=None):
         """
         Inputs:
             - EEG_to_fMRI: model
@@ -68,8 +72,10 @@ class view_EEG_classifier(tf.keras.Model):
         self.training=True
         
         self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
-        self.clf = LinearClassifier()
-        #self.clf = PolynomialClassifier(degree=poly_degree)
+        if(degree==1):
+            self.clf = LinearClassifier(variational=variational)
+        else:
+            self.clf = PolynomialClassifier(degree=degree, variational=variational)
         #sigma layers
         self.flatten=tf.keras.layers.Flatten()
         self.dense=tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)
@@ -95,17 +101,21 @@ class view_EEG_classifier(tf.keras.Model):
 
 class ViewContrastiveClassifier(tf.keras.Model):
 
-    def __init__(self, model, input_shape, dimension, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
+    def __init__(self, model, input_shape, dimension, degree=1, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, variational=False, seed=None):
 
         super(ViewContrastiveClassifier, self).__init__()
 
         self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
-        self.clf = LinearClassifier()
+        
+        if(degree==1):
+            self.clf = LinearClassifier(variational=variational)
+        else:
+            self.clf = PolynomialClassifier(degree=degree, variational=variational)
 
         self.flatten1 = tf.keras.layers.Flatten()
         self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
 
-        self.dot = tf.keras.layers.Dot(axes=1)
+        self.dot = tf.keras.layers.Dot(axes=1, normalize=True)
 
     def build(self, input_shape):
         self.view.build(input_shape)
@@ -129,7 +139,7 @@ class ViewContrastiveClassifier(tf.keras.Model):
             s2=self.flatten1(z2)
             s2=self.linear(s2)
 
-            return [1.-self.dot([s1,s2])/(tf.norm(s1,axis=1)*tf.norm(s2,axis=1)), self.clf(z1), self.clf(z2)]
+            return [1.-self.dot([s1,s2]), self.clf(z1), self.clf(z2)]
 
         return self.clf(self.view(X)[0])
 
@@ -137,14 +147,18 @@ class ViewContrastiveClassifier(tf.keras.Model):
 
 class ViewLatentContrastiveClassifier(tf.keras.Model):
 
-    def __init__(self, model, input_shape, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, siamese_projection=False, siamese_projection_dimension=10, variational=False, seed=None):
+    def __init__(self, model, input_shape, degree=1, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, siamese_projection=False, siamese_projection_dimension=10, variational=False, seed=None):
 
         super(ViewLatentContrastiveClassifier, self).__init__()
 
         self.siamese_projection=siamese_projection
 
         self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, latent_contrastive=True, seed=seed)
-        self.clf = LinearClassifier(variational=variational)
+        
+        if(degree==1):
+            self.clf = LinearClassifier(variational=variational)
+        else:
+            self.clf = PolynomialClassifier(degree=degree, variational=variational)
 
         self.flatten = tf.keras.layers.Flatten()
         
