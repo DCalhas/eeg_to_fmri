@@ -117,10 +117,7 @@ class Contrastive(tf.keras.Model):
 
     def build(self, input_shape):
         self.view.build(input_shape)
-        if(self.view.aleatoric):
-            self.clf.build(self.view.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
-        else:
-            self.clf.build(self.view.output_shape)
+        self.clf.build(self.view.output_shape)
 
 
     def call(self, X, training=False):
