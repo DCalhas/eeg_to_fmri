@@ -124,8 +124,8 @@ class Contrastive(tf.keras.Model):
         x=tf.split(X, 2, axis=1)
         x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
 
-        z1 = self.view(x1)[0]
-        z2 = self.view(x2)[0]
+        z1 = self.view(x1)
+        z2 = self.view(x2)
 
         s1=self.flatten(z1)
         s1=self.linear(s1)
