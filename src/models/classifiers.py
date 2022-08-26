@@ -96,8 +96,48 @@ class ViewClassifier(tf.keras.Model):
         if(self.training):
             return [logits]+z+[sigma_1]
         return logits
-        
 
+
+class Contrastive(tf.keras.Model):
+        
+    def __init__(self, model, input_shape, dimension, degree=1, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, variational=False, seed=None):
+
+        super(Contrastive, self).__init__()
+
+        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed).eeg_encoder
+        
+        self.flatten = tf.keras.layers.Flatten()
+        
+        if(variational):
+            self.linear = DenseVariational(dimension)
+        else:
+            self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
+
+        self.dot = tf.keras.layers.Dot(axes=1, normalize=True)
+
+    def build(self, input_shape):
+        self.view.build(input_shape)
+        if(self.view.aleatoric):
+            self.clf.build(self.view.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
+        else:
+            self.clf.build(self.view.output_shape)
+
+
+    def call(self, X, training=False):
+
+        x=tf.split(X, 2, axis=1)
+        x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
+
+        z1 = self.view(x1)[0]
+        z2 = self.view(x2)[0]
+
+        s1=self.flatten(z1)
+        s1=self.linear(s1)
+
+        s2=self.flatten(z2)
+        s2=self.linear(s2)
+
+        1.-self.dot([s1,s2])
 
 class ViewContrastiveClassifier(tf.keras.Model):
 
@@ -112,7 +152,7 @@ class ViewContrastiveClassifier(tf.keras.Model):
         else:
             self.clf = PolynomialClassifier(degree=degree, variational=variational)
 
-        self.flatten1 = tf.keras.layers.Flatten()
+        self.flatten = tf.keras.layers.Flatten()
         self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
 
         self.dot = tf.keras.layers.Dot(axes=1, normalize=True)
@@ -133,10 +173,10 @@ class ViewContrastiveClassifier(tf.keras.Model):
             z1 = self.view(x1)[0]
             z2 = self.view(x2)[0]
 
-            s1=self.flatten1(z1)
+            s1=self.flatten(z1)
             s1=self.linear(s1)
 
-            s2=self.flatten1(z2)
+            s2=self.flatten(z2)
             s2=self.linear(s2)
 
             return [1.-self.dot([s1,s2]), self.clf(z1), self.clf(z2)]
