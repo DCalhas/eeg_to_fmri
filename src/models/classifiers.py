@@ -61,7 +61,7 @@ class ViewClassifier(tf.keras.Model):
 
     """
     
-    def __init__(self, model, input_shape, degree=1, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, variational=False, seed=None):
+    def __init__(self, model, input_shape, degree=1, latent_clf=False, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, variational=False, seed=None):
         """
         Inputs:
             - EEG_to_fMRI: model
@@ -72,6 +72,9 @@ class ViewClassifier(tf.keras.Model):
         self.training=True
         
         self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
+        if(self.latent_clf):
+            self.view=self.view.eeg_encoder
+
         if(degree==1):
             self.clf = LinearClassifier(variational=variational)
         else:
@@ -82,14 +85,21 @@ class ViewClassifier(tf.keras.Model):
 
     def build(self, input_shape):
         self.view.build(input_shape)
-        if(self.view.aleatoric):
-            self.clf.build(self.view.q_decoder.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
+        if(not self.latent_clf):
+            if(self.view.aleatoric):
+                self.clf.build(self.view.q_decoder.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
+            else:
+                self.clf.build(self.view.q_decoder.output_shape)
         else:
-            self.clf.build(self.view.q_decoder.output_shape)
+            self.clf.build(self.view.output_shape)
     
     def call(self, X):
         z = self.view(X)
-        logits=self.clf(z[0])
+        z=self.view(X)
+        if(not self.latent_clf):
+            z=z[0]
+            
+        logits=self.clf(z)
 
         sigma_1 = self.dense(self.flatten(logits))
 
