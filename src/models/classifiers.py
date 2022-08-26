@@ -118,7 +118,6 @@ class Contrastive(tf.keras.Model):
     def build(self, input_shape):
         self.view.build(input_shape)
 
-
     def call(self, X, training=False):
 
         x=tf.split(X, 2, axis=1)
@@ -133,7 +132,7 @@ class Contrastive(tf.keras.Model):
         s2=self.flatten(z2)
         s2=self.linear(s2)
 
-        1.-self.dot([s1,s2])
+        return 1.-self.dot([s1,s2])
 
 class ViewContrastiveClassifier(tf.keras.Model):
 
