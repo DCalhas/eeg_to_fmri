@@ -70,6 +70,7 @@ class ViewClassifier(tf.keras.Model):
         super(ViewClassifier, self).__init__()
 
         self.training=True
+        self.latent_clf=latent_clf
         
         self.view = pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
         if(self.latent_clf):
@@ -98,7 +99,7 @@ class ViewClassifier(tf.keras.Model):
         z=self.view(X)
         if(not self.latent_clf):
             z=z[0]
-            
+
         logits=self.clf(z)
 
         sigma_1 = self.dense(self.flatten(logits))
