@@ -95,24 +95,19 @@ class ViewClassifier(tf.keras.Model):
             self.clf.build(self.view.output_shape)
     
     def call(self, X):
-
-        print(X.shape)
-
-
-
         z=self.view(X)
-        
         if(not self.latent_clf):
-            z=z[0]
-
-        logits=self.clf(z)
-
+            logits=self.clf(z[0])
+        else:
+            logits=self.clf(z)
+        
         sigma_1 = self.dense(self.flatten(logits))
-
-
-        print(z.shape)
-        if(self.training):
+        
+        if(self.training and not self.latent_clf):
             return [logits]+z+[sigma_1]
+        elif(self.training):
+            return [logits, sigma_1]
+
         return logits
 
 
