@@ -18,7 +18,7 @@ NON_DIVISION_ZERO=1e-9
 
 def separate_targets(y):
     rank_tensor=tf.rank(y)
-    if(rank==3):
+    if(rank_tensor==3):
         splits=tf.shape(y)[1]
         y_contrast,y_clf1,y_clf2=tuple(tf.split(y, splits, axis=1))
         return tf.squeeze(y_contrast, axis=1), tf.squeeze(y_clf1, axis=1), tf.squeeze(y_clf2, axis=1)
