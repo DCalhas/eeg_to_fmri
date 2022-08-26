@@ -80,10 +80,7 @@ class ViewClassifier(tf.keras.Model):
             self.clf = LinearClassifier(variational=variational)
         else:
             self.clf = PolynomialClassifier(degree=degree, variational=variational)
-        #sigma layers
-        #self.flatten=tf.keras.layers.Flatten()
-        #self.dense=tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)
-
+        
     def build(self, input_shape):
         self.view.build(input_shape)
         if(not self.latent_clf):
@@ -101,11 +98,7 @@ class ViewClassifier(tf.keras.Model):
         else:
             logits=self.clf(z)
         
-        #sigma_1 = self.dense(self.flatten(logits))
-        
-        if(self.training and not self.latent_clf):
-            return [logits]+z+[sigma_1]
-        elif(self.training):
+        if(self.training):
             return [logits]
 
         return logits
