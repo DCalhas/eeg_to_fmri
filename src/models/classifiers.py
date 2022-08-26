@@ -113,11 +113,15 @@ class ViewClassifier(tf.keras.Model):
 
 class Contrastive(tf.keras.Model):
         
-    def __init__(self, model, input_shape, dimension, degree=1, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, variational=False, seed=None):
+    def __init__(self, model, input_shape, dimension, latent_clf=False, degree=1, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, variational=False, seed=None):
 
         super(Contrastive, self).__init__()
 
-        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed).eeg_encoder
+        self.latent_clf=latent_clf
+
+        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
+        if(self.latent_clf):
+            self.view=self.view.eeg_encoder
         
         self.flatten = tf.keras.layers.Flatten()
         
@@ -138,6 +142,8 @@ class Contrastive(tf.keras.Model):
 
         z1 = self.view(x1)
         z2 = self.view(x2)
+        if(not self.latent_clf):
+            z1, z2=(z1[0], z2[0])
 
         s1=self.flatten(z1)
         s1=self.linear(s1)
