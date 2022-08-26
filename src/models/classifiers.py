@@ -151,8 +151,12 @@ class ViewContrastiveClassifier(tf.keras.Model):
         else:
             self.clf = PolynomialClassifier(degree=degree, variational=variational)
 
+        if(variational):
+            self.linear=DenseVariational(dimension)
+        else:
+            self.linear=tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
+
         self.flatten = tf.keras.layers.Flatten()
-        self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
 
         self.dot = tf.keras.layers.Dot(axes=1, normalize=True)
 
