@@ -67,7 +67,7 @@ class ViewClassifier(tf.keras.Model):
             - EEG_to_fMRI: model
             - tupel: input_shape, eeg input shape
         """
-        super(view_EEG_classifier, self).__init__()
+        super(ViewClassifier, self).__init__()
 
         self.training=True
         
