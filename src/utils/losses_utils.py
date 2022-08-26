@@ -509,11 +509,9 @@ def nll_loss(y_true, y_pred):
     list: y_pred - from classifier.linearCLF viewer []
     np.ndarray: y_true
     """
-    #sigma_c = y_pred[-1]
 
-    classification = tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_true, y_pred[0])
-    return classification
-    #return (1/sigma_c)*classification + tf.math.log(sigma_c)
+    return tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_true, y_pred[0])
+    
 
 
 def Laplacian_Loss(y_true, y_pred):
