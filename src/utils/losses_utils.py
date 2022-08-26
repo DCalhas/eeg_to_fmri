@@ -16,6 +16,17 @@ NON_DIVISION_ZERO=1e-9
 #
 ######################################################################################################################
 
+def separate_targets(y):
+    rank_tensor=tf.rank(y)
+    if(rank==3):
+        splits=tf.shape(y)[1]
+        y_contrast,y_clf1,y_clf2=tuple(tf.split(y, splits, axis=1))
+        return tf.squeeze(y_contrast, axis=1), tf.squeeze(y_clf1, axis=1), tf.squeeze(y_clf2, axis=1)
+    else:
+        return y,y,y
+
+    
+
 class ContrastiveLoss(tf.keras.losses.Loss):
 
     def __init__(self, m=0.5, **kwargs):
@@ -25,6 +36,8 @@ class ContrastiveLoss(tf.keras.losses.Loss):
         self.m=m
 
     def call(self, y_true, y_pred):
+        y_true, _, _ = separate_targets(y_true)
+
         distance=y_pred
         similar=tf.argmax(y_true, axis=1).numpy().astype(np.float32)
 
@@ -42,11 +55,7 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
 
     def call(self, y_true, y_pred):
 
-        y_contrast,y_clf1,y_clf2=tuple(tf.split(y_true, 3, axis=1))
-
-        y_contrast=tf.squeeze(y_contrast, axis=1)
-        y_clf1=tf.squeeze(y_clf1, axis=1)
-        y_clf2=tf.squeeze(y_clf2, axis=1)
+        y_contrast,y_clf1,y_clf2 = separate_targets(y_true)
 
         return self.contrastive(y_contrast, y_pred[0])+self.nll(y_clf1, y_pred[1])+self.nll(y_clf2, y_pred[2])
         
