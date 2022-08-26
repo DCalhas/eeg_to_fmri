@@ -64,7 +64,6 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
 
         return self.contrastive(y_contrast, y_pred[0])+self.nll(y_clf1, y_pred[1])+self.nll(y_clf2, y_pred[2])
         
-    
 
 
 
@@ -512,7 +511,7 @@ def nll_loss(y_true, y_pred):
     """
     sigma_c = y_pred[-1]
 
-    classification = tf.keras.losses.MeanSquaredError()(y_true, tf.nn.softmax(y_pred[0]))
+    classification = tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_true, y_pred[0])
     return (1/sigma_c)*classification + tf.math.log(sigma_c)
 
 
