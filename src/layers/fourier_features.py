@@ -95,7 +95,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		kernel = (1.0 / self.kernel_scale) * self.unscaled_kernel
 		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
 		outputs = tf.nn.bias_add(outputs, self.bias)
-		self.add_loss(tf.abs((outputs-tf.math.minimum(outputs))/(tf.math.maximum(outputs)-tf.math.minimum(outputs))-(outputs)/(2*np.pi)))
+		self.add_loss(tf.abs((outputs-tf.math.reduce_min(outputs, axis=-1))/(tf.math.reduce_max(outputs,axis=-1)-tf.math.reduce_min(outputs, axis=-1))-(outputs)/(2*np.pi)))
 		return tf.cos(outputs)*tf.sin(outputs)
 
 	def compute_output_shape(self, input_shape):
