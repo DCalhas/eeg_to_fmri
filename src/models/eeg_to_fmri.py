@@ -167,7 +167,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             variational_iDFT_dependent_dim=variational_iDFT_dependent_dim,
                             variational_dist=variational_dist,
                             variational_random_padding=variational_random_padding,
-                            outfilter=self.fmri_ae.outfilter, seed=seed)
+                            outfilter=self.fmri_ae.outfilter, weight_decay=weight_decay, seed=seed)
 
     def build_encoder(self, latent_shape, input_shape, na_spec, n_channels, 
                             dropout=False, weight_decay=0.000, 
@@ -220,7 +220,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             variational_iDFT=False, variational_coefs=None, variational_dist=None,
                             variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
                             variational_random_padding=False,
-                            dropout=False, outfilter=0, seed=None):
+                            dropout=False, outfilter=0, weight_decay=0., seed=None):
 
         x = tf.keras.layers.Flatten()(output_encoder)#TODO: does it make sense in TRs>1?
 
