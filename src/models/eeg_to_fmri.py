@@ -533,7 +533,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].bias.numpy()),
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
-                    trainable=False)(x)
+                    trainable=True)(x)
         elif(type(pretrained_model.layers[4].layers[index]).__name__=="DenseFlipout"):
             x = getattr(tfp.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
                                 pretrained_model.layers[4].layers[index].units,
