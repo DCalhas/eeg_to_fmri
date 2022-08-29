@@ -32,7 +32,7 @@ class DenseVariational(tf.keras.layers.Layer):
 		self.activation=activation
 		self.kernel_prior_initializer=kernel_prior_initializer
 		self.kernel_posterior_initializer=kernel_posterior_initializer
-		self.bias_prior_initializer=bias_pior_initializer
+		self.bias_prior_initializer=bias_prior_initializer
 		self.bias_posterior_initializer=bias_posterior_initializer
 		self.use_bias=use_bias
 		self.trainable=trainable

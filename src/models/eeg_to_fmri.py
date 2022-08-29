@@ -225,7 +225,7 @@ class EEG_to_fMRI(tf.keras.Model):
         if(fourier_features):
             if(random_fourier):
                 self.latent_resolution = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                                  trainable=True, seed=seed, name="random_fourier_features")
+                                                                trainable=True, seed=seed, name="random_fourier_features")
             else:
                 self.latent_resolution = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
                                                                     trainable=True, name="fourier_features")
