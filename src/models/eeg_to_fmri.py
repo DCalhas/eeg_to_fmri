@@ -12,6 +12,7 @@ from layers.fourier_features import RandomFourierFeatures, FourierFeatures
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
 from layers.resnet_block import ResBlock, pretrained_ResBlock
+from layers.bayesian import DenseVariational
 from layers.mask import MRICircleMask
 from layers.latent_attention import Latent_EEG_Spatial_Attention, Latent_fMRI_Spatial_Attention
 from layers.style import Style
@@ -262,8 +263,9 @@ class EEG_to_fMRI(tf.keras.Model):
 
             #upsampling
             if(self.aleatoric_uncertainty and not variational_iDFT):#insert a new flag! instead of combination of flags
-                x = tfp.layers.DenseFlipout(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+                x = DenseVariational(latent_shape[0]*latent_shape[1]*latent_shape[2])(x)
+                #x = tfp.layers.DenseFlipout(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                #                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
             else:
                 x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
@@ -384,7 +386,7 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "Style": Style,
                 "Latent_EEG_Spatial_Attention": Latent_EEG_Spatial_Attention,
                 "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention,
-                "DenseFlipout": tfp.layers.DenseFlipout}
+                "DenseVariational": DenseVariational}
 
 
 class pretrained_EEG_to_fMRI(tf.keras.Model):
@@ -533,15 +535,14 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].bias.numpy()),
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
-                    trainable=True)(x)
-        elif(type(pretrained_model.layers[4].layers[index]).__name__=="DenseFlipout"):
-            x = getattr(tfp.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
-                                pretrained_model.layers[4].layers[index].units,
+                    trainable=False)(x)
+        elif(type(pretrained_model.layers[4].layers[index]).__name__=="DenseVariational"):
+            x = DenseVariational(pretrained_model.layers[4].layers[index].units,
                                 activation=tf.keras.activations.linear,
-                                kernel_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel.numpy()),
-                                bias_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].bias.numpy()),
-                                kernel_regularizer=regularizer,
-                                bias_regularizer=regularizer,
+                                kernel_prior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel_mu.numpy()),
+                                kernel_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].kernel_sigma.numpy()),
+                                bias_prior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].bias_mu.numpy()),
+                                bias_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].bias_sigma.numpy()),
                                 trainable=False)(x)
 
             raise NotImplementedError

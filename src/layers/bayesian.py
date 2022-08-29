@@ -9,8 +9,10 @@ class DenseVariational(tf.keras.layers.Layer):
 			units,
 			activation=None,
 			activity_regularizer=None,
-			kernel_initializer="GlorotUniform",
-			bias_initializer="GlorotUniform",
+			kernel_prior_initializer="GlorotUniform",
+			kernel_posterior_initializer="GlorotUniform",
+			bias_prior_initializer="GlorotUniform",
+			bias_posterior_initializer="GlorotUniform",
 			use_bias=True,
 			trainable=True,
 			seed=None,
@@ -28,8 +30,10 @@ class DenseVariational(tf.keras.layers.Layer):
 
 		self.units=units
 		self.activation=activation
-		self.kernel_initializer=kernel_initializer
-		self.bias_initializer=bias_initializer
+		self.kernel_prior_initializer=kernel_prior_initializer
+		self.kernel_posterior_initializer=kernel_posterior_initializer
+		self.bias_prior_initializer=bias_pior_initializer
+		self.bias_posterior_initializer=bias_posterior_initializer
 		self.use_bias=use_bias
 		self.trainable=trainable
 		self.seed = seed
@@ -41,16 +45,31 @@ class DenseVariational(tf.keras.layers.Layer):
 
 		input_shape = tf.TensorShape(input_shape)
 
+		kernel_prior_initializer=self.kernel_prior_initializer
+		kernel_posterior_initializer=self.kernel_posterior_initializer
+		bias_prior_initializer=self.bias_prior_initializer
+		bias_posterior_initializer=self.bias_posterior_initializer
+
+		if(type(kernel_prior_initializer) is str):
+			kernel_prior_initializer=getattr(tf.keras.initializers, kernel_prior_initializer)()
+		if(type(kernel_posterior_initializer) is str):
+			kernel_posterior_initializer=getattr(tf.keras.initializers, kernel_posterior_initializer)()
+		if(type(bias_prior_initializer) is str):
+			bias_prior_initializer=getattr(tf.keras.initializers, bias_prior_initializer)()
+		if(type(bias_posterior_initializer) is str):
+			bias_posterior_initializer=getattr(tf.keras.initializers, bias_posterior_initializer)()
+
+
 		self.kernel_mu = self.add_weight(
 				'kernel_mu',
 				shape=[last_dim, self.units],
-				initializer=getattr(tf.keras.initializers, self.kernel_initializer)(),
+				initializer=kernel_prior_initializer,
 				dtype=tf.float32,
 				trainable=self.trainable)
 		self.kernel_sigma = self.add_weight(
 				'kernel_sigma',
 				shape=[last_dim, self.units],
-				initializer=getattr(tf.keras.initializers, self.kernel_initializer)(),
+				initializer=kernel_posterior_initializer,
 				dtype=tf.float32,
 				trainable=self.trainable)
 
@@ -58,14 +77,14 @@ class DenseVariational(tf.keras.layers.Layer):
 			self.bias_mu = self.add_weight(
 					'bias_mu',
 					shape=[self.units,],
-					initializer=getattr(tf.keras.initializers, self.bias_initializer)(),
+					initializer=bias_prior_initializer,
 					dtype=self.dtype,
 					trainable=self.trainable)
 
 			self.bias_sigma = self.add_weight(
 					'bias_sigma',
 					shape=[self.units,],
-					initializer=getattr(tf.keras.initializers, self.bias_initializer)(),
+					initializer=bias_posterior_initializer,
 					dtype=self.dtype,
 					trainable=self.trainable)
 		else:
