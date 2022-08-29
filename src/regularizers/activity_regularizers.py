@@ -5,11 +5,10 @@ import numpy as np
 
 class InOfDistribution(tf.keras.regularizers.Regularizer):
 
-
 	def __init__(self, l=1.0, **kwargs):
 		self.l=tf.keras.backend.cast_to_floatx(l)
 
-		super(OrganizeChannels, self).__init__(**kwargs)
+		super(InOfDistribution, self).__init__(**kwargs)
 
 	@tf.function(autograph=True,input_signature=[tf.TensorSpec([None], tf.float32)])
 	def __call__(self, x):
