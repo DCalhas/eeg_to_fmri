@@ -227,7 +227,7 @@ class EEG_to_fMRI(tf.keras.Model):
         if(fourier_features):
             if(random_fourier):
                 self.latent_resolution = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                                #regularizer=InOfDistribution(l=weight_decay),#adapt to distribution
+                                                                regularizer=InOfDistribution(l=weight_decay),#adapt to distribution
                                                                 trainable=True, seed=seed, name="random_fourier_features")
             else:
                 self.latent_resolution = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
@@ -389,7 +389,8 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "Style": Style,
                 "Latent_EEG_Spatial_Attention": Latent_EEG_Spatial_Attention,
                 "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention,
-                "DenseVariational": DenseVariational}
+                "DenseVariational": DenseVariational,
+                "InOfDistribution": InOfDistribution,}
 
 
 class pretrained_EEG_to_fMRI(tf.keras.Model):
