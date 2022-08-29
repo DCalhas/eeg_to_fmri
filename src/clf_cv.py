@@ -45,9 +45,6 @@ if __name__ == "__main__":
 	
 	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability = assertion_utils.clf_cv(opt)
 
-	if(run_eagerly):
-		raise NotImplementedError
-
 #create directory to save
 if(not os.path.exists(path_labels+"/"+ setting)):
 	os.makedirs(path_labels+"/"+ setting)
