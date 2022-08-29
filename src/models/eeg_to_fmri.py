@@ -8,6 +8,8 @@ from utils import state_utils
 
 from tensorflow.keras.layers import Dense#globals get attr
 
+from regularizers.activity_regularizers import InOfDistribution
+
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
@@ -225,6 +227,7 @@ class EEG_to_fMRI(tf.keras.Model):
         if(fourier_features):
             if(random_fourier):
                 self.latent_resolution = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                                regularizer=InOfDistribution(),#adapt to distribution
                                                                 trainable=True, seed=seed, name="random_fourier_features")
             else:
                 self.latent_resolution = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 

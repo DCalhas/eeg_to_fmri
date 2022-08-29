@@ -1,5 +1,27 @@
 import tensorflow as tf
 
+import numpy as np
+
+
+class InOfDistribution(tf.keras.regularizers.Regularizer):
+
+
+	def __init__(self, l=1.0, **kwargs):
+		self.l=tf.keras.backend.cast_to_floatx(l)
+
+		super(OrganizeChannels, self).__init__(**kwargs)
+
+	@tf.function(autograph=True,input_signature=[tf.TensorSpec([None], tf.float32)])
+	def __call__(self, x):
+
+		return tf.reduce_sum(tf.abs((x-tf.expand_dims(tf.math.reduce_min(x, axis=-1), axis=-1))/tf.expand_dims(tf.math.reduce_max(x,axis=-1)-tf.math.reduce_min(x, axis=-1), axis=-1)-(x)/(2*np.pi)))
+
+	def get_config(self):
+		return {"l": self.l}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
 
 class OrganizeChannels(tf.keras.regularizers.Regularizer):
 	"""

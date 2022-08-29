@@ -2,6 +2,8 @@ import tensorflow as tf
 
 import numpy as np
 
+from regularizers.activity_regularizers import InOfDistribution
+
 _SUPPORTED_RBF_KERNEL_TYPES = ['gaussian']
 
 def _get_default_scale(initializer, input_dim):
@@ -34,7 +36,7 @@ def _get_random_features_initializer(initializer, shape, seed=None):
 
 class RandomFourierFeatures(tf.keras.layers.Layer):
 
-	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, trainable=False, units=None, seed=None, name=None, **kwargs):
+	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, trainable=False, units=None, regularizer=None, seed=None, name=None, **kwargs):
 		if output_dim <= 0:
 			raise ValueError(
 			'`output_dim` should be a positive integer. Given: {}.'.format(
@@ -51,6 +53,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		self.output_dim = output_dim
 		self.units=output_dim
 		self.kernel_initializer = kernel_initializer
+		self.regularizer=regularizer
 		self.scale = scale
 		self.seed=seed
 		self.trainable=trainable
@@ -95,7 +98,8 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		kernel = (1.0 / self.kernel_scale) * self.unscaled_kernel
 		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
 		outputs = tf.nn.bias_add(outputs, self.bias)
-		self.add_loss(tf.reduce_mean(tf.abs((outputs-tf.expand_dims(tf.math.reduce_min(outputs, axis=-1), axis=-1))/tf.expand_dims(tf.math.reduce_max(outputs,axis=-1)-tf.math.reduce_min(outputs, axis=-1), axis=-1)-(outputs)/(2*np.pi))))
+		if(not self.regularizer is None):
+			self.add_loss(self.regularizer(outputs))
 		return tf.cos(outputs)*tf.sin(outputs)
 
 	def compute_output_shape(self, input_shape):
@@ -114,6 +118,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		config = {
 			'output_dim': self.output_dim,
 			'kernel_initializer': kernel_initializer,
+			'regularizer': self.regularizer,
 			'scale': self.scale,
 			'units': self.units,
 		}
