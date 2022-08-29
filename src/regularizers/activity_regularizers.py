@@ -13,7 +13,7 @@ class InOfDistribution(tf.keras.regularizers.Regularizer):
 	@tf.function(autograph=True,input_signature=[tf.TensorSpec([None], tf.float32)])
 	def __call__(self, x):
 
-		return self.l*tf.reduce_sum(tf.abs((x-tf.expand_dims(tf.math.reduce_min(x, axis=-1), axis=-1))/tf.expand_dims(tf.math.reduce_max(x,axis=-1)-tf.math.reduce_min(x, axis=-1), axis=-1)-(x)/(2*np.pi)))
+		return self.l*tf.reduce_sum(tf.abs((x-tf.math.reduce_min(x, axis=0))/(tf.math.reduce_max(x,axis=0)-tf.math.reduce_min(x, axis=0))-(x)/(2*np.pi)))
 
 	def get_config(self):
 		return {"l": self.l}
