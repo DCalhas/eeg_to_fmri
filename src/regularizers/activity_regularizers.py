@@ -5,15 +5,16 @@ import numpy as np
 
 class InOfDistribution(tf.keras.regularizers.Regularizer):
 
-	def __init__(self, l=1.0, **kwargs):
+	def __init__(self, l=1.0, m=np.pi, **kwargs):
 		self.l=tf.keras.backend.cast_to_floatx(l)
+		self.m=tf.keras.backend.cast_to_floatx(m)
 
 		super(InOfDistribution, self).__init__(**kwargs)
 
 	@tf.function(autograph=True,input_signature=[tf.TensorSpec([None], tf.float32)])
 	def __call__(self, x):
 
-		return self.l*tf.reduce_sum(tf.abs((x-tf.math.reduce_min(x, axis=0))/(tf.math.reduce_max(x,axis=0)-tf.math.reduce_min(x, axis=0))-(x)/(2*np.pi)))
+		return self.l*tf.reduce_sum(tf.abs((x-tf.math.reduce_min(x, axis=0))/(tf.math.reduce_max(x,axis=0)-tf.math.reduce_min(x, axis=0))-(x)/(self.m)))
 
 	def get_config(self):
 		return {"l": self.l}
