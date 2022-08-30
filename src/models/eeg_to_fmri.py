@@ -516,7 +516,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         index+=1
         
-        
         if(pretrained_model.layers[4].layers[index].name=="conditional_attention_style_dense"):
             attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
             self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[4].layers[index]).__name__)(
@@ -531,7 +530,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             #add style features from attention graph or prior learned style
             x = x*self.latent_style
         elif(pretrained_model.layers[4].layers[index].name=="style_prior"):
-            print("HERE")
             x = Style(initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].latent_style.numpy()), trainable=False, seed=None, name='style_prior')(x)
         else:
             raise NotImplementedError
