@@ -44,6 +44,7 @@ class ContrastiveLoss(tf.keras.losses.Loss):
         if(tf.rank(distance)==2):
             similar=tf.expand_dims(similar, axis=-1)
 
+        print(similar*distance + (1-similar)*(tf.abs(distance-self.m)))
         return similar*distance + (1-similar)*(tf.abs(distance-self.m))
 
 
