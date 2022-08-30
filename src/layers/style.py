@@ -20,13 +20,9 @@ class Style(tf.keras.layers.Layer):
 
 		self.initializer=initializer
 		self.regularizer=regularizer
-		self.trainable=trainable
 		self.seed=seed
 
-		super(Style, self).__init__()
-
-		self.trainable=trainable
-		print(self.trainable)
+		super(Style, self).__init__(trainable=trainable)
 
 	def build(self, input_shape):
 		"""
@@ -43,8 +39,6 @@ class Style(tf.keras.layers.Layer):
 											regularizer=self.regularizer,
 											initializer=initializer,
 											trainable=self.trainable)
-		print(self.name)
-		print(self.trainable)
 
 	def call(self, x,):
 		"""
