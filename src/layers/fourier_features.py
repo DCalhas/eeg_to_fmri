@@ -40,7 +40,7 @@ class Sinusoids(tf.keras.layers.Layer):
 		
 	def __init__(self, **kwargs):
 
-		super(Sinusoids, self).__init__(**kwargs):
+		super(Sinusoids, self).__init__(**kwargs)
 		
 	def call(self, X):
 		return tf.sin(X)*tf.cos(X)
