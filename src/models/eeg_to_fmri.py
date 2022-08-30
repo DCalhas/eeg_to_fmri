@@ -501,6 +501,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     
     def build_decoder(self, pretrained_model, input_shape, output_encoder, activation=None, attention_scores=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
         
+        x=output_encoder
         
         if("Fourier" in type(pretrained_model.layers[4].layers[11]).__name__):
             index=11
