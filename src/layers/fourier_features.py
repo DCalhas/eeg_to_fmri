@@ -118,8 +118,8 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
 		outputs = tf.nn.bias_add(outputs, self.bias)
 		
-		outputs=self.layer_normalization(outputs)
 		outputs=self.batch_normalization(outputs)
+		outputs=self.layer_normalization(outputs)
 		
 		return outputs
 		
