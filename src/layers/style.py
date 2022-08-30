@@ -11,7 +11,7 @@ class Style(tf.keras.layers.Layer):
 	"""
 
 
-	def __init__(self, initializer="glorot_uniform", regularizer=None, trainable=True, seed=None, **kwargs):
+	def __init__(self, initializer="glorot_uniform", regularizer=None, trainable=False, seed=None, **kwargs):
 		"""
 		initializer argument is required due to this layer having a weight
 		"""
