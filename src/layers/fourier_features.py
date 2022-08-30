@@ -72,7 +72,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		self.units=output_dim
 		self.kernel_initializer = kernel_initializer
 		self.regularizer=regularizer
-		self.normalization=tf.keras.layers.BatchNormalization(gamma_initializer=tf.constant_initializer(np.pi), trainable=False)
+		self.normalization=tf.keras.layers.BatchNormalization(gamma_initializer=tf.constant_initializer(np.pi/2), trainable=False)
 		self.scale = scale
 		self.seed=seed
 		self.trainable=trainable
