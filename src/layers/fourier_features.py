@@ -34,6 +34,23 @@ def _get_random_features_initializer(initializer, shape, seed=None):
 							random_features_initializer, _SUPPORTED_RBF_KERNEL_TYPES))
 	return random_features_initializer
 
+class Sinusoids(tf.keras.layers.Layer):
+
+
+	def __init__(self, **kwargs):
+
+		super(Sinusoids, self).__init__(**kwargs)
+
+	def call(self, X):
+		return tf.sin(X)*tf.cos(X)
+
+	def get_config(self):
+		return {}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
 
 class RandomFourierFeatures(tf.keras.layers.Layer):
 
@@ -100,10 +117,9 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		kernel = (1.0 / self.kernel_scale) * self.unscaled_kernel
 		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
 		outputs = tf.nn.bias_add(outputs, self.bias)
+		return self.normalization(outputs)
 		
-		outputs=self.normalization(outputs)
-		
-		return tf.sin(outputs)*tf.cos(outputs)
+		#return tf.sin(outputs)*tf.cos(outputs)
 
 	def compute_output_shape(self, input_shape):
 		input_shape = tf.TensorShape(input_shape)
