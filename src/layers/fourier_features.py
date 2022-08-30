@@ -122,7 +122,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		outputs=self.batch_normalization(outputs)
 		outputs=self.layer_normalization(outputs)
 
-		self.add_loss(self.regularizer(outputs))
+		#self.add_loss(self.regularizer(outputs))
 
 		return outputs
 		
