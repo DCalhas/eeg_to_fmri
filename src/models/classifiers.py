@@ -117,13 +117,6 @@ class Contrastive(tf.keras.Model):
             self.view=self.view.eeg_encoder
         
         self.flatten = tf.keras.layers.Flatten()
-        
-        #if(variational):
-        #    self.linear = DenseVariational(dimension)
-        #else:
-        #    self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
-
-        #self.dot = tf.keras.layers.Dot(axes=1, normalize=True)
 
     def build(self, input_shape):
         self.view.build(input_shape)
@@ -138,13 +131,7 @@ class Contrastive(tf.keras.Model):
         if(not self.latent_clf):
             z1, z2=(z1[0], z2[0])
 
-        #s1=self.flatten(z1)
-        #s1=self.linear(s1)
-
-        #s2=self.flatten(z2)
-        #s2=self.linear(s2)
         return tf.abs(z1-z2)
-        #return 1.-self.dot([s1,s2])
 
 class ViewContrastiveClassifier(tf.keras.Model):
 
@@ -162,15 +149,6 @@ class ViewContrastiveClassifier(tf.keras.Model):
             self.clf = LinearClassifier(variational=variational)
         else:
             self.clf = PolynomialClassifier(degree=degree, variational=variational)
-
-        if(variational):
-            self.linear=DenseVariational(dimension)
-        else:
-            self.linear=tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
-
-        self.flatten = tf.keras.layers.Flatten()
-
-        self.dot = tf.keras.layers.Dot(axes=1, normalize=True)
 
     def build(self, input_shape):
         self.view.build(input_shape)
@@ -192,12 +170,6 @@ class ViewContrastiveClassifier(tf.keras.Model):
 
             if(not self.latent_clf):
                 z1,z2=(z1[0],z2[0])
-            
-            #s1=self.flatten(z1)
-            #s1=self.linear(s1)
-
-            #s2=self.flatten(z2)
-            #s2=self.linear(s2)
 
             return [tf.abs(z1-z2), self.clf(z1), self.clf(z2)]
 
@@ -249,8 +221,8 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             if(self.siamese_projection):
                 ss1=self.flatten(z1[0])
                 ss2=self.flatten(z2[0])
-                return [1.-self.dot([s1,s2]), 1.-self.dot([ss1,ss2]), self.clf(z1[0]), self.clf(z2[0])]
+                return [tf.abs(s1-s2), 1.-self.dot([ss1,ss2]), self.clf(z1[0]), self.clf(z2[0])]
 
-            return [1.-self.dot([s1,s2]), self.clf(z1[0]), self.clf(z2[0])]
+            return [tf.abs(s1-s2), self.clf(z1[0]), self.clf(z2[0])]
 
         return self.clf(self.view(X)[0])
