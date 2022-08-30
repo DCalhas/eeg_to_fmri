@@ -227,4 +227,4 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
             return [tf.abs(s1-s2), self.clf(z1[0].numpy()), self.clf(z2[0].numpy())]
 
-        return self.clf(self.view(X)[0])
+        return self.clf(self.view(X)[0].numpy())
