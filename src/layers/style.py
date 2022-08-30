@@ -21,12 +21,12 @@ class Style(tf.keras.layers.Layer):
 		self.initializer=initializer
 		self.regularizer=regularizer
 		self.trainable=trainable
-		print(self.trainable)
 		self.seed=seed
 
 		super(Style, self).__init__()
 
-
+		self.trainable=trainable
+		print(self.trainable)
 
 	def build(self, input_shape):
 		"""
