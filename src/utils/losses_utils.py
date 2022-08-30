@@ -510,7 +510,7 @@ def nll_loss(y_true, y_pred):
     np.ndarray: y_true
     """
 
-    return tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_true, y_pred[0])
+    return 0.*tf.keras.losses.CategoricalCrossentropy(from_logits=True)(y_true, y_pred[0])
     
 
 
