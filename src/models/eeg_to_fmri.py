@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Dense#globals get attr
 
 from regularizers.activity_regularizers import InOfDistribution
 
-from layers.fourier_features import RandomFourierFeatures, FourierFeatures
+from layers.fourier_features import RandomFourierFeatures, FourierFeatures, Sinusoids
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
 from layers.resnet_block import ResBlock, pretrained_ResBlock
@@ -473,13 +473,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                 trainable=True)(x)#placeholder
         
         x = tf.keras.layers.Reshape(pretrained_model.layers[1].layers[-1].target_shape)(x)
-
-        self.eeg_encoder = tf.keras.Model(input_shape, x)
-
-        return input_shape, x, attention_scores
-    
-    def build_decoder(self, pretrained_model, input_shape, output_encoder, activation=None, attention_scores=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
-        x = tf.keras.layers.Flatten()(output_encoder)
+        x = tf.keras.layers.Flatten()(x)
         
         if("Fourier" in type(pretrained_model.layers[4].layers[11]).__name__):
             index=11
@@ -489,20 +483,35 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             raise NotImplementedError
 
         if("Fourier" in type(pretrained_model.layers[4].layers[index]).__name__):
-            self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[index]).__name__](
+            x = globals()[type(pretrained_model.layers[4].layers[index]).__name__](
                                             pretrained_model.layers[4].layers[index].units,
                                             scale=pretrained_model.layers[4].layers[index].kernel_scale.numpy(),
                                             regularizer=InOfDistribution(l=1e-0),
-                                            trainable=False, name="latent_projection")
+                                            trainable=False, name="latent_projection")(x)
         else:
-            self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[index]).__name__](
+            x = globals()[type(pretrained_model.layers[4].layers[index]).__name__](
                                                 pretrained_model.layers[4].layers[index].units,
                                                 kernel_regularizer=regularizer,
                                                 bias_regularizer=regularizer,
-                                                trainable=False, name="latent_projection")
+                                                trainable=False, name="latent_projection")(x)
+
+        self.eeg_encoder = tf.keras.Model(input_shape, x)
+
+        return input_shape, x, attention_scores
+    
+    def build_decoder(self, pretrained_model, input_shape, output_encoder, activation=None, attention_scores=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
+        
+        
+        if("Fourier" in type(pretrained_model.layers[4].layers[11]).__name__):
+            index=11
+        elif("Style" in type(pretrained_model.layers[4].layers[11]).__name__):
+            index=10
+        else:
+            raise NotImplementedError
+
+        if("Fourier" in type(pretrained_model.layers[4].layers[index]).__name__):
+            x = Sinusoids()(x)
         index+=1
-        #project sinusoids
-        x = self.latent_resolution(x)
         
         if(pretrained_model.layers[4].layers[index].name=="conditional_attention_style_dense"):
             attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)

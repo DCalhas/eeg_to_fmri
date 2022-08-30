@@ -102,8 +102,10 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			regularization=self.regularizer(outputs)
 			batch_size = tf.cast(tf.shape(outputs)[0], tf.float32)
 			self.add_loss(regularization/batch_size)
-			
-		return tf.cos(outputs)*tf.sin(outputs)
+
+		return outputs
+
+		#return tf.sin(X)*tf.cos(X)
 
 	def compute_output_shape(self, input_shape):
 		input_shape = tf.TensorShape(input_shape)
@@ -154,6 +156,24 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			R = x*c
 
 		return R
+
+
+class Sinusoids(tf.keras.layers.Layer):
+
+		
+	def __init__(self, **kwargs):
+
+		super(Sinusoids, self).__init__(**kwargs)):
+		
+	def call(self, X):
+		return tf.sin(X)*tf.cos(X)
+
+	def get_config(self):
+		return {}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
 
 
 class FourierFeatures(tf.keras.layers.Layer):
