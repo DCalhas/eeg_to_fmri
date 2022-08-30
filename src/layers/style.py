@@ -24,7 +24,7 @@ class Style(tf.keras.layers.Layer):
 		print(self.trainable)
 		self.seed=seed
 
-		super(Style, self).__init__(**kwargs)
+		super(Style, self).__init__()
 
 
 
