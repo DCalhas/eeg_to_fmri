@@ -501,7 +501,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         return input_shape, x, attention_scores
     
     def build_decoder(self, pretrained_model, input_shape, output_encoder, activation=None, attention_scores=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
-        x = tf.keras.layers.Flatten()(output_encoder)
+        x = output_encoder
         
         if("Fourier" in type(pretrained_model.layers[4].layers[11]).__name__):
             index=11
@@ -527,10 +527,11 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         use_bias=pretrained_model.layers[4].layers[index].use_bias,
                                         name="conditional_attention_style_dense",
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                                        trainable=True)(attention_scores)
+                                        trainable=False)(attention_scores)
             #add style features from attention graph or prior learned style
             x = x*self.latent_style
         elif(pretrained_model.layers[4].layers[index].name=="style_prior"):
+            print("HERE")
             x = Style(initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].latent_style.numpy()), trainable=False, seed=None, name='style_prior')(x)
         else:
             raise NotImplementedError
