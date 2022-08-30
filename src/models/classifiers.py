@@ -143,7 +143,7 @@ class Contrastive(tf.keras.Model):
 
         #s2=self.flatten(z2)
         #s2=self.linear(s2)
-        return tf.abs(s1-s2)
+        return tf.abs(z1-z2)
         #return 1.-self.dot([s1,s2])
 
 class ViewContrastiveClassifier(tf.keras.Model):
