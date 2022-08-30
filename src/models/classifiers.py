@@ -118,12 +118,12 @@ class Contrastive(tf.keras.Model):
         
         self.flatten = tf.keras.layers.Flatten()
         
-        if(variational):
-            self.linear = DenseVariational(dimension)
-        else:
-            self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
+        #if(variational):
+        #    self.linear = DenseVariational(dimension)
+        #else:
+        #    self.linear = tf.keras.layers.Dense(dimension, kernel_regularizer=regularizer)
 
-        self.dot = tf.keras.layers.Dot(axes=1, normalize=True)
+        #self.dot = tf.keras.layers.Dot(axes=1, normalize=True)
 
     def build(self, input_shape):
         self.view.build(input_shape)
@@ -138,13 +138,13 @@ class Contrastive(tf.keras.Model):
         if(not self.latent_clf):
             z1, z2=(z1[0], z2[0])
 
-        s1=self.flatten(z1)
-        s1=self.linear(s1)
+        #s1=self.flatten(z1)
+        #s1=self.linear(s1)
 
-        s2=self.flatten(z2)
-        s2=self.linear(s2)
-
-        return 1.-self.dot([s1,s2])
+        #s2=self.flatten(z2)
+        #s2=self.linear(s2)
+        return tf.abs(s1-s2)
+        #return 1.-self.dot([s1,s2])
 
 class ViewContrastiveClassifier(tf.keras.Model):
 
