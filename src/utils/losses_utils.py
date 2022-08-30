@@ -65,7 +65,7 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
             """
             return self.contrastive(y_contrast, y_pred[0])+self.call(y_true, y_pred[1:])
 
-        return self.contrastive(y_contrast, y_pred[0])+self.nll(y_clf1, y_pred[1])+self.nll(y_clf2, y_pred[2])
+        return self.contrastive(y_contrast, y_pred[0])+0.*self.nll(y_clf1, y_pred[1])+0.*self.nll(y_clf2, y_pred[2])
         
 
 
