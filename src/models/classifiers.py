@@ -186,6 +186,8 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
         super(ViewLatentContrastiveClassifier, self).__init__()
 
+        self.training=True
+
         self.siamese_projection=siamese_projection
 
         self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, feature_selection=feature_selection, segmentation_mask=segmentation_mask, latent_contrastive=True, seed=seed)
