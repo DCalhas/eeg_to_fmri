@@ -34,6 +34,26 @@ def _get_random_features_initializer(initializer, shape, seed=None):
 							random_features_initializer, _SUPPORTED_RBF_KERNEL_TYPES))
 	return random_features_initializer
 
+
+class Sinusoids(tf.keras.layers.Layer):
+
+		
+	def __init__(self, **kwargs):
+
+		super(Sinusoids, self).__init__(**kwargs):
+		
+	def call(self, X):
+		return tf.sin(X)*tf.cos(X)
+
+	def get_config(self):
+		return {}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
+
+
 class RandomFourierFeatures(tf.keras.layers.Layer):
 
 	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, trainable=False, units=None, regularizer=None, seed=None, name=None, **kwargs):
@@ -156,24 +176,6 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			R = x*c
 
 		return R
-
-
-class Sinusoids(tf.keras.layers.Layer):
-
-		
-	def __init__(self, **kwargs):
-
-		super(Sinusoids, self).__init__(**kwargs)):
-		
-	def call(self, X):
-		return tf.sin(X)*tf.cos(X)
-
-	def get_config(self):
-		return {}
-
-	@classmethod
-	def from_config(cls, config):
-		return cls(**config)
 
 
 class FourierFeatures(tf.keras.layers.Layer):
