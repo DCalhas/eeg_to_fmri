@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Dense#globals get attr
 
 from regularizers.activity_regularizers import InOfDistribution
 
-from layers.fourier_features import RandomFourierFeatures, FourierFeatures
+from layers.fourier_features import RandomFourierFeatures, FourierFeatures, Sinusoids
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
 from layers.resnet_block import ResBlock, pretrained_ResBlock
@@ -390,7 +390,8 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "Latent_EEG_Spatial_Attention": Latent_EEG_Spatial_Attention,
                 "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention,
                 "DenseVariational": DenseVariational,
-                "InOfDistribution": InOfDistribution,}
+                "InOfDistribution": InOfDistribution,
+                "Sinusoids": Sinusoids,}
 
 
 class pretrained_EEG_to_fMRI(tf.keras.Model):
