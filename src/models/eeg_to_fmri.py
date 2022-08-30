@@ -492,6 +492,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[index]).__name__](
                                             pretrained_model.layers[4].layers[index].units,
                                             scale=pretrained_model.layers[4].layers[index].kernel_scale.numpy(),
+                                            regularizer=InOfDistribution(l=1.0),
                                             trainable=False, name="latent_projection")
         else:
             self.latent_resolution = globals()[type(pretrained_model.layers[4].layers[index]).__name__](
@@ -577,7 +578,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].loc.numpy()),
                                         scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].scale.numpy()),
                                         biases_initializer=tf.constant_initializer(pretrained_model.layers[4].layers[index].biases.numpy()),
-                                        trainable=True)(x)
+                                        trainable=False)(x)
                 self.aleatoric=True
             elif(type(pretrained_model.layers[4].layers[index]).__name__=="padded_iDCT3D"):
                 x = padded_iDCT3D(**pretrained_model.layers[4].layers[index].get_config())(x)
