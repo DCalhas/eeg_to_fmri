@@ -23,8 +23,6 @@ class Style(tf.keras.layers.Layer):
 		self.trainable=trainable
 		self.seed=seed
 
-		print(self.trainable)
-
 		super(Style, self).__init__(**kwargs)
 
 
@@ -44,6 +42,8 @@ class Style(tf.keras.layers.Layer):
 											regularizer=self.regularizer,
 											initializer=initializer,
 											trainable=self.trainable)
+		print(self.name)
+		print(self.trainable)
 
 	def call(self, x,):
 		"""
