@@ -112,7 +112,7 @@ class Contrastive(tf.keras.Model):
 
         self.latent_clf=latent_clf
 
-        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
+        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
         if(self.latent_clf):
             self.view=self.view.eeg_encoder
         
@@ -141,14 +141,14 @@ class ViewContrastiveClassifier(tf.keras.Model):
 
         self.latent_clf=latent_clf
 
-        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
+        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, feature_selection=feature_selection, segmentation_mask=segmentation_mask, seed=seed)
         if(self.latent_clf):
             self.view=self.view.eeg_encoder
 
         if(degree==1):
-            self.clf = LinearClassifier(variational=variational)
+            self.clf = LinearClassifier(variational=variational, regularizer=regularizer)
         else:
-            self.clf = PolynomialClassifier(degree=degree, variational=variational)
+            self.clf = PolynomialClassifier(degree=degree, variational=variational, regularizer=regularizer)
 
     def build(self, input_shape):
         self.view.build(input_shape)
@@ -188,12 +188,12 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
         self.siamese_projection=siamese_projection
 
-        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, regularizer=regularizer, feature_selection=feature_selection, segmentation_mask=segmentation_mask, latent_contrastive=True, seed=seed)
+        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, feature_selection=feature_selection, segmentation_mask=segmentation_mask, latent_contrastive=True, seed=seed)
         
         if(degree==1):
-            self.clf = LinearClassifier(variational=variational)
+            self.clf = LinearClassifier(variational=variational, regularizer=regularizer)
         else:
-            self.clf = PolynomialClassifier(degree=degree, variational=variational)
+            self.clf = PolynomialClassifier(degree=degree, variational=variational, regularizer=regularizer)
 
         self.flatten = tf.keras.layers.Flatten()
         
@@ -221,7 +221,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             if(self.siamese_projection):
                 ss1=self.flatten(z1[0])
                 ss2=self.flatten(z2[0])
-                return [tf.abs(s1-s2), 1.-self.dot([ss1,ss2]), self.clf(z1[0]), self.clf(z2[0])]
+                return [tf.abs(s1-s2), 1.-self.dot([ss1,ss2]), self.clf(z1[0].numpy()), self.clf(z2[0].numpy())]
 
             return [tf.abs(s1-s2), self.clf(z1[0].numpy()), self.clf(z2[0].numpy())]
 
