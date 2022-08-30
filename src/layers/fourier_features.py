@@ -124,9 +124,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			batch_size = tf.cast(tf.shape(outputs)[0], tf.float32)
 			self.add_loss(regularization/batch_size)
 
-		return outputs
-
-		#return tf.sin(X)*tf.cos(X)
+		return tf.sin(X)*tf.cos(X)
 
 	def compute_output_shape(self, input_shape):
 		input_shape = tf.TensorShape(input_shape)
