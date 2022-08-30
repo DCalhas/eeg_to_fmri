@@ -118,6 +118,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		kernel = (1.0 / self.kernel_scale) * self.unscaled_kernel
 		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
 		outputs = tf.nn.bias_add(outputs, self.bias)
+		outputs = np.pi*(outputs-tf.math.reduce_min(outputs, axis=0))/(tf.math.reduce_max(outputs,axis=0)-tf.math.reduce_min(outputs, axis=0))
 		if(not self.regularizer is None):
 			regularization=self.regularizer(outputs)
 			batch_size = tf.cast(tf.shape(outputs)[0], tf.float32)
