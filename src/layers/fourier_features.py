@@ -55,6 +55,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		self.units=output_dim
 		self.kernel_initializer = kernel_initializer
 		self.regularizer=regularizer
+		self.normalization=tf.keras.layers.BatchNormalization()
 		self.scale = scale
 		self.seed=seed
 		self.trainable=trainable
@@ -99,8 +100,8 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		kernel = (1.0 / self.kernel_scale) * self.unscaled_kernel
 		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
 		outputs = tf.nn.bias_add(outputs, self.bias)
-		#outputs = np.pi*(outputs-tf.math.reduce_min(outputs, axis=0))/(tf.math.reduce_max(outputs,axis=0)-tf.math.reduce_min(outputs, axis=0))
-		print(outputs)
+		
+		outputs=self.normalization(outputs)
 		
 		return tf.sin(outputs)*tf.cos(outputs)
 
