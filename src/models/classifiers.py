@@ -206,7 +206,6 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
         else:
             self.clf.build(self.view.q_decoder.output_shape)
 
-
     def call(self, X, training=False):
         if(training):
             x=tf.split(X, 2, axis=1)
