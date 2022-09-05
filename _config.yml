@@ -13,3 +13,9 @@ layout: default
 title: Documentation
 nav_order: 2
 ---
+
+---
+layout: default
+title: Sinusoid Separation
+nav_order: 2
+---
