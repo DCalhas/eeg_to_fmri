@@ -1,11 +1,6 @@
 # Separating Sinusoid Projections
 
-In this post I will talk about an approach that is able to use sinusoids to generate images [1][1], while being able to separate the data according to labels.
-
-
-
-
-
+In this post I will talk about an approach that is able to use sinusoids to generate images [1](1), while being able to separate the data according to labels.
 
 
 
