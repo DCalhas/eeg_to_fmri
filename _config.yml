@@ -1,10 +1,10 @@
 remote_theme: just-the-docs/just-the-docs
 
-search_enabled: true
+search_enabled: false
 
 ---
 layout: default
-title: Home
+title: README
 nav_order: 1
 ---
 
@@ -16,6 +16,6 @@ nav_order: 2
 
 ---
 layout: default
-title: Sinusoid Separation
-nav_order: 2
+title: Sinusoid Separation Projections
+nav_order: 3
 ---
