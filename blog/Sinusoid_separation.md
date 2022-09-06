@@ -1,3 +1,12 @@
+---
+layout: default
+title: Separating Sinusoid Projections
+parent: blog
+nav_order: 3
+---
+
+
+
 # Separating Sinusoid Projections
 
 In this post I will talk about an approach that is able to use sinusoids to generate images [[1](#references)], while being able to separate the data according to labels.

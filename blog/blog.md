@@ -7,6 +7,5 @@ permalink: blog
 ---
 
 # Blog
-{: .no_toc }
 
 This section contains the blog posts published about the PhD thesis.
