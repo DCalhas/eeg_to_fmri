@@ -247,7 +247,7 @@ python main.py metrics NEW -na_path_eeg ../na_models_eeg/na_specification_2 -na_
 
 This repository goes along with blog posts done during the PhD course:
 
-- [Sinusoid Separation](https://github.com/DCalhas/eeg_to_fmri/blob/master/Sinusoid_separation.md);
+- [Sinusoid Separation](https://github.com/DCalhas/eeg_to_fmri/blob/master/blog/Sinusoid_separation.md);
 
 ## Acknowledgements
 
