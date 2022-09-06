@@ -1,3 +1,9 @@
+---
+layout: default
+title: Documentation
+nav_order: 2
+---
+
 # Documentation
 
 The code of this PhD thesis is extensive. Please read this section carefully if you have any issue with the code before you publish any issue or contact the authors. If any issue still persists after reading the documentation, please publish an issue on the Github repository.

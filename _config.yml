@@ -2,30 +2,5 @@ remote_theme: just-the-docs/just-the-docs
 
 search_enabled: false
 
----
-layout: default
-title: From EEG to fMRI
-nav_order: 1
----
-
----
-layout: default
-title: Documentation
-nav_order: 2
----
-
----
-layout: default
-title: Blog
-nav_order: 3
-has_children: true
----
 
 
-
----
-layout: default
-title: Separating Sinusoid Projections
-parent: Blog
-nav_order: 3
----
