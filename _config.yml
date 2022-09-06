@@ -4,7 +4,7 @@ search_enabled: true
 
 ---
 layout: default
-title: Home
+title: From EEG to fMRI
 nav_order: 1
 ---
 
@@ -16,6 +16,6 @@ nav_order: 2
 
 ---
 layout: default
-title: Sinusoid Separation
+title: Separating Sinusoid Projections
 nav_order: 2
 ---
