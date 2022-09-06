@@ -3,6 +3,7 @@ layout: default
 title: Separating Sinusoid Projections
 parent: Blog
 nav_order: 1
+permalink: blog
 ---
 
 
