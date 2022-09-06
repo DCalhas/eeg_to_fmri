@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Separating Sinusoid Projections
-parent: blog
-nav_order: 3
+parent: Blog
+nav_order: 1
 ---
 
 
