@@ -1,6 +1,6 @@
 remote_theme: just-the-docs/just-the-docs
 
-search_enabled: true
+search_enabled: false
 
 ---
 layout: default
@@ -16,6 +16,16 @@ nav_order: 2
 
 ---
 layout: default
+title: Blog
+nav_order: 3
+has_children: true
+---
+
+
+
+---
+layout: default
 title: Separating Sinusoid Projections
-nav_order: 2
+parent: Blog
+nav_order: 3
 ---
