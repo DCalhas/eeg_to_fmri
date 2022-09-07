@@ -5,3 +5,5 @@ search_enabled: false
 title: From EEG to fMRI
 
 color_scheme: dark
+
+exclude: ["README.md"]

@@ -1,3 +1,11 @@
+---
+layout: default
+title: Home
+nav_order: 1
+permalink: /
+---
+
+
 # From EEG to fMRI
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
