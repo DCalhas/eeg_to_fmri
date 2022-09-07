@@ -3,6 +3,9 @@ layout: default
 title: Documentation
 nav_order: 2
 mathjax: true
+tags: 
+  - latex
+  - math
 ---
 
 # Documentation

@@ -4,6 +4,9 @@ title: Separating Sinusoid Projections
 parent: Blog
 nav_order: 1
 mathjax: true
+tags: 
+  - latex
+  - math
 ---
 
 
