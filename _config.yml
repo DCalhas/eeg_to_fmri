@@ -7,3 +7,11 @@ title: From EEG to fMRI
 color_scheme: dark
 
 exclude: ["README.md"]
+
+compress_html:
+	clippings: all
+	comments: all
+	endings: all
+	startings: []
+	blanklines: true
+	profile: false
