@@ -20,7 +20,7 @@ In this post I will talk about an approach that is able to use sinusoids to gene
 
 <p align="center">
 	<img src="./figures/cosine_image.png" width="400"/>
-<\p>
+</p>
 
 
 
