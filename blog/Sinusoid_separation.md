@@ -17,10 +17,26 @@ In this post I will talk about an approach that is able to use sinusoids to gene
 
 
 
-
 <p align="center">
 	<img src="./figures/cosine_image.png" width="400"/>
 </p>
+
+
+### Constrastive loss
+
+
+<p align="center">
+	<img src="./figures/contrastive_optimization.png" width="400"/>
+</p>
+
+
+### Bayesian versus Deterministic
+
+
+<p align="center">
+	<img src="./figures/bayesian_vs_deterministic.png" width="400"/>
+</p>
+
 
 
 
