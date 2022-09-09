@@ -19,7 +19,7 @@ In this post I will talk about an approach that is able to use sinusoids to gene
 
 
 
-<img src="figures/image_cosine.png" alt="alt text" width="100"/>
+<img src="./figures/image_cosine.png" alt="alt text" width="100"/>
 
 
 
