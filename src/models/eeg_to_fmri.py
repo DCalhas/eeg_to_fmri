@@ -512,7 +512,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         
         index+=1
         
-        print(pretrained_model.layers[3].layers[index].name)
         if(pretrained_model.layers[3].layers[index].name=="conditional_attention_style_dense"):
             attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
             self.latent_style = getattr(tf.keras.layers, type(pretrained_model.layers[3].layers[index]).__name__)(
