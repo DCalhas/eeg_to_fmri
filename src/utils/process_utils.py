@@ -583,7 +583,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 
 					loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_reg))
+					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_reg), variational=variational)
 				linearCLF.build(X_train.shape)
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
@@ -651,7 +651,7 @@ def loocv(fold, setting, view, dataset, l1_regularizer, epochs, learning_rate, b
 		else:
 			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 			loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_regularizer))
+			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_regularizer), variational=variational)
 		linearCLF.build(X_train.shape)
 
 	#train classifier
