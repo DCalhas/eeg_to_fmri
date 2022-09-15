@@ -475,11 +475,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         x = tf.keras.layers.Flatten()(x)
 
-        print(pretrained_model.layers[3].summary())
-        print(type(pretrained_model.layers[3].layers[11]).__name__)
-        if("Fourier" in type(pretrained_model.layers[3].layers[11]).__name__):
-            index=11
-        elif("Style" in type(pretrained_model.layers[3].layers[11]).__name__):
+        if("Fourier" in type(pretrained_model.layers[3].layers[10]).__name__):
             index=10
         else:
             raise NotImplementedError
@@ -503,10 +499,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     def build_decoder(self, pretrained_model, input_shape, output_encoder, activation=None, attention_scores=None, regularizer=None, feature_selection=False, segmentation_mask=False, seed=None):
         x = output_encoder
         
-        if("Fourier" in type(pretrained_model.layers[3].layers[11]).__name__):
-            index=12
-        elif("Style" in type(pretrained_model.layers[3].layers[11]).__name__):
-            index=10
+        if("Fourier" in type(pretrained_model.layers[3].layers[10]).__name__):
+            index=11
         else:
             raise NotImplementedError
 
