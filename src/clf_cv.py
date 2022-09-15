@@ -54,7 +54,7 @@ if(not os.path.exists(path_labels+"/"+ setting)):
 if(view=="fmri"):
 	process_utils.launch_process(process_utils.train_synthesis, 
 								(dataset_synth, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, path_save_network, gpu_mem, seed, run_eagerly))
-exit()
+
 #create predictions and true labels
 process_utils.launch_process(process_utils.create_labels,
 							(view, dataset_clf, path_labels, setting))
