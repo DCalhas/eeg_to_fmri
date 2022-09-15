@@ -466,7 +466,7 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, 
 
 		#validate
 		launch_process(loocv,
-					(i, setting, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior, variational))
+					(i, setting, view, dataset, hyperparameters[0], epochs, hyperparameters[2], hyperparameters[3], gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior, variational))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -527,10 +527,10 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 	def optimize_wrapper(theta):
 		from multiprocessing import Manager
 
-		l1_reg, l2_reg, batch_size, learning_rate = (float(theta[:,0]), float(theta[:,1]), int(theta[:,2]), float(theta[:,3]))
+		l1_reg, batch_size, learning_rate = (float(theta[:,0]), int(theta[:,1]), float(theta[:,2]))
 		value = Manager().Array('d', range(1))
 
-		launch_process(optimize_elastic, (value, (l1_reg, l2_reg, batch_size, learning_rate),))
+		launch_process(optimize_elastic, (value, (l1_reg, batch_size, learning_rate),))
 
 		print("Finished with score", value[0], end="\n\n\n")
 		return value[0]
@@ -614,7 +614,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 
 	return optimizer.x_opt
 
-def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
+def loocv(fold, setting, view, dataset, l1_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
 	
 	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
