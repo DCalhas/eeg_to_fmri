@@ -600,9 +600,9 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
-	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 2.)}, 
+	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-5, 2.)}, 
 						{'name': 'batch_size', 'type': 'discrete', 'domain': (2,4,8,16)},
-						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-2)}]
+						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-1)}]
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
