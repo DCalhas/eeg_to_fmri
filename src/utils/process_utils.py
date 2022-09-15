@@ -583,7 +583,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 
 					loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_reg))
+					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_reg), variational=variational)
 				linearCLF.build(X_train.shape)
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
@@ -600,9 +600,9 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
-	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 2.)}, 
+	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-5, 2.)}, 
 						{'name': 'batch_size', 'type': 'discrete', 'domain': (2,4,8,16)},
-						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-2)}]
+						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-1)}]
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
@@ -651,7 +651,7 @@ def loocv(fold, setting, view, dataset, l1_regularizer, epochs, learning_rate, b
 		else:
 			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 			loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_regularizer))
+			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_regularizer), variational=variational)
 		linearCLF.build(X_train.shape)
 
 	#train classifier
