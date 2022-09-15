@@ -26,6 +26,7 @@ if __name__ == "__main__":
 	parser.add_argument('-style_prior', action="store_true", help="Whether to use a learned style prior or use the attention weights as a probe.")
 	parser.add_argument('-padded', action="store_true", help="Fill higher resolutions with zero for the upsampling method.")
 	parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
+	parser.add_argument('-variational_clf', action="store_true", help="Variational linear classifier with reparametrization trick.")
 	parser.add_argument('-variational_coefs', default=None, type=None, help="Number of extra stochastic resolution coefficients")
 	parser.add_argument('-variational_dependent_h', default=None, type=int, help="Apply dependency mechanism on X to get high frequency coefficient\nDimension of the hidden boundary decision for stochastic heads")
 	parser.add_argument('-variational_dist', default="Normal", type=str, help="Distribution used for the high resolution coefficients")
@@ -43,7 +44,7 @@ if __name__ == "__main__":
 	parser.add_argument('-seed', default=42, type=int, help="Seed for random state")
 	opt = parser.parse_args()
 	
-	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability = assertion_utils.clf_cv(opt)
+	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability = assertion_utils.clf_cv(opt)
 
 #create directory to save
 if(not os.path.exists(path_labels+"/"+ setting)):
@@ -59,7 +60,7 @@ process_utils.launch_process(process_utils.create_labels,
 							(view, dataset_clf, path_labels, setting))
 
 #create predictions and true labels
-process_utils.setup_data_loocv(setting, view, dataset_clf, fold, folds, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_save_network, path_labels, feature_selection, segmentation_mask, style_prior)
+process_utils.setup_data_loocv(setting, view, dataset_clf, fold, folds, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_save_network, path_labels, feature_selection, segmentation_mask, style_prior, variational_clf)
 
 #report classification metrics
 process_utils.launch_process(process_utils.compute_acc_metrics, 

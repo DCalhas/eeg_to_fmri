@@ -101,6 +101,7 @@ def clf_cv(opt):
 	style_prior=opt.style_prior
 	padded=opt.padded
 	variational=opt.variational
+	variational_clf=opt.variational_clf
 	variational_coefs=opt.variational_coefs
 	variational_dependent_h=opt.variational_dependent_h
 	variational_dist=opt.variational_dist
@@ -122,6 +123,8 @@ def clf_cv(opt):
 
 	if(style_prior):
 		setting+="_style_prior"
+	if(variational_clf):
+		setting+="_bayesian"
 	if(padded):
 		assert not variational, "No variational model along with padded version of filling with zeros"
 		assert type(resolution_decoder) is float, "There needs to be a specification of the lower resolution"
@@ -161,4 +164,4 @@ def clf_cv(opt):
 	if(view!="fmri"):
 		setting=dataset_clf+"_"+view
 		
-	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability
+	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability

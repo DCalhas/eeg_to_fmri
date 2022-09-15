@@ -449,7 +449,7 @@ def append_labels(view, path, y_true, y_pred, setting):
 	np.save(path+setting+"/y_true.npy",np.append(np.load(path+setting+"/y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False):
+def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
 
 	from utils import preprocess_data
 
@@ -462,11 +462,11 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, 
 
 	for i in range(fold, dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
-		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask)
+		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask, variational=variational)
 
 		#validate
 		launch_process(loocv,
-					(i, setting, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior))
+					(i, setting, view, dataset, hyperparameters[0], hyperparameters[1], epochs, hyperparameters[3], hyperparameters[2], gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior, variational))
 
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
@@ -519,7 +519,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=False, segmentation_mask=False):
+def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=False, segmentation_mask=False, variational=False):
 	import GPyOpt
 	
 	iteration=0
@@ -547,10 +547,11 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 
 		from sklearn.utils import shuffle
 
-		l1_reg, l2_reg, batch_size, learning_rate = (theta)
+		l1_reg, batch_size, learning_rate = (theta)
 
 		tf_config.set_seed(seed=seed)
 		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly)
+
 
 		dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 		train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
@@ -561,7 +562,6 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 
 		y_true=np.empty((0,), dtype=np.float64)
 		y_pred=np.empty((0,), dtype=np.float64)
-		ssim=np.empty((0,), dtype=np.float64)
 		for fold in range(n_folds_cv):
 			print("On fold", fold+1, end="\r")
 			train_data, test_data = dataset_clf_wrapper.split(fold)
@@ -570,18 +570,20 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 			with tf.device('/CPU:0'):
 				optimizer = tf.keras.optimizers.Adam(learning_rate)
 
-				train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
 				
 				if(view=="fmri"):
-					loss_fn=[losses_utils.nll_loss, losses_utils.entropy_mae_loss][int(feature_selection or segmentation_mask)]
-					linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
-																X_train.shape[1:], activation=tf.keras.activations.relu, 
-																regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg),
-																feature_selection=feature_selection, segmentation_mask=segmentation_mask)
+					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, clf=True)
+					loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
+					linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
+																		X_train.shape[1:], activation=tf.keras.activations.linear, 
+																		regularizer=tf.keras.regularizers.L1(l=l1_reg), variational=variational,
+																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
 				else:
+					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
+
 					loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_reg, l2=l2_reg))
+					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_reg))
 				linearCLF.build(X_train.shape)
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
@@ -598,10 +600,9 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
-	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 1.)}, 
-						{'name': 'l2', 'type': 'continuous', 'domain': (1e-10, 1.)},
-						{'name': 'batch_size', 'type': 'discrete', 'domain': (1,2,4,8,16)},
-						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-10, 1e-4)}]
+	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-10, 2.)}, 
+						{'name': 'batch_size', 'type': 'discrete', 'domain': (2,4,8,16)},
+						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-2)}]
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
@@ -613,7 +614,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 
 	return optimizer.x_opt
 
-def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False):
+def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
 	
 	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
@@ -637,18 +638,20 @@ def loocv(fold, setting, view, dataset, l1_regularizer, l2_regularizer, epochs, 
 
 	with tf.device('/CPU:0'):
 		optimizer = tf.keras.optimizers.Adam(learning_rate)
-		train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
+		
 		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
 
 		if(view=="fmri"):
-			loss_fn=[losses_utils.nll_loss, losses_utils.entropy_mae_loss][int(feature_selection or segmentation_mask)]
-			linearCLF = classifiers.view_EEG_classifier(tf.keras.models.load_model(path_network,custom_objects=eeg_to_fmri.custom_objects), 
-														X_train.shape[1:], activation=tf.keras.activations.relu, 
-														regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer),
-														feature_selection=feature_selection, segmentation_mask=segmentation_mask)
+			train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, clf=True)
+			loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
+			linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
+																		X_train.shape[1:], activation=tf.keras.activations.linear, 
+																		regularizer=tf.keras.regularizers.L1(l=l1_regularizer), variational=variational,
+																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
 		else:
+			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 			loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer))
+			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_regularizer))
 		linearCLF.build(X_train.shape)
 
 	#train classifier
