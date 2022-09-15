@@ -54,7 +54,7 @@ class Sinusoids(tf.keras.layers.Layer):
 
 class RandomFourierFeatures(tf.keras.layers.Layer):
 
-	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, trainable=False, units=None, regularizer=None, seed=None, name=None, **kwargs):
+	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, trainable=False, units=None, seed=None, name=None, **kwargs):
 		if output_dim <= 0:
 			raise ValueError(
 			'`output_dim` should be a positive integer. Given: {}.'.format(
@@ -139,7 +139,6 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		config = {
 			'output_dim': self.output_dim,
 			'kernel_initializer': kernel_initializer,
-			'regularizer': self.regularizer,
 			'scale': self.scale,
 			'units': self.units,
 		}
