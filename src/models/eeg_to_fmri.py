@@ -513,6 +513,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         if("Fourier" in type(pretrained_model.layers[4].layers[index]).__name__):
             x=Sinusoids()(x)
 
+        print(pretrained_model.layers[4].summary())
         index+=1
         
         if(pretrained_model.layers[4].layers[index].name=="conditional_attention_style_dense"):
