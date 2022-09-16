@@ -268,7 +268,7 @@ class Dataset_CLF_CV:
 
 class DatasetContrastive:
 
-	def __init__(self, X, labels, batch=4, repeat=False, clf=False):
+	def __init__(self, X, labels, batch=4, repeat_pairing=False, clf=False):
 		"""
 
 			arguemnt clf specifies if one also gives the labels of the data in the tensorflow.data.Dataset
@@ -284,7 +284,7 @@ class DatasetContrastive:
 
 		self.batch=batch
 		self.clf=clf
-		self.repeat=repeat
+		self.repeat_pairing=repeat_pairing
 		self.tf_dataset=None
 
 	
@@ -349,8 +349,7 @@ class DatasetContrastive:
 		repeat n times the dataset, this is a wrapper for the train session
 		"""
 
-		print(self.tf_dataset)
-		if(not self.repeat and self.tf_dataset is not None):
+		if(not self.repeat_pairing and self.tf_dataset is not None):
 			return self.tf_dataset
 
 		self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).batch(self.batch).repeat(n)
