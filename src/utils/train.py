@@ -122,6 +122,9 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architectur
 
         loss = 0.0
         n_batches = 0
+
+        print(train_set)
+        print(train_set.__dict__)
         
         for batch_set in train_set.repeat(1):
 
