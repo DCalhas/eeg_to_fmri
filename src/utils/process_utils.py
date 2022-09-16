@@ -586,6 +586,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_reg), variational=variational)
 				linearCLF.build(X_train.shape)
 
+			print(train_set)
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 			#evaluate
 			linearCLF.training=False

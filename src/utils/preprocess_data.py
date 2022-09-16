@@ -346,10 +346,10 @@ class DatasetContrastive:
 
 	def repeat(self, n):
 		"""
-
 		repeat n times the dataset, this is a wrapper for the train session
 		"""
 
+		print(self.tf_dataset)
 		if(not self.repeat and self.tf_dataset is not None):
 			return self.tf_dataset
 
