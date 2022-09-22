@@ -57,8 +57,9 @@ if(view=="fmri"):
 	#							(dataset_synth, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, path_save_network, gpu_mem, seed, run_eagerly))
 
 #create predictions and true labels
-process_utils.launch_process(process_utils.create_labels,
-							(view, dataset_clf, path_labels, setting))
+if(fold==0):
+	process_utils.launch_process(process_utils.create_labels,
+								(view, dataset_clf, path_labels, setting))
 
 #create predictions and true labels
 process_utils.setup_data_loocv(setting, view, dataset_clf, fold, folds, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_save_network, path_labels, feature_selection, segmentation_mask, style_prior, variational_clf)
