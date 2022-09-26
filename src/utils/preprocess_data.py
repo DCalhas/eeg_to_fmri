@@ -277,7 +277,8 @@ class DatasetContrastive:
 		self.X = X
 		self.labels = labels
 
-		self.pairs=self.X.shape[0]
+		#number of pairs has to be lower than the size of the dataset
+		self.pairs=self.X.shape[0]//2
 
 		self.data=None
 		self.y=None

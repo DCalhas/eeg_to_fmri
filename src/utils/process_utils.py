@@ -546,7 +546,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 
 		from sklearn.utils import shuffle
 
-		l1_reg, batch_size, learning_rate = (theta)
+		l2_reg, batch_size, learning_rate = (theta)
 
 		tf_config.set_seed(seed=seed)
 		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly)
@@ -576,13 +576,13 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 					loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 					linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
 																		X_train.shape[1:], activation=tf.keras.activations.linear, 
-																		regularizer=tf.keras.regularizers.L1(l=l1_reg), variational=variational,
-																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
+																		regularizer=tf.keras.regularizers.L2(l=l2_reg), variational=variational,
+																		feature_selection=False, segmentation_mask=False, siamese_projection=True,)
 				else:
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 
 					loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_reg), variational=variational)
+					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L2(l=l2_reg), variational=variational)
 				linearCLF.build(X_train.shape)
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
@@ -599,9 +599,9 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
-	hyperparameters = [{'name': 'l1', 'type': 'continuous','domain': (1e-5, 2.)}, 
-						{'name': 'batch_size', 'type': 'discrete', 'domain': (2,4,8,16)},
-						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-1)}]
+	hyperparameters = [{'name': 'l2', 'type': 'continuous','domain': (1e-5, 2.)}, 
+						{'name': 'batch_size', 'type': 'discrete', 'domain': (4,8,16)},
+						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-3, 1e-1)}]
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
@@ -613,7 +613,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 
 	return optimizer.x_opt
 
-def loocv(fold, setting, view, dataset, l1_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
+def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
 	
 	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
@@ -645,12 +645,12 @@ def loocv(fold, setting, view, dataset, l1_regularizer, epochs, learning_rate, b
 			loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 			linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
 																		X_train.shape[1:], activation=tf.keras.activations.linear, 
-																		regularizer=tf.keras.regularizers.L1(l=l1_regularizer), variational=variational,
+																		regularizer=tf.keras.regularizers.L2(l=l2_regularizer), variational=variational,
 																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
 		else:
 			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 			loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l1_regularizer), variational=variational)
+			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L2(l=l2_regularizer), variational=variational)
 		linearCLF.build(X_train.shape)
 
 	#train classifier
