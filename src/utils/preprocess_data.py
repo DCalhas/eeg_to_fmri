@@ -305,13 +305,16 @@ class DatasetContrastive:
 		if(shuffle):
 			self.shuffle()
 
-		self.data=np.empty((0,2,)+self.X.shape[1:], dtype=np.float32)
+		self.data=np.empty((self.pairs*2,2,)+self.X.shape[1:], dtype=np.float32)
 		
-		self.y=np.empty((0,2), dtype=np.float32)
+		self.y=np.empty((self.pairs*2,2), dtype=np.float32)
 
 		if(self.clf):
-			self.y1=np.empty((0,2), dtype=np.float32)
-			self.y2=np.empty((0,2), dtype=np.float32)
+			self.y1=np.empty((self.pairs*2,2), dtype=np.float32)
+			self.y2=np.empty((self.pairs*2,2), dtype=np.float32)
+
+		print(self.pairs)
+		instance=0
 
 		for i1 in range(self.X.shape[0]):
 			positive=self.pairs
@@ -327,21 +330,32 @@ class DatasetContrastive:
 				elif(np.all(self.labels[i1]==self.labels[i2])):
 					if(positive==0):
 						continue
-					self.y = np.concatenate((self.y, np.array([[0.0, 1.0]], dtype=np.float32)), axis=0)
+					self.y[instance]=np.array([0.0, 1.0], dtype=np.float32)
+					#self.y = np.concatenate((self.y, np.array([[0.0, 1.0]], dtype=np.float32)), axis=0)
 					positive-=1
 				else:
 					if(negative==0):
 						continue
-					self.y = np.concatenate((self.y, np.array([[1.0, 0.0]], dtype=np.float32)), axis=0)
+					self.y[instance]=np.array([1.0, 0.0], dtype=np.float32)
+					#self.y = np.concatenate((self.y, np.array([[1.0, 0.0]], dtype=np.float32)), axis=0)
 					negative-=1
 
 				if(self.clf):
-					self.y1 = np.concatenate((self.y1, self.labels[i1:i1+1].astype(np.float32)), axis=0)
-					self.y2 = np.concatenate((self.y2, self.labels[i2:i2+1].astype(np.float32)), axis=0)
+					self.y1[instance]=self.labels[i1].astype(np.float32)
+					self.y2[instance]=self.labels[i2].astype(np.float32)
+					#self.y1 = np.concatenate((self.y1, self.labels[i1:i1+1].astype(np.float32)), axis=0)
+					#self.y2 = np.concatenate((self.y2, self.labels[i2:i2+1].astype(np.float32)), axis=0)
 
-				print("Indices:", i1, i2,"; Class", self.labels[i1], self.labels[i2])
+				#print("Indices:", i1, i2,"; Class", self.labels[i1], self.labels[i2])
 
-				self.data = np.concatenate((self.data, np.expand_dims(np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0), axis=0)), axis=0)
+				self.data[instance]=np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0)
+				#self.data = np.concatenate((self.data, np.expand_dims(np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0), axis=0)), axis=0)
+				print(instance, end="\r")
+		print(self.y.shape)
+		print(self.y1.shape)
+		print(self.y2.shape)
+		print(self.data.shape)
+		
 
 		if(self.clf):
 			return self.data, np.concatenate((np.expand_dims(self.y, axis=1), np.concatenate((np.expand_dims(self.y1,axis=1), np.expand_dims(self.y2,axis=1)), axis=1)), axis=1)
