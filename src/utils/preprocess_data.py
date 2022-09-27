@@ -300,11 +300,8 @@ class DatasetContrastive:
 		self.labels=data[1]
 
 	@property
-	def pairwise(self, shuffle=True):
+	def pairwise(self):
 		
-		if(shuffle):
-			self.shuffle()
-
 		self.data=np.empty((self.X.shape[0]*self.pairs*2,2,)+self.X.shape[1:], dtype=np.float32)
 		
 		self.y=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
@@ -351,7 +348,7 @@ class DatasetContrastive:
 		return self.data, self.y
 
 
-	def repeat(self, n):
+	def repeat(self, n, shuffle=True):
 		"""
 		repeat n times the dataset, this is a wrapper for the train session
 		"""
@@ -359,6 +356,9 @@ class DatasetContrastive:
 		if(not self.repeat_pairing and self.tf_dataset is not None):
 			return self.tf_dataset
 
-		self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).batch(self.batch).repeat(n)
+		if(shuffle):
+			self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).shuffle(self.X.shape[0]*self.pairs*2).batch(self.batch).repeat(n)
+		else:
+			self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).batch(self.batch).repeat(n)
 
 		return self.tf_dataset
