@@ -464,7 +464,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = tf.keras.layers.Flatten()(x)
         
         x = tf.keras.layers.Dense(pretrained_model.layers[1].layers[-2].units,
-                                activation=activation,
+                                activation=tf.keras.activations.linear,#adapt to distribution learned by random fourier
                                 kernel_regularizer=regularizer,
                                 bias_regularizer=regularizer,
                                 kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[1].layers[-2].kernel.numpy()),
