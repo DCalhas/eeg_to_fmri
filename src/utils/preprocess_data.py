@@ -305,13 +305,13 @@ class DatasetContrastive:
 		if(shuffle):
 			self.shuffle()
 
-		self.data=np.empty((self.pairs*2,2,)+self.X.shape[1:], dtype=np.float32)
+		self.data=np.empty((self.X.shape[0]*self.pairs*2,2,)+self.X.shape[1:], dtype=np.float32)
 		
-		self.y=np.empty((self.pairs*2,2), dtype=np.float32)
+		self.y=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
 
 		if(self.clf):
-			self.y1=np.empty((self.pairs*2,2), dtype=np.float32)
-			self.y2=np.empty((self.pairs*2,2), dtype=np.float32)
+			self.y1=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
+			self.y2=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
 
 		print(self.pairs)
 		instance=0
@@ -349,8 +349,10 @@ class DatasetContrastive:
 				#print("Indices:", i1, i2,"; Class", self.labels[i1], self.labels[i2])
 
 				self.data[instance]=np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0)
+
 				#self.data = np.concatenate((self.data, np.expand_dims(np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0), axis=0)), axis=0)
 				print(instance, end="\r")
+				instance+=1
 		print(self.y.shape)
 		print(self.y1.shape)
 		print(self.y2.shape)
