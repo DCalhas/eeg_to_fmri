@@ -351,8 +351,10 @@ class DatasetContrastive:
 				self.data[instance]=np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0)
 
 				#self.data = np.concatenate((self.data, np.expand_dims(np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0), axis=0)), axis=0)
-				print(instance, end="\r")
+				print(instance, end="\t\t\t\t\r")
 				instance+=1
+		print(instance)
+
 		print(self.y.shape)
 		print(self.y1.shape)
 		print(self.y2.shape)
