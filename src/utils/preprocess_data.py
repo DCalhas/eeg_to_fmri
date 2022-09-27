@@ -321,6 +321,8 @@ class DatasetContrastive:
 
 				i2 = np.random.choice(np.arange(0,self.X.shape[0]), size=1, replace=False)
 
+				print(i1, i2)
+				
 				if(i2 in np.arange(i1-self.pairs,i1+self.pairs)):
 					#means they are the same
 					continue
