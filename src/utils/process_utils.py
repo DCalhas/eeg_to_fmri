@@ -646,7 +646,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 			linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
 																		X_train.shape[1:], activation=tf.keras.activations.linear, 
 																		regularizer=tf.keras.regularizers.L2(l=l2_regularizer), variational=variational,
-																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
+																		feature_selection=False, segmentation_mask=False, siamese_projection=True,)
 		else:
 			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
 			loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
