@@ -30,6 +30,8 @@ class DenseVariational(tf.keras.layers.Layer):
 
 		self.units=units
 		self.activation=activation
+		if(activation is None):
+			self.activation=tf.keras.activations.linear
 		self.kernel_prior_initializer=kernel_prior_initializer
 		self.kernel_posterior_initializer=kernel_posterior_initializer
 		self.bias_prior_initializer=bias_prior_initializer
@@ -110,7 +112,7 @@ class DenseVariational(tf.keras.layers.Layer):
 		if(self.use_bias):
 			output+=bias
 			
-		return output
+		return self.activation(output)
 
 	def get_config(self):
 		"""Returns the config of the layer.

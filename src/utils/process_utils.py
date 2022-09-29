@@ -491,7 +491,7 @@ def predict(test_set, model):
 
 	for x,y in test_set.repeat(1):
 		
-		if(tf.math.reduce_all(tf.math.equal(tf.math.argmax(y, axis=-1), tf.math.argmax(model(x), axis=-1))).numpy()):
+		if(tf.math.reduce_all(tf.math.equal(tf.math.argmax(y, axis=-1), tf.cast(model(x)[0]>0.5, tf.int64)).numpy())):
 			hits = np.append(hits, 1.0)
 		else:
 			hits = np.append(hits, 0.0)
@@ -501,7 +501,7 @@ def predict(test_set, model):
 		else:
 			y_true=np.append(y_true,0.0)
 		
-		y_pred=np.append(y_pred, tf.nn.softmax(model(x), axis=-1).numpy()[0,1])
+		y_pred=np.append(y_pred, model(x).numpy()[0,0])
 	
 	return hits, y_true, y_pred
 
@@ -579,9 +579,10 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 																		regularizer=tf.keras.regularizers.L2(l=l2_reg), variational=variational,
 																		feature_selection=False, segmentation_mask=False, siamese_projection=True,)
 				else:
-					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
+					#the indexation [:,1] is because we were using softmax instead of sigmoid
+					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 
-					loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=False)
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L2(l=l2_reg), variational=variational)
 				linearCLF.build(X_train.shape)
 
@@ -589,7 +590,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 			#evaluate
 			linearCLF.training=False
 			#evaluate according to final AUC in validation sets
-			y_pred=np.append(y_pred, tf.keras.activations.softmax(linearCLF(X_test)).numpy()[:,1])
+			y_pred=np.append(y_pred, linearCLF(X_test).numpy()[:,0])
 			y_true=np.append(y_true, y_test[:,1])
 			
 			print("Fold", fold+1, "with Acc:", np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")))
@@ -648,8 +649,8 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 																		regularizer=tf.keras.regularizers.L2(l=l2_regularizer), variational=variational,
 																		feature_selection=False, segmentation_mask=False, siamese_projection=True,)
 		else:
-			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
-			loss_fn=tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
+			loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=False)
 			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L2(l=l2_regularizer), variational=variational)
 		linearCLF.build(X_train.shape)
 

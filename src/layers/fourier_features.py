@@ -120,8 +120,6 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		outputs=self.layer_normalization(outputs)
 		
 		return outputs
-		
-		#return tf.sin(outputs)*tf.cos(outputs)
 
 	def compute_output_shape(self, input_shape):
 		input_shape = tf.TensorShape(input_shape)
