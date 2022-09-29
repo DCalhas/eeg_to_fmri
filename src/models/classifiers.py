@@ -11,16 +11,16 @@ class LinearClassifier(tf.keras.Model):
     
     
     """
-    def __init__(self, n_classes=2, regularizer=None, variational=False):
+    def __init__(self, n_classes=1, regularizer=None, variational=False):
         super(LinearClassifier, self).__init__()
 
         self.training=True
         
         self.flatten = tf.keras.layers.Flatten()
         if(variational):
-            self.linear = DenseVariational(n_classes)
+            self.linear = DenseVariational(n_classes, activation=tf.keras.activations.sigmoid)
         else:
-            self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
+            self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer, activation=tf.keras.activations.sigmoid)
         
     def call(self, X):
         return self.linear(self.flatten(X))
