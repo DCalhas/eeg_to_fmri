@@ -491,12 +491,12 @@ def predict(test_set, model):
 
 	for x,y in test_set.repeat(1):
 		
-		if(tf.math.reduce_all(tf.math.equal(tf.math.argmax(y, axis=-1), tf.cast(model(x)[0]>0.5, tf.int64)).numpy())):
+		if(tf.math.reduce_all(tf.math.equal(y[0]==1.0, tf.cast(model(x)[0]>0.5, tf.int64)).numpy())):
 			hits = np.append(hits, 1.0)
 		else:
 			hits = np.append(hits, 0.0)
 			
-		if(y.numpy()[0,1]==1.0):
+		if(y.numpy()[0]==1.0):
 			y_true=np.append(y_true,1.0)
 		else:
 			y_true=np.append(y_true,0.0)
