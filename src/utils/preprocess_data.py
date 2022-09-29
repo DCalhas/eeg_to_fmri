@@ -302,13 +302,13 @@ class DatasetContrastive:
 	@property
 	def pairwise(self):
 		
-		self.data=np.empty((self.X.shape[0]*self.pairs*2,2,)+self.X.shape[1:], dtype=np.float32)
+		self.data=np.empty((self.pairs*2,2,)+self.X.shape[1:], dtype=np.float32)
 		
-		self.y=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
+		self.y=np.empty((self.pairs*2,2), dtype=np.float32)
 
 		if(self.clf):
-			self.y1=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
-			self.y2=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
+			self.y1=np.empty((self.pairs*2,2), dtype=np.float32)
+			self.y2=np.empty((self.pairs*2,2), dtype=np.float32)
 
 		instance=0
 
