@@ -574,27 +574,27 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
 					loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 					linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
-																		X_train.shape[1:], activation=tf.keras.activations.linear, #.relu
-																		regularizer=tf.keras.regularizers.L2(l=l2_reg), variational=variational,
-																		feature_selection=False, segmentation_mask=False, siamese_projection=True,)
+																		X_train.shape[1:], activation=tf.keras.activations.relu, #.linear
+																		regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational,
+																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
 				else:
 					#the indexation [:,1] is because we were using softmax instead of sigmoid
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 
 					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
-					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L2(l=l2_reg), variational=variational)
+					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational)
 				linearCLF.build(X_train.shape)
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 			#evaluate
 			linearCLF.training=False
 			#evaluate according to final AUC in validation sets
-			y_pred=np.append(y_pred, linearCLF(X_test).numpy()[:,0])
+			y_pred=np.append(y_pred, tf.keras.activations.sigmoid(linearCLF(X_test)).numpy()[:,0])
 			y_true=np.append(y_true, y_test[:,1])
 			
-			print("Fold", fold+1, "with Acc:", np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32")))
+			print("Fold", fold+1, "with Acc:", np.mean(((y_pred>=0.5).astype("float32")==y_true).astype("float32")))
 
-		acc = np.mean(((y_pred>0.5).astype("float32")==y_true).astype("float32"))
+		acc = np.mean(((y_pred>=0.5).astype("float32")==y_true).astype("float32"))
 		value[0]=1. - acc
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
@@ -644,13 +644,13 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 			train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
 			loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 			linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
-																		X_train.shape[1:], activation=tf.keras.activations.linear, #.relu
-																		regularizer=tf.keras.regularizers.L2(l=l2_regularizer), variational=variational,
+																		X_train.shape[1:], activation=tf.keras.activations.relu, #.linear
+																		regularizer=tf.keras.regularizers.L1(l=l2_regularizer), variational=variational,
 																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
 		else:
 			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 			loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
-			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L2(l=l2_regularizer), variational=variational)
+			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_regularizer), variational=variational)
 		linearCLF.build(X_train.shape)
 
 	#train classifier
