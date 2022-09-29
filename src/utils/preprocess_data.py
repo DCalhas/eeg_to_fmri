@@ -312,42 +312,38 @@ class DatasetContrastive:
 
 		instance=0
 
-		for i1 in range(self.X.shape[0]):
-			positive=self.pairs
-			negative=self.pairs
+		positive=self.pairs
+		negative=self.pairs
+		
+		while(positive>0 or negative>0):
+			
+			#choice is done randomly throughout the dataset
+			indices = np.random.choice(np.arange(0,self.X.shape[0]), size=2, replace=False)
+			i1, i2 = (indices[0], indices[1])
 
-			while(positive>0 or negative>0):
-
-				i2 = np.random.choice(np.arange(0,self.X.shape[0]), size=1, replace=False)[0]
-
-				if(i2 in np.arange(i1-self.pairs,i1+self.pairs)):
-					#means they are the same
+			if(np.all(self.labels[i1]==self.labels[i2])):
+				if(positive==0):
 					continue
-				elif(np.all(self.labels[i1]==self.labels[i2])):
-					if(positive==0):
-						continue
-					self.y[instance]=np.array([0.0, 1.0], dtype=np.float32)
-					positive-=1
-				else:
-					if(negative==0):
-						continue
-					self.y[instance]=np.array([1.0, 0.0], dtype=np.float32)
-					negative-=1
+				self.y[instance]=np.array([0.0, 1.0], dtype=np.float32)
+				positive-=1
+			else:
+				if(negative==0):
+					continue
+				self.y[instance]=np.array([1.0, 0.0], dtype=np.float32)
+				negative-=1
 
-				if(self.clf):
-					self.y1[instance]=self.labels[i1].astype(np.float32)
-					self.y2[instance]=self.labels[i2].astype(np.float32)
-					
-				self.data[instance]=np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0)
-				instance+=1
+			if(self.clf):
+				self.y1[instance]=self.labels[i1].astype(np.float32)
+				self.y2[instance]=self.labels[i2].astype(np.float32)
 
+			self.data[instance]=np.concatenate((self.X[i1:i1+1], self.X[i2:i2+1]), axis=0)
+			instance+=1
 
 		if(self.clf):
 			return self.data, np.concatenate((np.expand_dims(self.y, axis=1), np.concatenate((np.expand_dims(self.y1,axis=1), np.expand_dims(self.y2,axis=1)), axis=1)), axis=1)
 
 		return self.data, self.y
-
-
+		
 	def repeat(self, n, shuffle=True):
 		"""
 		repeat n times the dataset, this is a wrapper for the train session

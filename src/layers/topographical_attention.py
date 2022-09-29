@@ -74,7 +74,7 @@ class Topographical_Attention(tf.keras.layers.Layer):
 			so instead of the attention weight matrix being of shape NxN
 			it has shape NxNxF
 			the F refers to the feature dimension that is reduced
-		""" 
+		"""
 
 		c = tf.tensordot(X, self.A, axes=[[2], [1]])
 		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
