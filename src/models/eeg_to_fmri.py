@@ -458,10 +458,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                 resblocks[i].right_layers[0].strides=(2,)+resblocks[i].right_layers[0].strides[1:]
                 x = tf.keras.layers.ZeroPadding3D(padding=((0,2), (0,0), (0,0)))(x)
                 #x = tf.pad(x, tf.constant([[0,0],[0, 2], [0, 0], [0,0], [0,0],]), "CONSTANT")
-            x = pretrained_ResBlock(resblocks[i], trainable=True, activation=activation, regularizer=regularizer, seed=seed)(x)
-
-            #x = tf.keras.layers.Dropout(0.5)(x)
-            
+            x = pretrained_ResBlock(resblocks[i], trainable=True, activation=activation, regularizer=regularizer, seed=seed)(x)            
         
         x = tf.keras.layers.Flatten()(x)
         
@@ -472,8 +469,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                 kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[1].layers[-2].kernel.numpy()),
                                 bias_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[1].layers[-2].bias.numpy()),
                                 trainable=True)(x)#placeholder
-
-        #x = tf.keras.layers.Dropout(0.5)(x)
         
         x = tf.keras.layers.Reshape(pretrained_model.layers[1].layers[-1].target_shape)(x)
 
