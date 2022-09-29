@@ -353,8 +353,8 @@ class DatasetContrastive:
 		repeat n times the dataset, this is a wrapper for the train session
 		"""
 
-		if(not self.repeat_pairing and self.tf_dataset is not None):
-			return self.tf_dataset
+		#if(not self.repeat_pairing and self.tf_dataset is not None):
+		#	return self.tf_dataset
 
 		if(shuffle):
 			self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).shuffle(self.X.shape[0]*self.pairs*2).batch(self.batch).repeat(n)

@@ -571,7 +571,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
 				
 				if(view=="fmri"):
-					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=2, clf=True)
+					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
 					loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 					linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
 																		X_train.shape[1:], activation=tf.keras.activations.linear, #.relu
@@ -641,12 +641,12 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
 
 		if(view=="fmri"):
-			train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=2, clf=True)
+			train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
 			loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 			linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
 																		X_train.shape[1:], activation=tf.keras.activations.linear, #.relu
 																		regularizer=tf.keras.regularizers.L2(l=l2_regularizer), variational=variational,
-																		feature_selection=False, segmentation_mask=False, siamese_projection=True,)
+																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
 		else:
 			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 			loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=False)
