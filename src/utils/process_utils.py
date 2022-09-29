@@ -490,8 +490,7 @@ def predict(test_set, model):
 	y_pred = np.empty((0,))
 
 	for x,y in test_set.repeat(1):
-		print(y==1.0, tf.cast(model(x)[0]>0.5, tf.int64))
-		if(tf.math.reduce_all(tf.math.equal(y==1.0, tf.cast(model(x)[0]>0.5, tf.int64)).numpy())):
+		if(tf.math.reduce_all(tf.math.equal(tf.cast(y==1.0,tf.int64), tf.cast(model(x)[0]>0.5, tf.int64)).numpy())):
 			hits = np.append(hits, 1.0)
 		else:
 			hits = np.append(hits, 0.0)
