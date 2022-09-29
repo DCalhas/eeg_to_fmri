@@ -278,7 +278,7 @@ class DatasetContrastive:
 		self.labels = labels
 
 		#number of pairs has to be lower than the size of the dataset
-		self.pairs=pairs
+		self.pairs=X.shape[0]//2
 
 		self.data=None
 		self.y=None
@@ -343,7 +343,7 @@ class DatasetContrastive:
 			return self.data, np.concatenate((np.expand_dims(self.y, axis=1), np.concatenate((np.expand_dims(self.y1,axis=1), np.expand_dims(self.y2,axis=1)), axis=1)), axis=1)
 
 		return self.data, self.y
-		
+
 	def repeat(self, n, shuffle=True):
 		"""
 		repeat n times the dataset, this is a wrapper for the train session
