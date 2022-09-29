@@ -490,7 +490,7 @@ def predict(test_set, model):
 	y_pred = np.empty((0,))
 
 	for x,y in test_set.repeat(1):
-		if(tf.math.reduce_all(tf.math.equal(tf.cast(y==1.0,tf.int64), tf.cast(model(x)[0]>0.5, tf.int64)).numpy())):
+		if(tf.math.reduce_all(tf.math.equal(tf.cast(y==1.0,tf.int64), tf.cast(model(x)[0]>=0.5, tf.int64)).numpy())):
 			hits = np.append(hits, 1.0)
 		else:
 			hits = np.append(hits, 0.0)
@@ -568,7 +568,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 			with tf.device('/CPU:0'):
 				optimizer = tf.keras.optimizers.Adam(learning_rate)
 
-				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
+				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
 				
 				if(view=="fmri"):
 					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=2, clf=True)
@@ -638,7 +638,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 	with tf.device('/CPU:0'):
 		optimizer = tf.keras.optimizers.Adam(learning_rate)
 		
-		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
+		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
 
 		if(view=="fmri"):
 			train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=2, clf=True)
@@ -679,7 +679,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 		#explaing features
 		#explain to fMRI view
 		explainer=lrp.LRP(linearCLF.clf)
-		R=lrp.explain(explainer, views(linearCLF, test_set, y_test), verbose=True)
+		R=lrp.explain(explainer, views(linearCLF, test_set, y_test[:,1]), verbose=True)
 		#explain to EEG channels
 		if(not style_prior):
 			raise NotImplementedError
