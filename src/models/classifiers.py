@@ -18,9 +18,9 @@ class LinearClassifier(tf.keras.Model):
         
         self.flatten = tf.keras.layers.Flatten()
         if(variational):
-            self.linear = DenseVariational(n_classes, activation=tf.keras.activations.sigmoid)
+            self.linear = DenseVariational(n_classes)
         else:
-            self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer, activation=tf.keras.activations.sigmoid)
+            self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
         
     def call(self, X):
         return self.linear(self.flatten(X))

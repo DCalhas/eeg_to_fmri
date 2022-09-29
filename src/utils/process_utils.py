@@ -490,7 +490,7 @@ def predict(test_set, model):
 	y_pred = np.empty((0,))
 
 	for x,y in test_set.repeat(1):
-		if(tf.math.reduce_all(tf.math.equal(tf.cast(y==1.0,tf.int64), tf.cast(model(x)[0]>=0.5, tf.int64)).numpy())):
+		if(tf.math.reduce_all(tf.math.equal(tf.cast(y==1.0,tf.int64), tf.cast(tf.keras.activations.sigmoid(model(x))[0]>=0.5, tf.int64)).numpy())):
 			hits = np.append(hits, 1.0)
 		else:
 			hits = np.append(hits, 0.0)
@@ -500,7 +500,7 @@ def predict(test_set, model):
 		else:
 			y_true=np.append(y_true,0.0)
 		
-		y_pred=np.append(y_pred, model(x).numpy()[0,0])
+		y_pred=np.append(y_pred, tf.keras.activations.sigmoid(model(x)).numpy()[0,0])
 	
 	return hits, y_true, y_pred
 
@@ -581,7 +581,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 					#the indexation [:,1] is because we were using softmax instead of sigmoid
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 
-					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=False)
+					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L2(l=l2_reg), variational=variational)
 				linearCLF.build(X_train.shape)
 
@@ -649,7 +649,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
 		else:
 			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
-			loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=False)
+			loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
 			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L2(l=l2_regularizer), variational=variational)
 		linearCLF.build(X_train.shape)
 
