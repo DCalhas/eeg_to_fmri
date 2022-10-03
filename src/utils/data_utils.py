@@ -229,9 +229,9 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
 
         if(not type(individuals_eegs) is np.ndarray):
             if(raw_eeg):
-                individuals_eegs = np.empty((0,) +(x_instance.shape[0],))
+                individuals_eegs = np.empty((globals()["n_individuals_"+dataset],) +(x_instance.shape[0],))
             else:
-                individuals_eegs = np.empty((0,) + (x_instance.shape[0], x_instance.shape[1]))
+                individuals_eegs = np.empty((globals()["n_individuals_"+dataset],) + (x_instance.shape[0], x_instance.shape[1]))
 
         if(raw_eeg_resample):#placeholder because eeg was already resampled
             fs_sample=1
@@ -239,9 +239,11 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
 
         x_instance=x_instance[:132]#number of ECG channels differ for some individuals
         if(raw_eeg):
-            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,:int(((recording_time))*fs_sample*f_resample)], (1,0))))
+            #individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,:int(((recording_time))*fs_sample*f_resample)], (1,0))))
+            individuals_eegs[individual] = np.transpose(x_instance[:,:int(((recording_time))*fs_sample*f_resample)], (1,0))
         else:
-            individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[:recording_time]))
+            #individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[:recording_time]))
+            individuals_eegs[individual] = np.transpose(x_instance, (2,0,1))[:recording_time]
 
     return individuals_eegs, getattr(eeg_utils, "get_labels_"+dataset)(individuals)
 
