@@ -574,7 +574,7 @@ def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eag
 					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
 					loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 					linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
-																		X_train.shape[1:], activation=tf.keras.activations.relu, #.linear
+																		X_train.shape[1:], activation=tf.keras.activations.linear, #.linear
 																		regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational,
 																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
 				else:
@@ -644,7 +644,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 			train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
 			loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 			linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
-																		X_train.shape[1:], activation=tf.keras.activations.relu, #.linear
+																		X_train.shape[1:], activation=tf.keras.activations.linear, #.linear
 																		regularizer=tf.keras.regularizers.L1(l=l2_regularizer), variational=variational,
 																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
 		else:
