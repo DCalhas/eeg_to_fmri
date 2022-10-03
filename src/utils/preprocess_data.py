@@ -201,12 +201,11 @@ class Dataset_CLF_CV:
 											recording_time=self.recording_time,
 											standardize_eeg=standardize_eeg)
 			
-			print(X.shape)
 			self.X, self.y = data_utils.create_clf_pairs(self.n_individuals, 
 														X, y, raw_eeg=raw_eeg,
 														recording_time=self.recording_time, 
 														interval_eeg=self.interval_eeg)
-			print(self.X.shape)
+			
 			self.X = np.expand_dims(self.X, axis=-1)
 
 			del X,y
