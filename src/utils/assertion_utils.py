@@ -111,6 +111,7 @@ def clf_cv(opt):
 	view=opt.view
 	folds=opt.folds
 	fold=opt.fold
+	n_processes=opt.n_processes
 	epochs=opt.epochs
 	gpu_mem=opt.gpu_mem
 	path_save_network=opt.path_save_network
@@ -160,8 +161,10 @@ def clf_cv(opt):
 		setting+="_feature_selection"
 	if(segmentation_mask):
 		setting+="_segmentation_mask"
+	if(n_processes>1):
+		assert gpu_mem/n_processes < 7000, "Should not be superior than memory of the GPU"
 
 	if(view!="fmri"):
 		setting=dataset_clf+"_"+view
 		
-	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability
+	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability

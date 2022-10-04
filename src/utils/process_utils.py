@@ -2,6 +2,8 @@ from multiprocessing import Process
 
 import os
 
+MAX_NUMBER_ALLOC=1000
+
 def process_setup_tensorflow(memory_limit, seed=42, run_eagerly=False):
 	from utils import tf_config
 
@@ -449,7 +451,7 @@ def append_labels(view, path, y_true, y_pred, setting):
 	np.save(path+setting+"/y_true.npy",np.append(np.load(path+setting+"/y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
+def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
 
 	from utils import preprocess_data
 
@@ -462,7 +464,7 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, epochs, gpu_mem, 
 
 	for i in range(fold, dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
-		hyperparameters = cv_opt(i, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask, variational=variational)
+		hyperparameters = cv_opt(i, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask, variational=variational)
 
 		#validate
 		launch_process(loocv,
@@ -517,21 +519,147 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(fold_loocv, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=False, segmentation_mask=False, variational=False):
+def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=False, segmentation_mask=False, variational=False):
 	import GPyOpt
 	
 	iteration=0
+
+	def filter_shared_array(sh_array):
+		import numpy as np
+
+		x = np.empty((0,), dtype=np.float32)
+		for i in range(len(sh_array)):
+			if(str(sh_array[i])=='nan'):
+				return x
+			x = np.append(x, [sh_array[i]], axis=0)
+
+		return x
 
 	def optimize_wrapper(theta):
 		from multiprocessing import Manager
 
 		l1_reg, batch_size, learning_rate = (float(theta[:,0]), int(theta[:,1]), float(theta[:,2]))
-		value = Manager().Array('d', range(1))
-
-		launch_process(optimize_elastic, (value, (l1_reg, batch_size, learning_rate),))
+		if(n_processes==1):
+			value = Manager().Array('d', range(1))
+			launch_process(optimize_elastic, (value, (l1_reg, batch_size, learning_rate),))
+		elif(n_processes>1):
+			value=[optimize_elastic_multi_process((l1_reg, batch_size, learning_rate))]
 
 		print("Finished with score", value[0], end="\n\n\n")
 		return value[0]
+
+	def optimize_elastic_multi_process(theta):
+
+		def run_fold(result_pred, result_true, theta, fold):
+			from utils import preprocess_data, tf_config, train, losses_utils, metrics
+			from models import eeg_to_fmri, classifiers
+			import tensorflow as tf
+			import numpy as np
+			from sklearn.utils import shuffle
+
+			l2_reg, batch_size, learning_rate = (theta)
+
+			tf_config.set_seed(seed=seed)
+			tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly)
+
+
+			dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
+			train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
+			dataset_clf_wrapper.X = train_data[0]
+			dataset_clf_wrapper.y = train_data[1]
+			dataset_clf_wrapper.shuffle()
+			dataset_clf_wrapper.set_folds(n_folds_cv)
+
+			y_true=np.empty((0,), dtype=np.float64)
+			y_pred=np.empty((0,), dtype=np.float64)
+
+			train_data, test_data = dataset_clf_wrapper.split(fold)
+			X_train, y_train=train_data
+			X_test, y_test=test_data
+			with tf.device('/CPU:0'):
+				optimizer = tf.keras.optimizers.Adam(learning_rate)
+
+				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
+				
+				if(view=="fmri"):
+					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
+					loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
+					linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
+																		X_train.shape[1:], activation=tf.keras.activations.linear, #.linear
+																		regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational,
+																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
+				else:
+					#the indexation [:,1] is because we were using softmax instead of sigmoid
+					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
+
+					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
+					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational)
+				linearCLF.build(X_train.shape)
+
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
+			#evaluate
+			linearCLF.training=False
+			#evaluate according to final AUC in validation sets
+			y_pred=tf.keras.activations.sigmoid(linearCLF(X_test)).numpy()[:,0])
+			y_true=y_test[:,1])
+
+			#write to shared array
+			for i in range(y_pred.shape[0]):
+				result_pred[i] = y_pred[i].numpy()
+			for i in range(y_true.shape[0]):
+				result_true[i] = y_true[i].numpy()
+
+		import numpy as np
+		from multiprocessing import Process, Manager
+		import gc
+
+		active=0
+		processes=[]
+		results_pred=[]
+		results_true=[]
+		for fold in range(n_folds_cv):
+			results_pred+=[Manager().Array('d', [float('nan') for x in range(MAX_NUMBER_ALLOC)])]
+			results_true+=[Manager().Array('d', [float('nan') for x in range(MAX_NUMBER_ALLOC)])]
+			processes+=[Process(target=run_fold, args=(results_pred[-1], results_true[-1], theta, fold))]
+			
+		for p in processes:
+			if(active<n_processes):
+				active+=1
+				p.start()
+			else:
+				for p1 in processes:
+					if(p1.is_alive()):
+						p1.join(timeout=None)
+						active-=1
+				active=0
+				for p1 in processes:
+					if(p1.is_alive()):
+						active+=1
+				#start another process
+				p.start()
+				active+=1
+
+		for p in processes:
+			if(p1.is_alive()):
+				p1.join(timeout=None)
+
+		y_pred=np.empty((0,),dtype=np.float32)
+		y_true=np.empty((0,),dtype=np.float32)
+		for result in results_pred:
+			y_pred=np.append(y_pred,filter_shared_array(result), axis=0)
+		for result in results_true:
+			y_true=np.append(y_true,filter_shared_array(result), axis=0)
+
+		acc = np.mean(((y_pred>=0.5).astype("float32")==y_true).astype("float32"))
+
+		del results_true, results_pred, y_pred, y_true, processes
+		gc.collect()
+
+		value=1. - acc
+		if(np.isnan(value)):
+			value = 1/1e-9
+		return value
+
 
 	def optimize_elastic(value, theta):
 
