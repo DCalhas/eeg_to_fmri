@@ -600,8 +600,8 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			#evaluate
 			linearCLF.training=False
 			#evaluate according to final AUC in validation sets
-			y_pred=tf.keras.activations.sigmoid(linearCLF(X_test)).numpy()[:,0])
-			y_true=y_test[:,1])
+			y_pred=tf.keras.activations.sigmoid(linearCLF(X_test)).numpy()[:,0]
+			y_true=y_test[:,1]
 
 			#write to shared array
 			for i in range(y_pred.shape[0]):
