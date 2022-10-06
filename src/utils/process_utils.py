@@ -626,7 +626,6 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 				for p1 in processes:
 					if(p1.is_alive()):
 						p1.join(timeout=None)
-						p1.close()
 						active-=1
 				active=0
 				for p1 in processes:
