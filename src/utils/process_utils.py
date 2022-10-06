@@ -619,7 +619,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			processes+=[Process(target=run_fold, args=(results_pred[-1], results_true[-1], theta, fold))]
 
 		for p in processes:
-			p1.close()
+			p.close()
 		for fold in range(n_folds_cv):
 			processes[fold]=Process(target=run_fold, args=(results_pred[fold], results_true[fold], theta, fold))
 			
