@@ -167,7 +167,7 @@ class Dataset_CLF_CV:
 	"""
 
 	
-	def __init__(self, dataset, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, standardize_eeg=False, load=True, load_path=None, verbose=False):
+	def __init__(self, dataset, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, standardize_eeg=False, load=True, load_path=None, seed=None, verbose=False):
 		"""
 		Inputs:
 			* str - dataset identifier
@@ -192,6 +192,7 @@ class Dataset_CLF_CV:
 		self.eeg_limit=eeg_limit
 		self.eeg_f_limit=eeg_f_limit
 		self.interval_eeg=10
+		self.seed=seed
 
 		if(load):
 			X, y = data_utils.load_data_clf(dataset, n_individuals=self.n_individuals, 
@@ -249,7 +250,7 @@ class Dataset_CLF_CV:
 
 		This should only be done in a CV setting with fold < individuals, i.e. please do not do this in a LOOCV setting
 		"""
-		data = shuffle(self.X, self.y)
+		data = shuffle(self.X, self.y, random_state=self.seed)
 		self.X=data[0]
 		self.y=data[1]
 
@@ -273,12 +274,14 @@ class Dataset_CLF_CV:
 
 class DatasetContrastive:
 
-	def __init__(self, X, labels, batch=4, pairs=4, repeat_pairing=False, clf=False):
+	def __init__(self, X, labels, batch=4, pairs=4, repeat_pairing=False, clf=False, seed=None):
 		"""
 
 			arguemnt clf specifies if one also gives the labels of the data in the tensorflow.data.Dataset
 
 		"""
+		self.seed=seed
+
 		self.X = X
 		self.labels = labels
 
@@ -300,7 +303,7 @@ class DatasetContrastive:
 
 		This should only be done in a CV setting with fold < individuals, i.e. please do not do this in a LOOCV setting
 		"""
-		data = shuffle(self.X, self.labels)
+		data = shuffle(self.X, self.labels, random_state=self.seed)
 		self.X=data[0]
 		self.labels=data[1]
 
@@ -358,7 +361,7 @@ class DatasetContrastive:
 		#	return self.tf_dataset
 
 		if(shuffle):
-			self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).shuffle(self.X.shape[0]*self.pairs*2).batch(self.batch).repeat(n)
+			self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).shuffle(self.X.shape[0]*self.pairs*2, seed=self.seed).batch(self.batch).repeat(n)
 		else:
 			self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).batch(self.batch).repeat(n)
 
