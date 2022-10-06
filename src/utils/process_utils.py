@@ -600,7 +600,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			y_true=y_test[:,1]
 
 			#write to shared array
-			save_path="ist_davidcalhas/tmp/"+str(fold)
+			save_path="/home/ist_davidcalhas/tmp/"+str(fold)
 			np.save(save_path+"_pred.npy",y_pred,allow_pickle=True)
 			np.save(save_path+"_true.npy",y_true,allow_pickle=True)
 
@@ -608,7 +608,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		from multiprocessing import Process, Manager
 		import gc
 
-		os.mkdir("ist_davidcalhas/tmp")
+		os.mkdir("/home/ist_davidcalhas/tmp")
 
 		active=0
 		processes=[]
@@ -645,8 +645,8 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		y_pred=np.empty((0,),dtype=np.float32)
 		y_true=np.empty((0,),dtype=np.float32)
 		for fold in range(n_folds_cv):
-			y_pred=np.append(y_pred,np.load("ist_davidcalhas/tmp/"+str(fold)+"_pred.npy",allow_pickle=True), axis=0)
-			y_true=np.append(y_true,np.load("ist_davidcalhas/tmp/"+str(fold)+"_true.npy",allow_pickle=True), axis=0)
+			y_pred=np.append(y_pred,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_pred.npy",allow_pickle=True), axis=0)
+			y_true=np.append(y_true,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_true.npy",allow_pickle=True), axis=0)
 
 		acc = np.mean(((y_pred>=0.5).astype("float32")==y_true).astype("float32"))
 
