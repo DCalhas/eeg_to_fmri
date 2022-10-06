@@ -617,6 +617,11 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			results_pred+=[Manager().Array('d', [float('nan') for x in range(MAX_NUMBER_ALLOC)])]
 			results_true+=[Manager().Array('d', [float('nan') for x in range(MAX_NUMBER_ALLOC)])]
 			processes+=[Process(target=run_fold, args=(results_pred[-1], results_true[-1], theta, fold))]
+
+		for p in processes:
+			p1.close()
+		for fold in range(n_folds_cv):
+			processes[fold]=Process(target=run_fold, args=(results_pred[fold], results_true[fold], theta, fold))
 			
 		for p in processes:
 			if(active<n_processes):
