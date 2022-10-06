@@ -472,12 +472,8 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epoc
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
 	
-	raw_eeg=False
-	if(view=="raw"):
-		raw_eeg=True
-
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset,
-														eeg_limit=True, raw_eeg=raw_eeg,
+														eeg_limit=True, raw_eeg=view=="raw",
 														eeg_f_limit=135, standardize_eeg=True, 
 														load=True, load_path=None)
 
@@ -605,9 +601,9 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 
 			#write to shared array
 			for i in range(y_pred.shape[0]):
-				result_pred[i] = y_pred[i].numpy()
+				result_pred[i] = y_pred[i]
 			for i in range(y_true.shape[0]):
-				result_true[i] = y_true[i].numpy()
+				result_true[i] = y_true[i]
 
 		import numpy as np
 		from multiprocessing import Process, Manager
