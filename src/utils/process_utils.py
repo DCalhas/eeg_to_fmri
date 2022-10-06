@@ -546,7 +546,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 
 	def optimize_elastic_multi_process(theta):
 
-		def run_fold(result_pred, result_true, theta, fold):
+		def run_fold(theta, fold):
 			from utils import preprocess_data, tf_config, train, losses_utils, metrics
 			from models import eeg_to_fmri, classifiers
 			import tensorflow as tf
@@ -600,28 +600,25 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			y_true=y_test[:,1]
 
 			#write to shared array
-			for i in range(y_pred.shape[0]):
-				result_pred[i] = y_pred[i]
-			for i in range(y_true.shape[0]):
-				result_true[i] = y_true[i]
+			save_path="ist_davidcalhas/tmp/"+str(fold)
+			np.save(save_path+"_pred.npy",y_pred,allow_pickle=True)
+			np.save(save_path+"_true.npy",y_true,allow_pickle=True)
 
 		import numpy as np
 		from multiprocessing import Process, Manager
 		import gc
 
+		os.mkdir("ist_davidcalhas/tmp")
+
 		active=0
 		processes=[]
-		results_pred=[]
-		results_true=[]
 		for fold in range(n_folds_cv):
-			results_pred+=[Manager().Array('d', [float('nan') for x in range(MAX_NUMBER_ALLOC)])]
-			results_true+=[Manager().Array('d', [float('nan') for x in range(MAX_NUMBER_ALLOC)])]
-			processes+=[Process(target=run_fold, args=(results_pred[-1], results_true[-1], theta, fold))]
+			processes+=[Process(target=run_fold, args=(theta, fold))]
 
 		for p in processes:
 			p.close()
 		for fold in range(n_folds_cv):
-			processes[fold]=Process(target=run_fold, args=(results_pred[fold], results_true[fold], theta, fold))
+			processes[fold]=Process(target=run_fold, args=(theta, fold))
 			
 		for p in processes:
 			if(active<n_processes):
@@ -647,14 +644,13 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 
 		y_pred=np.empty((0,),dtype=np.float32)
 		y_true=np.empty((0,),dtype=np.float32)
-		for result in results_pred:
-			y_pred=np.append(y_pred,filter_shared_array(result), axis=0)
-		for result in results_true:
-			y_true=np.append(y_true,filter_shared_array(result), axis=0)
+		for fold in range(n_folds_cv):
+			y_pred=np.append(y_pred,np.load("ist_davidcalhas/tmp/"+str(fold)+"_pred.npy",allow_pickle=True), axis=0)
+			y_true=np.append(y_true,np.load("ist_davidcalhas/tmp/"+str(fold)+"_true.npy",allow_pickle=True), axis=0)
 
 		acc = np.mean(((y_pred>=0.5).astype("float32")==y_true).astype("float32"))
 
-		del results_true, results_pred, y_pred, y_true, processes
+		del y_pred, y_true, processes
 		gc.collect()
 
 		value=1. - acc
