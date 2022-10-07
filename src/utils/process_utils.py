@@ -608,7 +608,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		from multiprocessing import Process, Manager
 		import gc
 
-		if(not os.path.isdir("/home/ist_davidcalhas/tmp"))
+		if(not os.path.isdir("/home/ist_davidcalhas/tmp")):
 			os.mkdir("/home/ist_davidcalhas/tmp")
 
 		active=0
