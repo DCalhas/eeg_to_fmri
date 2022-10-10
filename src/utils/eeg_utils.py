@@ -77,7 +77,7 @@ def get_eeg_instance_01(individual, path_eeg=dataset_path+'/datasets/01/EEG/', p
 
 	complete_path = path + vhdr_file
 
-	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+	return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
 
 
 def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=True, path_eeg=dataset_path+'/datasets/02'):
@@ -125,7 +125,7 @@ def get_eeg_instance_03(individual, path_eeg=media_directory+dataset_03+"/", run
 
 		complete_path = path + vhdr_file
 
-		return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+		return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
 
 
 def get_eeg_instance_04(individual, path_eeg=media_directory+dataset_04+"/derivatives/", task="eegfmriNF", preprocessed=True):
@@ -143,7 +143,7 @@ def get_eeg_instance_04(individual, path_eeg=media_directory+dataset_04+"/deriva
 
 	complete_path = path + vhdr_file
 
-	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+	return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
 
 def get_eeg_instance_05(individual, path_eeg=media_directory+dataset_05+"/derivatives/", task="MIpost", preprocessed=True):
 
@@ -159,7 +159,7 @@ def get_eeg_instance_05(individual, path_eeg=media_directory+dataset_05+"/deriva
 
 	complete_path = path + vhdr_file
 
-	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+	return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
 
 """
 Function that reads EEG data from a <NEW> dataset
@@ -200,7 +200,7 @@ def get_eeg_instance_10(individual, path_eeg=media_directory+dataset_10+"/", pro
 			vhdr_file = brainvision_files[1]
 		complete_path = path + vhdr_file
 		
-		return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
+		return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
 
 def get_eeg_instance_11(individual, path_eeg=media_directory+dataset_11+"/", sess_on=True, preprocessed=False):
 	
@@ -224,7 +224,7 @@ def get_eeg_instance_11(individual, path_eeg=media_directory+dataset_11+"/", ses
 
 		complete_path = path + individual + "_" + session + "_task-rest_eeg.bdf" 
 		
-		return mne.io.read_raw_bdf(complete_path, preload=True, verbose=0)
+		return mne.io.read_raw_bdf(complete_path, preload=False, verbose=0)
 
 def get_labels_10(individuals, path_eeg=media_directory+dataset_10+"/"):
 	labels=np.zeros((len(individuals), 2))#0 - hc, 1 - p
