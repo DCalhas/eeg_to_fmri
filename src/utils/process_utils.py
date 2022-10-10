@@ -567,8 +567,8 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			dataset_clf_wrapper.shuffle()
 			dataset_clf_wrapper.set_folds(n_folds_cv)
 
-			y_true=np.empty((0,), dtype=np.float64)
-			y_pred=np.empty((0,), dtype=np.float64)
+			y_true=np.empty((0,), dtype=np.float32)
+			y_pred=np.empty((0,), dtype=np.float32)
 
 			train_data, test_data = dataset_clf_wrapper.split(fold)
 			X_train, y_train=train_data
@@ -689,8 +689,8 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		dataset_clf_wrapper.shuffle()
 		dataset_clf_wrapper.set_folds(n_folds_cv)
 
-		y_true=np.empty((0,), dtype=np.float64)
-		y_pred=np.empty((0,), dtype=np.float64)
+		y_true=np.empty((0,), dtype=np.float32)
+		y_pred=np.empty((0,), dtype=np.float32)
 		for fold in range(n_folds_cv):
 			print("On fold", fold+1, end="\r")
 			train_data, test_data = dataset_clf_wrapper.split(fold)
