@@ -15,7 +15,7 @@ def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_
 	tf.config.set_soft_device_placement(True)
 	tf.config.log_device_placement=True
 	if(device=="GPU"):
-		tf.config.experimental.set_memory_growth(gpu, True)
+		tf.config.experimental.set_memory_growth(gpu, False)
 		tf.config.experimental.set_virtual_device_configuration(gpu, [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=memory_limit)])
 
 	if(run_eagerly):
