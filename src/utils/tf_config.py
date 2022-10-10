@@ -23,7 +23,6 @@ def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_
 
 	if(set_primary_memory):
 		cpu = tf.config.list_physical_devices('CPU')[0]
-		tf.config.experimental.set_memory_growth(cpu, False)
 		tf.config.experimental.set_virtual_device_configuration(cpu, [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=1024*8)])
 		tf.config.set_logical_device_configuration(cpu,[tf.config.LogicalDeviceConfiguration(memory_limit=1024*8)])
 		memory_utils.limit_CPU_memory(1024*1024*1024*8)#4GB
