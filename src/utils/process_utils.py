@@ -597,7 +597,9 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 
 			print("TRAINING")
 
-			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=False, verbose_batch=False)
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=True)
+
+			print("TRAIN COMPLETED")
 			#evaluate
 			linearCLF.training=False
 			#evaluate according to final AUC in validation sets
@@ -605,9 +607,14 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			y_true=y_test[:,1]
 
 			#write to shared array
+
+			print("SAVING PREDICTIONS")
+
 			save_path="/home/ist_davidcalhas/tmp/"+str(fold)
 			np.save(save_path+"_pred.npy",y_pred,allow_pickle=True)
 			np.save(save_path+"_true.npy",y_true,allow_pickle=True)
+
+			print("COMPLETED")
 
 		import numpy as np
 		from multiprocessing import Process, Manager
