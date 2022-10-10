@@ -40,6 +40,10 @@ fs_10=2048
 fs_11=512
 fs_12=1024
 
+fs_NEW=None
+recording_time_10=203
+recording_time_11=90
+
 media_directory="/mnt/datasets/"
 dataset_01="ds000001"
 dataset_02="ds000116"

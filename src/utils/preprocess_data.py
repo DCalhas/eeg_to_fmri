@@ -99,19 +99,12 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 
 def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, file_output=None, standardize_eeg=False, interval_eeg=10, verbose=False):
 
-	if(dataset=="10"):
-		n_individuals_train = 30
-		n_individuals_test = 13
-		recording_time=203
-		eeg_limit=True 
-		eeg_f_limit=135
-	elif(dataset=="11"):
-		n_individuals_train = 20
-		n_individuals_test = 11
-		recording_time=90
-		eeg_limit=True 
-		eeg_f_limit=135
-	
+	n_individuals_train=getattr(data_utils, "n_individuals_train_"+dataset)
+	n_individuals_test=getattr(data_utils, "n_individuals_test_"+dataset)
+	recording_time=getattr(eeg_utils, "recording_time_"+dataset)
+	eeg_limit=getattr(eeg_utils, "fs_"+dataset)>250
+	eeg_f_limit=135
+
 	if(verbose):
 		if(file_output == None):
 			print("I: Loading data")
@@ -182,12 +175,8 @@ class Dataset_CLF_CV:
 		"""
 		assert dataset in ["10", "11"], "Dataset not recognized, may not yet be implemented"
 
-		if(dataset=="10"):
-			self.n_individuals = 43
-			self.recording_time=203
-		elif(dataset=="11"):
-			self.n_individuals = 31
-			self.recording_time=90
+		self.n_individuals=getattr(data_utils, "n_individuals_"+dataset)
+		self.recording_time=getattr(eeg_utils, "recording_time_"+dataset)
 			
 		self.eeg_limit=eeg_limit
 		self.eeg_f_limit=eeg_f_limit
