@@ -8,11 +8,7 @@ import numpy as np
 
 import random
 
-import resource
-
-def limit_CPU_memory(bytes):
-	soft, hard = resource.getrlimit(resource.RLIMIT_AS)
-	resource.setrlimit(resource.RLIMIT_AS, (bytes, hard))
+from utils import memory_utils
 
 def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_memory=True):
 	gpu = tf.config.experimental.list_physical_devices(device)[0]
@@ -26,7 +22,7 @@ def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_
 		tf.config.run_functions_eagerly(True)
 
 	if(set_primary_memory):
-		limit_CPU_memory(1024*4)
+		memory_utils.limit_CPU_memory(1024*4)
 
 def set_seed(seed=42):
 	random.seed(seed)
