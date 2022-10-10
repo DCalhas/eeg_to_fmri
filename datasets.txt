@@ -1,6 +1,0 @@
-https://openneuro.org/datasets/ds002739/versions/1.0.0
-https://openneuro.org/datasets/ds002725/versions/1.0.0
-https://openneuro.org/datasets/ds002338/versions/2.0.1
-https://openneuro.org/datasets/ds002336/versions/2.0.1
-https://openneuro.org/datasets/ds002158/versions/1.0.2
-https://osf.io/yjzq9/
