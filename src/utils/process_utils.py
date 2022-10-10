@@ -468,7 +468,7 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epoc
 
 		#validate
 		launch_process(loocv,
-					(i, setting, view, dataset, hyperparameters[0], epochs, hyperparameters[2], hyperparameters[1], gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior, variational))
+					(i, setting, view, dataset, hyperparameters[0], epochs, hyperparameters[2], hyperparameters[1], n_processes*(gpu_mem), seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior, variational))
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
 	
