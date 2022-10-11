@@ -559,8 +559,6 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			tf_config.set_seed(seed=seed)
 			tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly)
 
-			print("LOADING DATA")
-
 			dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels, seed=seed)
 			train_data, test_data = dataset_clf_wrapper.split(fold_loocv)
 			dataset_clf_wrapper.X = train_data[0]
@@ -575,7 +573,6 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			X_train, y_train=train_data
 			X_test, y_test=test_data
 			with tf.device('/CPU:0'):
-				print("ALLOCATING MODEL")
 				optimizer = tf.keras.optimizers.Adam(learning_rate)
 
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
@@ -583,7 +580,6 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 				if(view=="fmri"):
 					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True, seed=seed)
 					loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
-					print("LOADING PRETRAINED MODEL")
 					linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
 																		X_train.shape[1:], activation=tf.keras.activations.linear, #.linear
 																		regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational,

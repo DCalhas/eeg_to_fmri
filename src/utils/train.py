@@ -124,10 +124,7 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architectur
         n_batches = 0
         
         for batch_set in train_set.repeat(1):
-
-            print("TRAIN STEP")
             batch_loss = train_step(model, batch_set, opt, loss_fn, u_architecture=u_architecture).numpy()
-            print("FINISHED TRAIN STEP")
             loss += batch_loss
             n_batches += 1
             gc.collect()
