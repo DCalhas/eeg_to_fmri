@@ -643,7 +643,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			try:
 				os.kill(p.pid, signal.SIGKILL)
 			except:
-				print("I: Could not kill process.")
+				print("I: Could not kill process", p.pid, end=".\n")
 
 		y_pred=np.empty((0,),dtype=np.float32)
 		y_true=np.empty((0,),dtype=np.float32)
