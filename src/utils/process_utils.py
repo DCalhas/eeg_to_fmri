@@ -643,10 +643,14 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		y_pred=np.empty((0,),dtype=np.float32)
 		y_true=np.empty((0,),dtype=np.float32)
 		for fold in range(n_folds_cv):
-			y_pred=np.append(y_pred,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_pred.npy",allow_pickle=True), axis=0)
-			y_true=np.append(y_true,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_true.npy",allow_pickle=True), axis=0)
+			try:
+				y_pred=np.append(y_pred,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_pred.npy",allow_pickle=True), axis=0)
+				y_true=np.append(y_true,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_true.npy",allow_pickle=True), axis=0)
+			except:
+				print("Failed in concurrency.")
+				return 1/1e-9
 			os.remove("/home/ist_davidcalhas/tmp/"+str(fold)+"_pred.npy")
-			os.remove("/home/ist_davidcalhas/tmp/"+str(fold)+"_true.npy")
+			os.remove("/home/ist_davidcalhas/tmp/"+str(fold)+"_true.npy")			
 
 		acc = np.mean(((y_pred>=0.5).astype("float32")==y_true).astype("float32"))
 
