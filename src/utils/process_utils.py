@@ -551,8 +551,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			from models import eeg_to_fmri, classifiers
 			import tensorflow as tf
 			import numpy as np
-			from sklearn.utils
-			import shuffle
+			from sklearn.utils import shuffle
 			import gc
 
 			l2_reg, batch_size, learning_rate = (theta)
