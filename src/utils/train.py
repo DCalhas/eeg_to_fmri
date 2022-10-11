@@ -111,8 +111,8 @@ def evaluate_additional(X, model, additional_losses):
     return (losses/n_batches).tolist()
 
 def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architecture=False, additional_losses=[], file_output=None, verbose=False, verbose_batch=False):
-    val_loss = []
-    train_loss = []
+    val_loss = np.empty((0,), dtype=np.float32)
+    train_loss = np.empty((0,), dtype=np.float32)
 
     for epoch in range(epochs):
 
@@ -128,9 +128,9 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architectur
             print_utils.print_message("Batch "+str(n_batches)+" with loss: " + str(batch_loss), file_output=file_output, verbose=verbose_batch, end="\r")
 
         if(val_set is not None):
-            val_loss.append(evaluate(val_set, model, loss_fn, u_architecture=u_architecture))
+            val_loss=np.append(val_loss,[evaluate(val_set, model, loss_fn, u_architecture=u_architecture)], axis=0)
         
-        train_loss.append(loss/n_batches)
+        train_loss=np.append(train_loss,[(loss/n_batches)], axis=0)
 
         print_utils.print_message("Epoch " + str(epoch+1) + " with loss: " + str(train_loss[-1]), file_output=file_output, verbose=verbose)
 
