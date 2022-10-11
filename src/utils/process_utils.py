@@ -551,7 +551,9 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			from models import eeg_to_fmri, classifiers
 			import tensorflow as tf
 			import numpy as np
-			from sklearn.utils import shuffle
+			from sklearn.utils
+			import shuffle
+			import gc
 
 			l2_reg, batch_size, learning_rate = (theta)
 
@@ -595,6 +597,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational)
 				linearCLF.build(X_train.shape)
 
+			gc.collect()
 			print("TRAINING")
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=True)
@@ -602,17 +605,11 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			print("TRAIN COMPLETED")
 			#evaluate
 			linearCLF.training=False
-			#evaluate according to final AUC in validation sets
-			y_pred=tf.keras.activations.sigmoid(linearCLF(X_test)).numpy()[:,0]
-			y_true=y_test[:,1]
-
 			#write to shared array
-
 			print("SAVING PREDICTIONS")
-
 			save_path="/home/ist_davidcalhas/tmp/"+str(fold)
-			np.save(save_path+"_pred.npy",y_pred,allow_pickle=True)
-			np.save(save_path+"_true.npy",y_true,allow_pickle=True)
+			np.save(save_path+"_pred.npy",tf.keras.activations.sigmoid(linearCLF(X_test)).numpy()[:,0],allow_pickle=True)
+			np.save(save_path+"_true.npy",y_test[:,1],allow_pickle=True)
 
 			print("COMPLETED")
 
