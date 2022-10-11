@@ -591,22 +591,16 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational)
 				linearCLF.build(X_train.shape)
-
 			gc.collect()
-			print("TRAINING")
 
-			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=True)
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=False, verbose_batch=False)
 
-			print("TRAIN COMPLETED")
 			#evaluate
 			linearCLF.training=False
 			#write to shared array
-			print("SAVING PREDICTIONS")
 			save_path="/home/ist_davidcalhas/tmp/"+str(fold)
 			np.save(save_path+"_pred.npy",tf.keras.activations.sigmoid(linearCLF(X_test)).numpy()[:,0],allow_pickle=True)
 			np.save(save_path+"_true.npy",y_test[:,1],allow_pickle=True)
-
-			print("COMPLETED")
 
 		import numpy as np
 		from multiprocessing import Process, Manager
@@ -651,6 +645,8 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		for fold in range(n_folds_cv):
 			y_pred=np.append(y_pred,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_pred.npy",allow_pickle=True), axis=0)
 			y_true=np.append(y_true,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_true.npy",allow_pickle=True), axis=0)
+			os.remove("/home/ist_davidcalhas/tmp/"+str(fold)+"_pred.npy")
+			os.remove("/home/ist_davidcalhas/tmp/"+str(fold)+"_true.npy")
 
 		acc = np.mean(((y_pred>=0.5).astype("float32")==y_true).astype("float32"))
 
