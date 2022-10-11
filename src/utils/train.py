@@ -114,10 +114,6 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architectur
     val_loss = []
     train_loss = []
 
-    parameters_history = []
-    l2loss_history = []
-    additional_losses_history = []
-
     for epoch in range(epochs):
 
         loss = 0.0
@@ -133,14 +129,9 @@ def train(train_set, model, opt, loss_fn, epochs=10, val_set=None, u_architectur
 
         if(val_set is not None):
             val_loss.append(evaluate(val_set, model, loss_fn, u_architecture=u_architecture))
-            #used for BNN version
-            #parameters_history.append(evaluate_parameters(val_set, model))
-            l2loss_history.append(evaluate_l2loss(val_set, model, u_architecture=u_architecture))
-            #additional_losses_history.append(evaluate_additional(val_set, model, additional_losses))
-
+        
         train_loss.append(loss/n_batches)
 
         print_utils.print_message("Epoch " + str(epoch+1) + " with loss: " + str(train_loss[-1]), file_output=file_output, verbose=verbose)
-        #print_utils.print_message("Epoch " + str(epoch+1) + " with l2loss: " + str(l2loss_history[-1]), file_output=file_output, verbose=verbose)
 
-    return train_loss, val_loss, parameters_history, l2loss_history, additional_losses_history
+    del train_loss, val_loss
