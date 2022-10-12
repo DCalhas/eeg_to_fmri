@@ -22,7 +22,7 @@ def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_
 		tf.config.run_functions_eagerly(True)
 
 	if(set_primary_memory):
-		memory_utils.limit_CPU_memory(1024*1024*1024*16, 12)#4GB
+		memory_utils.limit_CPU_memory(1024*1024*1024*16, 100)#4GB
 
 def set_seed(seed=42):
 	random.seed(seed)
