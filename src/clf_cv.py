@@ -11,6 +11,7 @@ from pathlib import Path
 import shutil
 
 import os
+os.environ['OPENBLAS_NUM_THREADS'] = '1'#limit the number of threads for numpy
 
 import time
 

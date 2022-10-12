@@ -550,6 +550,8 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			from utils import preprocess_data, tf_config, train, losses_utils, metrics
 			from models import eeg_to_fmri, classifiers
 			import tensorflow as tf
+			import os
+			os.environ['OPENBLAS_NUM_THREADS'] = '1'#limit the number of threads for numpy
 			import numpy as np
 			from sklearn.utils import shuffle
 			import gc
@@ -756,6 +758,9 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 	from models import eeg_to_fmri, classifiers
 
 	import tensorflow as tf
+
+	import os
+	os.environ['OPENBLAS_NUM_THREADS'] = '1'#limit the number of threads for numpy
 
 	import numpy as np
 
