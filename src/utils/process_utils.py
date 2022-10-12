@@ -601,6 +601,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			save_path="/home/ist_davidcalhas/tmp/"+str(fold)
 			np.save(save_path+"_pred.npy",tf.keras.activations.sigmoid(linearCLF(X_test)).numpy()[:,0],allow_pickle=True)
 			np.save(save_path+"_true.npy",y_test[:,1],allow_pickle=True)
+			print("I: Completed fold", fold, "of", n_folds_cv)
 
 		import numpy as np
 		from multiprocessing import Process, Manager
