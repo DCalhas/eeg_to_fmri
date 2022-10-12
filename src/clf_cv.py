@@ -10,8 +10,10 @@ from pathlib import Path
 
 import shutil
 
+MAX_PROCESSES=12
+
 import os
-os.environ['OPENBLAS_NUM_THREADS'] = '12'#limit the number of threads for numpy
+os.environ['OPENBLAS_NUM_THREADS'] = '6'#limit the number of threads for numpy
 
 import time
 
@@ -49,7 +51,7 @@ if __name__ == "__main__":
 	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability = assertion_utils.clf_cv(opt)
 
 #limit process memory
-memory_utils.limit_CPU_memory(1024*1024*1024*16)
+memory_utils.limit_CPU_memory(1024*1024*1024*16, MAX_PROCESSES)
 
 #create directory to save
 if(not os.path.exists(path_labels+"/"+ setting)):
