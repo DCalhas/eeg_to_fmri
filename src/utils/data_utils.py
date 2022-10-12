@@ -38,6 +38,9 @@ n_individuals_05=17
 n_individuals_NEW=None
 n_individuals_10=43
 n_individuals_11=31
+n_individuals_12=None
+n_individuals_13=None
+n_individuals_14=None
 
 n_individuals_train_01 = 8
 n_individuals_test_01 = 2
@@ -53,6 +56,13 @@ n_individuals_train_10 = 30
 n_individuals_test_10 = 13
 n_individuals_train_11 = 25
 n_individuals_test_11 = 6
+n_individuals_train_12 = None
+n_individuals_test_12 = None
+n_individuals_train_13 = None
+n_individuals_test_13 = None
+n_individuals_train_14 = None
+n_individuals_test_14 = None
+
 
 #############################################################################################################
 #

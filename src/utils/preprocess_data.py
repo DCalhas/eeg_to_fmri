@@ -279,6 +279,8 @@ class DatasetContrastive:
 
 		self.data=None
 		self.y=None
+		self.y1=None
+		self.y2=None
 
 		self.batch=batch
 		self.clf=clf
@@ -298,6 +300,8 @@ class DatasetContrastive:
 
 	@property
 	def pairwise(self):
+		del self.data, self.y, self.y1, self.y2
+		gc.collect()
 		
 		self.data=np.empty((self.pairs*2,2,)+self.X.shape[1:], dtype=np.float32)
 		
@@ -348,6 +352,9 @@ class DatasetContrastive:
 
 		#if(not self.repeat_pairing and self.tf_dataset is not None):
 		#	return self.tf_dataset
+
+		del self.tf_dataset
+			gc.collect()
 
 		if(shuffle):
 			self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).shuffle(self.X.shape[0]*self.pairs*2, seed=self.seed).batch(self.batch).repeat(n)

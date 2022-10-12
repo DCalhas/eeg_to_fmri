@@ -38,11 +38,16 @@ fs_05=200
 fs_NEW=None
 fs_10=2048
 fs_11=512
-fs_12=1024
+fs_12=None
+fs_13=None
+fs_14=None
 
 fs_NEW=None
 recording_time_10=203
 recording_time_11=90
+recording_time_12=None
+recording_time_13=None
+recording_time_14=None
 
 media_directory="/mnt/datasets/"
 dataset_01="ds000001"
@@ -50,9 +55,13 @@ dataset_02="ds000116"
 dataset_03="ds002158"
 dataset_04="ds002336"
 dataset_05="ds002338"
+dataset_06="ds003768"
 dataset_NEW="NEW"
-dataset_10="ds004000"
-dataset_11="ds002778"
+dataset_10="ds004000"#schizophrenia
+dataset_11="ds002778"#parkinson's uc san diego ask authors for validation -- no good results were gathered
+dataset_12="ds003509"#mne.io.read_raw_eeglab parkinson's
+dataset_13="ds003506"#parkinson's
+dataset_14="ds003944"#schizophrenia
 
 ##########################################################################################################################
 #
@@ -161,21 +170,24 @@ def get_eeg_instance_05(individual, path_eeg=media_directory+dataset_05+"/deriva
 
 	return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
 
-"""
-Function that reads EEG data from a <NEW> dataset
+def get_eeg_instance_06(individual, path_eeg=media_directory+dataset_06+"/derivatives/", task="MIpost", preprocessed=True):
+	raise NotImplementedError
 
-This function should return an EEG raw brainvision object, please refer to: https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw
 
-Inputs:
-	* int - individual, should be an integer \in [0,NUMBER_INDIVIDUALS_NEW]
-	* str - path_eeg, the path specification where the individuals are listed
-	* str - task, optional, depends on the dataset you are operating with
-	* bool - preprocessed, specifies if one is reading preprocessed data or not, feel free to implement it as you wish
-Outputs:
-	* mne.io.Raw - the EEG object
-"""
 def get_eeg_instance_NEW(individual, path_eeg=None, task=None, preprocessed=None):
+	"""
+	Function that reads EEG data from a <NEW> dataset
 
+	This function should return an EEG raw brainvision object, please refer to: https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw
+
+	Inputs:
+		* int - individual, should be an integer \in [0,NUMBER_INDIVIDUALS_NEW]
+		* str - path_eeg, the path specification where the individuals are listed
+		* str - task, optional, depends on the dataset you are operating with
+		* bool - preprocessed, specifies if one is reading preprocessed data or not, feel free to implement it as you wish
+	Outputs:
+		* mne.io.Raw - the EEG object
+	"""
 	raise NotImplementedError
 
 def get_eeg_instance_10(individual, path_eeg=media_directory+dataset_10+"/", proposer=False, preprocessed=False):
@@ -226,6 +238,15 @@ def get_eeg_instance_11(individual, path_eeg=media_directory+dataset_11+"/", ses
 		
 		return mne.io.read_raw_bdf(complete_path, preload=False, verbose=0)
 
+def get_eeg_instance_12(individual, path_eeg=media_directory+dataset_12+"/", sess_on=True, preprocessed=False):
+	raise NotImplementedError
+
+def get_eeg_instance_13(individual, path_eeg=media_directory+dataset_13+"/", sess_on=True, preprocessed=False):
+	raise NotImplementedError
+	
+def get_eeg_instance_14(individual, path_eeg=media_directory+dataset_14+"/", sess_on=True, preprocessed=False):
+	raise NotImplementedError
+	
 def get_labels_10(individuals, path_eeg=media_directory+dataset_10+"/"):
 	labels=np.zeros((len(individuals), 2))#0 - hc, 1 - p
 	
@@ -256,6 +277,15 @@ def get_labels_11(individuals, path_eeg=media_directory+dataset_11+"/"):
 			
 	return labels
 
+
+def get_labels_12(individuals, path_eeg=media_directory+dataset_12+"/"):
+	raise NotImplementedError
+
+def get_labels_13(individuals, path_eeg=media_directory+dataset_13+"/"):
+	raise NotImplementedError
+
+def get_labels_14(individuals, path_eeg=media_directory+dataset_14+"/"):
+	raise NotImplementedError
 
 def get_eeg_dataset(number_individuals=16, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
 	individuals = []
