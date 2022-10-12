@@ -13,7 +13,7 @@ import shutil
 MAX_PROCESSES=12
 
 import os
-os.environ['OPENBLAS_NUM_THREADS'] = '6'#limit the number of threads for numpy
+os.environ['OPENBLAS_NUM_THREADS'] = '1'#limit the number of threads for numpy
 
 import time
 
