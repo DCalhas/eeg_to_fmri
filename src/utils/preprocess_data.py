@@ -354,7 +354,7 @@ class DatasetContrastive:
 		#	return self.tf_dataset
 
 		del self.tf_dataset
-			gc.collect()
+		gc.collect()
 
 		if(shuffle):
 			self.tf_dataset=tf.data.Dataset.from_tensor_slices(self.pairwise).shuffle(self.X.shape[0]*self.pairs*2, seed=self.seed).batch(self.batch).repeat(n)
