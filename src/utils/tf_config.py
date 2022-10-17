@@ -10,7 +10,7 @@ import random
 
 from utils import memory_utils
 
-MAX_N_THREADS=30
+MAX_N_THREADS=5
 
 def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_memory=False, set_tf_threads=False):
 	gpu = tf.config.experimental.list_physical_devices(device)[0]
