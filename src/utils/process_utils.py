@@ -685,7 +685,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		l2_reg, batch_size, learning_rate = (theta)
 
 		tf_config.set_seed(seed=seed)
-		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly, set_primary_memory=True, set_tf_threads=True)
+		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly, set_primary_memory=False, set_tf_threads=False)
 
 
 		dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
