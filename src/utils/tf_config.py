@@ -10,7 +10,7 @@ import random
 
 from utils import memory_utils
 
-MAX_N_THREADS=10
+MAX_N_THREADS=30
 
 def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_memory=False, set_tf_threads=False):
 	gpu = tf.config.experimental.list_physical_devices(device)[0]
@@ -29,7 +29,7 @@ def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_
 		tf.config.threading.set_intra_op_parallelism_threads(MAX_N_THREADS)
 
 	if(set_primary_memory):
-		memory_utils.limit_CPU_memory(1024*1024*1024*16, 100)#16GB and max of 100 threads 
+		memory_utils.limit_CPU_memory(1024*1024*1024*16, 200)#16GB and max of 100 threads 
 
 def set_seed(seed=42):
 	random.seed(seed)

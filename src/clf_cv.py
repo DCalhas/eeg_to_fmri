@@ -10,7 +10,7 @@ from pathlib import Path
 
 import shutil
 
-MAX_PROCESSES=100
+MAX_PROCESSES=200
 
 import os
 #os.environ['OPENBLAS_NUM_THREADS'] = '1'#limit the number of threads for numpy
