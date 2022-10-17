@@ -12,7 +12,7 @@ from utils import memory_utils
 
 MAX_N_THREADS=5
 
-def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_memory=True):
+def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_memory=True, set_tf_threads=False):
 	gpu = tf.config.experimental.list_physical_devices(device)[0]
 	tf.config.set_soft_device_placement(True)
 	tf.config.log_device_placement=True
@@ -24,11 +24,12 @@ def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_
 		tf.config.run_functions_eagerly(True)
 
 	#set number of threads
-	tf.config.threading.set_inter_op_parallelism_threads(MAX_N_THREADS)
-	tf.config.threading.set_intra_op_parallelism_threads(MAX_N_THREADS)
+	if(set_tf_threads):
+		tf.config.threading.set_inter_op_parallelism_threads(MAX_N_THREADS)
+		tf.config.threading.set_intra_op_parallelism_threads(MAX_N_THREADS)
 
 	if(set_primary_memory):
-		memory_utils.limit_CPU_memory(1024*1024*1024*16, 100)#4GB
+		memory_utils.limit_CPU_memory(1024*1024*1024*16, 100)#16GB and max of 100 threads 
 
 def set_seed(seed=42):
 	random.seed(seed)
