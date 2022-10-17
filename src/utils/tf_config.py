@@ -25,7 +25,7 @@ def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_
 
 	#set number of threads
 	if(set_tf_threads):
-		tf.config.experimental.set_synchronous_execution()
+		tf.config.experimental.set_synchronous_execution(True)
 		tf.config.threading.set_inter_op_parallelism_threads(MAX_N_THREADS)
 		tf.config.threading.set_intra_op_parallelism_threads(MAX_N_THREADS)
 
