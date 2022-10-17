@@ -20,8 +20,11 @@ mv cuda/include/cudnn*.h $CONDA_PREFIX/include/
 mv cuda/lib64/libcudnn* $CONDA_PREFIX/lib/
 rm -r cuda
 chmod a+r $CONDA_PREFIX/include/cudnn*.h $CONDA_PREFIX/lib/libcudnn*
+#set up variables when activating envorimonent
+mkdir -p $CONDA_PREFIX/etc/conda/activate.d
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/' > $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 
-pip install tensorflow-gpu==2.9
+pip install tensorflow-gpu==2.9.0
 pip install -r requirements.txt
 
 echo "I: Setting up datasets directory"
