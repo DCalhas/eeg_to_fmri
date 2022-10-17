@@ -1,6 +1,7 @@
 import resource
 
 def limit_CPU_memory(bytes, n_processes):
+	return
 	soft, hard = resource.getrlimit(resource.RLIMIT_DATA)
 	resource.setrlimit(resource.RLIMIT_DATA, (bytes, hard))#heap of the process
 	resource.setrlimit(resource.RLIMIT_AS, (1024*1024*1024*26, hard))#virtual memory allocation
