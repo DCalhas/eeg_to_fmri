@@ -33,5 +33,5 @@ The EEG has a drift in relation to the associated fMRI volume, since it takes in
 On the other hand, we have a **single** fMRI volume associated with the respective EEG. This fMRI is described by three dimensions, corresponding to the 3-dimensional axis, where $$M_1=64$$, $$M_2=64$$ and $$M_3=30$$. The figure below shows an fMRI volume.
 
 <p align="center">
-	<img src="./figures/fmri_volume.png" width="300"/>
+	<img src="./figures/fmri_volume.png" width="600"/>
 </p>
