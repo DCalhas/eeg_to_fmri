@@ -40,25 +40,18 @@ In terms of code this corresponds to loading the data. First we start by import 
 
 ```
 import tensorflow as tf
-
 import numpy as np
-
 from utils import tf_config
 
 dataset="01"
 memory_limit=1500
-
 tf_config.set_seed(seed=2)
 tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
 
 import GPyOpt
-
 import argparse
-
 from utils import preprocess_data, train, losses_utils, metrics, eeg_utils, data_utils
-
 from models import eeg_to_fmri
-
 from pathlib import Path
 ```
 
