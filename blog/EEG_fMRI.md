@@ -77,5 +77,56 @@ with tf.device('/CPU:0'):
 											verbose=True)
 	eeg_train, fmri_train =train_data
 	eeg_test, fmri_test = test_data
+print(eeg_train.shape, fmri_train.shape)
+print(eeg_test.shape, fmri_test.shape)
+```
 
+```
+<<< (64,134,10,1) (64,64,30,1)
+<<< (64,134,10,1) (64,64,30,1)
+```
+
+After this we can start building the model presented in the first figure. To do this, we first unroll the hyperparameters for the neural network: learning rate, weight decay, etc:
+
+```
+learning_rate,weight_decay ,kernel_size ,stride_size ,batch_size,latent_dimension,n_channels,max_pool,batch_norm,skip_connections,dropout,n_stacks,outfilter,local=eeg_to_fmri.parameters
+```
+
+Additionally, we also load the architecture specification:
+
+```
+with open(str(Path.home())+"/eeg_to_fmri/na_models_eeg/na_specification_2", "rb") as f:
+	na_specification_eeg = pickle.load(f)
+with open(str(Path.home())+"/eeg_to_fmri/na_models_fmri/na_specification_2", "rb") as f:
+	na_specification_fmri = pickle.load(f)
+```
+
+With these parameters, we can finally build the model and setup the optimizer, loss, training set and test set:
+
+```
+with tf.device('/CPU:0'):
+	model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
+						weight_decay=weight_decay, skip_connections=True, batch_norm=True, fourier_features=True,
+						random_fourier=True, topographical_attention=True, conditional_attention_style=True,
+						conditional_attention_style_prior=False, local=True, seed=None, 
+						fmri_args = (latent_dimension, fmri_train.shape[1:], kernel_size, stride_size, n_channels, 
+						max_pool, batch_norm, weight_decay, skip_connections,
+						n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
+	model.build(eeg_train.shape, fmri_train.shape)
+	optimizer = tf.keras.optimizers.Adam(learning_rate)
+	loss_fn = losses_utils.mae_cosine
+	train_set = tf.data.Dataset.from_tensor_slices((eeg_train, fmri_train)).batch(batch_size)
+	test_set= tf.data.Dataset.from_tensor_slices((eeg_test, fmri_test)).batch(1)
+```
+
+Finally, comes the fun part, where the model is trained with the objective of producing an fMRI volume similar to the one paired with the given EEG:
+
+```
+train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=True, val_set=None, verbose=True, verbose_batch=True)
+```
+
+The output in my machine corresponds to:
+
+```
+<<<
 ```
