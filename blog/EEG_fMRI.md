@@ -14,7 +14,7 @@ tags:
 
 In this post I will go over the procedure to project an EEG instance to an fMRI.
 
-In the [EEG to fMRI paper](https://arxiv.org/abs/2203.03481), the methodology to do this projection is presented. The architecture of this model is shown in the Figure below.
+In the [EEG to fMRI paper](https://arxiv.org/abs/2203.03481), the methodology to do this projection is presented. The architecture of this model is shown in the figure below.
 
 <p align="center">
 	<img src="./figures/architecture_eeg_benefits.png" width="200"/>
@@ -38,7 +38,7 @@ On the other hand, we have a **single** fMRI volume associated with the respecti
 
 In terms of code this corresponds to loading the data. First we start by import the necessary libraries:
 
-```
+```python
 import tensorflow as tf
 import numpy as np
 from utils import tf_config
@@ -57,7 +57,7 @@ from pathlib import Path
 
 Then we specify the number of individuals and $$T$$ (which corresponds to ```interval_eeg```), and load the data:
 
-```
+```python
 n_individuals=getattr(data_utils, "n_individuals_"+dataset)
 interval_eeg=10
 
@@ -73,7 +73,7 @@ with tf.device('/CPU:0'):
 print(eeg_train.shape, fmri_train.shape)
 print(eeg_test.shape, fmri_test.shape)
 ```
-
+The print output corresponds to:
 ```
 <<< (64,134,10,1) (64,64,30,1)
 <<< (64,134,10,1) (64,64,30,1)
@@ -81,13 +81,13 @@ print(eeg_test.shape, fmri_test.shape)
 
 After this we can start building the model presented in the first figure. To do this, we first unroll the hyperparameters for the neural network: learning rate, weight decay, etc:
 
-```
+```python
 learning_rate,weight_decay ,kernel_size ,stride_size ,batch_size,latent_dimension,n_channels,max_pool,batch_norm,skip_connections,dropout,n_stacks,outfilter,local=eeg_to_fmri.parameters
 ```
 
 Additionally, we also load the architecture specification:
 
-```
+```python
 with open(str(Path.home())+"/eeg_to_fmri/na_models_eeg/na_specification_2", "rb") as f:
 	na_specification_eeg = pickle.load(f)
 with open(str(Path.home())+"/eeg_to_fmri/na_models_fmri/na_specification_2", "rb") as f:
@@ -96,7 +96,7 @@ with open(str(Path.home())+"/eeg_to_fmri/na_models_fmri/na_specification_2", "rb
 
 With these parameters, we can finally build the model and setup the optimizer, loss, training set and test set:
 
-```
+```python
 with tf.device('/CPU:0'):
 	model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
 						weight_decay=weight_decay, skip_connections=True, batch_norm=True, fourier_features=True,
@@ -114,7 +114,7 @@ with tf.device('/CPU:0'):
 
 Finally, comes the fun part, where the model is trained with the objective of producing an fMRI volume similar to the one paired with the given EEG:
 
-```
+```python
 train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=True, val_set=None, verbose=True, verbose_batch=True)
 ```
 
