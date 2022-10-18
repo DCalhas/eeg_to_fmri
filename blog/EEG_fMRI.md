@@ -27,11 +27,11 @@ This model processes two inputs:
 The EEG has a drift in relation to the associated fMRI volume, since it takes into consideration $$10\times \mbox{TR}$$ seconds in total (for the [NODDI](https://osf.io/94c5t/) dataset this corresponds to $$10\times 2.160=21.6$$ seconds). In addition, the EEG has $$C$$ channels and $$F$$ frequency coefficients. The figure below shows a representation of an EEG.
 
 <p align="center">
-	<img src="./figures/eeg_stft.png" width="50"/>
+	<img src="./figures/eeg_stft.png" width="200"/>
 </p>
 
 On the other hand, we have a **single** fMRI volume associated with the respective EEG. This fMRI is described by three dimensions, corresponding to the 3-dimensional axis, where $$M_1=64$$, $$M_2=64$$ and $$M_3=30$$. The figure below shows an fMRI volume.
 
 <p align="center">
-	<img src="./figures/fmri_volume.png" width="50"/>
+	<img src="./figures/fmri_volume.png" width="300"/>
 </p>
