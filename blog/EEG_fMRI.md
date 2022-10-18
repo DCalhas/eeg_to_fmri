@@ -116,7 +116,7 @@ Note that the loss used minimizes the objective of approximating the EEG with th
 
 $$\mathcal{L}(\vec{x}, \vec{y}) = ||\vec{y}-\hat{y}||_1^1  + 1-\frac{\vec{z}_x^* \cdot \vec{z}_y}{||\vec{z}_x^*||_2^2\cdot ||\vec{z}_y||_2^2}$$
 
-This loss approximates the output (predicted fMRI) with the ground truth (fMRI volume) with the L1 distance and approximates the latent representations with a pattern based (cosine) distance.
+This loss approximates the output (predicted fMRI) with the ground truth (fMRI volume) with the L1 distance ($$||\vec{y}-\hat{y}||_1^1$$) and approximates the latent representations with a pattern based (cosine) distance ($$1-\frac{\vec{z}_x^* \cdot \vec{z}_y}{||\vec{z}_x^*||_2^2\cdot ||\vec{z}_y||_2^2}$$).
 
 Finally, comes the fun part, where the model is trained with the objective of producing an fMRI volume similar to the one paired with the given EEG:
 
