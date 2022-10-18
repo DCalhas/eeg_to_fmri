@@ -63,11 +63,11 @@ interval_eeg=10
 
 with tf.device('/CPU:0'):
 	train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals,
-											interval_eeg=interval_eeg, 
-											ind_volume_fit=False,
-											standardize_fmri=True,
-											iqr=False,
-											verbose=True)
+						interval_eeg=interval_eeg, 
+						ind_volume_fit=False,
+						standardize_fmri=True,
+						iqr=False,
+						verbose=True)
 	eeg_train, fmri_train =train_data
 	eeg_test, fmri_test = test_data
 print(eeg_train.shape, fmri_train.shape)
