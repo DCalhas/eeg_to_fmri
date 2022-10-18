@@ -50,7 +50,7 @@ tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
 
 import GPyOpt
 import argparse
-from utils import preprocess_data, train, losses_utils, metrics, eeg_utils, data_utils
+from utils import preprocess_data, train, losses_utils, metrics, eeg_utils, data_utils, viz_utils
 from models import eeg_to_fmri
 from pathlib import Path
 ```
@@ -112,6 +112,12 @@ with tf.device('/CPU:0'):
 	test_set= tf.data.Dataset.from_tensor_slices((eeg_test, fmri_test)).batch(1)
 ```
 
+Note that the loss used minimizes the objective of approximating the EEG with the fMRI, along with the latent representations of each other, meaning:
+
+$$\mathcal{L}(\vec{x}, \vec{y}) = ||\vec{y}-\hat{y}||_1^1  + 1-\frac{\vec{z}_x^* \cdot \vec{z}_y}{||\vec{z}_x^*||_2^2\cdot ||\vec{z}_y||_2^2}$$
+
+This loss approximates the output (predicted fMRI) with the ground truth (fMRI volume) with the L1 distance and approximates the latent representations with a pattern based (cosine) distance.
+
 Finally, comes the fun part, where the model is trained with the objective of producing an fMRI volume similar to the one paired with the given EEG:
 
 ```python
@@ -121,5 +127,15 @@ train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=True
 The output in my machine corresponds to:
 
 ```
-<<<
+<<< Epoch 1: 
 ```
+
+Now we have a trained model that given an EEG representation, gives us an fMRI volume. You can check the visualization by using the visualization utilities file available in this repository:
+
+```
+for eeg, fmri in dev_set.repeat(1):
+	viz_utils.plot_3D_representation_projected_slices(model(eeg, fmri)[0].numpy()[0], threshold=0.37).show()
+	break
+```
+
+The output of this code corresponds to the figure below. Note that we give the model the EEG and the fMRI representation, however our goal is to produce an fMRI volume without an EEG reference. If we check the [call function](https://github.com/DCalhas/eeg_to_fmri/blob/ff7c1b988a7dca77f0db400bcb511c6127e82c33/src/models/eeg_to_fmri.py#L329) of the model, we see that it returns a list of tensors, where the first tensor is the predicted fMRI without influence of the original fMRI and only dependent on the EEG.
