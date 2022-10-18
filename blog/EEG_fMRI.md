@@ -35,3 +35,47 @@ On the other hand, we have a **single** fMRI volume associated with the respecti
 <p align="center">
 	<img src="./figures/fmri_volume.png" width="600"/>
 </p>
+
+In terms of code this corresponds to loading the data. First we start by import the necessary libraries:
+
+```
+import tensorflow as tf
+
+import numpy as np
+
+from utils import tf_config
+
+dataset="01"
+memory_limit=1500
+
+tf_config.set_seed(seed=2)
+tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
+
+import GPyOpt
+
+import argparse
+
+from utils import preprocess_data, train, losses_utils, metrics, eeg_utils, data_utils
+
+from models import eeg_to_fmri
+
+from pathlib import Path
+```
+
+Then we specify the number of individuals and $$T$$ (which corresponds to ```interval_eeg```), and load the data:
+
+```
+n_individuals=getattr(data_utils, "n_individuals_"+dataset)
+interval_eeg=10
+
+with tf.device('/CPU:0'):
+	train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals,
+											interval_eeg=interval_eeg, 
+											ind_volume_fit=False,
+											standardize_fmri=True,
+											iqr=False,
+											verbose=True)
+	eeg_train, fmri_train =train_data
+	eeg_test, fmri_test = test_data
+
+```
