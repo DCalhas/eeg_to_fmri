@@ -28,23 +28,9 @@ pip install tensorflow-gpu==2.9.0
 pip install -r requirements.txt
 
 echo "I: Setting up datasets directory"
+echo "Now you have to set the path for the datasets."
+echo -n "Please specify a path for the datasets (the default is "$PWD"/datasets):"
+read EEG_FMRI_DATASETS
 
-
-FILE=datasets/zipped_datasets/01.zip
-if [ -f "$FILE" ]; then
-    echo "I: Datasets already downloaded."
-    unzip $FILE -d datasets/.
-else 
-    echo "I: Please download datasets indicated in the Datasets Description of the paper"
-    echo "I: Organize them in datasets/01 and datasets/02"
-    echo "I: If the zipped datasets file is available please unzip them in the directories specified"
-    printf "I: If not please download them from:\nFirst dataset:\nEEG1.zip: https://osf.io/mx8ze/download \nEEG2.zip: https://osf.io/2zmup/download\nfMRI.zip: https://osf.io/vd5yz/download\nSecond dataset: http://openfmri.s3.amazonaws.com/tarballs/ds000116_R2.0.0_raw.tgz\n"
-    mkdir datasets
-    mkdir datasets/01
-    mkdir datasets/02
-    mkdir datasets/zipped_datasets
-fi
-
-
-journalctl --disk-usage
-journalctl --vacuum-time=3d
+echo 'export EEG_FMRI='$PWD >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+echo 'export EEG_FMRI_DATASETS='$EEG_FMRI_DATASETS >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
