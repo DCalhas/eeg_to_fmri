@@ -12,7 +12,12 @@ tags:
 
 # EEG recoding to fMRI volume
 
-In this post I will go over the procedure to project an EEG instance to an fMRI.
+In this post I will go over the procedure to project an EEG instance to an fMRI. This work is the core of my PhD thesis and all the findings that consequently followed. The motivation of synthesizing an fMRI volume from EEG rests on:
+- An EEG recording setup is cheaper than an MRI laboratory setup;
+- The fMRI recording session in itself costs hundreds of dollars, whereas an EEG recording does not;
+- The main hypothesis of this work is to develop an informed fMRI view that allows better diagnosis than the EEG view alone, consequently having the potential of being applied in health care systems and reducing costs.
+
+## What is the model?
 
 In the [EEG to fMRI paper](https://arxiv.org/abs/2203.03481), the methodology to do this projection is presented. The architecture of this model is shown in the figure below.
 
@@ -24,17 +29,23 @@ This model processes two inputs:
 - EEG representation $$\vec{x} \in \mathbb{R}^{C \times F \times T}$$;
 - fMRI volume representation $$\vec{y} \in \mathbb{R}^{M_1 \times M_2 \times M_3}$$.
 
+## What is an EEG?
+
 The EEG has a drift in relation to the associated fMRI volume, since it takes into consideration $$10\times \mbox{TR}$$ seconds in total (for the [NODDI](https://osf.io/94c5t/) dataset this corresponds to $$10\times 2.160=21.6$$ seconds). In addition, the EEG has $$C$$ channels and $$F$$ frequency coefficients. The figure below shows a representation of an EEG.
 
 <p align="center">
 	<img src="./figures/eeg_stft.png" width="200"/>
 </p>
 
+## What is an fMRI?
+
 On the other hand, we have a **single** fMRI volume associated with the respective EEG. This fMRI is described by three dimensions, corresponding to the 3-dimensional axis, where $$M_1=64$$, $$M_2=64$$ and $$M_3=30$$. The figure below shows an fMRI volume.
 
 <p align="center">
 	<img src="./figures/fmri_volume.png" width="600"/>
 </p>
+
+## Let us dive our hands into the code! And the mathematics behind it!
 
 In terms of code this corresponds to loading the data. First we start by import the necessary libraries:
 
