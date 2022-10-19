@@ -126,7 +126,7 @@ with tf.device('/CPU:0'):
 
 Note that the loss used minimizes the objective of approximating the EEG with the fMRI, along with the latent representations of each other, meaning:
 
-$$\mathcal{L}(\vec{x}, \vec{y}) = ||\vec{y}-\hat{y}||_1^1  + 1-\frac{\vec{z}_x^* \cdot \vec{z}_y}{||\vec{z}_x^*||_2^2\cdot ||\vec{z}_y||_2^2}$$
+$$\mathcal{L}(\vec{x}, \vec{y}) = ||\vec{y}-\hat{y}||_1^1  + 1-\frac{\vec{z}_x \cdot \vec{z}_y}{||\vec{z}_x||_2^2\cdot ||\vec{z}_y||_2^2}$$
 
 This loss ([code](https://github.com/DCalhas/eeg_to_fmri/blob/b4ab007aa85fef7c6c3d62b2e215e0131ee42f26/src/utils/losses_utils.py#L447)) approximates the output (predicted fMRI) with the ground truth (fMRI volume) using the L1 distance and approximates the latent representations with a pattern based (cosine) distance.
 
@@ -166,3 +166,7 @@ The output of this code corresponds to the figure below.
 </p>
 
 Note that we give as input, to the model, the EEG and the fMRI representation, however our goal is to produce an fMRI volume without an EEG reference. If we check the [call function](https://github.com/DCalhas/eeg_to_fmri/blob/ff7c1b988a7dca77f0db400bcb511c6127e82c33/src/models/eeg_to_fmri.py#L329) of the model, we see that it returns a list of tensors, where the first tensor is the predicted fMRI without influence of the original fMRI and only dependent on the EEG. In the [next blog post](https://dcalhas.github.io/eeg_to_fmri/blog/Sinusoid_separation.html) I show you how to use the model trained in this post to obtain fMRI synthesized volumes and use them for classification.
+
+## References
+
+\[1\]: [Tancik, Matthew, et al. Fourier features let networks learn high frequency functions in low dimensional domains. Advances in Neural Information Processing Systems, 2020, 33: 7537-7547.](https://arxiv.org/abs/2006.10739)
