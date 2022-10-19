@@ -11,7 +11,7 @@ tags:
 
 
 
-# Separating Sinusoid Projections
+# Classification on EEG only datasets
 
 In this post I will talk about an approach that is able to use sinusoids to generate images [[1](#references)], while being able to separate the data according to labels.
 
@@ -22,7 +22,7 @@ In this post I will talk about an approach that is able to use sinusoids to gene
 </p>
 
 
-### Constrastive loss
+### Constrastive loss in the unit circle
 
 
 <p align="center">
