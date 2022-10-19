@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Separating Sinusoid Projections
+title: Classification on EEG only dataset
 parent: Blog
 nav_order: 2
 mathjax: true

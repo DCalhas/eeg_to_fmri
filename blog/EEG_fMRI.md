@@ -78,7 +78,7 @@ The print output corresponds to:
 <<< (574, 64, 134, 10, 1) (574, 64, 64, 30, 1)
 ```
 
-After this we can start building the model presented in the first figure. To do this, we first unroll the hyperparameters for the neural network: learning rate, weight decay, etc:
+In total, we are using 2296 instances for training the model and 574 constitute the testing set. After this we can start building the model presented in the first figure. We first unroll the hyperparameters for the neural network: learning rate, weight decay, etc:
 
 ```python
 learning_rate,weight_decay ,kernel_size ,stride_size ,batch_size,latent_dimension,n_channels,max_pool,batch_norm,skip_connections,dropout,n_stacks,outfilter,local=eeg_to_fmri.parameters
@@ -92,6 +92,8 @@ with open(str(Path.home())+"/eeg_to_fmri/na_models_eeg/na_specification_2", "rb"
 with open(str(Path.home())+"/eeg_to_fmri/na_models_fmri/na_specification_2", "rb") as f:
 	na_specification_fmri = pickle.load(f)
 ```
+
+Note that both the ```eeg_to_fmri.parameters``` and the neural architectures' specification were obtained after exhaustive automatic searches. For the first, the Bayesian optimization algorithm was used and for the second the automatic neural architecture generation algorithm ([paper](https://openreview.net/forum?id=TCvkaP15O7e)).
 
 With these parameters, we can finally build the model and setup the optimizer, loss, training set and test set:
 
