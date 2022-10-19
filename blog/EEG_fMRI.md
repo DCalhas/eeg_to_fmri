@@ -44,9 +44,8 @@ import numpy as np
 from utils import tf_config
 
 dataset="01"
-memory_limit=1500
 tf_config.set_seed(seed=2)
-tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit)
+tf_config.setup_tensorflow(device="GPU", memory_limit=1500)
 
 import GPyOpt
 import argparse
@@ -75,8 +74,8 @@ print(eeg_test.shape, fmri_test.shape)
 ```
 The print output corresponds to:
 ```
-<<< (64,134,10,1) (64,64,30,1)
-<<< (64,134,10,1) (64,64,30,1)
+<<< (2296, 64, 134, 10, 1) (2296, 64, 64, 30, 1)
+<<< (574, 64, 134, 10, 1) (574, 64, 64, 30, 1)
 ```
 
 After this we can start building the model presented in the first figure. To do this, we first unroll the hyperparameters for the neural network: learning rate, weight decay, etc:
@@ -116,9 +115,9 @@ Note that the loss used minimizes the objective of approximating the EEG with th
 
 $$\mathcal{L}(\vec{x}, \vec{y}) = ||\vec{y}-\hat{y}||_1^1  + 1-\frac{\vec{z}_x^* \cdot \vec{z}_y}{||\vec{z}_x^*||_2^2\cdot ||\vec{z}_y||_2^2}$$
 
-This loss ([code](https://github.com/DCalhas/eeg_to_fmri/blob/b4ab007aa85fef7c6c3d62b2e215e0131ee42f26/src/utils/losses_utils.py#L447)) approximates the output (predicted fMRI) with the ground truth (fMRI volume) with the L1 distance and approximates the latent representations with a pattern based (cosine) distance.
+This loss ([code](https://github.com/DCalhas/eeg_to_fmri/blob/b4ab007aa85fef7c6c3d62b2e215e0131ee42f26/src/utils/losses_utils.py#L447)) approximates the output (predicted fMRI) with the ground truth (fMRI volume) using the L1 distance and approximates the latent representations with a pattern based (cosine) distance.
 
-Finally, comes the fun part, where the model is trained with the objective of producing an fMRI volume similar to the one paired with the given EEG:
+Finally, comes the fun part! The model is trained with the objective of producing an fMRI volume similar to the one paired with the given EEG:
 
 ```python
 train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=True, val_set=None, verbose=True, verbose_batch=True)
@@ -127,12 +126,21 @@ train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=True
 The output in my machine corresponds to:
 
 ```
-<<< Epoch 1: 
+<<< Epoch 1 with loss: 0.9473224575095891
+<<< Epoch 2 with loss: 0.9166405657857968
+<<< Epoch 3 with loss: 0.9102472579853045
+<<< Epoch 4 with loss: 0.9070683614925225
+<<< Epoch 5 with loss: 0.9040099402130273
+<<< Epoch 6 with loss: 0.9051329443679038
+<<< Epoch 7 with loss: 0.903896741543082
+<<< Epoch 8 with loss: 0.8961787599719775
+<<< Epoch 9 with loss: 0.8985048017435373
+<<< Epoch 10 with loss: 0.8955792264448226
 ```
 
 Now we have a trained model that given an EEG representation, gives us an fMRI volume. You can check the visualization by using the visualization utilities file available in this repository:
 
-```
+```python
 for eeg, fmri in dev_set.repeat(1):
 	viz_utils.plot_3D_representation_projected_slices(model(eeg, fmri)[0].numpy()[0], threshold=0.37).show()
 	break
