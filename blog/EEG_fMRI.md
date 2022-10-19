@@ -125,7 +125,7 @@ Finally, comes the fun part! The model is trained with the objective of producin
 train.train(train_set, model, optimizer, loss_fn, epochs=10, u_architecture=True, val_set=None, verbose=True, verbose_batch=True)
 ```
 
-The output in my machine corresponds to:
+The output, running this in my laptop, corresponds to:
 
 ```
 <<< Epoch 1 with loss: 0.9473224575095891
@@ -148,4 +148,10 @@ for eeg, fmri in dev_set.repeat(1):
 	break
 ```
 
-The output of this code corresponds to the figure below. Note that we give the model the EEG and the fMRI representation, however our goal is to produce an fMRI volume without an EEG reference. If we check the [call function](https://github.com/DCalhas/eeg_to_fmri/blob/ff7c1b988a7dca77f0db400bcb511c6127e82c33/src/models/eeg_to_fmri.py#L329) of the model, we see that it returns a list of tensors, where the first tensor is the predicted fMRI without influence of the original fMRI and only dependent on the EEG.
+The output of this code corresponds to the figure below. 
+
+<p align="center">
+	<img src="./figures/synthesized_fmri.png" width="600"/>
+</p>
+
+Note that we give as input, to the model, the EEG and the fMRI representation, however our goal is to produce an fMRI volume without an EEG reference. If we check the [call function](https://github.com/DCalhas/eeg_to_fmri/blob/ff7c1b988a7dca77f0db400bcb511c6127e82c33/src/models/eeg_to_fmri.py#L329) of the model, we see that it returns a list of tensors, where the first tensor is the predicted fMRI without influence of the original fMRI and only dependent on the EEG. In the [next blog post](https://dcalhas.github.io/eeg_to_fmri/blog/Sinusoid_separation.html) I show you how to use the model trained in this post to obtain fMRI synthesized volumes and use them for classification.
