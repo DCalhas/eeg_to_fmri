@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Classification on EEG only dataset
+title: Classification on EEG only datasets
 parent: Blog
 nav_order: 2
 mathjax: true
