@@ -41,6 +41,11 @@ Testing a new dataset on this framework should not be too difficult. Do the foll
 - additionally, you might want to define the list of channels (if your EEG electrode setup follows the [10-20 system](https://en.wikipedia.org/wiki/10%E2%80%9320_system_(EEG))), to retrieve more advanced analysis, such as EEG electrode relevance. This should be done in the beginning of the [eeg_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/eeg_utils.py) file;
 - last, but no least, comes the time to implement the two functions that read the EEG and fMRI recordings, corresponding to **get_eeg_instance_NEW**, at [eeg_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/eeg_utils.py#L171), and **get_indviduals_path_NEW**, at [fmri_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/fmri_utils.py#L299);
 
+In addition to reading the rest of this section, which helps you setting up your data, you also have available two blog posts:
+
+- [EEG recording to fMRI volume](https://dcalhas.github.io/eeg_to_fmri/blog/EEG_fMRI.html): goes over an example on how to operate with a simultaneous EEG and fMRI dataset and creates a model that synthesizes fMRI from EEG;
+- [Classification on EEG only datasets](https://dcalhas.github.io/eeg_to_fmri/blog/Sinusoid_separation.html): this one picks up on the previous blog post and uses the pretrained model (that synthesizes fMRI from EEG), and shows you how to create an fMRI view of an EEG instance and classify it.
+
 ### Dataset structure
 
 In this example, we assume your dataset has the following structure (if it has a different structure please interpret the code provided in the next two sections and adapt it):
@@ -247,9 +252,10 @@ python main.py metrics NEW -na_path_eeg ../na_models_eeg/na_specification_2 -na_
 
 ## Blog posts
 
-This repository goes along with blog posts done during the PhD course:
+This repository goes along with blog posts done during my PhD course:
 
-- [Sinusoid Separation](https://dcalhas.github.io/eeg_to_fmri/blog/Sinusoid_separation.html);
+- [EEG recording to fMRI volume](https://dcalhas.github.io/eeg_to_fmri/blog/EEG_fMRI.html);
+- [Classification on EEG only datasets](https://dcalhas.github.io/eeg_to_fmri/blog/Sinusoid_separation.html);
 
 ## Acknowledgements
 
