@@ -69,14 +69,14 @@ Ideally you want this function to return an [mne.io.Raw](https://mne.tools/stabl
 
 The inputs of this function are:
 - *individual* - int, the individual one wants to retrieve. This function is being executed inside a for loop, ```for individual in range(getattr(data_utils, "n_individuals_"+dataset)```, that goes through the range of individuals, **n_individuals_NEW**, you set in the [data_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/data_utils.py#L32) file;
-- *path_eeg* - str, the path where your dataset is located, e.g. ```path_eeg="/tmp/NEW/EEG/"```, this may be an optional argument set as ```path_eeg="/tmp/"+dataset_NEW+"/EEG/"```;
+- *path_eeg* - str, the path where your dataset is located, e.g. ```path_eeg=os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/EEG/"```, this may be an optional argument set as ```path_eeg=os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/EEG/"```;
 - *task* - str, can be set to None if it does not apply to your dataset;
 
 So given these inputs one can start by listing the directories of your dataset (now this can depend on how you organized the data, we assume that each individual has a folder dedicated to itself and the sorted names of the folders have the individual's folders first and after the auxiliary description ones, e.g. "info" for information about the dataset):
 
 
 ```python
-def get_eeg_instance_NEW(individual, path_eeg="/tmp/"+dataset_NEW+"/EEG/", task=None,):
+def get_eeg_instance_NEW(individual, path_eeg=os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/EEG/", task=None,):
 	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
 
 	individual = individuals[individual]
@@ -86,7 +86,7 @@ def get_eeg_instance_NEW(individual, path_eeg="/tmp/"+dataset_NEW+"/EEG/", task=
 ```
 The output of the last print (if ```individuals=["sub-001", "sub-002", ..., "sub-"+data_utils.n_individuals_NEW, ...]```):
 ```bash
-/tmp/NEW/EEG/sub-001/
+/tmp/"+dataset_NEW+"/EEG/sub-001/
 ```
 
 Inside the path described above should be a set of files needed to load a eeg brainvision object. If you sort these files, likely 
@@ -107,7 +107,7 @@ Now one only needs to return the Brainvision object:
 In the end **get_eeg_instance_NEW** is:
 
 ```python
-def get_eeg_instance_NEW(individual, path_eeg="/tmp/"+dataset_NEW+"/", task=None,):
+def get_eeg_instance_NEW(individual, path_eeg=os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/", task=None,):
 	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
 
 	individual = individuals[individual]
@@ -126,14 +126,14 @@ def get_eeg_instance_NEW(individual, path_eeg="/tmp/"+dataset_NEW+"/", task=None
 Next step is to implement the function that retrieves the fMRI recordings of all individuals. We assume each individual's recording is save in an [.nii.gz](http://justsolve.archiveteam.org/wiki/NII) file.
 
 The inputs of this function are:
-- *path_fmri* - str, absolute path that specifies the location of your dataset, e.g. ```path_fmri="/tmp/NEW/BOLD/```, this may be an optional argument set as ```path_fmri="/tmp/"+dataset_NEW+"/BOLD/"```
+- *path_fmri* - str, absolute path that specifies the location of your dataset, e.g. ```path_fmri=os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/```, this may be an optional argument set as ```path_fmri=os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/"```
 - *resolution_factor* - float, this is an optional argument that might not be used, please refer to the [functions](https://github.com/DCalhas/eeg_to_fmri/blob/1df6f6e353952ca6b9643938e1558ecf0697d435/src/utils/fmri_utils.py#L110) where this argument is used to grasp its function. WARNING: this variable is deprecated;
 - *number_individuals* - int, this variables specifies the number of individuals in this dataset, it is specified in the function call as ```number_individuals=getattr(data_utils, "number_individuals_"+dataset)```;
 
 Given the absolute path of the data and the number of individuals one wants to retrieve, we can now start implementing the code. Let's start by listing the individuals and saving it in a list:
 
 ```python
-def get_individuals_paths_NEW(path_fmri="/tmp/NEW/BOLD/", resolution_factor=None, number_individuals=None):
+def get_individuals_paths_NEW(path_fmri=os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/", resolution_factor=None, number_individuals=None):
 	fmri_individuals = []#this will be the output of this function
 	
 	dir_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f)) and "sub" in path_fmri+f])
@@ -141,7 +141,7 @@ def get_individuals_paths_NEW(path_fmri="/tmp/NEW/BOLD/", resolution_factor=None
 ```
 
 ```bash
-["/tmp/NEW/BOLD/sub-001", "/tmp/NEW/BOLD/sub-002", ..., "/tmp/NEW/BOLD/sub-"+data_utils.n_individuals_NEW, ...]
+[os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/sub-001", os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/sub-002", ..., os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/sub-"+data_utils.n_individuals_NEW, ...]
 ```
 
 Now we can move on to start the loop, where one iterates over each individuals' directory and loads the recording:
@@ -156,7 +156,7 @@ Now we can move on to start the loop, where one iterates over each individuals' 
 We assume that inside the individuals' folder, you will have an ".nii.gz" file and an additional ".anat" file. When sorted this list will have the ".nii.gz" file in the second place:
 
 ```
-["/tmp/NEW/BOLD/sub-001/FILE.anat", "/tmp/NEW/BOLD/sub-001/FILE.nii.gz"]
+[os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/sub-001/FILE.anat", os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/sub-001/FILE.nii.gz"]
 ```
 
 Therefore we pick the second file and use the [nilearn](https://nilearn.github.io/modules/generated/nilearn.image.load_img.html) library to load the image:
@@ -172,7 +172,7 @@ Therefore we pick the second file and use the [nilearn](https://nilearn.github.i
 In the end, this function is as:
 
 ```python
-def get_individuals_paths_NEW(path_fmri="/tmp/NEW/BOLD/", resolution_factor=None, number_individuals=None):
+def get_individuals_paths_NEW(path_fmri=os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/", resolution_factor=None, number_individuals=None):
 	fmri_individuals = []#this will be the output of this function
 	
 	dir_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f)) and "sub" in path_fmri+f])
@@ -198,7 +198,7 @@ For the EEG, we do not have a specified studied solution, just pray that it work
 For the fMRI, we found that mutating the resolution via Discrete Cosine Transform (DCT) spectral domain is a reasonable work around. To do this you only need to add the specified lines to the **get_individuals_paths_NEW** and a *downsample* and *downsample_shape* optional arguments to the function call:
 
 ```python
-def get_individuals_paths_NEW(path_fmri="/tmp/NEW/BOLD/", resolution_factor=None, number_individuals=None, downsample=True, downsample_shape=(64,64,30)):
+def get_individuals_paths_NEW(path_fmri=os.environ['EEG_FMRI_DATASETS']+dataset_NEW+"/BOLD/", resolution_factor=None, number_individuals=None, downsample=True, downsample_shape=(64,64,30)):
 	
 	...
 
