@@ -7,7 +7,7 @@
 
 ## Setup
 
-Ideally, your machine has a Nvidia GPU and is running Linux.
+Ideally, your machine has a GPU and is running Linux.
 
 First of all, please install [anaconda](https://www.anaconda.com/) at ```$HOME/anaconda3/```. To setup the environment for this repository, please run the following commands:
 
@@ -27,6 +27,8 @@ Run the configuration file:
 ```shell
 ./config.sh
 ```
+
+Please make sure to set the path to the datasets directory correclty. This path is stored in an environment variable, so every time you activate the environment, the variable is set and used in the code as os.environ['EEG_FMRI_DATASETS'].
 
 ## How do I test this research on my dataset?
 
