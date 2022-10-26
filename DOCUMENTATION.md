@@ -33,6 +33,8 @@ are as follows:
 	- 01: This corresponds to the [NODDI dataset](https://osf.io/94c5t/).
 	- 02: This corresponds to the [Oddball dataset](https://legacy.openfmri.org/dataset/ds000116/).
 	- 03: This corresponds to the [CN-EPFL dataset](https://openneuro.org/datasets/ds002158/versions/1.0.0).
+	- 04: This corresponds to the [Neurinfo-Rennes Xp1 dataset](https://openneuro.org/datasets/ds002336/versions/2.0.0).
+	- 05: This corresponds to the [Neurinfo-Rennes Xp1 dataset](https://openneuro.org/datasets/ds002336/versions/2.0.0).
 
 >	**Optional:**
 >	- *topographical_attention*: whether to use [topographical attention](https://github.com/DCalhas/eeg_to_fmri/blob/master/src/layers/topographical_attention.py) on the EEG channels/electrodes dimension.
