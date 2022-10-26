@@ -16,22 +16,24 @@ The code of this PhD thesis is extensive. Please read this section carefully if 
 
 The main.py file located at src/main.py is the script used for retrieve the results present in the [EEG to fMRI Synthesis](https://arxiv.org/abs/2203.03481) paper.
 
-> The arguments given to the file of the form:
-> $ python main.py <ARG1> <ARG2> ... <ARGN>
-> are as follows:
->
-> **Required:**
->	- *mode*
->		- metrics: the model is trained on a selected dataset and metrics, such as RMSE, SSIM and [Sharpness](https://arxiv.org/abs/1609.04836) (for uncertainty) are computed;
->		- residues: plots of the residues, on the test set data, in a white to black (bad to good, respectively) scale are retrieved. Example: TODO
->		- quality: retrieves the plots of each synthesized fMRI view.
->		- lrp_eeg_channels: Propagate the relevances from $$\hat{y}$$ to the channels [graph representation](https://github.com/DCalhas/eeg_to_fmri/blob/master/src/layers/topographical_attention.py). This is done using the [Layer-wise Relevance Propagation](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0130140). 
->		- lrp_eeg_fmri: Propagate the relevances from the latent representation $$z_y$$ to $$y$$.
->	- *dataset*
->		- 01: This corresponds to the [NODDI dataset](https://osf.io/94c5t/).
->		- 02: This corresponds to the [Oddball dataset](https://legacy.openfmri.org/dataset/ds000116/).
->		- 03: This corresponds to the [CN-EPFL dataset](https://openneuro.org/datasets/ds002158/versions/1.0.0).
->
+The arguments given to the file of the form:
+```bash
+python main.py <ARG1> <ARG2> ... <ARGN>
+```
+are as follows:
+
+**Required:**
+- *mode*
+	- metrics: the model is trained on a selected dataset and metrics, such as RMSE, SSIM and [Sharpness](https://arxiv.org/abs/1609.04836) (for uncertainty) are computed;
+	- residues: plots of the residues, on the test set data, in a white to black (bad to good, respectively) scale are retrieved. Example: TODO
+	- quality: retrieves the plots of each synthesized fMRI view.
+	- lrp_eeg_channels: Propagate the relevances from $$\hat{y}$$ to the channels [graph representation](https://github.com/DCalhas/eeg_to_fmri/blob/master/src/layers/topographical_attention.py). This is done using the [Layer-wise Relevance Propagation](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0130140). 
+	- lrp_eeg_fmri: Propagate the relevances from the latent representation $$z_y$$ to $$y$$.
+- *dataset*
+	- 01: This corresponds to the [NODDI dataset](https://osf.io/94c5t/).
+	- 02: This corresponds to the [Oddball dataset](https://legacy.openfmri.org/dataset/ds000116/).
+	- 03: This corresponds to the [CN-EPFL dataset](https://openneuro.org/datasets/ds002158/versions/1.0.0).
+
 >	**Optional:**
 >	- *topographical_attention*: whether to use [topographical attention](https://github.com/DCalhas/eeg_to_fmri/blob/master/src/layers/topographical_attention.py) on the EEG channels/electrodes dimension.
 >	- *conditional_attention_style*: use the attention scores to condition the latent representations. This is only used if *topographical_attention* is also used.
