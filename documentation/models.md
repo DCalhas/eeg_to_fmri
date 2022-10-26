@@ -10,7 +10,7 @@ tags:
 ---
 
 
-## Models
+# Models
 
 The models implemented in this repository are:
 
@@ -22,7 +22,7 @@ The models implemented in this repository are:
 You may find more models implemented in the [models](https://github.com/DCalhas/eeg_to_fmri/tree/master/src/models) folder. Please beware that the latter may be either stale or deprecated.
 
 	
-### fMRI AE
+## fMRI AE
 
 This class implements an fMRI autoencoder.
 
@@ -46,7 +46,7 @@ This class implements an fMRI autoencoder.
 >	- *_build_decoder*: bool, specifies if the decoder is built or not. This is because this class is used to build the fMRI encoder for the EEG_to_fMRI model;
 >	- *na_spec*: tuple, Please refer to the next subsection for a clear description of a neural architecture specification;
 	
-### EEG to fMRI
+## EEG to fMRI
 
 This class implements the EEG to fMRI Synthesis model proposed in this [paper](https://arxiv.org/abs/2203.03481). 
 
@@ -79,7 +79,7 @@ This class implements the EEG to fMRI Synthesis model proposed in this [paper](h
 >	- *seed*: int, specifies the seed from which the random generator starts;
 >	- *fmri_args*: tuple, contains the arguments given to the fMRI encoder part of the model. Please refer to the fmri_ae documentation;	
 
-#### Neural Architecture Specification
+### Neural Architecture Specification
 
 NA_specification - tuple - (list1, list2, bool, tuple1, tuple2)
                                     * list1 - kernel sizes
@@ -97,7 +97,7 @@ na = ([(2,2,2), (2,2,2)], [(1,1,1), (1,1,1)], True, (2,2,2), (1,1,1))
 This ```na``` is a neural architecture with 2 layers, kernel of size 2 for all 3 dimensions stride of size 1 for all dimensions, between each layer a max pooling operation is applied with kernel size 2 for all dimensions and stride size 1 for all dimensions
 
 
-#### Example build
+### Example build
 
 ```
 from models.eeg_to_fmri import EEG_to_fMRI
@@ -107,8 +107,8 @@ model = EEG_to_fMRI((7,7,7),
 
 ```
 
-### Linear Classifier
+## Linear Classifier
 
 
-### EEG View Classifier
+## EEG View Classifier
 
