@@ -87,7 +87,7 @@ This model implements variational layers:
 
 This layer is the bayesian version of the [tf.keras.layers.Dense]() layer. It is parametrized by $$W,b$$ and transforms the inputs, $$X\in \mathbb{R}^{N}$$, as:
 
-$$a(W^\top X + b)$$
+$$a(W^\top \cdot X + b)$$
 
 The parameters are variational and are setup as:
 
