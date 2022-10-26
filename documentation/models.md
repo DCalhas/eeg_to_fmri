@@ -1,14 +1,13 @@
 ---
 layout: default
-title: Layers
-parent: Models
+title: Models
+parent: Documentation
 nav_order: 2
 mathjax: true
 tags: 
   - latex
   - math
 ---
-
 
 # Models
 
