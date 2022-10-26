@@ -85,7 +85,7 @@ This model implements variational layers:
 
 #### Dense Varitational
 
-This layer is the bayesian version of the [tf.keras.layers.Dense]() layer. It is parametrized by $$W,b$$ and transforms the inputs, $$X\in \mathbb{R}^{N}$$, as:
+This layer is the bayesian version of the [tf.keras.layers.Dense](https://www.tensorflow.org/api_docs/python/tf/keras/layers/Dense) layer. It is parametrized by $$W,b$$ and transforms the inputs, $$X\in \mathbb{R}^{N}$$, as:
 
 $$a(W^\top \cdot X + b)$$
 
