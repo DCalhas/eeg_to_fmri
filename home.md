@@ -36,7 +36,7 @@ Run the configuration file:
 ./config.sh
 ```
 
-Please make sure to set the path to the datasets directory correclty. This path is stored in an environment variable, so every time you activate the environment, the variable is set and used in the code as os.environ['EEG_FMRI_DATASETS'].
+Please make sure to set the path to the datasets directory correclty. This path is stored in an environment variable, so every time you activate the environment, the variable is set and used in the code as ```os.environ['EEG_FMRI_DATASETS']```.
 
 ## How do I test this research on my dataset?
 
