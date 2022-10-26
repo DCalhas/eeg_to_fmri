@@ -98,8 +98,6 @@ and for the bias:
 $$b = b_{\mbox{posterior}} + b_{\mbox{prior}} \times \epsilon: epsilon \sim \mathcal{N}(0,1)^{\mbox{units}} \wedge b_{\mbox{posterior}}, b_{\mbox{prior}} \in \mathbb{R}^{\mbox{units}},$$
 
 > Arguments:
->	- *
-
 >	- *units*: int, specifies the output units;
 >	- *activation*: func, specifies the activation $$a$$ used;
 >	- *activity_regularizer*: func, specifies the activity regularization applied;
@@ -110,6 +108,7 @@ $$b = b_{\mbox{posterior}} + b_{\mbox{prior}} \times \epsilon: epsilon \sim \mat
 >	- *use_bias*: bool, specifies whether to use bias or not;
 >	- *trainable*: bool, specifies whether the parameters are trainable;
 >	- *seed*: bool, specifies the seed to generate random numbers;
+>
 > Methods:
 >	- *call*: returns the output given an input;
 >	- *get_config*: returns a dictionary with the configuration needed to serialize the layer (see [layer serialization](https://www.tensorflow.org/api_docs/python/tf/keras/layers/serialize));
