@@ -116,7 +116,9 @@ This class is a linear classifier, that contains a matrix and a bias (optional) 
 >	- *regularizer*: tf.keras.regularizers.Regularizer, specifies the regularization applied to the parameters;
 
 
-## EEG View Classifier, using Sinusoid separation explained in [this blog post]()
+## EEG View Classifier
+
+This class uses Sinusoid separation explained in [this blog post](https://dcalhas.github.io/eeg_to_fmri/blog/Sinusoid_separation.html).
 
 The name of this class is ```ViewLatentContrastiveClassifier```. You find in the file several variations to classify a view, however this class implements the methodology that is able to separate accurately the data.
 
