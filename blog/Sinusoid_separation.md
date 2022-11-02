@@ -36,7 +36,7 @@ The loss that achieves this goal is an adaptation of the [contrastive loss](),
 
 $$\mathcal{L}_D(x_1, x_2, y_p) = y_p \times D(x_1, x_2) + (1-y_p) \times ||D(x_1,x_2)-m||_1,$$
 
-where $$x_1$$ and $$x_2$$ are supposed to be the projection before the cosine, $$\omega \cdot \vec{z}_x + \beta$$, for two instances, and $$y_p$$ specifies if these two instances belong together or not. Two instances belong together if $$y_i == y_j$$ and are false pairs if $$y_i \neq y_j$$. Therefore, $$y_p$$ can be represented as $$1[y_i == y_j]$$. The term $$y_p \times D(x_1, x_2)$$ brings points with the same label closer together, while them term $$(1-y_p) \times ||D(x_1,x_2)-m||_1$$ places points with different labels as far as $$m$$, which we set to $$m=\pi$$.
+where $$x_1$$ and $$x_2$$ are supposed to be the projection before the cosine, $$\omega \cdot \vec{z}_x + \beta$$, for two instances, and $$y_p$$ specifies if these two instances belong together or not. Two instances belong together if $$y_i == y_j$$ and are false pairs if $$y_i \neq y_j$$. Therefore, $$y_p$$ can be represented as $$1[y_i == y_j]$$. The term $$y_p \times D(x_1, x_2)$$ brings points with the same label closer together, while them term $$(1-y_p) \times \|\|D(x_1,x_2)-m\|\|_1$$ places points with different labels as far as $$m$$, which we set to $$m=\pi$$.
 
 ## Let us dive into the code!
 
