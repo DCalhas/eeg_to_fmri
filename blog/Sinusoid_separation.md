@@ -34,13 +34,38 @@ In this section, I will go over the methodology used to classify synthesized ima
 
 The loss that achieves this goal is an adaptation of the [contrastive loss](),
 
-$$\mathcal{L}_D(x_1, x_2, y_p) = y_p \times D(x_1, x_2) + (1-y_p) \times ||D(x_1,x_2)-m||_1,$$
+$$\mathcal{L}_D(x_1, x_2, y_p) = y_p \times D(x_1, x_2) + (1-y_p) \times \|D(x_1,x_2)-m\|_1,$$
 
-where $$x_1$$ and $$x_2$$ are supposed to be the projection before the cosine, $$\omega \cdot \vec{z}_x + \beta$$, for two instances, and $$y_p$$ specifies if these two instances belong together or not. Two instances belong together if $$y_i == y_j$$ and are false pairs if $$y_i \neq y_j$$. Therefore, $$y_p$$ can be represented as $$1[y_i == y_j]$$. The term $$y_p \times D(x_1, x_2)$$ brings points with the same label closer together, while them term $$(1-y_p) \times \|\|D(x_1,x_2)-m\|\|_1$$ places points with different labels as far as $$m$$, which we set to $$m=\pi$$.
+where $$x_1$$ and $$x_2$$ are supposed to be the projection before the cosine, $$\omega \cdot \vec{z}_x + \beta$$, for two instances, and $$y_p$$ specifies if these two instances belong together or not. Two instances belong together if $$y_i == y_j$$ and are false pairs if $$y_i \neq y_j$$. Therefore, $$y_p$$ can be represented as $$1[y_i == y_j]$$. The term $$y_p \times D(x_1, x_2)$$ brings points with the same label closer together, while them term $$(1-y_p) \times \|D(x_1,x_2)-m\|_1$$ places points with different labels as far as $$m$$, which we set to $$m=\pi$$.
 
 ## Let us dive into the code!
 
+First you need to do all the imports:
 
+```python
+import tensorflow as tf
+from utils import data_utils, preprocess_data, tf_config, train, losses_utils, lrp, viz_utils, fmri_utils
+from layers import topographical_attention
+from models import classifiers, eeg_to_fmri
+from pathlib import Path
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+import pickle
+```
+
+Then you set up the information about which dataset to use for the classification, for the synthesis, as well as setting up the seed for tensorflow and the memory limit it uses on the GPU.
+
+```python
+dataset="11"
+dataset_synthesis="01"
+raw_eeg=False
+n_individuals=getattr(data_utils, "n_individuals_"+dataset)
+memory_limit=1500
+interval_eeg=10
+tf_config.set_seed(seed=2)
+tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit, run_eagerly=True)
+```
 
 
 
