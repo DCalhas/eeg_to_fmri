@@ -26,7 +26,7 @@ This image corresponds to the STFT projection of one channel. The labels are $$y
 
 ## Classifying synthesized images
 
-In this section, I will go over the methodology used to classify synthesized images (a projection that is done using the sinusoids). This is the novel contribution of this [paper](https://en.wikipedia.org/wiki/HTTP_404). Let $$\vec{z}_{X_i}$$ be a latent projection of the synthesizer model, such that $$\vec{z}_{X_i}=E(X_i; \theta_E)$$ is the representation preceeding the sinusoid projection. It consists on picking the sinusoid projections $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$, with $$\omega,\beta$$ being trainable parameters, and separating both $$\omega \cdot \vec{z}_{X_i} + \beta$$ and $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$ using a contrastive loss. In the figure below it is shown how the points are initialized and how after training they are well separated in opposite sides of the unit circle, where the $$cos$$ takes values $$\approx 1$$ and $$\approx -1$$.
+In this section, I will go over the methodology used to classify synthesized images (a projection that is done using the sinusoids). This is the novel contribution of this [paper](https://en.wikipedia.org/wiki/HTTP_404). Let $$\vec{z}_{X_i}=E(X_i; \theta_E)$$ be a latent projection of the synthesizer model preceeding the sinusoid projection. Since the sinusoid projection is $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$, with $$\omega,\beta$$ being trainable parameters, then we can by induction separate both $$\omega \cdot \vec{z}_{X_i} + \beta$$ and $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$ using a contrastive loss. In the figure below it is shown how the points are initialized and how after training they are well separated in opposite sides of the unit circle, where the $$cos$$ takes values $$\approx 1$$ and $$\approx -1$$.
 
 <p align="center">
 	<img src="./figures/contrastive_optimization.png" width="400"/>
@@ -36,7 +36,7 @@ The loss that achieves this goal is an adaptation of the [contrastive loss](),
 
 $$\mathcal{L}_D(X_1, X_2, y_p) = y_p \times D(X_1, X_2) + (1-y_p) \times \|D(X_1,X_2)-m\|_1,$$
 
-where $$X_1$$ and $$X_2$$ are the two instances that constitute the pair. The distance function is defined as $$D(X_i, X_j)=\|(\omega \cdot\vec{z}_{X_i} + \beta) -(\omega \cdot \vec{z}_{X_j} + \beta)\|_1$$ and $$y_p$$ specifies if these two instances belong together or not. Two instances belong together if $$y_i == y_j$$ and are false pairs if $$y_i \neq y_j$$. Therefore, $$y_p$$ can be represented as $$1[y_i == y_j]$$. The term $$y_p \times D(x_1, x_2)$$ brings points with the same label closer together, while them term $$(1-y_p) \times \|D(x_1,x_2)-m\|_1$$ places points with different labels as far as $$m$$, which we set to $$m=\pi$$.
+where $$X_1$$ and $$X_2$$ are the two instances that constitute the pair. The distance function is defined as $$D(X_i, X_j)=\|(\omega \cdot\vec{z}_{X_i} + \beta) -(\omega \cdot \vec{z}_{X_j} + \beta)\|_1$$ and $$y_p$$ specifies if these two instances belong together or not. Two instances belong together if $$y_i == y_j$$ and are false pairs if $$y_i \neq y_j$$. Therefore, $$y_p$$ can be represented as $$1[y_i == y_j]$$. The term $$y_p \times D(X_1, X_2)$$ brings points with the same label closer together, while them term $$(1-y_p) \times \|D(X_1,X_2)-m\|_1$$ places points with different labels as far as $$m$$, which we set to $$m=\pi$$.
 
 ## Let us dive into the code!
 
@@ -88,7 +88,7 @@ test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
 
 Why do we need the labels $$y_i, y_j$$? Because in addition to separating the data according to the contrastive loss, we are also learning a linear classifier that classifies the synthesized fMRI view. This loss is represented as 
 
-$$\mathcal{L}_C = y_i\times log(\hat{y}_i) + y_j\times log(\hat{y}_j),$$
+$$\mathcal{L}_C(X_i, X_j, y_i, y_j) = y_i\times log(\hat{y}_i) + y_j\times log(\hat{y}_j),$$
 
 where both instances are used for the training of the classifier. Altogether, these losses form the main loss
 
