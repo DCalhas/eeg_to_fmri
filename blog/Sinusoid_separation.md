@@ -106,9 +106,7 @@ Now that we have all the data setted up, we can start building the model.
 ```python
 network="/home/ist_davidcalhas/eeg_to_fmri/networks/deterministic"
 optimizer = tf.keras.optimizers.Adam(1e-3)
-linearCLF=classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(network,custom_objects=eeg_to_fmri.custom_objects), 
-				X_train.shape[1:], activation=tf.keras.activations.linear, 
-				regularizer=tf.keras.regularizers.L1(l=2.), variational=True)
+linearCLF=classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(network,custom_objects=eeg_to_fmri.custom_objects), X_train.shape[1:], activation=tf.keras.activations.linear, regularizer=tf.keras.regularizers.L1(l=2.), variational=True)
 linearCLF.build(X_train.shape)
 ```
 
@@ -142,6 +140,17 @@ for x, _ in test_set.repeat(1):
 	break
 ```
 
+Now we can use the fMRI synthesized view to check which regions of the synthesized brain had more relevance to the prediction.
+
+```python
+explainer = lrp.LRP(linearCLF.clf)
+test_views = np.empty((0,)+getattr(fmri_utils, "fmri_shape_"+dataset_synthesis)+(1,))
+for x, _ in test_set.repeat(1):
+    test_views = np.append(test_views, linearCLF.view.q_decoder(x), axis=0)
+test_views_set = tf.data.Dataset.from_tensor_slices((test_views,y_test)).batch(1)
+R=lrp.explain(explainer, test_views_set, verbose=True)
+fig = viz_utils.plot_3D_representation_projected_slices(np.mean(R, axis=0), res_img=np.mean(fmri_train,axis=0),slice_label=True,cmap=plt.cm.gist_heat,threshold=0.2,legend_colorbar=r"$\mathbb{E}[R]$",max_min_legend=["Negative","Positive"])
+```
 ## References
 
 \[1\]: [Tancik, Matthew, et al. Fourier features let networks learn high frequency functions in low dimensional domains. Advances in Neural Information Processing Systems, 2020, 33: 7537-7547.](https://arxiv.org/abs/2006.10739)
