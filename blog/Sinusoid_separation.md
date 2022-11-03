@@ -79,7 +79,20 @@ with tf.device('/CPU:0'):
 	X_test, y_test=test_data
 ```
 
-With the train and test data, which formulate the pairs of data $$X, y$$, with its corresponding features and labels we are set. Wait, we still need a special type of pairing for the training, since we are minimizing the contrastive loss.
+With the train and test data, which formulate the pairs of data $$X, y$$, with its corresponding features and labels we are set. Wait, we still need a special type of pairing for the training, since we are minimizing the contrastive loss. That means we need pairs of instances $$i, j$$, where for each batch introduced in the model we need their features $$X_i, X_j$$, labels $$y_i, y_j$$ and pair label $$y_p = 1[y_i==y_j]$$. In the end each batch of the ```train_set``` contains tuples of the form $$(X_i, X_j, y_p, y_i, y_j)$$.
+
+```python
+train_set = preprocess_data.DatasetContrastive(X_train, y_train, batch=8, clf=True)
+test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(1)
+```
+
+Why do we need the labels $$y_i, y_j$$? Because in addition to separating the data according to the contrastive loss, we are also learning a linear classifier that classifies the synthesized fMRI view. This loss is represented as 
+
+$$\mathcal{L}_C = y_i\times log(\hat{y}_i) + y_j\times log(\hat{y}_j),$$
+
+where both instances are used for the training of the classifier. Altogether, these losses form the main loss
+
+$$\mathcal{L}(X_i, X_j, y_p, y_i, y_j) = \mathcal{L}_D(X_i, X_j, y_p) + \mathcal{L}_C(X_i, X_j, y_i, y_j) + \lambda\|\theta\|_1$$
 
 ## References
 
