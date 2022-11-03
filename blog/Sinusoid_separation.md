@@ -67,11 +67,19 @@ tf_config.set_seed(seed=2)
 tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit, run_eagerly=True)
 ```
 
+For this classification setting, we always assume that a CV with $$n$$ folds is being performed, but here we simply do one fold. That is why the number of folds is being set, but only one of them is being considered ```train_data, test_data = dataset_clf_wrapper.split(0)```.
 
+```python
+with tf.device('/CPU:0'):	
+	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=True)
+	dataset_clf_wrapper.shuffle()
+	dataset_clf_wrapper.set_folds(5)
+	train_data, test_data = dataset_clf_wrapper.split(0)
+	X_train, y_train=train_data
+	X_test, y_test=test_data
+```
 
-
-
-
+With the train and test data, which formulate the pairs of data $$X, y$$, with its corresponding features and labels we are set. Wait, we still need a special type of pairing for the training, since we are minimizing the contrastive loss.
 
 ## References
 
