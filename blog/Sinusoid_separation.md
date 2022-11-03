@@ -16,17 +16,17 @@ In this post I will talk about the application of this package to classify EEG d
 
 ## EEG only dataset
 
-The dataset consists of $$N$$ individuals. The individuals have a set of features $$X \in \mathbb{R}^{N \times C\times F\times T}$$ and labels $$y \in \mathbb{R}^{N \times 1}$$. The notation is similar to the previous blog post, where $$C$$ stands for the number of channels, $$F$$ is the frequency resolution and $$T$$ is the amount of time considered of the EEG recording. Note that, we only consider binary classification problems for this setup. An EEG instance looks like illustrated in the figure below.
+The dataset consists of $$N$$ individuals. The individuals have a set of features $$X \in \mathbb{R}^{N \times C\times F\times T}$$ and labels $$y \in \mathbb{R}^{N \times 1}$$. The notation is similar to the previous blog post, where $$C$$ stands for the number of channels, $$F$$ is the frequency resolution and $$T$$ is the amount of time considered of the EEG recording. An EEG instance looks like illustrated in the figure below.
 
 <p align="center">
 	<img src="./figures/eeg_stft.png" width="200"/>
 </p>
 
-This image corresponds to the STFT projection of one channel. The labels are $$y = \{0, 0, \dots, 1, 1\}$$.
+This image corresponds to the STFT projection of one channel. The labels are $$y = \{0, 0, \dots, 1, 1\}$$. Note that, we only consider binary classification problems for this setup.
 
 ## Classifying synthesized images
 
-In this section, I will go over the methodology used to classify synthesized images (a projection that is done using the sinusoids). This is the novel contribution of this [paper](https://en.wikipedia.org/wiki/HTTP_404). Let $$\vec{z}_{X_i}=E(X_i; \theta_E)$$ be a latent projection of the synthesizer model preceeding the sinusoid projection. Since the sinusoid projection is $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$, with $$\omega,\beta$$ being trainable parameters, then we can by induction separate both $$\omega \cdot \vec{z}_{X_i} + \beta$$ and $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$ using a contrastive loss. In the figure below it is shown how the points are initialized and how after training they are well separated in opposite sides of the unit circle, where the $$cos$$ takes values $$\approx 1$$ and $$\approx -1$$.
+In this section, I will go over the methodology used to classify synthesized images (projected by sinusoids). This is the novel contribution of this [paper](https://en.wikipedia.org/wiki/HTTP_404). Let $$\vec{z}_{X_i}=E(X_i; \theta_E)$$ be a latent projection of the synthesizer model preceding the sinusoid projection. Since the sinusoid projection is $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$, with $$\omega,\beta$$ being trainable parameters, then we can by induction separate both $$\omega \cdot \vec{z}_{X_i} + \beta$$ and $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$ using a contrastive loss. In the figure below it is shown how the points are initialized and how after training they are well separated in opposite sides of the unit circle, where the $$cos$$ takes values $$\approx 1$$ and $$\approx -1$$.
 
 <p align="center">
 	<img src="./figures/contrastive_optimization.png" width="400"/>
@@ -67,7 +67,7 @@ tf_config.set_seed(seed=2)
 tf_config.setup_tensorflow(device="GPU", memory_limit=memory_limit, run_eagerly=True)
 ```
 
-For this classification setting, we always assume that a CV with $$n$$ folds is being performed, but here we simply do one fold. That is why the number of folds is being set, but only one of them is being considered ```train_data, test_data = dataset_clf_wrapper.split(0)```.
+For this classification setting, we always assume a CV with $$5$$ folds, but here we simply do one fold. That is why the number of folds is being set, but only one of them is being considered ```train_data, test_data = dataset_clf_wrapper.split(0)```.
 
 ```python
 with tf.device('/CPU:0'):	
@@ -94,7 +94,7 @@ where both instances are used for the training of the classifier. Please note th
 
 $$\mathcal{L}(X_i, X_j, y_p, y_i, y_j) = \mathcal{L}_D(X_i, X_j, y_p) + \mathcal{L}_C(X_i, X_j, y_i, y_j) + \lambda\|\theta\|_1,$$
 
-where $$\theta$$ is the set of parameters of the classifier.
+where $$\theta$$ is the set of parameters of the classifier only. Check the [Linear Classifier](https://dcalhas.github.io/eeg_to_fmri/documentation/models.html) and [Dense Variational](https://dcalhas.github.io/eeg_to_fmri/documentation/layers.html) modules to see the code used to classify a synthesized fMRI view (of the EEG). 
 
 ## References
 
