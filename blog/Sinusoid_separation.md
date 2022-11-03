@@ -45,7 +45,6 @@ First you need to do all the imports:
 ```python
 import tensorflow as tf
 from utils import data_utils, preprocess_data, tf_config, train, losses_utils, lrp, viz_utils, fmri_utils
-from layers import topographical_attention
 from models import classifiers, eeg_to_fmri
 from pathlib import Path
 import numpy as np
@@ -94,7 +93,54 @@ where both instances are used for the training of the classifier. Please note th
 
 $$\mathcal{L}(X_i, X_j, y_p, y_i, y_j) = \mathcal{L}_D(X_i, X_j, y_p) + \mathcal{L}_C(X_i, X_j, y_i, y_j) + \lambda\|\theta\|_1,$$
 
-where $$\theta$$ is the set of parameters of the classifier only. Check the [Linear Classifier](https://dcalhas.github.io/eeg_to_fmri/documentation/models.html) and [Dense Variational](https://dcalhas.github.io/eeg_to_fmri/documentation/layers.html) modules to see the code used to classify a synthesized fMRI view (of the EEG). 
+where $$\theta$$ is the set of parameters of the classifier only. This loss is built in the ```losses_utils``` module and is instantiated in the code as:
+
+```python
+loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
+```
+
+Please check the [Linear Classifier](https://dcalhas.github.io/eeg_to_fmri/documentation/models.html) and [Dense Variational](https://dcalhas.github.io/eeg_to_fmri/documentation/layers.html) modules to see the code used to classify a synthesized fMRI view (of the EEG).
+
+Now that we have all the data setted up, we can start building the model.
+
+```python
+network="/home/ist_davidcalhas/eeg_to_fmri/networks/deterministic"
+optimizer = tf.keras.optimizers.Adam(1e-3)
+linearCLF=classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(network,custom_objects=eeg_to_fmri.custom_objects), 
+				X_train.shape[1:], activation=tf.keras.activations.linear, 
+				regularizer=tf.keras.regularizers.L1(l=2.), variational=True)
+linearCLF.build(X_train.shape)
+```
+
+With the model built, we only have the training session left to do:
+
+
+```python
+train.train(train_set, linearCLF, optimizer, loss_fn, epochs=10, verbose=True, verbose_batch=True)
+```
+
+The output corresponds to:
+
+```
+<<< Epoch 1 with loss: 84.25851927132442
+<<< Epoch 2 with loss: 52.9350555025298
+<<< Epoch 3 with loss: 125.1430987325208
+<<< Epoch 4 with loss: 78.96974868609988
+<<< Epoch 5 with loss: 57.1884643990418
+<<< Epoch 6 with loss: 60.4331891588096
+<<< Epoch 7 with loss: 38.95034251619002
+<<< Epoch 8 with loss: 10.687810596078634
+<<< Epoch 9 with loss: 19.28891693029938
+<<< Epoch 10 with loss: 6.3919262424882115
+```
+
+The training loss does not converge in the beginning, which is due to the loss being composed by two components that are dependent. For the classification loss to converge, the contrastive loss needs to converge in the first place. This is why the values of the training loss do not look very stable. However, the model is still learning the tasks defined, let's see what it synthesizes and how it performs predictively.
+
+```python
+for x, _ in test_set.repeat(1):
+	fig = viz_utils.plot_3D_representation_projected_slices(linearCLF.view.q_decoder(x).numpy()[0,:,:,:,:],slice_label=True, threshold=0.50,)
+	break
+```
 
 ## References
 
