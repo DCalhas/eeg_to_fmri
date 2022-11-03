@@ -133,7 +133,7 @@ Performs the inverse DCT, but adds stochastic frequencies, i.e. padds the spectr
 
 ## Random Fourier Module
 
-This module is a wrap of the implementation done in [tensorflow](https://www.tensorflow.org/api_docs/python/tf/keras/layers/experimental/RandomFourierFeatures), but some tweaks were needed to git it into our methodology. The file is similar to the tensorflow implementation.
+This module is a wrap of the implementation done in [tensorflow](https://www.tensorflow.org/api_docs/python/tf/keras/layers/experimental/RandomFourierFeatures), but some tweaks were needed to get it to work with our methodology. The file is similar to the tensorflow implementation.
 
 ## Topographical Attention Module
 
