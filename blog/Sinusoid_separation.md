@@ -32,7 +32,7 @@ In this section, I will go over the methodology used to classify synthesized ima
 	<img src="./figures/contrastive_optimization.png" width="400"/>
 </p>
 
-The loss that achieves this goal is an adaptation of the [contrastive loss](),
+The loss that achieves this goal is an adaptation of the contrastive loss [\[1\]](#references),
 
 $$\mathcal{L}_D(X_1, X_2, y_p) = y_p \times D(X_1, X_2) + (1-y_p) \times \|D(X_1,X_2)-m\|_1,$$
 
@@ -151,6 +151,8 @@ test_views_set = tf.data.Dataset.from_tensor_slices((test_views,y_test)).batch(1
 R=lrp.explain(explainer, test_views_set, verbose=True)
 fig = viz_utils.plot_3D_representation_projected_slices(np.mean(R, axis=0), res_img=np.mean(fmri_train,axis=0),slice_label=True,cmap=plt.cm.gist_heat,threshold=0.2,legend_colorbar=r"$\mathbb{E}[R]$",max_min_legend=["Negative","Positive"])
 ```
+
+
 ## References
 
-\[1\]: [Tancik, Matthew, et al. Fourier features let networks learn high frequency functions in low dimensional domains. Advances in Neural Information Processing Systems, 2020, 33: 7537-7547.](https://arxiv.org/abs/2006.10739)
+\[1\]: [Bromley, J., Guyon, I., LeCun, Y., Säckinger, E., & Shah, R. (1993). Signature verification using a" siamese" time delay neural network. Advances in neural information processing systems, 6.](https://proceedings.neurips.cc/paper/1993/file/288cc0ff022877bd3df94bc9360b9c5d-Paper.pdf)

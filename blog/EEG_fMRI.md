@@ -104,7 +104,7 @@ with open(str(Path.home())+"/eeg_to_fmri/na_models_fmri/na_specification_2", "rb
 	na_specification_fmri = pickle.load(f)
 ```
 
-Note that both the ```eeg_to_fmri.parameters``` and the neural architectures' specification were obtained after exhaustive automatic searches. For the first, the Bayesian optimization algorithm was used and for the second the automatic neural architecture generation algorithm ([paper](https://openreview.net/forum?id=TCvkaP15O7e)).
+Note that both the ```eeg_to_fmri.parameters``` and the neural architectures' specification were obtained after exhaustive automatic searches. For the first, the Bayesian optimization algorithm [\[1\]](#references) was used and for the second the automatic neural architecture generation algorithm [\[2\]](#references).
 
 With these parameters, we can finally build the model and setup the optimizer, loss, training set and test set:
 
@@ -167,6 +167,10 @@ The output of this code corresponds to the figure below.
 
 Note that we give as input, to the model, the EEG and the fMRI representation, however our goal is to produce an fMRI volume without an EEG reference. If we check the [call function](https://github.com/DCalhas/eeg_to_fmri/blob/ff7c1b988a7dca77f0db400bcb511c6127e82c33/src/models/eeg_to_fmri.py#L329) of the model, we see that it returns a list of tensors, where the first tensor is the predicted fMRI without influence of the original fMRI and only dependent on the EEG. In the [next blog post](https://dcalhas.github.io/eeg_to_fmri/blog/Sinusoid_separation.html) I show you how to use the model trained in this post to obtain fMRI synthesized volumes and use them for classification.
 
+
+
 ## References
 
-\[1\]: [Tancik, Matthew, et al. Fourier features let networks learn high frequency functions in low dimensional domains. Advances in Neural Information Processing Systems, 2020, 33: 7537-7547.](https://arxiv.org/abs/2006.10739)
+\[1\]: [Snoek, J., Larochelle, H., & Adams, R. P. (2012). Practical bayesian optimization of machine learning algorithms. Advances in neural information processing systems, 25.](https://proceedings.neurips.cc/paper/2012/hash/05311655a15b75fab86956663e1819cd-Abstract.html)
+
+\[2\]: [Calhas, D., Manquinho, V. M., & Lynce, I. (2021, November). Automatic Generation of Neural Architecture Search Spaces. In Combining Learning and Reasoning: Programming Languages, Formalisms, and Representations.](https://openreview.net/forum?id=TCvkaP15O7e)
