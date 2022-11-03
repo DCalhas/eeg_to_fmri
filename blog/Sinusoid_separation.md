@@ -26,7 +26,7 @@ This image corresponds to the STFT projection of one channel. The labels are $$y
 
 ## Classifying synthesized images
 
-In this section, I will go over the methodology used to classify synthesized images (a projection that is done using the sinusoids). This is the novel contribution of this [paper](https://en.wikipedia.org/wiki/HTTP_404). It consists on picking the sinusoid projections $$cos(\omega \cdot \vec{z}_x + \beta)$$, with $$\omega,\beta$$ being trainable parameters, and separating both $$\omega \cdot \vec{z}_x + \beta$$ and $$cos(\omega \cdot \vec{z}_x + \beta)$$ using a contrastive loss. In the figure below it is shown how the points are initialized and how after training they are well separated in opposite sides of the unit circle, where the $$cos$$ takes values $$\approx 1$$ and $$\approx -1$$.
+In this section, I will go over the methodology used to classify synthesized images (a projection that is done using the sinusoids). This is the novel contribution of this [paper](https://en.wikipedia.org/wiki/HTTP_404). It consists on picking the sinusoid projections $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$, with $$\omega,\beta$$ being trainable parameters, and separating both $$\omega \cdot \vec{z}_{X_i} + \beta$$ and $$cos(\omega \cdot \vec{z}_{X_i} + \beta)$$ using a contrastive loss. In the figure below it is shown how the points are initialized and how after training they are well separated in opposite sides of the unit circle, where the $$cos$$ takes values $$\approx 1$$ and $$\approx -1$$.
 
 <p align="center">
 	<img src="./figures/contrastive_optimization.png" width="400"/>
@@ -34,9 +34,9 @@ In this section, I will go over the methodology used to classify synthesized ima
 
 The loss that achieves this goal is an adaptation of the [contrastive loss](),
 
-$$\mathcal{L}_D(x_1, x_2, y_p) = y_p \times D(x_1, x_2) + (1-y_p) \times \|D(x_1,x_2)-m\|_1,$$
+$$\mathcal{L}_D(X_1, X_2, y_p) = y_p \times D(X_1, X_2) + (1-y_p) \times \|D(X_1,X_2)-m\|_1,$$
 
-where $$x_1$$ and $$x_2$$ are supposed to be the projection before the cosine, $$\omega \cdot \vec{z}_x + \beta$$, for two instances, and $$y_p$$ specifies if these two instances belong together or not. Two instances belong together if $$y_i == y_j$$ and are false pairs if $$y_i \neq y_j$$. Therefore, $$y_p$$ can be represented as $$1[y_i == y_j]$$. The term $$y_p \times D(x_1, x_2)$$ brings points with the same label closer together, while them term $$(1-y_p) \times \|D(x_1,x_2)-m\|_1$$ places points with different labels as far as $$m$$, which we set to $$m=\pi$$.
+where $$X_1$$ and $$X_2$$ are the two instances that constitute the pair. The distance function is defined as $$D(X_i, X_j)=\|(\omega \cdot\vec{z}_{X_i} + \beta) -(\omega \cdot \vec{z}_{X_j} + \beta)\|_1$$ and $$y_p$$ specifies if these two instances belong together or not. Two instances belong together if $$y_i == y_j$$ and are false pairs if $$y_i \neq y_j$$. Therefore, $$y_p$$ can be represented as $$1[y_i == y_j]$$. The term $$y_p \times D(x_1, x_2)$$ brings points with the same label closer together, while them term $$(1-y_p) \times \|D(x_1,x_2)-m\|_1$$ places points with different labels as far as $$m$$, which we set to $$m=\pi$$.
 
 ## Let us dive into the code!
 
