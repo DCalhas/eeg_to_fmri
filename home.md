@@ -13,7 +13,7 @@ permalink: /
 
 [![Code: Documentation](https://img.shields.io/badge/code-documentation-green)](https://dcalhas.github.io/eeg_to_fmri/documentation)
 
-To install this package please run: ```pip install --upgrade eeg-to-fmri```. It is recommended to follow the [installation guide](https://dcalhas.github.io/eeg_to_fmri/install) steps.
+To install this package please run: ```pip install --upgrade eeg-to-fmri```. It is recommended to follow the [installation guide](https://dcalhas.github.io/eeg_to_fmri/install).
 
 ## Blog posts
 
