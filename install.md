@@ -2,12 +2,14 @@
 layout: default
 title: Install EEG to fMRI
 nav_order: 2
-permalink: /
+permalink: /install
 ---
 
 # Setup
 
-Ideally, your machine has a GPU and is running Linux.
+This install setup is tested for Linux (Ubuntu) with a GPU.
+
+It is recommended to create an anaconda environment and install all sources there.
 
 First of all, please install [anaconda](https://www.anaconda.com/) at ```$HOME/anaconda3/```. To setup the environment for this repository, please run the following commands:
 
