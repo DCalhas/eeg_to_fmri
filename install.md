@@ -47,7 +47,7 @@ echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/' > $CONDA_PREFI
 Now, you can finally install the ```eeg-to-fmri``` package:
 
 ```
-pip install -upgrade eeg-to-fmri
+pip install --upgrade eeg-to-fmri
 ```
 
 Some additional steps are needed to ensure the package runs accordingly. You need to specify the path for your datasets. For instance, I have my datasets at ```/home/david/datasets/```, then the environment variable for the datasets should be ```EEG_FMRI_DATASETS=/home/david/datasets/```. Since this variable only needs to be active, when running the ```eeg-to-fmri``` code, please put it in the activate folder, so everytime you activate the environemnt the variable exists.

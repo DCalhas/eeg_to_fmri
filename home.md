@@ -13,6 +13,8 @@ permalink: /
 
 [![Code: Documentation](https://img.shields.io/badge/code-documentation-green)](https://dcalhas.github.io/eeg_to_fmri/DOCUMENTATION.html)
 
+To install this package please run: ```pip install --upgrade eeg-to-fmri```. It is recommended to follow the [installation guide](https://dcalhas.github.io/eeg_to_fmri/install) steps.
+
 ## How do I test this research on my dataset?
 
 Testing a new dataset on this framework should not be too difficult. Do the following (in the order you feel most comfortable):
