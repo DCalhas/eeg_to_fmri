@@ -18,7 +18,7 @@ source $PATH_TO_ANACONDA/etc/profile.d/conda.sh
 conda activate eeg_fmri
 ```
 
-If you installed anaconda at ```/home/you/anaconda3``` then that is your $PATH_TO_ANACONDA variable.
+If you installed anaconda at ```/home/you/anaconda3``` then that is your ```$PATH_TO_ANACONDA``` variable.
 
 Following, let us setup cuda and cudnn. Download [cudnn](https://developer.nvidia.com/cudnn):
 
