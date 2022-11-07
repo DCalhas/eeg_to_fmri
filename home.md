@@ -39,7 +39,6 @@ If you use this software in your work, please cite it using the following metada
 }
 ```
 
-
 ## License
 
 [MIT License](https://choosealicense.com/licenses/mit/)

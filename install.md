@@ -5,7 +5,7 @@ nav_order: 2
 permalink: /install
 ---
 
-# Setup
+# Installation guide
 
 This install setup is tested for Linux (Ubuntu) with a GPU.
 
