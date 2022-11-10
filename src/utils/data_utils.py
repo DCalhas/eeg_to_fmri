@@ -250,6 +250,8 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
         x_instance=x_instance[:132]#number of ECG channels differ for some individuals
         if(raw_eeg):
             #individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance[:,:int(((recording_time))*fs_sample*f_resample)], (1,0))))
+            print(recording_time, fs_sample, f_resample)
+            print(x_instance[:,:int(((recording_time))*fs_sample*f_resample)].shape)
             individuals_eegs[individual*recording_time:individual*recording_time+recording_time] = np.transpose(x_instance[:,:int(((recording_time))*fs_sample*f_resample)], (1,0))
         else:
             #individuals_eegs = np.vstack((individuals_eegs, np.transpose(x_instance, (2,0,1))[:recording_time]))
