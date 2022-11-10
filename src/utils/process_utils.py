@@ -388,9 +388,9 @@ def train_synthesis(dataset, epochs, style_prior, padded, variational, variation
 	n_stacks=int(theta[11])
 	outfilter=int(theta[12])
 	local=True
-	with open(str(Path.home())+"/eeg_to_fmri/na_models_eeg/na_specification_2", "rb") as f:
+	with open(os.environ['EEG_FMRI']+"/na_models_eeg/na_specification_2", "rb") as f:
 		na_specification_eeg = pickle.load(f)
-	with open(str(Path.home())+"/eeg_to_fmri/na_models_fmri/na_specification_2", "rb") as f:
+	with open(os.environ['EEG_FMRI']+"/na_models_fmri/na_specification_2", "rb") as f:
 		na_specification_fmri = pickle.load(f)
 
 	with tf.device('/CPU:0'):
@@ -599,7 +599,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 			#evaluate
 			linearCLF.training=False
 			#write to shared array
-			save_path="/home/ist_davidcalhas/tmp/"+str(fold)
+			save_path=str(Path.home())+"/tmp/"+str(fold)
 			np.save(save_path+"_pred.npy",tf.keras.activations.sigmoid(linearCLF(X_test)).numpy()[:,0],allow_pickle=True)
 			np.save(save_path+"_true.npy",y_test[:,1],allow_pickle=True)
 			print("I: Completed fold", fold, "of", n_folds_cv)
@@ -609,8 +609,8 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		import gc
 		import signal
 
-		if(not os.path.isdir("/home/ist_davidcalhas/tmp")):
-			os.mkdir("/home/ist_davidcalhas/tmp")
+		if(not os.path.isdir(str(Path.home())+"/tmp")):
+			os.mkdir(str(Path.home())+"/tmp")
 
 		active=0
 		processes=[]
@@ -651,13 +651,13 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		y_true=np.empty((0,),dtype=np.float32)
 		for fold in range(n_folds_cv):
 			try:
-				y_pred=np.append(y_pred,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_pred.npy",allow_pickle=True), axis=0)
-				y_true=np.append(y_true,np.load("/home/ist_davidcalhas/tmp/"+str(fold)+"_true.npy",allow_pickle=True), axis=0)
+				y_pred=np.append(y_pred,np.load(str(Path.home())+"/tmp/"+str(fold)+"_pred.npy",allow_pickle=True), axis=0)
+				y_true=np.append(y_true,np.load(str(Path.home())+"/tmp/"+str(fold)+"_true.npy",allow_pickle=True), axis=0)
 			except:
 				print("Failed in concurrency.")
 				return 1/1e-9
-			os.remove("/home/ist_davidcalhas/tmp/"+str(fold)+"_pred.npy")
-			os.remove("/home/ist_davidcalhas/tmp/"+str(fold)+"_true.npy")			
+			os.remove(str(Path.home())+"/tmp/"+str(fold)+"_pred.npy")
+			os.remove(str(Path.home())+"/tmp/"+str(fold)+"_true.npy")			
 
 		acc = np.mean(((y_pred>=0.5).astype("float32")==y_true).astype("float32"))
 

@@ -24,6 +24,8 @@ import shutil
 import os
 import pickle
 
+parameters=(0.002980911194116198, 0.0, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1, True)
+
 search_space = [{'name': 'learning_rate', 'type': 'continuous',
 					'domain': (1e-5, 1e-2)},
 					{'name': 'reg', 'type': 'continuous',

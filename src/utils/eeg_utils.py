@@ -18,8 +18,6 @@ import csv
 
 home = str(Path.home())
 
-dataset_path = home + '/eeg_to_fmri'
-
 channels_01=['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 'F7', 'F8', 'T7', 'T8', 'P7', 'P8', 'Fz', 'Cz', 'Pz', 'Oz', 'FC1', 'FC2', 'CP1', 'CP2', 'FC5', 'FC6', 'CP5', 'CP6', 'TP9', 'TP10', 'POz', 'ECG', 'AF3', 'AF4', 'FC3', 'FC4', 'CP3', 'CP4', 'PO3', 'PO4', 'F5', 'F6', 'C5', 'C6', 'P5', 'P6', 'AF7', 'AF8', 'FT7', 'FT8', 'TP7', 'TP8', 'PO7', 'PO8', 'FT9', 'FT10', 'P9', 'P10', 'PO9', 'PO10', 'O9', 'O10', 'Fpz', 'CPz']
 channels_02=["C3-T7","T7-LM","LM-CP5","CP5-P7","P7-PO7","PO7-PO3","PO3-O1","O1-Oz","PO3-P3","P3-CP1","Pz-CP1","CP1-C3","Cz-C3","Fp2-Fp1","Fp1-AF3","AF4-Fp2","AF3-F3","F4-AF4","F3-F7","F8-F4","FC1-F3","F4-FC2","F7-FC5","FC6-F8","FC5-T7","T8-FC6","Cz-Fz","Fz-FC1","FC2-Fz","T8-C4","RM-T8","CP6-RM","P8-CP6","PO8-P8","PO4-PO8","O2-PO4","Oz-O2","P4-PO4","CP2-P4","CP2-Pz","C4-CP2","C4-Cz","Pz-Oz"]
 channels_03=['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 'F7', 'F8', 'T7', 'T8', 'P7', 'P8', 'Fz', 'Cz', 'Pz', 'Oz', 'FC1', 'FC2', 'CP1', 'CP2', 'FC5', 'FC6', 'CP5', 'CP6', 'TP9', 'TP10', 'POz', 'ECG', 'F1', 'F2', 'C1', 'C2', 'P1', 'P2', 'AF3', 'AF4', 'FC3', 'FC4', 'CP3', 'CP4', 'PO3', 'PO4', 'F5', 'F6', 'C5', 'C6', 'P5', 'P6', 'AF7', 'AF8', 'FT7', 'FT8', 'TP7', 'TP8', 'PO7', 'PO8',  'FT9', 'FT10', 'Fpz', 'CPz']
@@ -49,7 +47,7 @@ recording_time_12=None
 recording_time_13=None
 recording_time_14=None
 
-media_directory="/mnt/datasets/"
+media_directory=os.environ['EEG_FMRI_DATASETS']+"/"
 dataset_01="ds000001"
 dataset_02="ds000116"
 dataset_03="ds002158"
@@ -68,7 +66,7 @@ dataset_14="ds003944"#schizophrenia
 #											READING UTILS
 #			
 ##########################################################################################################################
-def get_eeg_instance_01(individual, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
+def get_eeg_instance_01(individual, path_eeg=os.environ['EEG_FMRI']+'/datasets/01/EEG/', preprocessed=True):
 
 	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
 
@@ -89,7 +87,7 @@ def get_eeg_instance_01(individual, path_eeg=dataset_path+'/datasets/01/EEG/', p
 	return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
 
 
-def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=True, path_eeg=dataset_path+'/datasets/02'):
+def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=True, path_eeg=os.environ['EEG_FMRI']+'/datasets/02'):
 
 	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])
 	
@@ -287,7 +285,7 @@ def get_labels_13(individuals, path_eeg=media_directory+dataset_13+"/"):
 def get_labels_14(individuals, path_eeg=media_directory+dataset_14+"/"):
 	raise NotImplementedError
 
-def get_eeg_dataset(number_individuals=16, path_eeg=dataset_path+'/datasets/01/EEG/', preprocessed=True):
+def get_eeg_dataset(number_individuals=16, path_eeg=os.environ['EEG_FMRI']+'/datasets/01/EEG/', preprocessed=True):
 	individuals = []
 
 	for i in range(number_individuals):

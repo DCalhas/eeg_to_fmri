@@ -1,36 +1,11 @@
-# From EEG to fMRI
+---
+layout: default
+title: Reproducibility
+nav_order: 3
+permalink: /reproducibility
+---
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-
-[![Code: Documentation](https://img.shields.io/badge/code-documentation-green)](https://dcalhas.github.io/eeg_to_fmri/DOCUMENTATION.html)
-
-## Setup
-
-Ideally, your machine has a GPU and is running Linux.
-
-First of all, please install [anaconda](https://www.anaconda.com/) at ```$HOME/anaconda3/```. To setup the environment for this repository, please run the following commands:
-
-```shell
-git clone git@github.com:DCalhas/eeg_to_fmri.git
-cd eeg_to_fmri
-```
-
-Download [cudnn](https://developer.nvidia.com/cudnn):
-
-```shell
-wget https://developer.download.nvidia.com/compute/redist/cudnn/v8.0.1/cudnn-11.0-linux-x64-v8.0.1.13.tgz
-```
-
-Run the configuration file:
-
-```shell
-./config.sh
-```
-
-Please make sure to set the path to the datasets directory correclty. This path is stored in an environment variable, so every time you activate the environment, the variable is set and used in the code as os.environ['EEG_FMRI_DATASETS'].
-
-## How do I test this research on my dataset?
+# How do I test this research on my dataset?
 
 Testing a new dataset on this framework should not be too difficult. Do the following (in the order you feel most comfortable):
 - define the number of individuals, **n_individuals_NEW**, that your dataset contains, this can be done in the [data_utils.py](https://github.com/DCalhas/eeg_to_fmri/blob/0c634384faa79c7f7289aa7ec1af9b04dac92ebc/src/utils/data_utils.py#L32) file;
@@ -46,7 +21,7 @@ In addition to reading the rest of this section, which helps you setting up your
 - [EEG recording to fMRI volume](https://dcalhas.github.io/eeg_to_fmri/blog/EEG_fMRI.html): goes over an example on how to operate with a simultaneous EEG and fMRI dataset and creates a model that synthesizes fMRI from EEG;
 - [Classification on EEG only datasets](https://dcalhas.github.io/eeg_to_fmri/blog/Sinusoid_separation.html): this one picks up on the previous blog post and uses the pretrained model (that synthesizes fMRI from EEG), and shows you how to create an fMRI view of an EEG instance and classify it.
 
-### Dataset structure
+## Dataset structure
 
 In this example, we assume your dataset has the following structure (if it has a different structure please interpret the code provided in the next two sections and adapt it):
 
@@ -70,7 +45,7 @@ NEW
 	...
 ```
 
-#### Implementing the get_eeg_instance_NEW function
+## Implementing the get_eeg_instance_NEW function
 
 Ideally you want this function to return an [mne.io.Raw](https://mne.tools/stable/generated/mne.io.Raw.html) object, that contains the EEG data. In this "tutorial" only this is the only supported option, however do it as you like most.
 
@@ -128,7 +103,7 @@ def get_eeg_instance_NEW(individual, path_eeg=os.environ['EEG_FMRI_DATASETS']+da
 	return mne.io.read_raw_brainvision(complete_path, preload=True, verbose=0)
 ```
 
-#### Implementing the get_individuals_path_NEW function
+## Implementing the get_individuals_path_NEW function
 
 Next step is to implement the function that retrieves the fMRI recordings of all individuals. We assume each individual's recording is save in an [.nii.gz](http://justsolve.archiveteam.org/wiki/NII) file.
 
@@ -194,7 +169,7 @@ def get_individuals_paths_NEW(path_fmri=os.environ['EEG_FMRI_DATASETS']+dataset_
 	return fmri_individuals
 ```
 
-##### My dataset has fMRI volumes with higher resolutions than accepted by this work. What should I do?
+### My dataset has fMRI volumes with higher resolutions than accepted by this work. What should I do?
 
 Unfortunately, the model only accepts:
 - EEG instances with 64 channels and a total of 134 frequency resolutions in a specified window of **TR_\***;
@@ -238,7 +213,7 @@ Import the modules to perform the DCT and either add or remove resolutions to fi
 
 After this, you should be set to run the code and retrieve the results you desire.
 
-### Run the code and retrieve results
+## Run the code and retrieve results
 
 Now you just need to run the [main.py](https://github.com/DCalhas/eeg_to_fmri/blob/master/src/main.py) file with your dataset identifier given as an argument. Please refer to the [documentation](https://github.com/DCalhas/eeg_to_fmri/blob/master/DOCUMENTATION.md), where you will find what you need to give as arguments, an example call is (open shell):
 
@@ -249,32 +224,3 @@ mkdir /tmp/eeg_to_fmri
 mkdir /tmp/eeg_to_fmri/metrics
 python main.py metrics NEW -na_path_eeg ../na_models_eeg/na_specification_2 -na_path_fmri ../na_models_fmri/na_specification_2 -save_metrics -metrics_path /tmp/eeg_to_fmri/metrics
 ```
-
-## Blog posts
-
-This repository goes along with blog posts done during my PhD course:
-
-- [EEG recording to fMRI volume](https://dcalhas.github.io/eeg_to_fmri/blog/EEG_fMRI.html);
-- [Classification on EEG only datasets](https://dcalhas.github.io/eeg_to_fmri/blog/Sinusoid_separation.html);
-
-## Acknowledgements
-
-We would like to thank everyone at [INESC-ID](https://www.inesc-id.pt/) that accompanied the journey throughout my PhD. This work was supported by national funds through Fundação para a Ciência e Tecnologia ([FCT](https://www.fct.pt/index.phtml.pt)), under the Ph.D. Grant SFRH/BD/5762/2020 to David Calhas and INESC-ID pluriannual UIDB/50021/2020.
-
-## Cite this repository
-
-If you use this software in your work, please cite it using the following metadata:
-
-```
-@article{calhas2022eeg,
-  title={EEG to fMRI Synthesis Benefits from Attentional Graphs of Electrode Relationships},
-  author={Calhas, David and Henriques, Rui},
-  journal={arXiv preprint arXiv:2203.03481},
-  year={2022}
-}
-```
-
-
-## License
-
-[MIT License](https://choosealicense.com/licenses/mit/)

@@ -44,9 +44,7 @@ n_volumes_03=370-bold_shift_03
 n_volumes_04=180-bold_shift_04
 n_volumes_05=300-bold_shift_05
 
-dataset_path = home + '/eeg_to_fmri'
-
-media_directory="/mnt/datasets/"
+media_directory=os.environ['EEG_FMRI_DATASETS']+"/"
 dataset_01="ds000001"
 dataset_02="ds000116"
 dataset_03="ds002158"
@@ -59,7 +57,7 @@ dataset_NEW="NEW"
 #                         READING UTILS
 #       
 ##########################################################################################################################
-def get_fmri_instance(individual=0, path_fmri=dataset_path+'/datasets/01/fMRI/'):
+def get_fmri_instance(individual=0, path_fmri=os.environ['EEG_FMRI']+'/datasets/01/fMRI/'):
 
     individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
@@ -74,7 +72,7 @@ def get_fmri_instance(individual=0, path_fmri=dataset_path+'/datasets/01/fMRI/')
     return apply_mask(complete_path, mask_img)
 
 
-def get_fmri_instance_img(individual=0, path_fmri=dataset_path+'/datasets/01/fMRI/'):
+def get_fmri_instance_img(individual=0, path_fmri=os.environ['EEG_FMRI']+'/datasets/01/fMRI/'):
 
     individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
@@ -86,7 +84,7 @@ def get_fmri_instance_img(individual=0, path_fmri=dataset_path+'/datasets/01/fMR
 
     return image.load_img(complete_path)
 
-def get_population_mask(path_fmri=dataset_path+'/datasets/01/fMRI/'):
+def get_population_mask(path_fmri=os.environ['EEG_FMRI']+'/datasets/01/fMRI/'):
 
     individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
@@ -112,14 +110,14 @@ def get_population_mask(path_fmri=dataset_path+'/datasets/01/fMRI/'):
 
 
 
-def get_individuals_ids(path_fmri=dataset_path+'/datasets/01/fMRI/'):
+def get_individuals_ids(path_fmri=os.environ['EEG_FMRI']+'/datasets/01/fMRI/'):
 
     individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
 
     return individuals
 
 
-def get_individuals_paths_01(path_fmri=dataset_path+'/datasets/01/fMRI/', resolution_factor = 5, number_individuals=10):
+def get_individuals_paths_01(path_fmri=os.environ['EEG_FMRI']+'/datasets/01/fMRI/', resolution_factor = 5, number_individuals=10):
     
     fmri_individuals = []
     file_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
@@ -154,7 +152,7 @@ def get_individuals_paths_01(path_fmri=dataset_path+'/datasets/01/fMRI/', resolu
     return fmri_individuals
 
 
-def get_individuals_paths_02(path_fmri=dataset_path+"/datasets/02/", task=1, run=1, resolution_factor = 1, number_individuals=10):
+def get_individuals_paths_02(path_fmri=os.environ['EEG_FMRI']+"/datasets/02/", task=1, run=1, resolution_factor = 1, number_individuals=10):
     
     task_run = "task" + '%03d' % (task,) + "_run" + '%03d' % (run,)
     
