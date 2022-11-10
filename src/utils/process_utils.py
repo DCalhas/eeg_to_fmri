@@ -608,6 +608,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		from multiprocessing import Process, Manager
 		import gc
 		import signal
+		from pathlib import Path
 
 		if(not os.path.isdir(str(Path.home())+"/tmp")):
 			os.mkdir(str(Path.home())+"/tmp")
