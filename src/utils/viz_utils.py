@@ -475,7 +475,7 @@ Inputs:
 Returns:
     matplotlib.Figure - The figure to plot, no saving option implemented
 """
-def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, threshold=0.37, cmap=plt.cm.nipy_spectral, uncertainty=False, res_img=None, legend_colorbar="redidues", max_min_legend=["Good","Bad"], normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
+def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, threshold=0.37, cmap=plt.cm.nipy_spectral, uncertainty=False, res_img=None, legend_colorbar="redidues", max_min_legend=["Good","Bad"], normalize_residues=False, normalize_explanations=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
     label = "$Z_{"
 
     #this is a placeholder for the residues plot
@@ -502,6 +502,13 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
         if(uncertainty):
             _instance=copy.deepcopy(instance)
         instance[np.where(res_img < threshold)]= 1.001
+    elif(normalize_explanations):
+        res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
+        if(uncertainty):
+            _instance=copy.deepcopy(instance)
+        instance[np.where(res_img < threshold)]= 1.001
+        instance[np.where(res_img >= threshold)] = (instance[np.where(res_img >= threshold)]-np.mean(instance[np.where(res_img >= threshold)]))/np.std(instance[np.where(res_img >= threshold)])
+        instance[np.where(res_img >= threshold)] = (instance[np.where(res_img >= threshold)]-np.amin(instance[np.where(res_img >= threshold)]))/(np.amax(instance[np.where(res_img >= threshold)])-np.amin(instance[np.where(res_img >= threshold)]))
     else:
         res_img = (res_img[:,:,:,:]-np.amin(res_img[:,:,:,:]))/(np.amax(res_img[:,:,:,:])-np.amin(res_img[:,:,:,:]))
         if(uncertainty):
@@ -530,7 +537,7 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
         pos=[0.09, 0.15, 0.01, 0.7]
     cbaxes = fig.add_axes(pos)  # This is the position for the colorbar
     #to give a normalized bar that goes from 0.0 to 1.0
-    if(normalize_residues):
+    if(normalize_residues or normalize_explanations):
         norm=mpl.colors.Normalize(vmin=0.0, vmax=1.0)
         cb = plt.colorbar(ax, cax = cbaxes, norm=norm)
     else:
@@ -588,7 +595,7 @@ Inputs:
 Returns:
     matplotlib.Figure - The figure to plot, no saving option implemented
 """
-def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resolution=1, v_resolution=1, threshold=0.37, cmap=plt.cm.nipy_spectral, uncertainty=False, res_img=None, alpha_img=None, legend_colorbar="redidues", max_min_legend=["Good","Bad"], normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
+def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resolution=1, v_resolution=1, threshold=0.37, cmap=plt.cm.nipy_spectral, cmap_background=plt.cm.binary, uncertainty=False, res_img=None, alpha_img=None, legend_colorbar="redidues", max_min_legend=["Good","Bad"], normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
     label = "$Z_{"
 
     assert alpha_img is not None
@@ -606,7 +613,9 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
     axes = fig.add_subplot(gs[:,0:2], projection='3d', proj_type='ortho')
     
     cmap = copy.copy(mpl.cm.get_cmap(cmap))
+    cmap_background = copy.copy(mpl.cm.get_cmap(cmap_background))
     cmap.set_over("w")
+    cmap_background.set_over("w")
     #cmap.set_under("w")
     #cmap.set_bad("w")
     
@@ -677,6 +686,7 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
         #alpha+=(mask<0.1).astype("float32")
         #alpha[np.where(alpha==0.0)]=0.2
 
+        axes.imshow(cmap_background(img))
         axes.imshow(cmap(img, alpha=mask))
 
         if(slice_label):
