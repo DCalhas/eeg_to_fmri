@@ -1,5 +1,6 @@
 import numpy as np
 
+from eeg_to_fmri.layers import fft
 
 def make_indices2d(indices,):
 	"""
