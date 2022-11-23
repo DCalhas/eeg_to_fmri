@@ -29,7 +29,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('mode', choices=['ground_truth', 'pred'], help="Which labels to run BicPAMS on, predictions or ground_truth")
 parser.add_argument('dataset', choices=['10', '11'], help="Which dataset to work on")
-parser.add_argument('-format', default="arff", type=str, help="File format to give to BicPAMS")
+parser.add_argument('-format_file', default="arff", type=str, help="File format to give to BicPAMS")
 parser.add_argument('-background_cutoff', action="store_true", help="Build a brain mask in the original fMRI resolution")
 parser.add_argument('-background_cutoff_low', action="store_true", help="Build a brain mask in a downsampled fMRI resolution")
 parser.add_argument('-resolution', default=(10,10,5), type=tuple, help="Resolution where the brain mask is built")
@@ -44,7 +44,7 @@ opt = parser.parse_args()
 
 dataset=opt.dataset
 mode=opt.mode
-format_file=opt.format
+format_file=opt.format_file
 background_cutoff=opt.background_cutoff
 background_cutoff_low=opt.background_cutoff_low
 threshold=opt.threshold
