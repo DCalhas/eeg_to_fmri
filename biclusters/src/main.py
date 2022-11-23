@@ -1,3 +1,5 @@
+import bicpy
+
 import sys
 
 from pathlib import Path
@@ -16,9 +18,6 @@ from layers import fft
 
 sys.path.remove("../../src")
 
-import utils
-
-print(utils.__file__)
 import numpy as np
 
 import tensorflow as tf
