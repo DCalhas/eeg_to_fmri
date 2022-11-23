@@ -1,5 +1,12 @@
 import sys
 
+from pathlib import Path
+
+import os
+
+os.environ["EEG_FMRI"]=str(Path.home())+"/eeg_to_fmri"
+os.environ["EEG_FMRI_DATASETS"]="/mnt/datasets"
+
 sys.path.append("../../src")
 
 #to be replaced by eeg_to_fmri package
