@@ -18,7 +18,7 @@ sys.path.remove("../../src")
 
 import utils
 
-print(utils)
+print(utils.__file__)
 import numpy as np
 
 import tensorflow as tf
