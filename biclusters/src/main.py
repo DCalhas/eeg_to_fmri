@@ -9,14 +9,12 @@ import os
 os.environ["EEG_FMRI"]=str(Path.home())+"/eeg_to_fmri"
 os.environ["EEG_FMRI_DATASETS"]="/mnt/datasets"
 
-sys.path.append("../../src")
-
 #to be replaced by eeg_to_fmri package
-from utils import tf_config, preprocess_data, viz_utils
+from eeg_to_fmri.utils import tf_config, viz_utils
 
-from layers import fft
+from eeg_to_fmri.data import preprocess_data
 
-sys.path.remove("../../src")
+from eeg_to_fmri.layers import fft
 
 import numpy as np
 
