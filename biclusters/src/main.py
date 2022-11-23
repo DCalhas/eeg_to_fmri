@@ -16,6 +16,7 @@ from layers import fft
 
 sys.path.remove("../../src")
 
+print(utils)
 import numpy as np
 
 import tensorflow as tf
