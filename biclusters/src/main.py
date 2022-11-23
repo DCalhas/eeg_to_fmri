@@ -101,7 +101,7 @@ bicpy.run(bicpams_parameters, "./view_"+mode+"."+format_file)
 
 #TODO the other notebook
 
-bics_patterns=patterns.Bics_Patterns.build("./output/result.txt", views, relu=None, low=True, resolution=resolution)
+bics_patterns=patterns.Bics_Patterns.build("./output/result.txt", X_view, relu=None, low=True, resolution=resolution)
 
 for k in range(best_K):
 
