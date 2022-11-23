@@ -1,17 +1,19 @@
 import sys
 
-sys.path.append("../..")
+sys.path.append("../../src")
+
+#to be replaced by eeg_to_fmri package
+from utils import tf_config, preprocess_data, viz_utils
+
+from layers import fft
+
+sys.path.remove("../../src")
 
 import numpy as np
 
 import tensorflow as tf
 
 import bicpy
-
-#to be replaced by eeg_to_fmri package
-from src.utils import tf_config, preprocess_data, viz_utils
-
-from src.layers import fft
 
 import argparse
 
