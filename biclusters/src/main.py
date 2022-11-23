@@ -34,10 +34,13 @@ parser.add_argument('-background_cutoff', action="store_true", help="Build a bra
 parser.add_argument('-background_cutoff_low', action="store_true", help="Build a brain mask in a downsampled fMRI resolution")
 parser.add_argument('-resolution', default=(10,10,5), type=tuple, help="Resolution where the brain mask is built")
 parser.add_argument('-threshold', default=0.5, type=float, help="Threshold to build the brain mask")
+parser.add_argument('-threshold_mask', action="store_true", help="Specifies if one applies a threshold in plotted mask")
+parser.add_argument('-threshold_mask_value', default=0.7, type=float, help="Threshold to apply in plotted mask")
 parser.add_argument('-min_biclusters', default=100, type=int, help="Minimum biclusters to stop searching for more")
 parser.add_argument('-min_lift', default=1.2, type=float, help="Minimum lift to stop searching for more")
 parser.add_argument('-nr_labels', default=5, type=int, help="Number of bins to discretize the data")
 parser.add_argument('-min_columns', default=3, type=int, help="Minimum columns to stop searching for more")
+parser.add_argument('-best_K', default=10, type=int, help="Top biclusters to save")
 
 
 opt = parser.parse_args()
@@ -53,6 +56,9 @@ min_biclusters=opt.min_biclusters
 min_lift=opt.min_lift
 nr_labels=opt.nr_labels
 min_columns=opt.min_columns
+best_K=opt.best_K
+threshold_mask=opt.threshold_mask
+threshold_mask_value=opt.threshold_mask_value
 
 bicpams_parameters=bicpy.DEFAULT_PARAMS
 bicpams_parameters['min_biclusters']=min_biclusters
@@ -91,3 +97,18 @@ with open("./view_"+mode+"."+format_file, "w") as f:
 	f.close()
 
 bicpy.run(bicpams_parameters, "./view_"+mode+"."+format_file)
+
+
+#TODO the other notebook
+
+bics_patterns=patterns.Bics_Patterns.build("./output/result.txt", views, relu=None, low=True, resolution=resolution)
+
+for k in range(best_K):
+
+	best_index=bics_patterns.get_best(delete=True)
+	print("I:", str(k+1), "bicluster at index", str(best_index),"with lifts:", bics_patterns.get(best_index).lifts)
+	masked_data=bics_patterns.apply_mask(best_index, brain_mask=brain_mask)
+
+	if(threshold_mask):
+		masked_data[np.where(masked_data<threshold_mask_value)]=0.1
+		masked_data[np.where(masked_data>=threshold_mask_value)]=0.99
