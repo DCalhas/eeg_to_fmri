@@ -85,9 +85,9 @@ views_downsampled, brain_mask = to_bicpams.downsample(X_view, resolution, thresh
 
 with open("./view_"+mode+"."+format_file, "w") as f:
 	if(mode=="ground_truth"):
-		f.write(to_bicpams.build_arff(views_downsampled, y_true, y_pred, resolution, cutoff_low=background_cutoff_low, brain_mask=brain_mask)[0])	
+		f.write(to_bicpams.build_arff(views_downsampled, y_true, y_pred, resolution, format_file, cutoff_low=background_cutoff_low, brain_mask=brain_mask)[0])	
 	elif(mode=="pred"):
-		f.write(to_bicpams.build_arff(views_downsampled, y_true, y_pred, resolution, cutoff_low=background_cutoff_low, brain_mask=brain_mask)[1])
+		f.write(to_bicpams.build_arff(views_downsampled, y_true, y_pred, resolution, format_file, cutoff_low=background_cutoff_low, brain_mask=brain_mask)[1])
 	f.close()
 
 bicpy.run(bicpams_parameters, "./view_"+mode+"."+format_file)

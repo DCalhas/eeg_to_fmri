@@ -40,7 +40,7 @@ def downsample(views, resolution, threshold=0.37, cutoff=False, cutoff_low=False
 	return X_view_downsampled, brain_mask
 
 
-def build_arff(views, y_true, y_pred, resolution, cutoff_low=False, brain_mask=None):
+def build_arff(views, y_true, y_pred, resolution, format_file, cutoff_low=False, brain_mask=None):
 
 	string_file_view_ground_truth=""
 	string_file_view_pred=""
