@@ -16,6 +16,8 @@ from layers import fft
 
 sys.path.remove("../../src")
 
+import utils
+
 print(utils)
 import numpy as np
 
