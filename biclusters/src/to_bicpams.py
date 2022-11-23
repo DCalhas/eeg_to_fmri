@@ -25,7 +25,7 @@ def downsample(views, resolution, threshold=0.37, cutoff=False, cutoff_low=False
 
 	X_view_downsampled=np.empty((0,)+resolution+(1,), dtype="float32")
 
-	for i in range(X_view.shape[0]):
+	for i in range(views.shape[0]):
 		X_view_downsampled=np.append(X_view_downsampled,np.expand_dims(idct(dct(views[i:i+1,:,:,:,0])[:,:resolution[0],:resolution[1],:resolution[2]]).numpy(), axis=-1),axis=0)
 
 	if(cutoff_low):	
