@@ -1,5 +1,3 @@
-import bicpy
-
 import sys
 
 from pathlib import Path
@@ -21,6 +19,10 @@ import numpy as np
 import tensorflow as tf
 
 import bicpy
+
+import patterns
+
+import to_bicpams
 
 import argparse
 
@@ -79,15 +81,13 @@ X_view = np.load(path_labels+"views.npy")
 y_true = np.load(path_labels+"y_true.npy")
 y_pred = np.load(path_labels+"y_pred.npy")
 
-views_downsampled, brain_mask = downsample(X_view, resolution, threshold=threshold, cutoff=background_cutoff, cutoff_low=background_cutoff_low,)
-
-build_arff(views_downsampled, y_true, y_pred, resolution, cutoff_low=background_cutoff_low, brain_mask=brain_mask)
+views_downsampled, brain_mask = to_bicpams.downsample(X_view, resolution, threshold=threshold, cutoff=background_cutoff, cutoff_low=background_cutoff_low,)
 
 with open("./view_"+mode+"."+format_file, "w") as f:
 	if(mode=="ground_truth"):
-		f.write(build_arff(views_downsampled, y_true, y_pred, resolution, cutoff_low=background_cutoff_low, brain_mask=brain_mask)[0])	
+		f.write(to_bicpams.build_arff(views_downsampled, y_true, y_pred, resolution, cutoff_low=background_cutoff_low, brain_mask=brain_mask)[0])	
 	elif(mode=="pred"):
-		f.write(build_arff(views_downsampled, y_true, y_pred, resolution, cutoff_low=background_cutoff_low, brain_mask=brain_mask)[1])
+		f.write(to_bicpams.build_arff(views_downsampled, y_true, y_pred, resolution, cutoff_low=background_cutoff_low, brain_mask=brain_mask)[1])
 	f.close()
 
 bicpy.run(bicpams_parameters, "./view_"+mode+"."+format_file)
