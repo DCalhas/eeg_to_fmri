@@ -67,6 +67,7 @@ threshold_mask=opt.threshold_mask
 threshold_mask_value=opt.threshold_mask_value
 metrics_path=opt.metrics_path
 
+print(resolution)
 bicpams_parameters=bicpy.DEFAULT_PARAMS
 bicpams_parameters['min_biclusters']=min_biclusters
 bicpams_parameters['min_lift']=min_lift
