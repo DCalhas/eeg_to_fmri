@@ -58,6 +58,7 @@ background_cutoff=opt.background_cutoff
 background_cutoff_low=opt.background_cutoff_low
 threshold=opt.threshold
 resolution=tuple(int(k) for k in opt.resolution.split(","))
+print(resolution)
 min_biclusters=opt.min_biclusters
 min_lift=opt.min_lift
 nr_labels=opt.nr_labels
