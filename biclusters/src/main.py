@@ -32,7 +32,7 @@ parser.add_argument('dataset', choices=['10', '11'], help="Which dataset to work
 parser.add_argument('-format_file', default="arff", type=str, help="File format to give to BicPAMS")
 parser.add_argument('-background_cutoff', action="store_true", help="Build a brain mask in the original fMRI resolution")
 parser.add_argument('-background_cutoff_low', action="store_true", help="Build a brain mask in a downsampled fMRI resolution")
-parser.add_argument('-resolution', default=(10,10,5), type=tuple, help="Resolution where the brain mask is built")
+parser.add_argument('-resolution', default="10,10,5", type=str, help="Resolution where the brain mask is built")
 parser.add_argument('-threshold', default=0.5, type=float, help="Threshold to build the brain mask")
 parser.add_argument('-threshold_mask', action="store_true", help="Specifies if one applies a threshold in plotted mask")
 parser.add_argument('-threshold_mask_value', default=0.7, type=float, help="Threshold to apply in plotted mask")
@@ -57,7 +57,7 @@ format_file=opt.format_file
 background_cutoff=opt.background_cutoff
 background_cutoff_low=opt.background_cutoff_low
 threshold=opt.threshold
-resolution=opt.resolution
+resolution=tuple(int(k) for k in opt.resolution.split(","))
 min_biclusters=opt.min_biclusters
 min_lift=opt.min_lift
 nr_labels=opt.nr_labels
@@ -67,7 +67,6 @@ threshold_mask=opt.threshold_mask
 threshold_mask_value=opt.threshold_mask_value
 metrics_path=opt.metrics_path
 
-print(resolution)
 bicpams_parameters=bicpy.DEFAULT_PARAMS
 bicpams_parameters['min_biclusters']=min_biclusters
 bicpams_parameters['min_lift']=min_lift
