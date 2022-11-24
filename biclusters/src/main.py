@@ -78,8 +78,9 @@ assert not (background_cutoff and background_cutoff_low)
 setting=dataset+"_"+mode
 if(background_cutoff):
 	setting+="_original_masked"
-elif(background_cutoff):
+elif(background_cutoff_low):
 	setting+="_low_masked_"+str(resolution[0])+"x"+str(resolution[1])+"x"+str(resolution[2])
+
 setting+="_lift_"+"{:.1f}".format(min_lift)+"_clusters_"+str(min_biclusters)+"_labels_"+str(nr_labels)+"_columns_"+str(min_columns)
 
 #create dir setting if not exists
