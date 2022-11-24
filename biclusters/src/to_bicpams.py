@@ -59,6 +59,8 @@ def build_arff(views, y_true, y_pred, resolution, format_file, cutoff_low=False,
 
 		string_file_view_ground_truth+="\n@DATA\n"
 
+		string_file_view_pred+=string_file_view_ground_truth
+
 	if(format_file=="csv"):
 		string_file_view_ground_truth+=","
 		string_file_view_pred+=","
