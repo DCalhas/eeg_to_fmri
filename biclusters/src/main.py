@@ -125,4 +125,6 @@ for k in range(best_K):
 		masked_data[np.where(masked_data<threshold_mask_value)]=0.1
 		masked_data[np.where(masked_data>=threshold_mask_value)]=0.99
 
-	fig = viz_utils.plot_3D_representation_projected_slices_alpha(np.mean(X_view[indices], axis=0),res_img=np.mean(X_view[indices],axis=0),alpha_img=np.amax(masked_data[indices], axis=0),slice_label=False,uncertainty=True,legend_colorbar=r"$H$",save=True, save_path=metrics_path+"/"+ setting+"/bic_"+str(k+1)+"_lift_"+"{:.3f}".format(np.mean(bics_patterns.get(best_index).lifts))+".pdf", max_min_legend=["Inhibitory","Excitatory"])
+
+
+	fig = viz_utils.plot_3D_representation_projected_slices_alpha(np.mean(X_view[indices], axis=0),res_img=np.mean(X_view[indices],axis=0),alpha_img=np.amax(masked_data[indices], axis=0),slice_label=False,uncertainty=True,legend_colorbar=r"$H$",save=True, save_path=metrics_path+"/"+ setting+"/bic_"+str(k+1)+"_lift_"+"{:.3f}".format(np.amax(bics_patterns.get(best_index).lifts))+"_"+["hc", "scz"][np.argmax(bics_patterns.get(best_index).lifts)]+".pdf", max_min_legend=["Inhibitory","Excitatory"])
