@@ -288,7 +288,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(x)
         elif(self.aleatoric_uncertainty):
             x = tf.keras.layers.Flatten()(x)
-            x =  tfp.layers.DenseFlipout(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2])(x)
+            x =  DenseVariational(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2])(x)
         else:
             x = tf.keras.layers.Flatten()(x)
             #upsampling
