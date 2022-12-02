@@ -477,7 +477,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         x = tf.keras.layers.Flatten()(x)
 
-        if("Fourier" in type(pretrained_model.layers[4]).__name__):
+        if("Fourier" in type(pretrained_model.layers[3]).__name__):
             self.index_model=4
             if("Fourier" in type(pretrained_model.layers[index_model].layers[10]).__name__):
                 index=10
