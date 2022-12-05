@@ -30,8 +30,8 @@ class DenseVariational(tf.keras.layers.Layer):
 
 		self.units=units
 		self.activation_fn=activation
-		if(activation is None):
-			self.activation="linear"
+		if(self.activation_fn is None):
+			self.activation_fn="linear"
 		self.kernel_prior_initializer=kernel_prior_initializer
 		self.kernel_posterior_initializer=kernel_posterior_initializer
 		self.bias_prior_initializer=bias_prior_initializer
