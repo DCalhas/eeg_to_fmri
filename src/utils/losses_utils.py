@@ -53,8 +53,8 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
 
         super(ContrastiveClassificationLoss, self).__init__(**kwargs)
 
-        self.contrastive=ContrastiveLoss(m=m, reduction="none")
-        self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction="none")
+        self.contrastive=ContrastiveLoss(m=m, reduction=tf.keras.losses.Reduction.NONE)
+        self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
 
     def call(self, y_true, y_pred, y1_var=1., y2_var=1.):
         y_contrast,y_clf1,y_clf2 = separate_targets(y_true)
@@ -70,7 +70,7 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
         print(self.contrastive(y_contrast, y_pred[1]).shape)
         print(tf.reduce_mean(y1_var,axis=[1,2,3,4]).shape)
         print(self.nll(y_clf1[:,1], y_pred[2]).shape)
-        
+
         return self.contrastive(y_contrast, y_pred[1])+(1/tf.reduce_mean(y1_var,axis=[1,2,3,4]))*self.nll(y_clf1[:,1], y_pred[2])+(1/tf.reduce_mean(y2_var,axis=[1,2,3,4]))*self.nll(y_clf2[:,1], y_pred[3]) + tf.math.log(y1_var*y2_var)
         
 
