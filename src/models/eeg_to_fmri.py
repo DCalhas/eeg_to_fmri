@@ -560,7 +560,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     trainable=False)(x)
         elif(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="DenseVariational"):
             x = DenseVariational(pretrained_model.layers[self.index_model].layers[index].units,
-                                activation=tf.keras.activations.linear,
+                                activation=pretrained_model.layers[self.index_model].layers[index].activation_fn,
                                 kernel_prior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel_mu.numpy()),
                                 kernel_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel_sigma.numpy()),
                                 bias_prior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_mu.numpy()),
