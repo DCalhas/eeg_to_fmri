@@ -53,6 +53,17 @@ if __name__ == "__main__":
 #limit process memory
 memory_utils.limit_CPU_memory(1024*1024*1024*24, MAX_PROCESSES)
 
+print(style_prior)
+print(padded)
+print(variational)
+print(variational_clf)
+print(variational_coefs)
+print(variational_dependent_h)
+print(variational_dist)
+print(variational_random_padding)
+print(resolution_decoder)
+print(aleatoric_uncertainty)
+
 #create directory to save
 if(not os.path.exists(path_labels+"/"+ setting)):
 	os.makedirs(path_labels+"/"+ setting)
