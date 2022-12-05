@@ -186,6 +186,8 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
         super(ViewLatentContrastiveClassifier, self).__init__()
 
+        assert not siamese_projection
+
         self.siamese_projection=siamese_projection
 
         self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, feature_selection=feature_selection, segmentation_mask=segmentation_mask, latent_contrastive=True, seed=seed)
@@ -218,11 +220,6 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             s1=self.flatten(z1[1])
             s2=self.flatten(z2[1])
 
-            if(self.siamese_projection):
-                ss1=self.flatten(z1[0])
-                ss2=self.flatten(z2[0])
-                return [tf.abs(s1-s2), 1.-self.dot([ss1,ss2]), self.clf(z1[0].numpy()), self.clf(z2[0].numpy())]
-
-            return [tf.abs(s1-s2), self.clf(z1[0].numpy()), self.clf(z2[0].numpy())]
+            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy()), self.clf(z2[0].numpy())]
 
         return self.clf(self.view(X)[0])

@@ -56,16 +56,19 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
         self.contrastive=ContrastiveLoss(m=m, reduction=reduction)
         self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction=reduction)
 
-    def call(self, y_true, y_pred):
+    def call(self, y_true, y_pred, y1_var=1., y2_var=1.):
         y_contrast,y_clf1,y_clf2 = separate_targets(y_true)
 
         if(len(y_pred)>3):
             """
             Means that there are some latent contrastive losses to be induced
             """
-            return self.contrastive(y_contrast, y_pred[0])+self.call(y_true, y_pred[1:])
+            print(tf.shape(y_pred[0][0]))
+            if(tf.shape(y_pred[0][0])[-1]==2):
+                _, y1_var = tf.split(y_pred[0][0], 2, axis=-1)
+                _, y2_var = tf.split(y_pred[0][1], 2, axis=-1)
 
-        return self.contrastive(y_contrast, y_pred[0])+self.nll(y_clf1[:,1], y_pred[1])+self.nll(y_clf2[:,1], y_pred[2])
+        return self.contrastive(y_contrast, y_pred[1])+(1/y1_var)*self.nll(y_clf1[:,1], y_pred[2])+(1/y2_var)*self.nll(y_clf2[:,1], y_pred[3]) + tf.log(y1_var*y2_var)
         
 
 

@@ -548,6 +548,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index]).__name__)()(x)
         index+=1
 
+        self.aleatoric=False
         #upsampling layer
         if(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="Dense"):
             x = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index]).__name__)(
@@ -566,14 +567,12 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                 bias_prior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_mu.numpy()),
                                 bias_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_sigma.numpy()),
                                 trainable=False)(x)
-
-            raise NotImplementedError
+            self.aleatoric=True
         else:
             raise NotImplementedError
         
         index+=1
 
-        self.aleatoric=False
         if(type(pretrained_model.layers[self.index_model].layers[index+1]).__name__=="DCT3D"):
             #reshape
             x = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index]).__name__)(
