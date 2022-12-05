@@ -59,13 +59,12 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
     def call(self, y_true, y_pred, y1_var=1., y2_var=1.):
         y_contrast,y_clf1,y_clf2 = separate_targets(y_true)
 
-        if(len(y_pred)>3):
+        if(tf.shape(y_pred[0][0])[-1]==2):
             """
-            Means that there are some latent contrastive losses to be induced
+            Means we are running uncertainty
             """
-            if(tf.shape(y_pred[0][0])[-1]==2):
-                _, y1_var = tf.split(y_pred[0][0], 2, axis=-1)
-                _, y2_var = tf.split(y_pred[0][1], 2, axis=-1)
+            _, y1_var = tf.split(y_pred[0][0], 2, axis=-1)
+            _, y2_var = tf.split(y_pred[0][1], 2, axis=-1)
 
         return tf.reduce_mean(self.contrastive(y_contrast, y_pred[1]), axis=1)+(1/tf.reduce_mean(y1_var,axis=[1,2,3,4]))*self.nll(tf.expand_dims(y_clf1[:,1],-1), y_pred[2])+(1/tf.reduce_mean(y2_var,axis=[1,2,3,4]))*self.nll(tf.expand_dims(y_clf2[:,1],-1), y_pred[3]) + tf.math.log(y1_var*y2_var)
         
