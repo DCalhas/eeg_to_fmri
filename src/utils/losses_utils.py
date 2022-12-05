@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import correlate
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 import tensorflow.keras.backend as K
 
