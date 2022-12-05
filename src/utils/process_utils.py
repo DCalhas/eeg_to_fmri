@@ -427,7 +427,7 @@ def train_synthesis(dataset, epochs, style_prior, padded, variational, variation
 	print("I: Starting pretraining of synthesis network")
 
 	train.train(train_set, model, optimizer, 
-							loss_fn, epochs=epochs, 
+							loss_fn, epochs=0, 
 							u_architecture=True,
 							val_set=None, verbose=True, verbose_batch=False)
 
