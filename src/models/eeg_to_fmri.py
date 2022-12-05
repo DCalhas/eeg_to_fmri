@@ -513,8 +513,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         else:
             raise NotImplementedError
 
-
-        print(pretrained_model.layers[self.index_model].summary())
         #project sinusoids
         if("Sinusoids" in type(pretrained_model.layers[self.index_model].layers[index]).__name__):
             x=Sinusoids()(x)
