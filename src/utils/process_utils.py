@@ -427,10 +427,10 @@ def train_synthesis(dataset, epochs, style_prior, padded, variational, variation
 
 	print("I: Starting pretraining of synthesis network")
 
-	loss_history = train.train(train_set, model, optimizer, 
+	train.train(train_set, model, optimizer, 
 							loss_fn, epochs=epochs, 
 							u_architecture=True,
-							val_set=None, verbose=True, verbose_batch=False)[0]
+							val_set=None, verbose=True, verbose_batch=False)
 
 	print("I: Saving synthesis network at", save_path)
 
