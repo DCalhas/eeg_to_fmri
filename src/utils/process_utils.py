@@ -353,7 +353,6 @@ def cross_validation_eeg_fmri(score, fourier_features, random_fourier,
 
 
 def train_synthesis(dataset, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, save_path, gpu_mem, seed, run_eagerly):
-	print(dataset, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, save_path, gpu_mem, seed, run_eagerly)
 	#imports
 	import tensorflow as tf
 
