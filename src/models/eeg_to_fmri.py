@@ -233,6 +233,7 @@ class EEG_to_fMRI(tf.keras.Model):
             else:
                 x = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
                                                                     trainable=True, name="fourier_features")(x)
+            print("SINUSOIDS")
             x=Sinusoids()(x)
         else:
             x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
