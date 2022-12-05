@@ -463,19 +463,20 @@ def uncertainty_losses_plot(setting, losses_history, loss_i, epochs=10):
 #                                                3 Dimensinoal plot with 2d slices
 #
 ##########################################################################################################
-"""
-    
-Inputs:
-    instance: Numpy.ndarray - of shape (X,Y,Z,1)
-    factor: float - that resamples the Z axis slices
-    h_resolution: int - resolution in the horizontal dimension
-    v_resolution: int - resolution in the vertical dimension
-    save: bool - whether to save the figure
-    save_path: str - path to save the figure, save has to be True
-Returns:
-    matplotlib.Figure - The figure to plot, no saving option implemented
-"""
+
 def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, v_resolution=1, threshold=0.37, cmap=plt.cm.nipy_spectral, uncertainty=False, res_img=None, legend_colorbar="redidues", max_min_legend=["Good","Bad"], normalize_residues=False, normalize_explanations=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
+    """
+        
+    Inputs:
+        instance: Numpy.ndarray - of shape (X,Y,Z,1)
+        factor: float - that resamples the Z axis slices
+        h_resolution: int - resolution in the horizontal dimension
+        v_resolution: int - resolution in the vertical dimension
+        save: bool - whether to save the figure
+        save_path: str - path to save the figure, save has to be True
+    Returns:
+        matplotlib.Figure - The figure to plot, no saving option implemented
+    """
     label = "$Z_{"
 
     #this is a placeholder for the residues plot
@@ -583,19 +584,20 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
     return fig
 
 
-"""
-    
-Inputs:
-    instance: Numpy.ndarray - of shape (X,Y,Z,1)
-    factor: float - that resamples the Z axis slices
-    h_resolution: int - resolution in the horizontal dimension
-    v_resolution: int - resolution in the vertical dimension
-    save: bool - whether to save the figure
-    save_path: str - path to save the figure, save has to be True
-Returns:
-    matplotlib.Figure - The figure to plot, no saving option implemented
-"""
+
 def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resolution=1, v_resolution=1, threshold=0.37, cmap=plt.cm.nipy_spectral, cmap_background=plt.cm.binary, uncertainty=False, res_img=None, alpha_img=None, legend_colorbar="redidues", max_min_legend=["Good","Bad"], normalize_residues=False, slice_label=True, save=False, save_path=None, save_format="pdf"):
+    """
+        
+    Inputs:
+        instance: Numpy.ndarray - of shape (X,Y,Z,1)
+        factor: float - that resamples the Z axis slices
+        h_resolution: int - resolution in the horizontal dimension
+        v_resolution: int - resolution in the vertical dimension
+        save: bool - whether to save the figure
+        save_path: str - path to save the figure, save has to be True
+    Returns:
+        matplotlib.Figure - The figure to plot, no saving option implemented
+    """
     label = "$Z_{"
 
     assert alpha_img is not None
@@ -709,22 +711,23 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
 
 
 
-"""
-    
-Inputs:
-    res1: Numpy.ndarray - of shape (X,Y,Z,1)
-    res2: Numpy.ndarray - of shape (X,Y,Z,1)
-    pvalues: Numpy.ndarray - of shape (X,Y,Z,1)
-    res_img: Numpy.ndarray - of shape (X,Y,Z,1)
-    factor: float - that resamples the Z axis slices
-    h_resolution: int - resolution in the horizontal dimension
-    v_resolution: int - resolution in the vertical dimension
-    save: bool - whether to save the figure
-    save_path: str - path to save the figure, save has to be True
-Returns:
-    matplotlib.Figure - The figure to plot, no saving option implemented
-"""
+
 def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_img, model1="Model1", model2="Model2", factor=3, h_resolution=1, v_resolution=1, threshold=0.37, slice_label=True, save=False, save_path=None, red_blue=False, save_format="pdf"):
+    """
+        
+    Inputs:
+        res1: Numpy.ndarray - of shape (X,Y,Z,1)
+        res2: Numpy.ndarray - of shape (X,Y,Z,1)
+        pvalues: Numpy.ndarray - of shape (X,Y,Z,1)
+        res_img: Numpy.ndarray - of shape (X,Y,Z,1)
+        factor: float - that resamples the Z axis slices
+        h_resolution: int - resolution in the horizontal dimension
+        v_resolution: int - resolution in the vertical dimension
+        save: bool - whether to save the figure
+        save_path: str - path to save the figure, save has to be True
+    Returns:
+        matplotlib.Figure - The figure to plot, no saving option implemented
+    """
     label = "$Z_{"
 
     #colormap definition
@@ -969,47 +972,48 @@ def comparison_plot_uncertainty(res1, res2, pvalues, res_img, model1="Model1", m
 
 
 
-"""
-Plot from: Bayesian DCT Uncertainty Quantification
 
-Examples:
-
->>> from utils import viz_utils, preprocess_data
->>> import tensorflow as tf
->>> import numpy as np
->>> from pathlib import Path
->>>
->>> home = str(Path.home())
->>> 
->>> n_individuals=getattr(data_utils, "n_individuals_"+dataset)
->>> with tf.device('/CPU:0'):
->>>     train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals,
-...                                                interval_eeg=interval_eeg, 
-...                                                ind_volume_fit=False,
-...                                                standardize_fmri=True,
-...                                                iqr=False,
-...                                                verbose=True)
->>>     eeg_train, fmri_train =train_data
->>>     eeg_test, fmri_test = test_data
->>>
->>> H=[2,5,7,10,13,15,18,20]
->>> sinusoids_res = np.zeros((8,64,64,30,1))
->>> path_res = home+"/eeg_to_fmri/metrics/01_topographical_attention_random_fourier_features_attention_style_variational_VonMises_dependent_h_"
->>> for sin in range(len(H)):
->>>     sinusoids_res[sin] = np.mean(np.squeeze(np.load(path_res+str(H[sin])+"_30x30x15_res_2.0/metrics/res_seed_11.npy"), axis=1), axis=0)
->>>
->>> resolutions=["3x3x1","6x6x3","12x12x6","15x15x7","18x18x9","20x20x10","25x25x12","30x30x15"]
->>> resolutions_res = np.zeros((8,64,64,30,1))
->>> path_res = home+"/eeg_to_fmri/metrics/01_topographical_attention_random_fourier_features_attention_style_variational_VonMises_dependent_h_15_"
->>> for res in range(len(resolutions)):
->>>     resolutions_res[res] = np.mean(np.squeeze(np.load(path_res+resolutions[res]+"_res_2.0/metrics/res_seed_11.npy"), axis=1), axis=0)
->>>
->>> viz_utils.plot_analysis_uncertainty(sinusoids_res, fmri_train, H, xlabel=r"$Var[res]$", ylabel=r"$H$", threshold=0.37, save=False, save_path=None, save_format="pdf")
->>> viz_utils.plot_analysis_uncertainty(resolutions_res, fmri_train, resolutions, xlabel=r"$Var[res]$", ylabel=r"$R$", threshold=0.37, save=False, save_path=None, save_format="pdf")
-
-
-"""
 def plot_analysis_uncertainty(runs, res_img, evaluations, xlabel=r"$Var[res]$", ylabel=r"$H$", threshold=0.37, save=False, save_path=None, save_format="pdf"):
+    """
+    Plot from: Bayesian DCT Uncertainty Quantification
+
+    Examples:
+
+    >>> from utils import viz_utils, preprocess_data
+    >>> import tensorflow as tf
+    >>> import numpy as np
+    >>> from pathlib import Path
+    >>>
+    >>> home = str(Path.home())
+    >>> 
+    >>> n_individuals=getattr(data_utils, "n_individuals_"+dataset)
+    >>> with tf.device('/CPU:0'):
+    >>>     train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals,
+    ...                                                interval_eeg=interval_eeg, 
+    ...                                                ind_volume_fit=False,
+    ...                                                standardize_fmri=True,
+    ...                                                iqr=False,
+    ...                                                verbose=True)
+    >>>     eeg_train, fmri_train =train_data
+    >>>     eeg_test, fmri_test = test_data
+    >>>
+    >>> H=[2,5,7,10,13,15,18,20]
+    >>> sinusoids_res = np.zeros((8,64,64,30,1))
+    >>> path_res = home+"/eeg_to_fmri/metrics/01_topographical_attention_random_fourier_features_attention_style_variational_VonMises_dependent_h_"
+    >>> for sin in range(len(H)):
+    >>>     sinusoids_res[sin] = np.mean(np.squeeze(np.load(path_res+str(H[sin])+"_30x30x15_res_2.0/metrics/res_seed_11.npy"), axis=1), axis=0)
+    >>>
+    >>> resolutions=["3x3x1","6x6x3","12x12x6","15x15x7","18x18x9","20x20x10","25x25x12","30x30x15"]
+    >>> resolutions_res = np.zeros((8,64,64,30,1))
+    >>> path_res = home+"/eeg_to_fmri/metrics/01_topographical_attention_random_fourier_features_attention_style_variational_VonMises_dependent_h_15_"
+    >>> for res in range(len(resolutions)):
+    >>>     resolutions_res[res] = np.mean(np.squeeze(np.load(path_res+resolutions[res]+"_res_2.0/metrics/res_seed_11.npy"), axis=1), axis=0)
+    >>>
+    >>> viz_utils.plot_analysis_uncertainty(sinusoids_res, fmri_train, H, xlabel=r"$Var[res]$", ylabel=r"$H$", threshold=0.37, save=False, save_path=None, save_format="pdf")
+    >>> viz_utils.plot_analysis_uncertainty(resolutions_res, fmri_train, resolutions, xlabel=r"$Var[res]$", ylabel=r"$R$", threshold=0.37, save=False, save_path=None, save_format="pdf")
+
+
+    """
     img = np.mean(res_img, axis=0)
 
     cp1 = np.linspace(0,1)
@@ -1025,12 +1029,13 @@ def plot_analysis_uncertainty(runs, res_img, evaluations, xlabel=r"$Var[res]$", 
                         ))
     cmap=ListedColormap(Legend)
 
-    """
-    analysis \in \mathbb{R}^H
-    voxel \in \mathbb{R}
-
-    """
+    
     def _cmap_(analysis, voxel, list_range, threshold=0., threshold_q=1e-1, epsilon=1e-3):
+        """
+        analysis \in \mathbb{R}^H
+        voxel \in \mathbb{R}
+
+        """
         if(voxel==-1):
             return (0.999,0.999,0.999)
 
@@ -1097,11 +1102,12 @@ def plot_analysis_uncertainty(runs, res_img, evaluations, xlabel=r"$Var[res]$", 
 
 
 
-"""
-Single display plot
 
-"""
 def single_display_gt_pred_espistemic_aleatoric(im1, im2, im3, im4, name="default", xslice=14, threshold=0.37, cmap=plt.cm.nipy_spectral, save=False, save_path=None, save_format="pdf"):
+    """
+    Single display plot
+
+    """
     
     def normalize_img(img, threshold=0.37):
         img = (img[:,:,:,:]-np.amin(img[:,:,:,:]))/(np.amax(img[:,:,:,:])-np.amin(img[:,:,:,:]))
@@ -1151,10 +1157,11 @@ def single_display_gt_pred_espistemic_aleatoric(im1, im2, im3, im4, name="defaul
         
     return fig
 
-"""
-Whole brain display - for Bayesian uncertainty Quantification
-"""
+
 def whole_display_gt_pred_espistemic_aleatoric(im1, im2, im3, im4, cmap=plt.cm.nipy_spectral, factor=5, save=False, save_path=None, save_format="pdf"):
+    """
+    Whole brain display - for Bayesian uncertainty Quantification
+    """
     cmap = copy.copy(mpl.cm.get_cmap(cmap))
     cmap.set_over("w")
 
@@ -1216,13 +1223,14 @@ def whole_display_gt_pred_espistemic_aleatoric(im1, im2, im3, im4, cmap=plt.cm.n
 ##########################################################################################################
 
 
-"""
 
-Inputs:
-    * R - np.ndarray
-    * X - np.ndarray
-"""
 def R_channels(R, X, ch_names=None, save=False, save_path=None, save_format="pdf"):
+    """
+
+    Inputs:
+        * R - np.ndarray
+        * X - np.ndarray
+    """
     if(ch_names is None):
         ch_names=list(range(X.shape[1]))
 
@@ -1281,13 +1289,14 @@ def R_channels(R, X, ch_names=None, save=False, save_path=None, save_format="pdf
         
         
 
-"""
 
-Inputs:
-    * R - np.ndarray
-    * channels - int32
-"""
 def R_analysis_channels(R, channels, ch_names=None, save=False, save_path=None, save_format="pdf"):
+    """
+
+    Inputs:
+        * R - np.ndarray
+        * channels - int32
+    """
     if(ch_names is None):
         ch_names=list(range(channels))
 
@@ -1359,13 +1368,14 @@ def R_analysis_channels(R, channels, ch_names=None, save=False, save_path=None, 
 
 
 
-"""
 
-Inputs:
-    * R - np.ndarray
-    * freqs - int32
-"""
 def R_analysis_freqs(R, freqs, save=False, save_path=None, save_format="pdf"):
+    """
+
+    Inputs:
+        * R - np.ndarray
+        * freqs - int32
+    """
     pop_freqs = np.sum(np.sum(R[:,:,:,:,0], axis=3), axis=1)
 
     pvalues=np.zeros((pop_freqs.shape[1], pop_freqs.shape[1]))
@@ -1428,13 +1438,14 @@ def R_analysis_freqs(R, freqs, save=False, save_path=None, save_format="pdf"):
         fig.show()
 
         
-"""
 
-Inputs:
-    * R - np.ndarray
-    * times - int32
-"""
 def R_analysis_times(R, times, save=False, save_path=None, save_format="pdf"):
+    """
+
+    Inputs:
+        * R - np.ndarray
+        * times - int32
+    """
     
 
     pop_times = np.sum(np.sum(R[:,:,:,:,0], axis=2), axis=1)
@@ -1502,12 +1513,13 @@ def R_analysis_times(R, times, save=False, save_path=None, save_format="pdf"):
         fig.show()
         
 
-"""
-Inputs:
-    * R - np.ndarray
-"""
+
 
 def R_analysis_dimensions(R, ch_names=None, save=False, save_path=None, save_format="pdf"):
+    """
+    Inputs:
+        * R - np.ndarray
+    """
 
     pop_channels = np.sum(np.sum(R[:,:,:,:,0], axis=3), axis=2)
     pop_freqs = np.sum(np.sum(R[:,:,:,:,0], axis=3), axis=1)
@@ -1666,13 +1678,14 @@ def R_analysis_dimensions(R, ch_names=None, save=False, save_path=None, save_for
     else:
         fig.show()
 
-"""
-Inputs:
-    * R - np.ndarray
-    * times - int32
-    * freqs - int32
-"""
+
 def R_analysis_times_freqs(R, times, freqs, func=np.std, save=False, save_path=None, save_format="pdf"):
+    """
+    Inputs:
+        * R - np.ndarray
+        * times - int32
+        * freqs - int32
+    """
     pop = (np.sum(R[:,:,:,:,0], axis=1),)
 
     if(func is metrics.ttest_1samp_r):
@@ -1700,13 +1713,14 @@ def R_analysis_times_freqs(R, times, freqs, func=np.std, save=False, save_path=N
     else:
         fig.show()
 
-"""
-Inputs:
-    * R - np.ndarray
-    * times - int32
-    * freqs - int32
-"""
+
 def R_analysis_channels_freqs(R, channels, freqs, func=np.std, ch_names=None, save=False, save_path=None, save_format="pdf"):
+    """
+    Inputs:
+        * R - np.ndarray
+        * times - int32
+        * freqs - int32
+    """
     pop = (np.sum(R[:,:,:,:,0], axis=3),)
 
     if(func is metrics.ttest_1samp_r):
@@ -1738,13 +1752,14 @@ def R_analysis_channels_freqs(R, channels, freqs, func=np.std, ch_names=None, sa
         fig.show()
 
 
-"""
-Inputs:
-    * R - np.ndarray
-    * times - int32
-    * channels - int32
-"""
+
 def R_analysis_times_channels(R, times, channels, func=np.std, ch_names=None, save=False, save_path=None, save_format="pdf"):
+    """
+    Inputs:
+        * R - np.ndarray
+        * times - int32
+        * channels - int32
+    """
     pop = (np.sum(R[:,:,:,:,0], axis=2),)
     
     if(func is metrics.ttest_1samp_r):
@@ -1780,13 +1795,14 @@ def R_analysis_times_channels(R, times, channels, func=np.std, ch_names=None, sa
 
 
 
-"""
-Plot EEG cap 10-20 system
 
-
-Good for attention scores and check which channels are related
-"""
 def plot_eeg_channels(colors=None, scores=None, edges=None, edge_threshold=0.5, edge_width=3., dataset="01", plot_names=False):
+    """
+    Plot EEG cap 10-20 system
+
+
+    Good for attention scores and check which channels are related
+    """
     #circle1 = plt.Circle((0, 0), 0.2, color='r')
     #circle2 = plt.Circle((0.5, 0.5), 0.2, color='blue')
     head = plt.Circle((0.5,0.5), 0.47, linestyle='-',edgecolor='black',fill=True, facecolor="white", zorder=0)
