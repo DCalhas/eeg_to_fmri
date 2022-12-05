@@ -29,9 +29,9 @@ class DenseVariational(tf.keras.layers.Layer):
 				**kwargs)
 
 		self.units=units
-		self.activation=activation
+		self.activation_fn=activation
 		if(activation is None):
-			self.activation=tf.keras.activations.linear
+			self.activation="linear"
 		self.kernel_prior_initializer=kernel_prior_initializer
 		self.kernel_posterior_initializer=kernel_posterior_initializer
 		self.bias_prior_initializer=bias_prior_initializer
@@ -112,7 +112,7 @@ class DenseVariational(tf.keras.layers.Layer):
 		if(self.use_bias):
 			output+=bias
 			
-		return self.activation(output)
+		return getattr(tf.keras.activations, self.activation_fn)(output)
 
 	def get_config(self):
 		"""Returns the config of the layer.
@@ -124,7 +124,7 @@ class DenseVariational(tf.keras.layers.Layer):
 				serialized values.
 		"""
 		return {'units': self.units,
-				'activation': self.activation,
+				'activation': self.activation_fn,
 				'kernel_posterior_initializer': self.kernel_posterior_initializer,
 				'bias_posterior_initializer': self.bias_posterior_initializer,
 				'kernel_prior_initializer': self.kernel_prior_initializer,
