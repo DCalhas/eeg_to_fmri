@@ -24,8 +24,10 @@ def main(opt):
 	fourier_features=opt.fourier_features
 	random_fourier=opt.random_fourier
 	conditional_attention_style=opt.conditional_attention_style
+	conditional_attention_style_prior=opt.conditional_attention_style_prior
 	epochs=opt.epochs
 	batch_size=opt.batch_size
+	optimizer=opt.optimizer
 	na_path_eeg=opt.na_path_eeg
 	na_path_fmri=opt.na_path_fmri
 	gpu_mem=opt.gpu_mem
@@ -51,8 +53,11 @@ def main(opt):
 	if(fourier_features):
 		setting+="_fourier_features"
 	if(conditional_attention_style):
-		assert topographical_attention, "To run conditional_attention_style, topographical_attention needs to be active"
-		setting+="_attention_style"
+		if(conditional_attention_style_prior):
+			setting+="_style_prior"
+		else:
+			assert topographical_attention, "To run conditional_attention_style, topographical_attention needs to be active"
+			setting+="_attention_style"
 	if(padded):
 		assert not variational, "No variational model along with padded version of filling with zeros"
 		assert type(resolution_decoder) is float, "There needs to be a specification of the lower resolution"
@@ -82,9 +87,11 @@ def main(opt):
 		assert variational, "Only done with variational flag set to True"
 		setting+="_random_padding"
 
+	assert optimizer in ["Adam", "PathAdam"]
 
 
-	return mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting
+
+	return mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, conditional_attention_style_prior, epochs, batch_size, optimizer, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting
 
 def clf_cv(opt):
 	"""
@@ -113,6 +120,7 @@ def clf_cv(opt):
 	fold=opt.fold
 	n_processes=opt.n_processes
 	epochs=opt.epochs
+	optimizer=opt.optimizer
 	gpu_mem=opt.gpu_mem
 	path_save_network=opt.path_save_network
 	run_eagerly=opt.run_eagerly
@@ -164,7 +172,9 @@ def clf_cv(opt):
 	if(n_processes>1):
 		assert gpu_mem/n_processes < 7000, "Should not be superior than memory of the GPU"
 
+	assert optimizer in ["Adam", "PathAdam"]
+
 	if(view!="fmri"):
 		setting=dataset_clf+"_"+view
 		
-	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability
+	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability

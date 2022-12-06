@@ -39,6 +39,7 @@ if __name__ == "__main__":
 	parser.add_argument('-fold', default=0, type=int, help="Fold to start leave one out at - useful when bizantine fault error occurs and restart at state (fold)")
 	parser.add_argument('-folds', default=5, type=int, help="Folds to consider in CV hyperparameter optimization")
 	parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
+	parser.add_argument('-optimizer', default="Adam", type=str, help="Optimizer to use for the learning session")
 	parser.add_argument('-n_processes', default=1, type=int, help="Number of processes to use during CV to launch folds and run independently.")
 	parser.add_argument('-gpu_mem', default=1500, type=int, help="GPU memory limit")
 	parser.add_argument('-path_save_network', default="/tmp/network_synthesis", type=str, help="Path to save neural network synthesis architecture")
@@ -48,7 +49,7 @@ if __name__ == "__main__":
 	parser.add_argument('-seed', default=42, type=int, help="Seed for random state")
 	opt = parser.parse_args()
 	
-	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability = assertion_utils.clf_cv(opt)
+	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability = assertion_utils.clf_cv(opt)
 
 #limit process memory
 memory_utils.limit_CPU_memory(1024*1024*1024*24, MAX_PROCESSES)

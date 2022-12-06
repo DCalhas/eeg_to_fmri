@@ -10,6 +10,8 @@ from utils import metrics, process_utils, train, losses_utils, viz_utils, lrp, d
 
 from models.eeg_to_fmri import EEG_to_fMRI
 
+from regularizers.path_sgd import PathOptimizer
+
 import tensorflow as tf
 
 from pathlib import Path
@@ -27,6 +29,7 @@ parser.add_argument('-TRs', default=1, type=int, help="Number of volumes to pred
 parser.add_argument('-topographical_attention', action="store_true", help="Topographical attention on EEG channels")
 parser.add_argument('-channel_organization', action="store_true", help="Organization of EEG channels, without surpressing information from any channel")
 parser.add_argument('-conditional_attention_style', action="store_true", help="Conditional attention style on the latent space")
+parser.add_argument('-conditional_attention_style_prior', action="store_true", help="Style prior on the latent space")
 parser.add_argument('-padded', action="store_true", help="Fill higher resolutions with zero for the upsampling method.")
 parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
 parser.add_argument('-variational_coefs', default=None, type=None, help="Number of extra stochastic resolution coefficients")
@@ -39,8 +42,9 @@ parser.add_argument('-fourier_features', action="store_true", help="Fourier feat
 parser.add_argument('-random_fourier', action="store_true", help="Use random fourier features projection")
 parser.add_argument('-epochs', default=10, type=int, help="Number of epochs")
 parser.add_argument('-batch_size', default=4, type=int, help="Batch size")
-parser.add_argument('-na_path_eeg', default=os.environ['EEG_FMRI']+"/na_models_eeg", type=str, help="Neural architectures path for the EEG encoder.")
-parser.add_argument('-na_path_fmri', default=os.environ['EEG_FMRI']+"/na_models_fmri", type=str, help="Neural architectures path for the fMRI encoder.")
+parser.add_argument('-optimizer', default="Adam", type=str, help="Optimizer to use for the learning session")
+parser.add_argument('-na_path_eeg', default=os.environ['EEG_FMRI']+"/na_models_eeg/na_specification_2", type=str, help="Neural architectures path for the EEG encoder.")
+parser.add_argument('-na_path_fmri', default=os.environ['EEG_FMRI']+"/na_models_fmri/na_specification_2", type=str, help="Neural architectures path for the fMRI encoder.")
 parser.add_argument('-gpu_mem', default=4000, type=int, help="GPU memory limit")
 parser.add_argument('-verbose', action="store_true", help="Verbose")
 parser.add_argument('-save_metrics', action="store_true", help="save metrics to compare afterwards")
@@ -50,7 +54,7 @@ parser.add_argument('-run_eagerly', action="store_true", help="Run eagerly, if n
 parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
 opt = parser.parse_args()
 
-mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, epochs, batch_size, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting = assertion_utils.main(opt)
+mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, conditional_attention_style_prior, epochs, batch_size, optimizer, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting = assertion_utils.main(opt)
 
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed, run_eagerly=run_eagerly)
@@ -60,8 +64,6 @@ if(not os.path.exists(metrics_path+"/"+ setting)):
 	os.makedirs(metrics_path+"/"+ setting)
 
 #load data
-raw_eeg=False
-resampling=False
 interval_eeg=10
 n_volumes=getattr(fmri_utils, "n_volumes_"+dataset)
 n_individuals=getattr(data_utils, "n_individuals_"+dataset)
@@ -86,16 +88,16 @@ with tf.device('/CPU:0'):
 		na_specification_eeg = pickle.load(f)
 	with open(na_path_fmri, "rb") as f:
 		na_specification_fmri = pickle.load(f)
-	optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
 	#placeholder not pretty please correct me
 	_resolution_decoder=None
 	if(type(resolution_decoder) is float):
 		_resolution_decoder=(int(fmri_shape[1]/resolution_decoder),int(fmri_shape[2]/resolution_decoder),int(fmri_shape[3]/resolution_decoder))
 
-	model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, skip_connections=skip_connections,
+	model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, 
 								batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
 								conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
+								conditional_attention_style_prior=conditional_attention_style_prior, skip_connections=skip_connections,
 								organize_channels=channel_organization, inverse_DFT=variational or padded, DFT=variational or padded, 
 								variational_dist=variational_dist, variational_iDFT=variational, variational_coefs=variational_coefs, 
 								variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h,
@@ -105,11 +107,15 @@ with tf.device('/CPU:0'):
 								kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
 								n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
 	model.build(eeg_shape, fmri_shape)
+	if(optimizer=="Adam"):
+		optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+	else:
+		optimizer = PathOptimizer([(1,)+eeg_shape[1:],(1,)+fmri_shape[1:]], model, learning_rate)
 	model.compile(optimizer=optimizer)
 	loss_fn = list(losses_utils.LOSS_FNS.values())[int(aleatoric_uncertainty)]#if variational get loss fn at index 1
 
 #train model
-history = train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose)
+train.train(train_set, model, optimizer, loss_fn, epochs=epochs, u_architecture=True, verbose=verbose, verbose_batch=verbose)
 
 if(mode=="metrics"):
 	#create dir setting if not exists
