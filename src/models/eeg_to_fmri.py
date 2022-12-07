@@ -545,7 +545,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index]).__name__)()(x)
         index+=1
 
-        self.aleatoric=False
         #upsampling layer
         if(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="Dense"):
             x = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index]).__name__)(
@@ -564,7 +563,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                 bias_prior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_mu.numpy()),
                                 bias_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_sigma.numpy()),
                                 trainable=False)(x)
-            self.aleatoric=True
         else:
             raise NotImplementedError
         
@@ -592,7 +590,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].scale.numpy()),
                                         biases_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].biases.numpy()),
                                         trainable=False)(x)
-                self.aleatoric=True
             elif(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="padded_iDCT3D"):
                 x = padded_iDCT3D(**pretrained_model.layers[self.index_model].layers[index].get_config())(x)
             index+=1
@@ -617,37 +614,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         bias_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
                                         padding=pretrained_model.layers[self.index_model].layers[index].padding,
                                         trainable=False)(x)
-        
-        if(feature_selection):
-            #try smoothing feature selection
-            z = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index-1]).__name__)(pretrained_model.layers[self.index_model].layers[index-1].target_shape[:-1])(z)
-            z = DCT3D(*pretrained_model.layers[self.index_model].layers[index-1].target_shape[:-1])(z)
-            shape_smoothing=(5,5,3)
-            z = z*tf.keras.layers.ZeroPadding3D(padding=((0, z.shape[1]-shape_smoothing[0]), (0, z.shape[2]-shape_smoothing[1]), (0, z.shape[3]-shape_smoothing[2])))(tf.ones((1,)+shape_smoothing+(1,)))[:,:,:,:,0]
-            z = iDCT3D(*pretrained_model.layers[self.index_model].layers[index-1].target_shape[:-1])(z)
-            z = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index-1]).__name__)(pretrained_model.layers[self.index_model].layers[index-1].target_shape)(z)
-        if(segmentation_mask):
-            #perform brain segmentation with mask
-            z = MRICircleMask([x,z][int(feature_selection)].shape)([x,z][int(feature_selection)])#mask a circle
-
-        if(feature_selection or segmentation_mask):
-            self.decoder = tf.keras.Model(input_shape, z)
-            #deprecated
-            sigma_2 = tf.keras.layers.Flatten()(x)
-            sigma_2 = tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(sigma_2)
-            self.sigma_2 = tf.keras.Model(input_shape, sigma_2)
-
-        if(self.aleatoric):#we want the uncertainty from the pretrained model
-            index+=1
-            sigma_1 = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index]).__name__)(
-                                            pretrained_model.layers[self.index_model].layers[index].units,
-                                            activation=tf.keras.activations.exponential,
-                                            #kernel_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel.numpy()),
-                                            #bias_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
-                                            kernel_regularizer=regularizer,
-                                            bias_regularizer=regularizer,
-                                            trainable=True,)(x)
-            self.sigma_1 = tf.keras.Model(input_shape, sigma_1)
 
         self.q_decoder = tf.keras.Model(input_shape, x)
         
@@ -655,30 +621,18 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
     def build(self, input_shape):
         self.eeg_encoder.build(input_shape=input_shape)
         self.q_decoder.build(input_shape=input_shape)
-        if(self.feature_selection or self.segmentation_mask):
-            self.decoder.build(input_shape=input_shape)
         self.built=True
 
     #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)])
-    def call(self, x1):
+    def call(self, x1, **kwargs):
         """
             Random behaviour of GPU with tf functions does not reproduce the same results
             Call this function when getting results
         """
         
-        if(self.aleatoric):
-            sigma_1=self.sigma_1(x1)
-            #self.add_loss(tf.reduce_mean(sigma_1))#minimize the uncertainty
-            z=[tf.concat([self.q_decoder(x1),sigma_1],axis=-1)]
-        else:
-            z = [self.q_decoder(x1)]
+        z = [self.q_decoder(x1)]
 
         if(self.latent_contrastive):
             z+=[self.eeg_encoder(x1)]
 
-        if(self.feature_selection or self.segmentation_mask):
-            sigma_2 = self.sigma_2(x1)#weight of tasks
-            z_mask=1.-self.decoder(x1)
-            return z+[z_mask, sigma_1, sigma_2]
-        
         return z

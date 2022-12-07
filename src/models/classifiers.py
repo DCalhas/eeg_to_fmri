@@ -11,19 +11,43 @@ class LinearClassifier(tf.keras.Model):
     
     
     """
-    def __init__(self, n_classes=1, regularizer=None, variational=False):
+    def __init__(self, n_classes=1, regularizer=None, variational=False, aleatoric=False):
         super(LinearClassifier, self).__init__()
 
-        self.training=True
-        
+        self.aleatoric=aleatoric
+        self.variational=variational
+        self.n_classes=n_classes
+        self.regularizer=regularizer
+
+        #layers
         self.flatten = tf.keras.layers.Flatten()
-        if(variational):
+        if(self.variational):
             self.linear = DenseVariational(n_classes)
         else:
             self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
+        if(self.aleatoric):
+            self.aleatoric_layer=tf.keras.layers.Dense(n_classes, activation=tf.keras.activations.exponential)
         
-    def call(self, X):
-        return self.linear(self.flatten(X))
+    def call(self, X, training=False):
+        z = self.linear(self.flatten(X))
+
+        if(self.aleatoric and training):
+            tf.concat([tf.expand_dims(z, axis=-1), tf.expand_dims(self.aleatoric_layer(z), axis=-1)], axis=-1)
+
+        return z
+
+    def get_config(self,):
+
+
+        return {"aleatoric": self.aleatoric
+            "variational": self.variational
+            "n_classes": self.n_classes
+            "regularizer": self.regularizer,}
+
+
+    @classmethod
+    def from_config(self, config):
+        return cls(**config)
 
 
 class PolynomialClassifier(tf.keras.Model):
@@ -214,12 +238,12 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             x=tf.split(X, 2, axis=1)
             x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
 
-            z1 = self.view(x1)#returns a list of [fmri view, latent_eeg]
-            z2 = self.view(x2)
+            z1 = self.view(x1, training=training)#returns a list of [fmri view, latent_eeg]
+            z2 = self.view(x2, training=training)
 
             s1=self.flatten(z1[1])
             s2=self.flatten(z2[1])
 
-            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy()), self.clf(z2[0].numpy())]
+            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=training), self.clf(z2[0].numpy(), training=training)]
 
-        return self.clf(self.view(X)[0])
+        return self.clf(self.view(X, training=training)[0], training=training)
