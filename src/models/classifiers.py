@@ -42,21 +42,21 @@ class LinearClassifier(tf.keras.Model):
             x=layer(x)
 
         if(self.aleatoric):
-            self.model=tf.keras.Model(_input_shape, tf.concat([tf.expand_dims(x, axis=-1), tf.expand_dims(self._layers[-1](x), axis=-1)], axis=-1))
-        else:
             self.model=tf.keras.Model(_input_shape, x)
+            self.aleatoric_model=tf.keras.Model(_input_shape, self._layers[-1](x))
+        else:
+            self.model=tf.keras.Model(_input_shape, self._layers[-1](x))
 
         self.model.build(input_shape)
+        self.aleatoric_model.build(input_shape)
 
         self.built=True
         
     def call(self, X, training=False):
-        z = self.linear(self.flatten(X))
-
         if(self.aleatoric and training):
-            return tf.concat([tf.expand_dims(z, axis=-1), tf.expand_dims(self.aleatoric_layer(z), axis=-1)], axis=-1)
+            return tf.concat([tf.expand_dims(self.model(X),axis=-1), tf.expand_dims(self.aleatoric_model(X), axis=-1)], axis=-1)
 
-        return z
+        return self.model(X)
 
     def get_config(self,):
 
