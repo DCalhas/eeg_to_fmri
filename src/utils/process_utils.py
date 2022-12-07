@@ -590,6 +590,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 					linearCLF = classifiers.LinearClassifier(regularizer="L1", regularizer_const=l2_reg, variational=variational, aleatoric=aleatoric_uncertainty,)
 				optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
 				linearCLF.build(X_train.shape)
+				linearCLF.compile(optimizer=optimizer)
 			gc.collect()
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=False, verbose_batch=False)
@@ -722,6 +723,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 					linearCLF = classifiers.LinearClassifier(regularizer="L1", regularizer_const=l2_reg, variational=variational, aleatoric=aleatoric_uncertainty,)
 				optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
 				linearCLF.build(X_train.shape)
+				linearCLF.compile(optimizer=optimizer)
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
 			#evaluate
@@ -790,6 +792,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, 
 			linearCLF = classifiers.LinearClassifier(regularizer="L1", regularizer_const=l2_regularizer, variational=variational, aleatoric=aleatoric_uncertainty,)
 		optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
 		linearCLF.build(X_train.shape)
+		linearCLF.compile(optimizer=optimizer)
 
 	#train classifier
 	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
