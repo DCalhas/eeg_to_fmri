@@ -237,7 +237,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
         if(degree==1):
             self.clf = LinearClassifier(variational=self.variational, regularizer=regularizer, aleatoric=self.aleatoric)
         else:
-            self.clf = PolynomialClassifier(degree=self.degree, variational=self.variational, regularizer=regularizer, self.aleatoric)
+            self.clf = PolynomialClassifier(degree=self.degree, variational=self.variational, regularizer=regularizer, aleatoric=self.aleatoric)
 
         self.flatten = tf.keras.layers.Flatten()
         
