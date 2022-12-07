@@ -97,8 +97,6 @@ class PathOptimizer(OPTIMIZER):
 
 		print(self.path_norm[:-4])
 
-		print(self.model.trainable_variables)
-
 		if(self.ratio is None):
 			#compute ratio
 			sgd_norm=0.
@@ -134,7 +132,7 @@ class PathOptimizer(OPTIMIZER):
 		#compute scale
 		with tf.GradientTape() as tape:
 			tape.watch(path_model.trainable_variables)
-			y = path_model(*input_shape_tensor)
+			y = path_model(*input_shape_tensor, training=True)
 			if(type(y) is list):
 				y = tf.reduce_sum([tf.reduce_sum(y_i) for y_i in y])
 			else:

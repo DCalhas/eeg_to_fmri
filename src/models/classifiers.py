@@ -16,6 +16,8 @@ class LinearClassifier(tf.keras.Model):
     def __init__(self, n_classes=1, regularizer=None, regularizer_const=0., variational=False, aleatoric=False):
         super(LinearClassifier, self).__init__()
 
+        self.training=True
+
         self.aleatoric=aleatoric
         self.variational=variational
         self.n_classes=n_classes
@@ -53,8 +55,8 @@ class LinearClassifier(tf.keras.Model):
 
         self.built=True
         
-    def call(self, X, training=False):
-        if(self.aleatoric and training):
+    def call(self, X):
+        if(self.aleatoric and self.training):
             return tf.concat([tf.expand_dims(self.model(X),axis=-1), tf.expand_dims(self.aleatoric_model(X), axis=-1)], axis=-1)
 
         return self.model(X)
