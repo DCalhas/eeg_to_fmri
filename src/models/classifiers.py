@@ -144,21 +144,21 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
         self.built=True
 
-    def call(self, X, training=False):
+    def call(self, X):
 
-        if(training):
+        if(self.training):
             x=tf.split(X, 2, axis=1)
             x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
 
-            z1 = self.view(x1, training=training)#returns a list of [fmri view, latent_eeg]
-            z2 = self.view(x2, training=training)
+            z1 = self.view(x1, training=self.training)#returns a list of [fmri view, latent_eeg]
+            z2 = self.view(x2, training=self.training)
 
             s1=self.flatten(z1[1])
             s2=self.flatten(z2[1])
 
-            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=training), self.clf(z2[0].numpy(), training=training)]
-
-        return self.clf(self.view(X, training=training)[0], training=training)
+            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=self.training), self.clf(z2[0].numpy(), training=self.training)]
+            
+        return self.clf(self.view(X, training=self.training)[0], training=self.training)
 
     def get_config(self,):
 
