@@ -112,10 +112,8 @@ class PathOptimizer(OPTIMIZER):
 
 	def compute_path_norm(self,):
 
-		#clone model and assign its l1 weights
-		print("HERE1")
+		#clone model and assign its l1 weights	
 		path_model=type(self.model).from_config(self.model.get_config())
-		print("HERE2")
 		#in the special case of ViewLatentContrastiveClassifier we have to do this, so we do not have two flowsS
 		path_model.training=False
 

@@ -133,7 +133,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             assert self.regularizer in ["L1", "L2"]
             regularizer=getattr(tf.keras.regularizers, self.regularizer)(l=self.regularizer_const)
 
-        self.view=pretrained_EEG_to_fMRI(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), self._input_shape, activation=activation, latent_contrastive=True, seed=seed)
+        self.view=pretrained_EEG_to_fMRI(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects, compile=False), self._input_shape, activation=activation, latent_contrastive=True, seed=seed)
         
         if(degree==1):
             self.clf = LinearClassifier(variational=self.variational, regularizer=regularizer, aleatoric=self.aleatoric)
