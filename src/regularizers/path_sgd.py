@@ -98,7 +98,6 @@ class PathOptimizer(OPTIMIZER):
 
 		if(self.ratio is None or type(self.model).__name__=="ViewLatentContrastiveClassifier"):
 			#compute ratio
-			print("RECOMPUTING")
 			sgd_norm=0.
 			pathsgd_norm=0.
 			for param in range(len(self.model.trainable_variables)):
