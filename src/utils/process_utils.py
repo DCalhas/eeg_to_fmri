@@ -352,7 +352,7 @@ def cross_validation_eeg_fmri(score, fourier_features, random_fourier,
 	score.value = (score.value-1.0)/n_folds
 
 
-def train_synthesis(dataset, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, save_path, gpu_mem, seed, run_eagerly):
+def train_synthesis(dataset, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, save_path, gpu_mem, seed, run_eagerly, verbose):
 	#imports
 	import tensorflow as tf
 
@@ -430,7 +430,7 @@ def train_synthesis(dataset, epochs, style_prior, padded, variational, variation
 	train.train(train_set, model, optimizer, 
 							loss_fn, epochs=epochs, 
 							u_architecture=True,
-							val_set=None, verbose=True, verbose_batch=False)
+							val_set=None, verbose=verbose, verbose_batch=verbose)
 
 	print("I: Saving synthesis network at", save_path)
 
@@ -452,7 +452,7 @@ def append_labels(view, path, y_true, y_pred, setting):
 	np.save(path+setting+"/y_true.npy",np.append(np.load(path+setting+"/y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epochs, optimizer_name, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, aleatoric_uncertainty=False, style_prior=False, variational=False):
+def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epochs, optimizer_name, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, aleatoric_uncertainty=False, style_prior=False, variational=False, verbose=False):
 
 	from utils import preprocess_data
 
@@ -465,11 +465,11 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epoc
 
 	for i in range(fold, dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
-		hyperparameters = cv_opt(i, n_processes, n_folds_cv, view, dataset, epochs, optimizer_name, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask, aleatoric_uncertainty=aleatoric_uncertainty, variational=variational)
+		hyperparameters = cv_opt(i, n_processes, n_folds_cv, view, dataset, epochs, optimizer_name, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask, aleatoric_uncertainty=aleatoric_uncertainty, variational=variational, verbose=verbose)
 
 		#validate
 		launch_process(loocv,
-					(i, setting, view, dataset, hyperparameters[0], epochs, optimizer_name, hyperparameters[2], hyperparameters[1], n_processes*(gpu_mem), seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, aleatoric_uncertainty, style_prior, variational))
+					(i, setting, view, dataset, hyperparameters[0], epochs, optimizer_name, hyperparameters[2], hyperparameters[1], n_processes*(gpu_mem), seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, aleatoric_uncertainty, style_prior, variational, verbose))
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
 	
@@ -516,7 +516,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer_name, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=False, segmentation_mask=False, aleatoric_uncertainty=False, variational=False):
+def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer_name, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=False, segmentation_mask=False, aleatoric_uncertainty=False, variational=False, verbose=False):
 	import GPyOpt
 	
 	iteration=0
@@ -594,7 +594,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 				linearCLF.compile(optimizer=optimizer)
 			gc.collect()
 
-			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=False, verbose_batch=False)
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=verbose, verbose_batch=verbose)
 
 			#evaluate
 			linearCLF.training=False
@@ -726,7 +726,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 				linearCLF.build(X_train.shape)
 				linearCLF.compile(optimizer=optimizer)
 
-			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
+			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=verbose, verbose_batch=verbose)
 			#evaluate
 			linearCLF.training=False
 			#evaluate according to final AUC in validation sets
@@ -754,7 +754,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 
 	return optimizer.x_opt
 
-def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, aleatoric_uncertainty=False, style_prior=False, variational=False):
+def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, aleatoric_uncertainty=False, style_prior=False, variational=False, verbose=False):
 	
 	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
@@ -796,7 +796,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, 
 		linearCLF.compile(optimizer=optimizer)
 
 	#train classifier
-	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
+	train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=verbose, verbose_batch=verbose)
 
 	#evaluate
 	linearCLF.training=False

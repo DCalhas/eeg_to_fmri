@@ -46,10 +46,11 @@ if __name__ == "__main__":
 	parser.add_argument('-path_labels', default="/tmp/", type=str, help="Path to save labels of classification task, should be a directory")
 	parser.add_argument('-save_explainability', action="store_true", help="save explainability features")
 	parser.add_argument('-run_eagerly', action="store_true", help="Run eagerly, if not it runs in graph mode. This is important for activity regularization")
+	parser.add_argument('-verbose', action="store_true", help="Whether to put verbosity in the training of the neural netowkrs")
 	parser.add_argument('-seed', default=42, type=int, help="Seed for random state")
 	opt = parser.parse_args()
 	
-	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability = assertion_utils.clf_cv(opt)
+	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability,verbose = assertion_utils.clf_cv(opt)
 
 #limit process memory
 memory_utils.limit_CPU_memory(1024*1024*1024*24, MAX_PROCESSES)
@@ -62,7 +63,7 @@ if(not os.path.exists(path_labels+"/"+ setting)):
 if(view=="fmri" and fold==0):
 	pass
 	#process_utils.launch_process(process_utils.train_synthesis, 
-	#							(dataset_synth, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, False, path_save_network, gpu_mem, seed, run_eagerly))
+	#							(dataset_synth, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, False, path_save_network, gpu_mem, seed, run_eagerly, verbose))
 
 #create predictions and true labels
 if(fold==0):
@@ -70,7 +71,7 @@ if(fold==0):
 								(view, dataset_clf, path_labels, setting))
 
 #create predictions and true labels
-process_utils.setup_data_loocv(setting, view, dataset_clf, fold, folds, n_processes, epochs, optimizer, gpu_mem, seed, run_eagerly, save_explainability, path_save_network, path_labels, feature_selection, segmentation_mask, aleatoric_uncertainty, style_prior, variational_clf)
+process_utils.setup_data_loocv(setting, view, dataset_clf, fold, folds, n_processes, epochs, optimizer, gpu_mem, seed, run_eagerly, save_explainability, path_save_network, path_labels, feature_selection, segmentation_mask, aleatoric_uncertainty, style_prior, variational_clf, verbose)
 
 #report classification metrics
 process_utils.launch_process(process_utils.compute_acc_metrics, 
