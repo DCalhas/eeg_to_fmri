@@ -642,8 +642,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             sigma_1 = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index]).__name__)(
                                             pretrained_model.layers[self.index_model].layers[index].units,
                                             activation=tf.keras.activations.exponential,
-                                            kernel_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel.numpy()),
-                                            bias_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
+                                            #kernel_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel.numpy()),
+                                            #bias_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
                                             kernel_regularizer=regularizer,
                                             bias_regularizer=regularizer,
                                             trainable=True,)(x)
