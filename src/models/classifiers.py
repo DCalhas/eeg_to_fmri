@@ -142,16 +142,6 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
         self.built=True
 
-        print("EACH SUBMODEL")
-        print(len(self.view.trainable_variables))
-        print(len(self.view.q_decoder.trainable_variables))
-        print(len(self.clf.trainable_variables))
-        print(len(self.clf.model.trainable_variables))
-        print(len(self.clf.aleatoric_model.trainable_variables))
-        print("SUM")
-        print(len(self.view.trainable_variables)+len(self.clf.trainable_variables))
-        print(len(self.trainable_variables))
-
     def call(self, X, training=False):
 
         if(training):
