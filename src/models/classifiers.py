@@ -37,14 +37,11 @@ class LinearClassifier(tf.keras.Model):
         return z
 
     def get_config(self,):
-
-
-        return {"aleatoric": self.aleatoric
-            "variational": self.variational
-            "n_classes": self.n_classes
-            "regularizer": self.regularizer,}
-
-
+        return {"aleatoric": self.aleatoric,
+                "variational": self.variational,
+                "n_classes": self.n_classes,
+                "regularizer": self.regularizer,}
+                
     @classmethod
     def from_config(self, config):
         return cls(**config)
