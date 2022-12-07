@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-OPTIMIZER=tf.keras.optimizers.SGD
+OPTIMIZER=tf.keras.optimizers.Adam
 
 
 def optimizer(name, input_shape, model, lr):
@@ -59,7 +59,7 @@ class PathOptimizer(OPTIMIZER):
 	>>> print("Gradients before:", gradients)
 	"""
 
-	def __init__(self, input_shape, model, lr, name="PathOptimizer", p=2, **kwargs):
+	def __init__(self, input_shape, model, lr, name="PathOptimizer", p=1, **kwargs):
 
 		self.model=model
 		self.path_norm=None
