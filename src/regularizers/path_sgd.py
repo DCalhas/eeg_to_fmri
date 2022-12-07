@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-OPTIMIZER=tf.keras.optimizers.Adam
+OPTIMIZER=tf.keras.optimizers.SGD
 
 
 def optimizer(name, input_shape, model, lr):
