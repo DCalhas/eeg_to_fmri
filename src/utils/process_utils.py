@@ -706,7 +706,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 			train_data, test_data = dataset_clf_wrapper.split(fold)
 			X_train, y_train=train_data
 			X_test, y_test=test_data
-			with tf.device('/CPU:0')
+			with tf.device('/CPU:0'):
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
 				
 				if(view=="fmri"):
