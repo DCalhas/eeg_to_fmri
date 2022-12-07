@@ -116,6 +116,8 @@ class PathOptimizer(OPTIMIZER):
 
 		#clone model and assign its l1 weights
 		path_model=type(self.model).from_config(self.model.get_config())
+		#in the special case of ViewLatentContrastiveClassifier we have to do this, so we do not have two flowsS
+		path_model=False
 
 		input_shape_tensor=None
 		#build input
@@ -132,7 +134,7 @@ class PathOptimizer(OPTIMIZER):
 		#compute scale
 		with tf.GradientTape() as tape:
 			tape.watch(path_model.trainable_variables)
-			y = path_model(*input_shape_tensor, training=True)
+			y = path_model(*input_shape_tensor)
 			if(type(y) is list):
 				y = tf.reduce_sum([tf.reduce_sum(y_i) for y_i in y])
 			else:
