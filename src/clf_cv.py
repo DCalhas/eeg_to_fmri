@@ -62,6 +62,7 @@ if(not os.path.exists(path_labels+"/"+ setting)):
 
 #train neural network synthesis
 if(view=="fmri" and fold==0):
+	pass
 	#process_utils.launch_process(process_utils.train_synthesis, 
 	#							(dataset_synth, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, False, fourier_norm, path_save_network, gpu_mem, seed, run_eagerly, verbose))
 
