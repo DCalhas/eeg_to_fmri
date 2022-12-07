@@ -107,7 +107,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 inverse_DFT=False, DFT=False, aleatoric_uncertainty=False,
                 variational_iDFT=False, variational_coefs=None, variational_dist=None,
                 variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
-                variational_random_padding=False,
+                variational_random_padding=False, fourier_normalization="layer",
                 resolution_decoder=None, low_resolution_decoder=False,
                 topographical_attention=False, organize_channels=False,
                  seed=None, fmri_args=None):
@@ -127,6 +127,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.conditional_attention_style=conditional_attention_style
         self.conditional_attention_style_prior=conditional_attention_style_prior
         self.random_fourier=random_fourier
+        self.fourier_normalization=fourier_normalization
         self.inverse_DFT=inverse_DFT
         self.DFT=DFT
         self.variational_iDFT=variational_iDFT
@@ -161,6 +162,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             conditional_attention_style_prior=conditional_attention_style_prior,
                             random_fourier=random_fourier,
                             fourier_features=fourier_features,
+                            fourier_normalization=fourier_normalization,
                             resolution_decoder=resolution_decoder,
                             low_resolution_decoder=low_resolution_decoder,
                             variational_iDFT=variational_iDFT, 
@@ -217,7 +219,7 @@ class EEG_to_fMRI(tf.keras.Model):
 
     def build_decoder(self, input_shape, output_encoder, latent_shape, fourier_features=False, random_fourier=False, 
                             attention_scores=None, conditional_attention_style=False, conditional_attention_style_prior=False,
-                            inverse_DFT=False, DFT=False, 
+                            inverse_DFT=False, DFT=False, fourier_normalization="layer",
                             low_resolution_decoder=False, resolution_decoder=None, 
                             variational_iDFT=False, variational_coefs=None, variational_dist=None,
                             variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
@@ -229,7 +231,7 @@ class EEG_to_fMRI(tf.keras.Model):
         if(fourier_features):
             if(random_fourier):
                 x = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                                trainable=True, seed=seed, name="random_fourier_features")(x)
+                                                                normalization=fourier_normalization, trainable=True, seed=seed, name="random_fourier_features")(x)
             else:
                 x = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
                                                                     trainable=True, name="fourier_features")(x)
@@ -354,6 +356,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 "dropout": self.dropout,
                 "local": self.local,
                 "fourier_features": self.fourier_features,
+                "fourier_normalization": self.fourier_normalization,
                 "conditional_attention_style": self.conditional_attention_style,
                 "conditional_attention_style_prior": self.conditional_attention_style_prior,
                 "random_fourier": self.random_fourier,
@@ -489,6 +492,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         if("Fourier" in type(pretrained_model.layers[self.index_model].layers[index]).__name__):
             x = globals()[type(pretrained_model.layers[self.index_model].layers[index]).__name__](
                                             pretrained_model.layers[self.index_model].layers[index].units,
+                                            normalization=pretrained_model.layers[self.index_model].layers[index].normalization,
                                             scale=pretrained_model.layers[self.index_model].layers[index].kernel_scale.numpy(),
                                             trainable=False, name="latent_projection")(x)
         else:

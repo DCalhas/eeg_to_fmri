@@ -51,10 +51,27 @@ class Sinusoids(tf.keras.layers.Layer):
 	def from_config(cls, config):
 		return cls(**config)
 
+class TanhNormalization(tf.keras.layers.Layer):
+
+	def __init__(self, **kwargs):
+
+		super(TanhNormalization, self).__init__(**kwargs)
+
+	def call(self, X):
+		return tf.keras.activations.tanh(X)*(np.pi/2)+(np.pi/2)
+
+	def get_config(self):
+		return {}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
+
 
 class RandomFourierFeatures(tf.keras.layers.Layer):
 
-	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, trainable=False, units=None, seed=None, name=None, **kwargs):
+	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, normalization="layer", trainable=False, units=None, seed=None, name=None, **kwargs):
 		if output_dim <= 0:
 			raise ValueError(
 			'`output_dim` should be a positive integer. Given: {}.'.format(
@@ -71,7 +88,12 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		self.output_dim = output_dim
 		self.units=output_dim
 		self.kernel_initializer = kernel_initializer
-		self.layer_normalization=tf.keras.layers.LayerNormalization(beta_initializer=tf.constant_initializer(np.pi/2), gamma_initializer=tf.constant_initializer(np.pi/2), trainable=False)
+		self.normalization=normalization
+		
+		if(normalization=="layer"):
+			self.layer_normalization=tf.keras.layers.LayerNormalization(beta_initializer=tf.constant_initializer(np.pi/2), gamma_initializer=tf.constant_initializer(np.pi/2), trainable=False)
+		elif(normalization=="tanh"):
+			self.layer_normalization=TanhNormalization()
 		self.scale = scale
 		self.seed=seed
 		self.trainable=trainable
@@ -139,6 +161,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			'kernel_initializer': kernel_initializer,
 			'scale': self.scale,
 			'units': self.units,
+			'normalization': self.normalization,
 		}
 		base_config = super(RandomFourierFeatures, self).get_config()
 		return dict(list(base_config.items()) + list(config.items()))
