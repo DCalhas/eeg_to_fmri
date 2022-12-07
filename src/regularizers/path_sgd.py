@@ -95,9 +95,9 @@ class PathOptimizer(OPTIMIZER):
 		gradients = list(list(zip(*grads_and_vars))[0])
 
 
-		print(gradients)
+		print(self.path_norm[:-4])
 
-		#print(self.model.trainable_variables)
+		print(self.model.trainable_variables)
 
 		if(self.ratio is None):
 			#compute ratio
