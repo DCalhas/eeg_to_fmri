@@ -95,7 +95,7 @@ class PathOptimizer(OPTIMIZER):
 		
 		gradients = list(list(zip(*grads_and_vars))[0])
 
-		print(gradients)
+		print(self.model.trainable_variables)
 		if(self.ratio is None or type(self.model).__name__=="ViewLatentContrastiveClassifier"):
 			#compute ratio
 			sgd_norm=0.
