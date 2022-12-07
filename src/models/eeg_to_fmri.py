@@ -494,13 +494,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                             pretrained_model.layers[self.index_model].layers[index].units,
                                             normalization=pretrained_model.layers[self.index_model].layers[index].normalization,
                                             scale=pretrained_model.layers[self.index_model].layers[index].kernel_scale.numpy(),
-                                            trainable=True, name="latent_projection")(x)
+                                            trainable=False, name="latent_projection")(x)
         else:
             x = globals()[type(pretrained_model.layers[self.index_model].layers[index]).__name__](
                                                 pretrained_model.layers[self.index_model].layers[index].units,
                                                 kernel_regularizer=regularizer,
                                                 bias_regularizer=regularizer,
-                                                trainable=True, name="latent_projection")(x)
+                                                trainable=False, name="latent_projection")(x)
 
         self.eeg_encoder = tf.keras.Model(input_shape, x)
 
@@ -532,11 +532,11 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         use_bias=pretrained_model.layers[self.index_model].layers[index].use_bias,
                                         name="conditional_attention_style_dense",
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                                        trainable=True)(attention_scores)
+                                        trainable=False)(attention_scores)
             #add style features from attention graph or prior learned style
             x = x*self.latent_style
         elif(pretrained_model.layers[self.index_model].layers[index].name=="style_prior"):
-            x = Style(initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].latent_style.numpy()), trainable=True, seed=None, name='style_prior')(x)
+            x = Style(initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].latent_style.numpy()), trainable=False, seed=None, name='style_prior')(x)
         else:
             raise NotImplementedError
 
@@ -558,7 +558,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                     bias_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
-                    trainable=True)(x)
+                    trainable=False)(x)
         elif(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="DenseVariational"):
             x = DenseVariational(pretrained_model.layers[self.index_model].layers[index].units,
                                 activation=pretrained_model.layers[self.index_model].layers[index].activation_fn,
@@ -566,7 +566,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                 kernel_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel_sigma.numpy()),
                                 bias_prior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_mu.numpy()),
                                 bias_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_sigma.numpy()),
-                                trainable=True)(x)
+                                trainable=False)(x)
         else:
             raise NotImplementedError
         
@@ -593,7 +593,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].loc.numpy()),
                                         scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].scale.numpy()),
                                         biases_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].biases.numpy()),
-                                        trainable=True)(x)
+                                        trainable=False)(x)
             elif(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="padded_iDCT3D"):
                 x = padded_iDCT3D(**pretrained_model.layers[self.index_model].layers[index].get_config())(x)
             index+=1
@@ -617,7 +617,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         kernel_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel.numpy()),
                                         bias_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
                                         padding=pretrained_model.layers[self.index_model].layers[index].padding,
-                                        trainable=True)(x)
+                                        trainable=False)(x)
 
         self.q_decoder = tf.keras.Model(input_shape, x)
         
