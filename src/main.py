@@ -10,7 +10,7 @@ from utils import metrics, process_utils, train, losses_utils, viz_utils, lrp, d
 
 from models.eeg_to_fmri import EEG_to_fMRI
 
-from regularizers.path_sgd import PathOptimizer
+from regularizers import path_sgd
 
 import tensorflow as tf
 
@@ -107,10 +107,7 @@ with tf.device('/CPU:0'):
 								kernel_size, stride_size, n_channels, max_pool, batch_norm, weight_decay, skip_connections,
 								n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
 	model.build(eeg_shape, fmri_shape)
-	if(optimizer=="Adam"):
-		optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-	else:
-		optimizer = PathOptimizer([(1,)+eeg_shape[1:],(1,)+fmri_shape[1:]], model, learning_rate)
+	optimizer=path_sgd.optimizer(optimizer, [(1,)+eeg_shape[1:],(1,)+fmri_shape[1:]], model, learning_rate)
 	model.compile(optimizer=optimizer)
 	loss_fn = list(losses_utils.LOSS_FNS.values())[int(aleatoric_uncertainty)]#if variational get loss fn at index 1
 

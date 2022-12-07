@@ -451,7 +451,7 @@ def append_labels(view, path, y_true, y_pred, setting):
 	np.save(path+setting+"/y_true.npy",np.append(np.load(path+setting+"/y_true.npy", allow_pickle=True), y_true), allow_pickle=True)
 
 
-def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epochs, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
+def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epochs, optimizer_name, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
 
 	from utils import preprocess_data
 
@@ -464,11 +464,11 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epoc
 
 	for i in range(fold, dataset_clf_wrapper.n_individuals):
 		#CV hyperparameter l1 and l2 reg constants
-		hyperparameters = cv_opt(i, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask, variational=variational)
+		hyperparameters = cv_opt(i, n_processes, n_folds_cv, view, dataset, epochs, optimizer_name, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=feature_selection, segmentation_mask=segmentation_mask, variational=variational)
 
 		#validate
 		launch_process(loocv,
-					(i, setting, view, dataset, hyperparameters[0], epochs, hyperparameters[2], hyperparameters[1], n_processes*(gpu_mem), seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior, variational))
+					(i, setting, view, dataset, hyperparameters[0], epochs, optimizer_name, hyperparameters[2], hyperparameters[1], n_processes*(gpu_mem), seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, style_prior, variational))
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
 	
@@ -515,7 +515,7 @@ def views(model, test_set, y):
 	return tf.data.Dataset.from_tensor_slices((dev_views,y)).batch(1)
 
 
-def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=False, segmentation_mask=False, variational=False):
+def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer_name, gpu_mem, seed, run_eagerly, path_labels, path_network, feature_selection=False, segmentation_mask=False, variational=False):
 	import GPyOpt
 	
 	iteration=0
@@ -549,6 +549,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 		def run_fold(theta, fold):
 			from utils import preprocess_data, tf_config, train, losses_utils, metrics
 			from models import eeg_to_fmri, classifiers
+			from regularizers import path_sgd
 			import tensorflow as tf
 			import os
 			import numpy as np
@@ -591,6 +592,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 
 					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational)
+				optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
 				linearCLF.build(X_train.shape)
 			gc.collect()
 
@@ -677,11 +679,16 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 
 		from models import eeg_to_fmri, classifiers
 
+		from regularizers import path_sgd
+
 		import tensorflow as tf
 
 		import numpy as np
 
 		from sklearn.utils import shuffle
+
+		#in case there is an OOM error
+		value[0] = 1/1e-9
 
 		l2_reg, batch_size, learning_rate = (theta)
 
@@ -721,6 +728,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 
 					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
 					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational)
+				optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
 				linearCLF.build(X_train.shape)
 
 			train.train(train_set, linearCLF, optimizer, loss_fn, epochs=epochs, val_set=None, u_architecture=False, verbose=True, verbose_batch=False)
@@ -744,18 +752,20 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, gpu_mem, 
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
 													acquisition_type="EI_MCMC")
-	optimizer.run_optimization(max_iter=20)#increase to 20 for real results
+	optimizer.run_optimization(max_iter=1)#increase to 20 for real results
 
 	print("Best value: ", optimizer.fx_opt)
 	print("Best hyperparameters: \n", optimizer.x_opt)
 
 	return optimizer.x_opt
 
-def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
+def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, style_prior=False, variational=False):
 	
 	from utils import preprocess_data, tf_config, train, lrp, losses_utils
 
 	from models import eeg_to_fmri, classifiers
+
+	from regularizers import path_sgd
 
 	import tensorflow as tf
 
@@ -776,10 +786,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 	X_train, y_train = shuffle(X_train, y_train)
 
 	with tf.device('/CPU:0'):
-		optimizer = tf.keras.optimizers.Adam(learning_rate)
-		
 		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
-
 		if(view=="fmri"):
 			train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
 			loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
@@ -791,6 +798,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, learning_rate, b
 			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 			loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
 			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_regularizer), variational=variational)
+		optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
 		linearCLF.build(X_train.shape)
 
 	#train classifier

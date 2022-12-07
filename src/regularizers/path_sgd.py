@@ -2,6 +2,16 @@ import tensorflow as tf
 
 OPTIMIZER=tf.keras.optimizers.Adam
 
+
+def optimizer(name, input_shape, model, lr):
+	if(optimizer=="PathAdam"):
+		return PathOptimizer(input_shape, model, lr)
+	elif(optimizer=="Adam"):
+		return tf.keras.optimizers.Adam(lr)
+	else:
+		raise NotImplementedError
+
+
 class PathOptimizer(OPTIMIZER):
 	"""
 	This class implements the tensorflow optimizer proposed in https://arxiv.org/abs/1506.02617
