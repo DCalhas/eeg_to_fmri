@@ -55,7 +55,7 @@ class LinearClassifier(tf.keras.Model):
 
         self.built=True
         
-    def call(self, X):
+    def call(self, X, **kwargs):
         if(self.aleatoric and self.training):
             return tf.concat([tf.expand_dims(self.model(X),axis=-1), tf.expand_dims(self.aleatoric_model(X), axis=-1)], axis=-1)
 
@@ -157,7 +157,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             s2=self.flatten(z2[1])
 
             return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=self.training), self.clf(z2[0].numpy(), training=self.training)]
-            
+
         return self.clf(self.view(X, training=self.training)[0], training=self.training)
 
     def get_config(self,):
