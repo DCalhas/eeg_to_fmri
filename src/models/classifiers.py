@@ -64,11 +64,12 @@ class PolynomialClassifier(tf.keras.Model):
     
     """
 
-    def __init__(self, n_classes=2, degree=3, regularizer=None, variational=False):
+    def __init__(self, n_classes=2, degree=3, regularizer=None, variational=False, aleatoric=False, **kwargs):
         super(PolynomialClassifier, self).__init__()
 
         self.training=True
         self.degree=degree
+        self.aleatoric=aleatoric
         
         self.flatten = tf.keras.layers.Flatten()
 
@@ -209,11 +210,9 @@ class ViewContrastiveClassifier(tf.keras.Model):
 
 class ViewLatentContrastiveClassifier(tf.keras.Model):
 
-    def __init__(self, path_network, input_shape, degree=1, activation=None, regularizer=None, regularizer_const=0., variational=False, seed=None, **kwargs):
+    def __init__(self, path_network, input_shape, degree=1, activation=None, regularizer=None, regularizer_const=0., variational=False, aleatoric=False, seed=None, **kwargs):
 
         super(ViewLatentContrastiveClassifier, self).__init__(**kwargs)
-
-        assert not siamese_projection
 
         self.path_network=path_network
         self.input_shape=input_shape
@@ -222,6 +221,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
         self.regularizer=regularizer
         self.regularizer_const=regularizer_const
         self.variational=variational
+        self.aleatoric=aleatoric
         self.seed=seed
 
         #prepare string regularizers
@@ -235,9 +235,9 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
         self.view=pretrained_EEG_to_fMRI(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), self.input_shape, activation=activation, latent_contrastive=True, seed=seed)
         
         if(degree==1):
-            self.clf = LinearClassifier(variational=self.variational, regularizer=regularizer)
+            self.clf = LinearClassifier(variational=self.variational, regularizer=regularizer, aleatoric=self.aleatoric)
         else:
-            self.clf = PolynomialClassifier(degree=self.degree, variational=self.variational, regularizer=regularizer)
+            self.clf = PolynomialClassifier(degree=self.degree, variational=self.variational, regularizer=regularizer, self.aleatoric)
 
         self.flatten = tf.keras.layers.Flatten()
         
@@ -272,6 +272,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
                 "regularizer": self.regularizer,
                 "regularizer_const": self.regularizer_const,
                 "variational": self.variational,
+                "aleatoric": self.aleatoric,
                 "seed": self.seed,}
 
     @classmethod
