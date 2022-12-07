@@ -98,8 +98,9 @@ class PathOptimizer(OPTIMIZER):
 
 		self.compute_path_norm()
 		
-		gradients = list(list(zip(*grads_and_vars))[0])
-		variables = list(list(zip(*grads_and_vars))[1])
+		unpacked_gradients=list(zip(*grads_and_vars))
+		gradients = list(unpacked_gradients[0])
+		variables = list(unpacked_gradients[1])
 
 		if(self.ratio is None):
 			#compute ratio
