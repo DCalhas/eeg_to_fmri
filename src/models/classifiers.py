@@ -55,8 +55,12 @@ class LinearClassifier(tf.keras.Model):
 
         self.built=True
         
-    def call(self, X, **kwargs):
-        if(self.aleatoric and self.training):
+    def call(self, X, training=False):
+        if(self.aleatoric and (self.training or training)):
+            """
+            self.training - is set after training
+            training - is set when the LinearClassifier is called from ViewLatentContrastiveClassifier
+            """
             return tf.concat([tf.expand_dims(self.model(X),axis=-1), tf.expand_dims(self.aleatoric_model(X), axis=-1)], axis=-1)
 
         return self.model(X)
