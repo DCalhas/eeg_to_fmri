@@ -95,8 +95,6 @@ class PathOptimizer(OPTIMIZER):
 		gradients = list(list(zip(*grads_and_vars))[0])
 
 
-		print(self.path_norm[:-4])
-
 		if(self.ratio is None):
 			#compute ratio
 			sgd_norm=0.
