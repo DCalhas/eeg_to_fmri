@@ -102,7 +102,8 @@ class PathOptimizer(OPTIMIZER):
 				sgd_norm += tf.norm(gradients[param], ord=1)
 				pathsgd_norm += tf.norm(gradients[param]/self.path_norm[param], ord=1)
 			self.ratio = ( sgd_norm / pathsgd_norm ) ** 1
-
+			
+		tf.print(len(gradients))
 		for param in range(len(self.model.trainable_variables)):
 			gradients[param]=(gradients[param]/self.path_norm[param])*self.ratio
 
@@ -122,8 +123,8 @@ class PathOptimizer(OPTIMIZER):
 			input_shape_tensor=(tf.ones(self.input_shape),)
 			path_model.build(self.input_shape)
 
-		print(len(path_model.trainable_variables))
-		print(len(self.model.trainable_variables))
+		tf.print(len(path_model.trainable_variables))
+		tf.print(len(self.model.trainable_variables))
 
 		for param in range(len(self.model.trainable_variables)):
 			path_model.trainable_variables[param].assign(tf.abs(self.model.trainable_variables[param]))
