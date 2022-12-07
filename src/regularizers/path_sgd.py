@@ -97,7 +97,7 @@ class PathOptimizer(OPTIMIZER):
 
 		print(gradients)
 
-		print(self.path_norm)
+		#print(self.model.trainable_variables)
 
 		if(self.ratio is None):
 			#compute ratio
