@@ -99,7 +99,7 @@ class PathOptimizer(OPTIMIZER):
 		self.compute_path_norm()
 		
 		gradients = list(list(zip(*grads_and_vars))[0])
-		variables = list(list(zip(*grads_and_vars))[0])
+		variables = list(list(zip(*grads_and_vars))[1])
 
 		if(self.ratio is None):
 			#compute ratio
