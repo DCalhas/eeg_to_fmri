@@ -95,7 +95,9 @@ class PathOptimizer(OPTIMIZER):
 		gradients = list(list(zip(*grads_and_vars))[0])
 
 
-		tf.print(len(gradients))
+		print(gradients)
+
+		print(self.path_norm)
 
 		if(self.ratio is None):
 			#compute ratio
