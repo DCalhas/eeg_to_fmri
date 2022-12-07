@@ -312,7 +312,7 @@ class EEG_to_fMRI(tf.keras.Model):
 
     def build(self, input_shape1, input_shape2):
         self.eeg_encoder.build(input_shape=input_shape1)
-        self.decoder.build(input_shape=self.eeg_encoder.output_shape)#input_shape1
+        self.decoder.build(input_shape=input_shape1)
 
         self.fmri_encoder.build(input_shape=input_shape2)
 

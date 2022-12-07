@@ -62,11 +62,6 @@ class PathOptimizer(OPTIMIZER):
 	def __init__(self, input_shape, model, lr, name="PathOptimizer", p=1, **kwargs):
 
 		self.model=model
-		if(type(self.model).__name__=="ViewLatentContrastiveClassifier"):
-			self._model=self.model.view.eeg_encoder
-		else:
-			self._model=self.model
-
 		self.path_norm=None
 		self.ratio=None
 		self.input_shape=input_shape
@@ -106,13 +101,13 @@ class PathOptimizer(OPTIMIZER):
 			#compute ratio
 			sgd_norm=0.
 			pathsgd_norm=0.
-			for param in range(len(self._model.trainable_variables)):
+			for param in range(len(self.model.trainable_variables)):
 				sgd_norm += tf.norm(gradients[param], ord=self.p)
 				pathsgd_norm += tf.norm(gradients[param]/self.path_norm[param], ord=self.p)
 			self.ratio = ( sgd_norm / pathsgd_norm ) ** (1/self.p)
 
 		
-		for param in range(len(self._model.trainable_variables)):
+		for param in range(len(self.model.trainable_variables)):
 			gradients[param]=(gradients[param]/self.path_norm[param])*self.ratio
 
 		return super().apply_gradients(zip(gradients, variables), name=name)
@@ -123,7 +118,7 @@ class PathOptimizer(OPTIMIZER):
 		path_model=type(self.model).from_config(self.model.get_config())
 		#in the special case of ViewLatentContrastiveClassifier we have to do this, so we do not have two flowsS
 		if(type(path_model).__name__=="ViewLatentContrastiveClassifier"):
-			path_model=path_model.view.eeg_encoder
+			#path_model=path_model.view.eeg_encoder
 			path_model.training=False
 
 		input_shape_tensor=None
@@ -135,11 +130,11 @@ class PathOptimizer(OPTIMIZER):
 			input_shape_tensor=(tf.ones(self.input_shape),)
 			path_model.build(self.input_shape)
 
-		for param in range(len(self._model.trainable_variables)):
+		for param in range(len(self.model.trainable_variables)):
 			if(self.p==1):
-				path_model.trainable_variables[param].assign((self._model.trainable_variables[param]**2)**0.5)
+				path_model.trainable_variables[param].assign((self.model.trainable_variables[param]**2)**0.5)
 			else:
-				path_model.trainable_variables[param].assign(self._model.trainable_variables[param]**self.p)
+				path_model.trainable_variables[param].assign(self.model.trainable_variables[param]**self.p)
 
 		#compute scale
 		with tf.GradientTape() as tape:
