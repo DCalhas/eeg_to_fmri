@@ -42,7 +42,7 @@ class LinearClassifier(tf.keras.Model):
         z = self.linear(self.flatten(X))
 
         if(self.aleatoric and training):
-            tf.concat([tf.expand_dims(z, axis=-1), tf.expand_dims(self.aleatoric_layer(z), axis=-1)], axis=-1)
+            return tf.concat([tf.expand_dims(z, axis=-1), tf.expand_dims(self.aleatoric_layer(z), axis=-1)], axis=-1)
 
         return z
 
