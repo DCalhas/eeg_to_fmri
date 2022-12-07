@@ -142,7 +142,7 @@ class PathOptimizer(OPTIMIZER):
 			if(type(y) is list):
 				y = tf.reduce_sum([tf.reduce_sum(y_i) for y_i in y])
 			else:
-				y = tf.reduce_sum(y)
+				y = tf.reduce_sum(tf.keras.activations.sigmoid(y))
 
 		self.path_norm=tape.gradient(y, path_model.trainable_variables)
 
