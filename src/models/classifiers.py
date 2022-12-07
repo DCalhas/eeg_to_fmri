@@ -243,6 +243,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
     def build(self, input_shape):
         self.view.build(input_shape)
         self.clf.build(self.view.q_decoder.output_shape)
+        self.built=True
 
     def call(self, X, training=False):
 
