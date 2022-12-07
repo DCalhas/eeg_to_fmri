@@ -312,7 +312,7 @@ class EEG_to_fMRI(tf.keras.Model):
 
     def build(self, input_shape1, input_shape2):
         self.eeg_encoder.build(input_shape=input_shape1)
-        self.decoder.build(input_shape=self.eeg_encoder.output_shape)
+        self.decoder.build(input_shape=self.eeg_encoder.output_shape)#input_shape1
 
         self.fmri_encoder.build(input_shape=input_shape2)
 
@@ -459,13 +459,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                 resblocks[i].right_layers[0].strides=(2,)+resblocks[i].right_layers[0].strides[1:]
                 x = tf.keras.layers.ZeroPadding3D(padding=((0,2), (0,0), (0,0)))(x)
                 #x = tf.pad(x, tf.constant([[0,0],[0, 2], [0, 0], [0,0], [0,0],]), "CONSTANT")
-            x = pretrained_ResBlock(resblocks[i], trainable=True, activation=activation, regularizer=regularizer, seed=seed)(x)
+            x = pretrained_ResBlock(resblocks[i], trainable=True, activation=tf.keras.activations.relu, regularizer=regularizer, seed=seed)(x)
             x = tf.keras.layers.Dropout(0.5)(x)
         
         x = tf.keras.layers.Flatten()(x)
         
         x = tf.keras.layers.Dense(pretrained_model.layers[1].layers[-2].units,
-                                activation=tf.keras.activations.linear,#adapt to distribution learned by random fourier
+                                activation=tf.keras.activations.relu,#adapt to distribution learned by random fourier
                                 kernel_regularizer=regularizer,
                                 bias_regularizer=regularizer,
                                 kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[1].layers[-2].kernel.numpy()),
