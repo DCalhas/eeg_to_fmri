@@ -52,7 +52,7 @@ class LinearClassifier(tf.keras.Model):
                 "regularizer_const": self.regularizer_const,}
 
     @classmethod
-    def from_config(self, config):
+    def from_config(cls, config):
         return cls(**config)
 
 
@@ -273,5 +273,5 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
                 "seed": self.seed,}
 
     @classmethod
-    def from_config(self, config):
+    def from_config(cls, config):
         return cls(**config)
