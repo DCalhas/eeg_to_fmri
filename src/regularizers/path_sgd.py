@@ -119,6 +119,7 @@ class PathOptimizer(OPTIMIZER):
 			input_shape_tensor=tuple(tf.ones(input_shape) for input_shape in self.input_shape)
 			path_model.build(*tuple(input_shape for input_shape in self.input_shape))
 		else:
+			print("HERE")
 			input_shape_tensor=(tf.ones(self.input_shape),)
 			path_model.build(self.input_shape)
 
