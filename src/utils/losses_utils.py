@@ -65,8 +65,8 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
             """
             _, y1_var = tf.split(y_pred[0][0], 2, axis=-1)
             _, y2_var = tf.split(y_pred[0][1], 2, axis=-1)
-            y1_var=1.#tf.reduce_mean(y1_var,axis=[1,2,3,4])
-            y2_var=1.#tf.reduce_mean(y2_var,axis=[1,2,3,4])
+            y1_var=tf.reduce_mean(y1_var,axis=[1,2,3,4])
+            y2_var=tf.reduce_mean(y2_var,axis=[1,2,3,4])
 
         return tf.reduce_mean(self.contrastive(y_contrast, y_pred[1]), axis=1)+(1/y1_var)*self.nll(tf.expand_dims(y_clf1[:,1],-1), y_pred[2])+(1/y2_var)*self.nll(tf.expand_dims(y_clf2[:,1],-1), y_pred[3]) + tf.math.log(y1_var*y2_var)
 
