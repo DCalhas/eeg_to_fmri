@@ -62,6 +62,9 @@ class PathOptimizer(OPTIMIZER):
 	def __init__(self, input_shape, model, lr, name="PathOptimizer", p=1, **kwargs):
 
 		self.model=model
+		if(type(self.model).__name__=="ViewLatentContrastiveClassifier"):
+			self.model=self.model.view.eeg_encoder
+
 		self.path_norm=None
 		self.ratio=None
 		self.input_shape=input_shape
@@ -94,8 +97,9 @@ class PathOptimizer(OPTIMIZER):
 		self.compute_path_norm()
 		
 		gradients = list(list(zip(*grads_and_vars))[0])
+		variables = list(list(zip(*grads_and_vars))[0])
 
-		if(self.ratio is None or type(self.model).__name__=="ViewLatentContrastiveClassifier"):
+		if(self.ratio is None):
 			#compute ratio
 			sgd_norm=0.
 			pathsgd_norm=0.
@@ -108,7 +112,7 @@ class PathOptimizer(OPTIMIZER):
 		for param in range(len(self.model.trainable_variables)):
 			gradients[param]=(gradients[param]/self.path_norm[param])*self.ratio
 
-		return super().apply_gradients(zip(gradients, self.model.trainable_variables), name=name)
+		return super().apply_gradients(zip(gradients, variables), name=name)
 
 	def compute_path_norm(self,):
 
