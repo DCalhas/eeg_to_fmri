@@ -215,7 +215,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
         super(ViewLatentContrastiveClassifier, self).__init__(**kwargs)
 
         self.path_network=path_network
-        self.input_shape=input_shape
+        self._input_shape=input_shape
         self.degree=degree
         self.activation=activation
         self.regularizer=regularizer
@@ -232,7 +232,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             assert self.regularizer in ["L1", "L2"]
             regularizer=getattr(tf.keras.regularizers, self.regularizer)(l=self.regularizer_const)
 
-        self.view=pretrained_EEG_to_fMRI(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), self.input_shape, activation=activation, latent_contrastive=True, seed=seed)
+        self.view=pretrained_EEG_to_fMRI(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), self._input_shape, activation=activation, latent_contrastive=True, seed=seed)
         
         if(degree==1):
             self.clf = LinearClassifier(variational=self.variational, regularizer=regularizer, aleatoric=self.aleatoric)
@@ -266,7 +266,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
     def get_config(self,):
 
         return {"path_network": self.path_network,
-                "input_shape": self.input_shape,
+                "input_shape": self._input_shape,
                 "degree": self.degree,
                 "activation": self.activation,
                 "regularizer": self.regularizer,
