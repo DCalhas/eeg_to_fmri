@@ -2,6 +2,8 @@ import tensorflow as tf
 
 import tensorflow_probability as tfp
 
+from models import eeg_to_fmri
+
 from models.eeg_to_fmri import pretrained_EEG_to_fMRI
 
 from layers.bayesian import DenseVariational
@@ -11,13 +13,21 @@ class LinearClassifier(tf.keras.Model):
     
     
     """
-    def __init__(self, n_classes=1, regularizer=None, variational=False, aleatoric=False):
+    def __init__(self, n_classes=1, regularizer=None, regularizer_const=0., variational=False, aleatoric=False):
         super(LinearClassifier, self).__init__()
 
         self.aleatoric=aleatoric
         self.variational=variational
         self.n_classes=n_classes
         self.regularizer=regularizer
+        self.regularizer_const=regularizer_const
+
+        if(type(self.activation) is str):
+            assert self.activation in ["linear", "relu"]
+            activation=getattr(tf.keras.activations, self.activation)
+        if(type(self.regularizer) is str):
+            assert self.regularizer in ["L1", "L2"]
+            regularizer=getattr(tf.keras.regularizers, self.regularizer)(l=self.regularizer_const)
 
         #layers
         self.flatten = tf.keras.layers.Flatten()
@@ -37,11 +47,13 @@ class LinearClassifier(tf.keras.Model):
         return z
 
     def get_config(self,):
+
         return {"aleatoric": self.aleatoric,
                 "variational": self.variational,
                 "n_classes": self.n_classes,
-                "regularizer": self.regularizer,}
-                
+                "regularizer": self.regularizer,
+                "regularizer_const": self.regularizer_const,}
+
     @classmethod
     def from_config(self, config):
         return cls(**config)
@@ -105,10 +117,7 @@ class ViewClassifier(tf.keras.Model):
     def build(self, input_shape):
         self.view.build(input_shape)
         if(not self.latent_clf):
-            if(self.view.aleatoric):
-                self.clf.build(self.view.q_decoder.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
-            else:
-                self.clf.build(self.view.q_decoder.output_shape)
+            self.clf.build(self.view.q_decoder.output_shape)
         else:
             self.clf.build(self.view.output_shape)
     
@@ -174,10 +183,7 @@ class ViewContrastiveClassifier(tf.keras.Model):
     def build(self, input_shape):
         self.view.build(input_shape)
         if(not self.latent_clf):
-            if(self.view.aleatoric):
-                self.clf.build(self.view.q_decoder.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
-            else:
-                self.clf.build(self.view.q_decoder.output_shape)
+            self.clf.build(self.view.q_decoder.output_shape)
         else:
             self.clf.build(self.view.output_shape)
 
@@ -203,20 +209,35 @@ class ViewContrastiveClassifier(tf.keras.Model):
 
 class ViewLatentContrastiveClassifier(tf.keras.Model):
 
-    def __init__(self, model, input_shape, degree=1, activation=None, regularizer=None, feature_selection=False, segmentation_mask=False, siamese_projection=False, siamese_projection_dimension=10, variational=False, seed=None):
+    def __init__(self, path_network, input_shape, degree=1, activation=None, regularizer=None, regularizer_const=0., variational=False, seed=None, **kwargs):
 
-        super(ViewLatentContrastiveClassifier, self).__init__()
+        super(ViewLatentContrastiveClassifier, self).__init__(**kwargs)
 
         assert not siamese_projection
 
-        self.siamese_projection=siamese_projection
+        self.path_network=path_network
+        self.input_shape=input_shape
+        self.degree=degree
+        self.activation=activation
+        self.regularizer=regularizer
+        self.regularizer_const=regularizer_const
+        self.variational=variational
+        self.seed=seed
 
-        self.view=pretrained_EEG_to_fMRI(model, input_shape, activation=activation, feature_selection=feature_selection, segmentation_mask=segmentation_mask, latent_contrastive=True, seed=seed)
+        #prepare string regularizers
+        if(type(self.activation) is str):
+            assert self.activation in ["linear", "relu"]
+            activation=getattr(tf.keras.activations, self.activation)
+        if(type(self.regularizer) is str):
+            assert self.regularizer in ["L1", "L2"]
+            regularizer=getattr(tf.keras.regularizers, self.regularizer)(l=self.regularizer_const)
+
+        self.view=pretrained_EEG_to_fMRI(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), self.input_shape, activation=activation, latent_contrastive=True, seed=seed)
         
         if(degree==1):
-            self.clf = LinearClassifier(variational=variational, regularizer=regularizer)
+            self.clf = LinearClassifier(variational=self.variational, regularizer=regularizer)
         else:
-            self.clf = PolynomialClassifier(degree=degree, variational=variational, regularizer=regularizer)
+            self.clf = PolynomialClassifier(degree=self.degree, variational=self.variational, regularizer=regularizer)
 
         self.flatten = tf.keras.layers.Flatten()
         
@@ -224,10 +245,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
     def build(self, input_shape):
         self.view.build(input_shape)
-        if(self.view.aleatoric):
-            self.clf.build(self.view.q_decoder.output_shape[:-1]+(2,))#additional dimension for aleatoric uncertainty
-        else:
-            self.clf.build(self.view.q_decoder.output_shape)
+        self.clf.build(self.view.q_decoder.output_shape)
 
     def call(self, X, training=False):
 
@@ -244,3 +262,18 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=training), self.clf(z2[0].numpy(), training=training)]
 
         return self.clf(self.view(X, training=training)[0], training=training)
+
+    def get_config(self,):
+
+        return {"path_network": self.path_network,
+                "input_shape": self.input_shape,
+                "degree": self.degree,
+                "activation": self.activation,
+                "regularizer": self.regularizer,
+                "regularizer_const": self.regularizer_const,
+                "variational": self.variational,
+                "seed": self.seed,}
+
+    @classmethod
+    def from_config(self, config):
+        return cls(**config)

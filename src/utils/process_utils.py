@@ -582,16 +582,14 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 				if(view=="fmri"):
 					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True, seed=seed)
 					loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
-					linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
-																		X_train.shape[1:], activation=tf.keras.activations.linear, #.linear
-																		regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational,
-																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
+					linearCLF = classifiers.ViewLatentContrastiveClassifier(path_network, X_train.shape[1:], activation="linear",
+																		regularizer="L1", regularizer_const=l2_reg, variational=variational,)
 				else:
 					#the indexation [:,1] is because we were using softmax instead of sigmoid
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 
 					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
-					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational)
+					linearCLF = classifiers.LinearClassifier(regularizer="L1", regularizer_const=l2_reg, variational=variational)
 				optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
 				linearCLF.build(X_train.shape)
 			gc.collect()
@@ -718,16 +716,14 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 				if(view=="fmri"):
 					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
 					loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
-					linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
-																		X_train.shape[1:], activation=tf.keras.activations.linear, #.linear
-																		regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational,
-																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
+					linearCLF = classifiers.ViewLatentContrastiveClassifier(path_network, X_train.shape[1:], activation="linear",
+																		regularizer="L1", regularizer_const=l2_reg, variational=variational,)
 				else:
 					#the indexation [:,1] is because we were using softmax instead of sigmoid
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 
 					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
-					linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_reg), variational=variational)
+					linearCLF = classifiers.LinearClassifier(regularizer="L1", regularizer_const=l2_reg, variational=variational)
 				optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
 				linearCLF.build(X_train.shape)
 
@@ -790,14 +786,12 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, 
 		if(view=="fmri"):
 			train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True)
 			loss_fn=losses_utils.ContrastiveClassificationLoss(m=np.pi, reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
-			linearCLF = classifiers.ViewLatentContrastiveClassifier(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects), 
-																		X_train.shape[1:], activation=tf.keras.activations.linear, #.linear
-																		regularizer=tf.keras.regularizers.L1(l=l2_regularizer), variational=variational,
-																		feature_selection=False, segmentation_mask=False, siamese_projection=False,)
+			linearCLF = classifiers.ViewLatentContrastiveClassifier(path_network, X_train.shape[1:], activation="linear",
+																regularizer="L1", regularizer_const=l2_regularizer, variational=variational,)
 		else:
 			train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 			loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
-			linearCLF = classifiers.LinearClassifier(regularizer=tf.keras.regularizers.L1(l=l2_regularizer), variational=variational)
+			linearCLF = classifiers.LinearClassifier(regularizer="L1", regularizer_const=l2_regularizer, variational=variational)
 		optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
 		linearCLF.build(X_train.shape)
 
