@@ -4,9 +4,9 @@ OPTIMIZER=tf.keras.optimizers.Adam
 
 
 def optimizer(name, input_shape, model, lr):
-	if(optimizer=="PathAdam"):
+	if(name=="PathAdam"):
 		return PathOptimizer(input_shape, model, lr)
-	elif(optimizer=="Adam"):
+	elif(name=="Adam"):
 		return tf.keras.optimizers.Adam(lr)
 	else:
 		raise NotImplementedError
