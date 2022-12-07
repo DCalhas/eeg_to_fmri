@@ -44,11 +44,12 @@ class LinearClassifier(tf.keras.Model):
         if(self.aleatoric):
             self.model=tf.keras.Model(_input_shape, x)
             self.aleatoric_model=tf.keras.Model(_input_shape, self._layers[-1](x))
+            self.aleatoric_model.build(input_shape)
         else:
             self.model=tf.keras.Model(_input_shape, self._layers[-1](x))
 
         self.model.build(input_shape)
-        self.aleatoric_model.build(input_shape)
+        
 
         self.built=True
         
@@ -257,7 +258,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
     def build(self, input_shape):
         self.view.build(input_shape)
-        self.clf.build(self.view.q_decoder.output_shape)
+        self.clf.build(self.view.q_decoder.output_shape[1:])
 
         self.built=True
 
