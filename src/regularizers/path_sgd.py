@@ -118,7 +118,6 @@ class PathOptimizer(OPTIMIZER):
 		path_model=type(self.model).from_config(self.model.get_config())
 		#in the special case of ViewLatentContrastiveClassifier we have to do this, so we do not have two flowsS
 		if(type(path_model).__name__=="ViewLatentContrastiveClassifier"):
-			#path_model=path_model.view.eeg_encoder
 			path_model.training=False
 
 		input_shape_tensor=None
