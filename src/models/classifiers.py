@@ -163,7 +163,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             s2=self.flatten(z2[1])
 
             #return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=self.training), self.clf(z2[0].numpy(), training=self.training)]
-            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1.numpy()[0], training=self.training), self.clf(z2.numpy()[0], training=self.training)]
+            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=self.training), self.clf(z2[0].numpy(), training=self.training)]
 
         return self.clf(self.view(X, training=self.training)[0], training=self.training)
 
