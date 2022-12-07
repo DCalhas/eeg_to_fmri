@@ -113,6 +113,8 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
         super(ViewLatentContrastiveClassifier, self).__init__(**kwargs)
 
+        self.training=True
+
         self.path_network=path_network
         self._input_shape=input_shape
         self.degree=degree
