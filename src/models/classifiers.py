@@ -22,9 +22,6 @@ class LinearClassifier(tf.keras.Model):
         self.regularizer=regularizer
         self.regularizer_const=regularizer_const
 
-        if(type(self.activation) is str):
-            assert self.activation in ["linear", "relu"]
-            activation=getattr(tf.keras.activations, self.activation)
         if(type(self.regularizer) is str):
             assert self.regularizer in ["L1", "L2"]
             regularizer=getattr(tf.keras.regularizers, self.regularizer)(l=self.regularizer_const)
