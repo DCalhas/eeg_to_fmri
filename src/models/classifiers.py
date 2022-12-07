@@ -27,13 +27,28 @@ class LinearClassifier(tf.keras.Model):
             regularizer=getattr(tf.keras.regularizers, self.regularizer)(l=self.regularizer_const)
 
         #layers
-        self.flatten = tf.keras.layers.Flatten()
+        self._layers=[tf.keras.layers.Flatten()]
         if(self.variational):
-            self.linear = DenseVariational(n_classes)
+            self._layers+=[DenseVariational(n_classes)]
         else:
-            self.linear = tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)
+            self._layers+=[tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)]
         if(self.aleatoric):
-            self.aleatoric_layer=tf.keras.layers.Dense(n_classes, activation=tf.keras.activations.exponential)
+            self._layers+=[tf.keras.layers.Dense(n_classes, activation=tf.keras.activations.exponential)]
+
+    def build(self, input_shape):
+        _input_shape = tf.keras.layers.Input(shape=input_shape)
+        x=_input_shape
+        for layer in self._layers[:-1]:
+            x=layer(x)
+
+        if(self.aleatoric):
+            self.model=tf.keras.Model(_input_shape, tf.concat([tf.expand_dims(x, axis=-1), tf.expand_dims(self._layers[-1](x), axis=-1)], axis=-1))
+        else:
+            self.model=tf.keras.Model(_input_shape, x)
+
+        self.model.build(input_shape)
+
+        self.built=True
         
     def call(self, X, training=False):
         z = self.linear(self.flatten(X))
@@ -244,11 +259,10 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
         self.view.build(input_shape)
         self.clf.build(self.view.q_decoder.output_shape)
 
-
-        print(len(self.view.q_decoder.trainable_variables)+len(self.clf.trainable_variables))
-        print(len(self.trainable_variables))
-
         self.built=True
+
+        print(len(self.view.trainable_variables)+len(self.clf.trainable_variables))
+        print(len(self.trainable_variables))
 
     def call(self, X, training=False):
 
