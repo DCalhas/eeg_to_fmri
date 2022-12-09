@@ -31,6 +31,7 @@ class LinearClassifier(tf.keras.Model):
         #layers
         self._layers=[tf.keras.layers.Flatten()]
         if(self.variational):
+            self._layers+=[tf.keras.layers.BatchNormalization()]
             self._layers+=[DenseVariational(500)]
             self._layers+=[DenseVariational(500)]
             self._layers+=[DenseVariational(n_classes)]
