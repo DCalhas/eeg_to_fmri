@@ -434,6 +434,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         input_shape = tf.keras.layers.Input(shape=self._input_shape)
 
         x = input_shape
+        x=tf.keras.layers.BatchNormalization(axis=(1,2,3))(x)
         #reshape to flattened features to apply attention mechanism
         x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
         #topographical attention
