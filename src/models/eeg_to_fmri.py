@@ -585,8 +585,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
             if(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="variational_iDCT3D"):
                 x = variational_iDCT3D(**pretrained_model.layers[self.index_model].layers[index].get_config(), 
-                                        normal_loc_initializer=tf.keras.initializers.GlorotUniform(seed=seed),loc.numpy()),
-                                        normal_scale_initializer=tf.keras.initializers.GlorotUniform(seed=seed),scale.numpy()),
+                                        normal_loc_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
+                                        normal_scale_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
                                         w1_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
                                         w2_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
                                         w3_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
