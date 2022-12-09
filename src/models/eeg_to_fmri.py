@@ -434,7 +434,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         input_shape = tf.keras.layers.Input(shape=self._input_shape)
 
         x = input_shape
-        x=tf.keras.layers.BatchNormalization(axis=(1,2,3,4))(x)
         #reshape to flattened features to apply attention mechanism
         x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
         #topographical attention
@@ -495,13 +494,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                             pretrained_model.layers[self.index_model].layers[index].units,
                                             normalization=pretrained_model.layers[self.index_model].layers[index].normalization,
                                             scale=pretrained_model.layers[self.index_model].layers[index].kernel_scale.numpy(),
-                                            trainable=False, name="latent_projection")(x)
+                                            trainable=True, name="latent_projection")(x)
         else:
             x = globals()[type(pretrained_model.layers[self.index_model].layers[index]).__name__](
                                                 pretrained_model.layers[self.index_model].layers[index].units,
                                                 kernel_regularizer=regularizer,
                                                 bias_regularizer=regularizer,
-                                                trainable=False, name="latent_projection")(x)
+                                                trainable=True, name="latent_projection")(x)
 
         self.eeg_encoder = tf.keras.Model(input_shape, x)
 
@@ -533,11 +532,11 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         use_bias=pretrained_model.layers[self.index_model].layers[index].use_bias,
                                         name="conditional_attention_style_dense",
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                                        trainable=False)(attention_scores)
+                                        trainable=True)(attention_scores)
             #add style features from attention graph or prior learned style
             x = x*self.latent_style
         elif(pretrained_model.layers[self.index_model].layers[index].name=="style_prior"):
-            x = Style(initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].latent_style.numpy()), trainable=False, seed=None, name='style_prior')(x)
+            x = Style(initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].latent_style.numpy()), trainable=True, seed=None, name='style_prior')(x)
         else:
             raise NotImplementedError
 
@@ -555,19 +554,19 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             x = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index]).__name__)(
                     pretrained_model.layers[self.index_model].layers[index].units,
                     activation=tf.keras.activations.linear,
-                    kernel_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel.numpy()),
-                    bias_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
+                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel.numpy()),
+                    bias_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
                     kernel_regularizer=regularizer,
                     bias_regularizer=regularizer,
-                    trainable=False)(x)
+                    trainable=True)(x)
         elif(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="DenseVariational"):
             x = DenseVariational(pretrained_model.layers[self.index_model].layers[index].units,
                                 activation=pretrained_model.layers[self.index_model].layers[index].activation_fn,
-                                kernel_prior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel_mu.numpy()),
-                                kernel_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel_sigma.numpy()),
-                                bias_prior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_mu.numpy()),
-                                bias_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_sigma.numpy()),
-                                trainable=False)(x)
+                                kernel_prior_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel_mu.numpy()),
+                                kernel_posterior_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel_sigma.numpy()),
+                                bias_prior_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_mu.numpy()),
+                                bias_posterior_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias_sigma.numpy()),
+                                trainable=True)(x)
         else:
             raise NotImplementedError
         
@@ -586,15 +585,15 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
             if(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="variational_iDCT3D"):
                 x = variational_iDCT3D(**pretrained_model.layers[self.index_model].layers[index].get_config(), 
-                                        normal_loc_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].normal.distribution.loc.numpy()),
-                                        normal_scale_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].normal.distribution.scale.numpy()),
-                                        w1_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].w1.numpy()),
-                                        w2_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].w2.numpy()),
-                                        w3_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].w3.numpy()),
-                                        loc_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].loc.numpy()),
-                                        scale_posterior_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].scale.numpy()),
-                                        biases_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].biases.numpy()),
-                                        trainable=False)(x)
+                                        normal_loc_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].normal.distribution.loc.numpy()),
+                                        normal_scale_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].normal.distribution.scale.numpy()),
+                                        w1_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].w1.numpy()),
+                                        w2_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].w2.numpy()),
+                                        w3_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].w3.numpy()),
+                                        loc_posterior_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].loc.numpy()),
+                                        scale_posterior_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].scale.numpy()),
+                                        biases_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].biases.numpy()),
+                                        trainable=True)(x)
             elif(type(pretrained_model.layers[self.index_model].layers[index]).__name__=="padded_iDCT3D"):
                 x = padded_iDCT3D(**pretrained_model.layers[self.index_model].layers[index].get_config())(x)
             index+=1
@@ -615,10 +614,10 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                         filters=pretrained_model.layers[self.index_model].layers[index].filters, 
                                         kernel_size=pretrained_model.layers[self.index_model].layers[index].kernel_size, 
                                         strides=pretrained_model.layers[self.index_model].layers[index].strides,
-                                        kernel_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel.numpy()),
-                                        bias_initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
+                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].kernel.numpy()),
+                                        bias_initializer=tf.keras.initializers.GlorotUniform(seed=seed),#tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].bias.numpy()),
                                         padding=pretrained_model.layers[self.index_model].layers[index].padding,
-                                        trainable=False)(x)
+                                        trainable=True)(x)
 
         self.q_decoder = tf.keras.Model(input_shape, x)
         
