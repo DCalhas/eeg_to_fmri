@@ -16,7 +16,7 @@ class Style(tf.keras.layers.Layer):
 		initializer argument is required due to this layer having a weight
 		"""
 
-		assert initializer in ["glorot_uniform", "Constant"] or type(initializer).__name__=="Constant"
+		assert initializer in ["glorot_uniform", "Constant"] or type(initializer).__name__ in ["Constant", "GlorotUniform"]
 
 		self.initializer=initializer
 		self.regularizer=regularizer
