@@ -18,7 +18,8 @@ def apply_gradient(model, optimizer, loss_fn, x, y, return_logits=False, call_fn
                 logits=model(x, training=True)
             else:
                 raise NotImplementedError
-        regularization=tf.math.add_n(model.losses)
+        if(len(model.losses)):
+            regularization=tf.math.add_n(model.losses)
         loss = loss_fn(y, logits)+regularization
     gradients = tape.gradient(loss, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
