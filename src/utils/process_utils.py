@@ -689,7 +689,6 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 		value[0] = 1/1e-9
 
 		l2_reg, batch_size, learning_rate = (theta)
-		l2_reg, batch_size, learning_rate = (0.01, 4, 0.01)
 
 		tf_config.set_seed(seed=seed)
 		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly, set_primary_memory=True, set_tf_threads=True)
@@ -741,9 +740,9 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
-	hyperparameters = [{'name': 'l2', 'type': 'continuous','domain': (1e-5, 2.)}, 
+	hyperparameters = [{'name': 'l2', 'type': 'continuous','domain': (1e-5, 0.0)}, 
 						{'name': 'batch_size', 'type': 'discrete', 'domain': (4,8,16)},
-						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-3, 1e-1)}]
+						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-1)}]
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
