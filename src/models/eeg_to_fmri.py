@@ -462,8 +462,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         x = tf.keras.layers.Flatten()(x)
 
-        self.eeg_encoder = tf.keras.Model(input_shape, x)
-        
         x = tf.keras.layers.Dense(pretrained_model.layers[1].layers[-2].units,
                                 activation=tf.keras.activations.linear,#adapt to distribution learned by random fourier
                                 kernel_regularizer=regularizer,
@@ -488,6 +486,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             index=10
         else:
             raise NotImplementedError
+
+        self.eeg_encoder = tf.keras.Model(input_shape, x)
 
         if("Fourier" in type(pretrained_model.layers[self.index_model].layers[index]).__name__):
             x = globals()[type(pretrained_model.layers[self.index_model].layers[index]).__name__](
