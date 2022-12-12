@@ -33,7 +33,7 @@ class ClassificationLoss(tf.keras.losses.Loss):
         super(ClassificationLoss, self).__init__(reduction='none', **kwargs)
 
         self.from_logits=from_logits
-        self._loss_fn=tf.keras.layers.MeanSquaredError(reduction=reduction)
+        self._loss_fn=tf.keras.losses.MeanSquaredError(reduction=reduction)
 
     def call(self, y_true, y_pred):
         if(self.from_logits):
