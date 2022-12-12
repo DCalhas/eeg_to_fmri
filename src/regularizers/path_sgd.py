@@ -129,11 +129,11 @@ class PathOptimizer(OPTIMIZER):
 			input_shape_tensor=(tf.ones(self.input_shape),)
 			path_model.build(self.input_shape[1:])
 
-		for param in range(len(self.model.trainable_variables)):
+		for param in range(len(self.model.variables)):
 			if(self.p==1):
-				path_model.trainable_variables[param].assign((self.model.trainable_variables[param]**2)**0.5)
+				path_model.variables[param].assign((self.model.variables[param]**2)**0.5)
 			else:
-				path_model.trainable_variables[param].assign(self.model.trainable_variables[param]**self.p)
+				path_model.variables[param].assign(self.model.variables[param]**self.p)
 
 		#compute scale
 		with tf.GradientTape() as tape:
