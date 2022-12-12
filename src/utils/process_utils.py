@@ -410,7 +410,7 @@ def train_synthesis(dataset, epochs, style_prior, padded, variational, variation
 			_resolution_decoder=(int(fmri_train.shape[1]/resolution_decoder),int(fmri_train.shape[2]/resolution_decoder),int(fmri_train.shape[3]/resolution_decoder))
 		model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
 							weight_decay=weight_decay, skip_connections=True, batch_norm=True, fourier_features=True, random_fourier=True, fourier_normalization=fourier_norm,
-							topographical_attention=True, conditional_attention_style=True, conditional_attention_style_prior=style_prior,
+							topographical_attention=False, conditional_attention_style=True, conditional_attention_style_prior=style_prior,
 							inverse_DFT=variational or padded, DFT=variational or padded, variational_iDFT=variational, variational_coefs=variational_coefs, 
 							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h, aleatoric_uncertainty=aleatoric_uncertainty, 
 							low_resolution_decoder=type(resolution_decoder) is float, variational_random_padding=variational_random_padding, 
