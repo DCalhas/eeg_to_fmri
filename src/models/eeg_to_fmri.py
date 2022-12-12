@@ -515,7 +515,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         if("Fourier" in type(pretrained_model.layers[self.index_model].layers[10]).__name__):
             index=11
         elif("Dense" in type(pretrained_model.layers[self.index_model].layers[10]).__name__):
-            index=10
+            index=11
         else:
             raise NotImplementedError
 
