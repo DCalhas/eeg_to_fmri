@@ -109,7 +109,7 @@ class PolynomialClassifier(tf.keras.Model):
 
 class ViewLatentContrastiveClassifier(tf.keras.Model):
 
-    def __init__(self, path_network, input_shape, degree=1, activation=None, regularizer=None, regularizer_const=0., variational=False, aleatoric=False, seed=None, **kwargs):
+    def __init__(self, path_network, input_shape, degree=1, activation=None, regularizer=None, regularizer_const=0., variational=False, aleatoric=False, organize_channels=False, seed=None, **kwargs):
 
         super(ViewLatentContrastiveClassifier, self).__init__(**kwargs)
 
@@ -122,6 +122,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
         self.regularizer=regularizer
         self.regularizer_const=regularizer_const
         self.variational=variational
+        self.organize_channels=organize_channels
         self.aleatoric=aleatoric
         self.seed=seed
 
@@ -133,7 +134,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             assert self.regularizer in ["L1", "L2"]
             regularizer=getattr(tf.keras.regularizers, self.regularizer)(l=self.regularizer_const)
 
-        self.view=pretrained_EEG_to_fMRI(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects, compile=False), self._input_shape, activation=activation, latent_contrastive=True, seed=seed)
+        self.view=pretrained_EEG_to_fMRI(tf.keras.models.load_model(path_network, custom_objects=eeg_to_fmri.custom_objects, compile=False), self._input_shape, activation=activation, latent_contrastive=True, organize_channels=organize_channels, seed=seed)
         
         if(degree==1):
             self.clf = LinearClassifier(variational=self.variational, regularizer=regularizer, aleatoric=self.aleatoric)
@@ -175,6 +176,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
                 "regularizer": self.regularizer,
                 "regularizer_const": self.regularizer_const,
                 "variational": self.variational,
+                "organize_channels": self.organize_channels,
                 "aleatoric": self.aleatoric,
                 "seed": self.seed,}
 
