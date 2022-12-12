@@ -446,6 +446,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         x = tf.keras.layers.Reshape(self._input_shape)(x)
         previous_block_x = x
 
+        self.eeg_encoder = tf.keras.Model(input_shape, x)
         
         #set the rest of the layers, but untrainable
         resblocks = pretrained_model.layers[1].layers[4:-3]
@@ -505,7 +506,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                                 bias_regularizer=regularizer,
                                                 trainable=True, name="latent_projection")(x)
 
-        self.eeg_encoder = tf.keras.Model(input_shape, x)
+        #self.eeg_encoder = tf.keras.Model(input_shape, x)
 
         return input_shape, x, attention_scores
     
