@@ -492,13 +492,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                             pretrained_model.layers[self.index_model].layers[index].units,
                                             normalization=pretrained_model.layers[self.index_model].layers[index].normalization,
                                             scale=pretrained_model.layers[self.index_model].layers[index].kernel_scale.numpy(),
-                                            trainable=False, name="latent_projection")(x)
+                                            trainable=True, name="latent_projection")(x)
         else:
             x = globals()[type(pretrained_model.layers[self.index_model].layers[index]).__name__](
                                                 pretrained_model.layers[self.index_model].layers[index].units,
                                                 kernel_regularizer=regularizer,
                                                 bias_regularizer=regularizer,
-                                                trainable=False, name="latent_projection")(x)
+                                                trainable=True, name="latent_projection")(x)
 
         self.eeg_encoder = tf.keras.Model(input_shape, x)
 
