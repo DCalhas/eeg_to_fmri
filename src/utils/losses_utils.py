@@ -58,7 +58,7 @@ class ContrastiveLoss(tf.keras.losses.Loss):
         if(tf.rank(distance)==2):
             similar=tf.expand_dims(similar, axis=-1)
 
-        return similar*distance + (1-similar)*(tf.abs(distance-self.m))
+        return similar*(-1.*distance) + (1-similar)*(1.*distance)
 
 
 class ContrastiveClassificationLoss(tf.keras.losses.Loss):
@@ -68,8 +68,7 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
         super(ContrastiveClassificationLoss, self).__init__(**kwargs)
 
         self.contrastive=ContrastiveLoss(m=m, reduction=tf.keras.losses.Reduction.NONE)
-        #self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
-        self.nll=ClassificationLoss(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
+        self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
 
     def call(self, y_true, y_pred, y1_var=1., y2_var=1.):
         y_contrast,y_clf1,y_clf2 = separate_targets(y_true)
