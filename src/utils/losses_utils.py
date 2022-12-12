@@ -25,7 +25,21 @@ def separate_targets(y):
     else:
         return y,y,y
 
-    
+
+class ClassificationLoss(tf.keras.losses.Loss):
+
+    def __init__(self, from_logits=False, reduction='auto', **kwargs):
+
+        super(ClassificationLoss, self).__init__(reduction='none', **kwargs)
+
+        self.from_logits=from_logits
+        self._loss_fn=tf.keras.layers.MeanSquaredError(reduction=reduction)
+
+    def call(self, y_true, y_pred):
+        if(self.from_logits):
+            y_pred=tf.keras.activations.sigmoid(y_pred)
+        return self._loss_fn(y_true, y_pred)
+
 
 class ContrastiveLoss(tf.keras.losses.Loss):
 
@@ -54,7 +68,8 @@ class ContrastiveClassificationLoss(tf.keras.losses.Loss):
         super(ContrastiveClassificationLoss, self).__init__(**kwargs)
 
         self.contrastive=ContrastiveLoss(m=m, reduction=tf.keras.losses.Reduction.NONE)
-        self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
+        #self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
+        self.nll=ClassificationLoss(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
 
     def call(self, y_true, y_pred, y1_var=1., y2_var=1.):
         y_contrast,y_clf1,y_clf2 = separate_targets(y_true)
