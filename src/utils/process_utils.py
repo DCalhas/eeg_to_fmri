@@ -458,8 +458,8 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epoc
 
 	from multiprocessing import Manager
 
-	#launch_process(load_data_loocv,
-	#				(view, dataset, path_labels))
+	launch_process(load_data_loocv,
+					(view, dataset, path_labels))
 
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, load=False, load_path=path_labels)
 
