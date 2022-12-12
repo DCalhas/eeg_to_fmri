@@ -689,6 +689,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 		value[0] = 1/1e-9
 
 		l2_reg, batch_size, learning_rate = (theta)
+		l2_reg, batch_size, learning_rate = (0.01, 4, 0.01)
 
 		tf_config.set_seed(seed=seed)
 		tf_config.setup_tensorflow(device="GPU", memory_limit=gpu_mem, run_eagerly=run_eagerly, set_primary_memory=True, set_tf_threads=True)
