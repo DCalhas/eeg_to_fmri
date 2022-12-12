@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+import numpy as np
+
 import tensorflow_probability as tfp
 
 from models import eeg_to_fmri
