@@ -487,8 +487,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         else:
             raise NotImplementedError
 
-        self.eeg_encoder = tf.keras.Model(input_shape, x)
-
         if("Fourier" in type(pretrained_model.layers[self.index_model].layers[index]).__name__):
             x = globals()[type(pretrained_model.layers[self.index_model].layers[index]).__name__](
                                             pretrained_model.layers[self.index_model].layers[index].units,
@@ -502,7 +500,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                                 bias_regularizer=regularizer,
                                                 trainable=False, name="latent_projection")(x)
 
-        #self.eeg_encoder = tf.keras.Model(input_shape, x)
+        self.eeg_encoder = tf.keras.Model(input_shape, x)
 
         return input_shape, x, attention_scores
     
