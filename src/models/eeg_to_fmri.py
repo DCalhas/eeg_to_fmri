@@ -488,7 +488,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             index=10
         elif("Dense" in type(pretrained_model.layers[3].layers[10]).__name__):
             self.index_model=3
-            index=9
+            index=10
         else:
             raise NotImplementedError
 
@@ -522,8 +522,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         #project sinusoids
         if("Sinusoids" in type(pretrained_model.layers[self.index_model].layers[index]).__name__):
             x=Sinusoids()(x)
-        
-        index+=1
+            index+=1
         
         if(pretrained_model.layers[self.index_model].layers[index].name=="conditional_attention_style_dense"):
             attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
@@ -540,10 +539,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             x = x*self.latent_style
         elif(pretrained_model.layers[self.index_model].layers[index].name=="style_prior"):
             x = Style(initializer=tf.constant_initializer(pretrained_model.layers[self.index_model].layers[index].latent_style.numpy()), trainable=False, seed=None, name='style_prior')(x)
-        else:
-            raise NotImplementedError
 
-        index+=1        
+        index+=1
         
         x = getattr(tf.keras.layers, type(pretrained_model.layers[self.index_model].layers[index]).__name__)(
                     pretrained_model.layers[self.index_model].layers[index].target_shape)(x)
