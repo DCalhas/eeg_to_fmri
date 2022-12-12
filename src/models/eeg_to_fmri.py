@@ -461,6 +461,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             x = tf.keras.layers.Dropout(0.5)(x)
 
         x = tf.keras.layers.Flatten()(x)
+
+        self.eeg_encoder = tf.keras.Model(input_shape, x)
         
         x = tf.keras.layers.Dense(pretrained_model.layers[1].layers[-2].units,
                                 activation=tf.keras.activations.linear,#adapt to distribution learned by random fourier
@@ -500,7 +502,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                                 bias_regularizer=regularizer,
                                                 trainable=False, name="latent_projection")(x)
 
-        self.eeg_encoder = tf.keras.Model(input_shape, x)
+        #self.eeg_encoder = tf.keras.Model(input_shape, x)
 
         return input_shape, x, attention_scores
     
