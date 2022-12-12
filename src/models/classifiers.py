@@ -31,8 +31,6 @@ class LinearClassifier(tf.keras.Model):
         #layers
         self._layers=[tf.keras.layers.Flatten()]
         if(self.variational):
-            self._layers+=[DenseVariational(500)]
-            self._layers+=[DenseVariational(500)]
             self._layers+=[DenseVariational(n_classes)]
         else:
             self._layers+=[tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)]
@@ -164,7 +162,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             s1=self.flatten(z1[1])
             s2=self.flatten(z2[1])
 
-            return [(z1[0].numpy(),z2[0].numpy()), tf.abs(s1.numpy()-s2.numpy()), self.clf(z1[0], training=self.training), self.clf(z2[0].numpy(), training=self.training)]
+            return [(z1[0],z2[0]), tf.abs(s1.numpy()-s2.numpy()), self.clf(z1[0].numpy(), training=self.training), self.clf(z2[0].numpy(), training=self.training)]
 
         return self.clf(self.view(X, training=self.training)[0], training=self.training)
 
