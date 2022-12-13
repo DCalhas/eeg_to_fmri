@@ -91,8 +91,6 @@ class PathOptimizer(OPTIMIZER):
 
 		"""
 
-		self.n_params=len(self.model.trainable_variables)
-
 		self.compute_path_norm()
 		
 		unpacked_gradients=list(zip(*grads_and_vars))
@@ -103,13 +101,13 @@ class PathOptimizer(OPTIMIZER):
 			#compute ratio
 			sgd_norm=0.
 			pathsgd_norm=0.
-			for param in range(self.n_params):
+			for param in range(len(self.model.trainable_variables)):
 				sgd_norm += tf.norm(gradients[param], ord=self.p)
 				pathsgd_norm += tf.norm(gradients[param]/self.path_norm[param], ord=self.p)
 			self.ratio = ( sgd_norm / pathsgd_norm ) ** (1/self.p)
 
 		
-		for param in range(self.n_params):
+		for param in range(len(self.model.trainable_variables)):
 			gradients[param]=(gradients[param]/self.path_norm[param])*self.ratio
 
 		return super().apply_gradients(zip(gradients, variables), name=name)
@@ -134,11 +132,7 @@ class PathOptimizer(OPTIMIZER):
 			else:
 				path_model.variables[param].assign(self.model.variables[param]**self.p)
 
-		#in the special case of ViewLatentContrastiveClassifier we have to do this, so we do not have two flowsS
-		if(type(path_model).__name__=="ViewLatentContrastiveClassifier"):
-			path_model.training=False
-			#path_model=path_model.view.eeg_encoder
-			#self.n_params=len(path_model.trainable_variables)
+		path_model.training=False
 
 		#compute scale
 		with tf.GradientTape() as tape:
