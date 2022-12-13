@@ -193,7 +193,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
         return cls(**config)
 
 
-class ViewLatentLikelihoodClassifier(tf.keras.Model):
+class ViewLatentLikelihoodClassifier(ViewLatentContrastiveClassifier):
 
     def __init__(self, **kwargs):
 
