@@ -40,10 +40,19 @@ class ClassificationLoss(tf.keras.losses.Loss):
             y_pred=tf.keras.activations.sigmoid(y_pred)
         return self._loss_fn(y_true, y_pred)
 
+class SeparationEntropyLoss(tf.keras.losses.Loss):
+
+    def __init__(self, reduction='auto', **kwargs):
+        super(SeparationEntropyLoss, self).__init__(**kwargs)
+        self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
+
+    def call(self, y_true, y_pred):
+        return self.nll(y_true, tf.reduce_mean(y_pred[0], axis=1))+self.nll(y_true, y_pred[1])
+
 
 class ContrastiveLoss(tf.keras.losses.Loss):
 
-    def __init__(self, m=0.5, **kwargs):
+    def __init__(self, m=np.pi, **kwargs):
 
         super(ContrastiveLoss, self).__init__(**kwargs)
 
