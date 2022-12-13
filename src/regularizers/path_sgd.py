@@ -101,6 +101,8 @@ class PathOptimizer(OPTIMIZER):
 		gradients = list(unpacked_gradients[0])
 		variables = list(unpacked_gradients[1])
 
+		self.ratio=None
+
 		if(self.ratio is None):
 			#compute ratio
 			sgd_norm=0.
