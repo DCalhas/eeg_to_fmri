@@ -2,7 +2,7 @@ import tensorflow as tf
 
 import gc
 
-OPTIMIZER=tf.keras.optimizers.SGD
+OPTIMIZER=tf.keras.optimizers.Adam
 
 
 def optimizer(name, input_shape, model, lr):
@@ -100,8 +100,6 @@ class PathOptimizer(OPTIMIZER):
 		unpacked_gradients=list(zip(*grads_and_vars))
 		gradients = list(unpacked_gradients[0])
 		variables = list(unpacked_gradients[1])
-
-		self.ratio=None
 
 		if(self.ratio is None):
 			#compute ratio
