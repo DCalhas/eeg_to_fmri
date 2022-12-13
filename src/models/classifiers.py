@@ -156,12 +156,6 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
     def call(self, X):
 
         if(self.training):
-            z = self.view(X, training=self.training)#returns a list of [fmri view, latent_eeg]
-            s=self.flatten(z[1])-np.pi/2
-            s=s/tf.norm(s.numpy(), ord=2)
-            return [s, self.clf(z[0].numpy(), training=self.training)]
-
-
             x=tf.split(X, 2, axis=1)
             x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
 
@@ -193,6 +187,33 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
                 "organize_channels": self.organize_channels,
                 "aleatoric": self.aleatoric,
                 "seed": self.seed,}
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
+
+
+class ViewLatentLikelihoodClassifier(tf.keras.Model):
+
+    def __init__(self, **kwargs):
+
+        super(ViewLatentLikelihoodClassifier, self).__init__(**kwargs)
+
+
+    def call(self, X):
+
+        if(self.training):
+            z = self.view(X, training=self.training)#returns a list of [fmri view, latent_eeg]
+            s=self.flatten(z[1])-np.pi/2
+            s=s/tf.norm(s.numpy(), ord=2)
+            return [s, self.clf(z[0].numpy(), training=self.training)]
+
+        return super().call(X)
+
+
+    def get_config(self,):
+        
+        return super().get_config()
 
     @classmethod
     def from_config(cls, config):
