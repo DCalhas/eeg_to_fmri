@@ -47,7 +47,7 @@ class SeparationEntropyLoss(tf.keras.losses.Loss):
         self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
 
     def call(self, y_true, y_pred):
-        return self.nll(y_true, tf.reduce_mean(y_pred[0], axis=1))+self.nll(y_true, y_pred[1])
+        return self.nll(y_true, tf.reduce_mean(y_pred[0], axis=1))+0.*self.nll(y_true, y_pred[1])
 
 
 class ContrastiveLoss(tf.keras.losses.Loss):

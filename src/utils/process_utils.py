@@ -711,11 +711,13 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
 				
 				if(view=="fmri"):
-					train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True, seed=seed)
-					loss_fn=losses_utils.ContrastiveClassificationLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
+					#train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True, seed=seed)
+					#loss_fn=losses_utils.ContrastiveClassificationLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
+					#linearCLF = classifiers.ViewLatentContrastiveClassifier(path_network, X_train.shape[1:], activation="linear", regularizer="L1",
+					#													regularizer_const=l2_reg, variational=variational, aleatoric=aleatoric_uncertainty,)
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 					loss_fn=losses_utils.SeparationEntropyLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
-					linearCLF = classifiers.ViewLatentContrastiveClassifier(path_network, X_train.shape[1:], activation="linear", regularizer="L1",
+					linearCLF = classifiers.ViewLatentLikelihoodClassifier(path_network, X_train.shape[1:], activation="linear", regularizer="L1",
 																		regularizer_const=l2_reg, variational=variational, aleatoric=aleatoric_uncertainty,)
 				else:
 					#the indexation [:,1] is because we were using softmax instead of sigmoid
