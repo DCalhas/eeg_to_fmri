@@ -139,10 +139,10 @@ class PathOptimizer(OPTIMIZER):
 				path_model.variables[param].assign(self.model.variables[param]**self.p)
 
 		#in the special case of ViewLatentContrastiveClassifier we have to do this, so we do not have two flowsS
-		if(type(path_model).__name__ in ["ViewLatentContrastiveClassifier"]):#, "ViewLatentLikelihoodClassifier"]):
+		if(type(path_model).__name__ in ["ViewLatentContrastiveClassifier"], "ViewLatentLikelihoodClassifier"]):
 			path_model.training=False
-			#path_model=path_model.view.eeg_encoder
-			#self.n_params=len(path_model.trainable_variables)
+			path_model=path_model.view.eeg_encoder
+			self.n_params=len(path_model.trainable_variables)
 
 		#compute scale
 		with tf.GradientTape() as tape:

@@ -206,7 +206,7 @@ class ViewLatentLikelihoodClassifier(ViewLatentContrastiveClassifier):
             z = self.view(X, training=self.training)#returns a list of [fmri view, latent_eeg]
             s=self.flatten(z[1])-np.pi/2
             s=s/tf.norm(s.numpy(), ord=2)
-            return [s, self.clf(z[0], training=self.training)]
+            return [s, self.clf(z[0].numpy(), training=self.training)]
 
         return super().call(X)
 
