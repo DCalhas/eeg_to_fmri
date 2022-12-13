@@ -147,14 +147,14 @@ class PathOptimizer(OPTIMIZER):
 		#compute scale
 		with tf.GradientTape() as tape:
 			tape.watch(path_model.trainable_variables)
-			y = path_model(*input_shape_tensor)
+			y=path_model(*input_shape_tensor)
 			if(type(y) is list):
-				y = tf.reduce_sum([tf.reduce_sum(y_i) for y_i in y])
+				y=tf.reduce_sum([tf.reduce_sum(y_i) for y_i in y])
 			else:
-				y = tf.reduce_sum(y)
+				y=tf.reduce_sum(y)
 
 			if(type(path_model).__name__ in ["ViewLatentContrastiveClassifier", "ViewLatentLikelihoodClassifier"]):
-				y+=tf.reduce_sum(path_model.eeg_encoder(*input_shape_tensor))
+				y+=tf.reduce_sum(path_model.view.eeg_encoder(*input_shape_tensor))
 
 		self.path_norm=tape.gradient(y, path_model.trainable_variables)
 
