@@ -535,7 +535,11 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 	def optimize_wrapper(theta):
 		from multiprocessing import Manager
 
-		l1_reg, batch_size, learning_rate = (float(theta[:,0]), int(theta[:,1]), float(theta[:,2]))
+		if(optimizer_name=="Adam"):
+			l1_reg, batch_size, learning_rate = (float(theta[:,0]), int(theta[:,1]), float(theta[:,2]))
+		else:
+			l1_reg, batch_size, learning_rate = (0., int(theta[:,0]), float(theta[:,1]))
+
 		if(n_processes==1):
 			value = Manager().Array('d', range(1))
 			launch_process(optimize_elastic, (value, (l1_reg, batch_size, learning_rate),))
@@ -722,11 +726,10 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 					loss_fn=losses_utils.SeparationEntropyLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 					linearCLF = classifiers.ViewLatentLikelihoodClassifier(path_network=path_network, input_shape=X_train.shape[1:], activation="linear", regularizer="L1",
-																		regularizer_const=0., variational=variational, aleatoric=aleatoric_uncertainty,)
+																		regularizer_const=l2_reg, variational=variational, aleatoric=aleatoric_uncertainty,)
 				else:
 					#the indexation [:,1] is because we were using softmax instead of sigmoid
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
-
 					loss_fn=tf.keras.losses.BinaryCrossentropy(from_logits=True)
 					linearCLF = classifiers.LinearClassifier(regularizer="L1", regularizer_const=l2_reg, variational=variational, aleatoric=aleatoric_uncertainty,)
 				optimizer=path_sgd.optimizer(optimizer_name, (1,)+X_train.shape[1:], linearCLF, learning_rate)
@@ -747,9 +750,12 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
-	hyperparameters = [{'name': 'l2', 'type': 'continuous','domain': (1., 3.0)}, 
-						{'name': 'batch_size', 'type': 'discrete', 'domain': (4,8,16)},
+	hyperparameters = [{'name': 'batch_size', 'type': 'discrete', 'domain': (4,8,16)},
 						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-1)}]
+	
+	if(optimizer_name=="Adam"):
+		hyperparameters+=[{'name': 'l2', 'type': 'continuous','domain': (1., 3.0)}]
+
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
 													model_type="GP_MCMC", 
@@ -758,6 +764,9 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 
 	print("Best value: ", optimizer.fx_opt)
 	print("Best hyperparameters: \n", optimizer.x_opt)
+
+	if(optimizer_name=="PathAdam"):
+		return (0., int(optimizer.x_opt[0]), float(optimizer.x_opt[1]))
 
 	return optimizer.x_opt
 
