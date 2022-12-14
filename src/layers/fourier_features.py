@@ -10,9 +10,9 @@ _SUPPORTED_RBF_KERNEL_TYPES = ['gaussian']
 
 class MaxNormalization(tf.keras.layers.Layer):
 
-	def __init__(self, l=0.01, p=1., **kwargs):
+	def __init__(self, mu=0, l=0.01, p=1., **kwargs):
 		
-		super(MaxNormalization, self).__init__(activity_regularizer=MaxNorm(l=l, p=p), **kwargs)
+		super(MaxNormalization, self).__init__(activity_regularizer=MaxNorm(mu=mu, l=l, p=p), **kwargs)
 		
 	def get_config(self):
 		return {}
@@ -108,8 +108,10 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		
 		if(normalization=="layer"):
 			self.layer_normalization=tf.keras.layers.LayerNormalization(beta_initializer=tf.constant_initializer(np.pi/2), gamma_initializer=tf.constant_initializer(np.pi/2), trainable=False)
+			self.reg_normalization=MaxNormalization(mu=np.pi/2, l=2/np.pi, p=2)
 		elif(normalization=="tanh"):
 			self.layer_normalization=TanhNormalization()
+			self.reg_normalization=MaxNormalization(mu=np.pi/2, l=2/np.pi, p=2)
 		self.scale = scale
 		self.seed=seed
 		self.trainable=trainable
@@ -156,6 +158,8 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		outputs = tf.nn.bias_add(outputs, self.bias)
 		
 		outputs=self.layer_normalization(outputs)
+
+		outputs=self.reg_normalization(outputs)
 
 		return outputs
 

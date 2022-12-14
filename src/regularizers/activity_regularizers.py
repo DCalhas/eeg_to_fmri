@@ -26,20 +26,22 @@ class InOfDistribution(tf.keras.regularizers.Regularizer):
 
 class MaxNorm(tf.keras.regularizers.Regularizer):
 
-	def __init__(self, l=1.0, p=1., **kwargs):
+	def __init__(self, mu=0.1, l=1.0, p=1., **kwargs):
 		self.l=tf.keras.backend.cast_to_floatx(l)
 		self.p=tf.keras.backend.cast_to_floatx(p)
+		self.mu=tf.keras.backend.cast_to_floatx(mu)
 
 		super(MaxNorm, self).__init__(**kwargs)
 
 	@tf.function(autograph=True)
 	def __call__(self, x):
 		
-		return -1.*self.l*tf.reduce_sum(tf.norm(x, ord=self.p))
+		return self.l*tf.reduce_sum(tf.norm(x-self.mu, ord=self.p))
 
 	def get_config(self):
 		return {"l": self.l,
-				"p": self.p}
+				"p": self.p,
+				"mu": self.mu}
 
 	@classmethod
 	def from_config(cls, config):
