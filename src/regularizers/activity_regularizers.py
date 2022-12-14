@@ -24,19 +24,19 @@ class InOfDistribution(tf.keras.regularizers.Regularizer):
 		return cls(**config)
 
 
-class MaxNorm(tf.keras.regularizers.Regularizer):
+class MaxBatchNorm(tf.keras.regularizers.Regularizer):
 
 	def __init__(self, mu=0.1, l=1.0, p=1., **kwargs):
 		self.l=tf.keras.backend.cast_to_floatx(l)
 		self.p=tf.keras.backend.cast_to_floatx(p)
 		self.mu=tf.keras.backend.cast_to_floatx(mu)
 
-		super(MaxNorm, self).__init__(**kwargs)
+		super(MaxBatchNorm, self).__init__(**kwargs)
 
 	@tf.function(autograph=True)
 	def __call__(self, x):
 		
-		return self.l*tf.reduce_sum(tf.norm(x-self.mu, ord=self.p))
+		return self.l*tf.reduce_sum(tf.norm(x-self.mu, ord=self.p, axis=0))#over the batch
 
 	def get_config(self):
 		return {"l": self.l,

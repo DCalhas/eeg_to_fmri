@@ -12,7 +12,7 @@ class MaxNormalization(tf.keras.layers.Layer):
 
 	def __init__(self, mu=0, l=0.01, p=1., **kwargs):
 		
-		super(MaxNormalization, self).__init__(activity_regularizer=MaxNorm(mu=mu, l=l, p=p), **kwargs)
+		super(MaxNormalization, self).__init__(activity_regularizer=MaxBatchNorm(mu=mu, l=l, p=p), **kwargs)
 		
 	def get_config(self):
 		return {}
@@ -157,7 +157,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
 		outputs = tf.nn.bias_add(outputs, self.bias)
 		
-		#outputs=self.layer_normalization(outputs)
+		outputs=self.layer_normalization(outputs)
 
 		outputs=self.reg_normalization(outputs)
 
