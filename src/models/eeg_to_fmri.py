@@ -489,8 +489,6 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         else:
             raise NotImplementedError
 
-        x=MaxNormalization(l=0.01,)(x)
-
         if("Fourier" in type(pretrained_model.layers[self.index_model].layers[index]).__name__):
             x = globals()[type(pretrained_model.layers[self.index_model].layers[index]).__name__](
                                             pretrained_model.layers[self.index_model].layers[index].units,
