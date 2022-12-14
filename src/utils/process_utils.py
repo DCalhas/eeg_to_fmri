@@ -470,7 +470,7 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epoc
 		#validate
 		launch_process(loocv,
 					(i, setting, view, dataset, hyperparameters[0], epochs, optimizer_name, hyperparameters[2], hyperparameters[1], n_processes*(gpu_mem), seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, aleatoric_uncertainty, style_prior, variational, verbose))
-		
+
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
 	
@@ -536,10 +536,10 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 	def optimize_wrapper(theta):
 		from multiprocessing import Manager
 
-		if(optimizer_name=="Adam"):
-			l1_reg, batch_size, learning_rate = (float(theta[:,0]), int(theta[:,1]), float(theta[:,2]))
-		else:
-			l1_reg, batch_size, learning_rate = (0., int(theta[:,0]), float(theta[:,1]))
+		#if(optimizer_name=="Adam"):
+		#	l1_reg, batch_size, learning_rate = (float(theta[:,0]), int(theta[:,1]), float(theta[:,2]))
+		#else:
+		l1_reg, batch_size, learning_rate = (0., int(theta[:,0]), float(theta[:,1]))
 
 		if(n_processes==1):
 			value = Manager().Array('d', range(1))
@@ -753,9 +753,6 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 
 	hyperparameters = [{'name': 'batch_size', 'type': 'discrete', 'domain': (4,8,16)},
 						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-1)}]
-	
-	if(optimizer_name=="Adam"):
-		hyperparameters=[{'name': 'l2', 'type': 'continuous','domain': (1., 3.0)}]+hyperparameters
 
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
