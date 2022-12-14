@@ -2,7 +2,7 @@ import tensorflow as tf
 
 import numpy as np
 
-from regularizers.activity_regularizers import InOfDistribution, MaxNorm
+from regularizers.activity_regularizers import InOfDistribution, MaxBatchNorm
 
 _SUPPORTED_RBF_KERNEL_TYPES = ['gaussian']
 

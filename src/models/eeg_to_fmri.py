@@ -8,7 +8,7 @@ from utils import state_utils
 
 from tensorflow.keras.layers import Dense#globals get attr
 
-from regularizers.activity_regularizers import InOfDistribution, MaxNorm
+from regularizers.activity_regularizers import InOfDistribution, MaxBatchNorm
 
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures, Sinusoids, MaxNormalization
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
@@ -394,7 +394,7 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention,
                 "DenseVariational": DenseVariational,
                 "InOfDistribution": InOfDistribution,
-                "MaxNorm": MaxNorm,
+                "MaxBatchNorm": MaxBatchNorm,
                 "MaxNormalization": MaxNormalization,
                 "Sinusoids": Sinusoids,}
 
