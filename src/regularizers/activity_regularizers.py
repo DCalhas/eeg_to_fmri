@@ -23,6 +23,30 @@ class InOfDistribution(tf.keras.regularizers.Regularizer):
 	def from_config(cls, config):
 		return cls(**config)
 
+
+class MaxNorm(tf.keras.regularizers.Regularizer):
+
+	def __init__(self, l=1.0, p=1., **kwargs):
+		self.l=tf.keras.backend.cast_to_floatx(l)
+		self.m=tf.keras.backend.cast_to_floatx(m)
+
+		super(MaxNorm, self).__init__(**kwargs)
+
+	@tf.function(autograph=True,input_signature=[tf.TensorSpec([None], tf.float32)])
+	def __call__(self, x):
+		
+		return self.l*tf.reduce_sum(tf.norm(x, ord=p))
+
+	def get_config(self):
+		return {"l": self.l,
+				"p": self.p}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
+
+
 class OrganizeChannels(tf.keras.regularizers.Regularizer):
 	"""
 	Activity regularizer for the Topographical_Attention layer that forces the attention scores to be heterogeneous for each channel chosen.

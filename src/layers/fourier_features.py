@@ -2,9 +2,25 @@ import tensorflow as tf
 
 import numpy as np
 
-from regularizers.activity_regularizers import InOfDistribution
+from regularizers.activity_regularizers import InOfDistribution, MaxNorm
 
 _SUPPORTED_RBF_KERNEL_TYPES = ['gaussian']
+
+
+
+class MaxNormalization(tf.keras.layers.Layer):
+
+	def __init__(self, l=0.01, p=1., **kwargs):
+		
+		super(MaxNormalization, self).__init__(activity_regularizer=MaxNorm(l=l, p=p), **kwargs)
+		
+	def get_config(self):
+		return {}
+
+	@classmethod
+	def from_config(cls, config):
+		return cls(**config)
+
 
 def _get_default_scale(initializer, input_dim):
 	if (isinstance(initializer, str) and
