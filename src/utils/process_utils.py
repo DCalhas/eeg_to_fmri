@@ -840,7 +840,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, 
 	if(save_explainability and view=="fmri"):
 		#explaing features
 		#explain to fMRI view
-		explainer=lrp.LRP(linearCLF.clf)
+		explainer=lrp.LRP(linearCLF.clf.model)
 		R=lrp.explain(explainer, views(linearCLF, test_set, y_test[:,1]), verbose=True)
 		#explain to EEG channels
 		if(not style_prior):
