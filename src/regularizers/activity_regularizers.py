@@ -35,7 +35,7 @@ class MaxNorm(tf.keras.regularizers.Regularizer):
 	@tf.function(autograph=True)
 	def __call__(self, x):
 		
-		return self.l*tf.reduce_sum(tf.norm(x, ord=self.p))
+		return -self.l*tf.reduce_sum(tf.norm(x, ord=self.p))
 
 	def get_config(self):
 		return {"l": self.l,
