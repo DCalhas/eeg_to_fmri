@@ -502,7 +502,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
                                                 bias_regularizer=regularizer,
                                                 trainable=False, name="latent_projection")(x)
 
-        x=MaxNormalization(l=0.1,)(x)
+        x=MaxNormalization(l=0.01,)(x)
 
         self.eeg_encoder = tf.keras.Model(input_shape, x)
 
