@@ -198,8 +198,6 @@ class ViewLatentLikelihoodClassifier(ViewLatentContrastiveClassifier):
 
         super(ViewLatentLikelihoodClassifier, self).__init__(**kwargs)
 
-        self.training=False
-
 
     def call(self, X):
 
