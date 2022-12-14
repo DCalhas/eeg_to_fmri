@@ -138,8 +138,8 @@ class PathOptimizer(OPTIMIZER):
 			else:
 				path_model.variables[param].assign(self.model.variables[param]**self.p)
 
-		path_model.training=False
-		
+		#path_model.training=False
+
 		#compute scale
 		with tf.GradientTape() as tape:
 			tape.watch(path_model.trainable_variables)
