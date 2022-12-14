@@ -53,7 +53,7 @@ class LinearClassifier(tf.keras.Model):
             self.model=tf.keras.Model(_input_shape, self._layers[-1](x))
 
         self.model.build(input_shape)
-        
+
         self.built=True
         
     def call(self, X, training=False):
@@ -197,6 +197,8 @@ class ViewLatentLikelihoodClassifier(ViewLatentContrastiveClassifier):
     def __init__(self, **kwargs):
 
         super(ViewLatentLikelihoodClassifier, self).__init__(**kwargs)
+
+        self.training=False
 
 
     def call(self, X):
