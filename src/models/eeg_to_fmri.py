@@ -434,11 +434,11 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
 
         x = input_shape
         #reshape to flattened features to apply attention mechanism
-        x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
+        #x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
         #topographical attention
-        x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], regularizer=regularizer)(x)
-        if(organize_channels):
-            attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)
+        #x, attention_scores = Topographical_Attention(self._input_shape[0], self._input_shape[1]*self._input_shape[2], regularizer=regularizer)(x)
+        #if(organize_channels):
+        #    attention_scores = Topographical_Attention_Scores_Regularization()(attention_scores)
 
         #reshape back to original shape
         x = tf.keras.layers.Reshape(self._input_shape)(x)
