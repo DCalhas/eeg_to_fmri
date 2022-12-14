@@ -107,11 +107,11 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		self.normalization=normalization
 		
 		if(normalization=="layer"):
-			#self.layer_normalization=tf.keras.layers.LayerNormalization(beta_initializer=tf.constant_initializer(np.pi/2), gamma_initializer=tf.constant_initializer(np.pi/2), trainable=False)
-			self.reg_normalization=MaxNormalization(mu=np.pi/2, l=0.5*(2/np.pi)**0.5, p=2)
+			self.layer_normalization=tf.keras.layers.LayerNormalization(beta_initializer=tf.constant_initializer(np.pi/2), gamma_initializer=tf.constant_initializer(np.pi/2), trainable=False)
+			#self.reg_normalization=MaxNormalization(mu=np.pi/2, l=0.5*(2/np.pi)**0.5, p=2)
 		elif(normalization=="tanh"):
-			#self.layer_normalization=TanhNormalization()
-			self.reg_normalization=MaxNormalization(mu=np.pi/2, l=0.5*(2/np.pi)**0.5, p=2)
+			self.layer_normalization=TanhNormalization()
+			#self.reg_normalization=MaxNormalization(mu=np.pi/2, l=0.5*(2/np.pi)**0.5, p=2)
 		self.scale = scale
 		self.seed=seed
 		self.trainable=trainable
@@ -157,9 +157,9 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
 		outputs = tf.nn.bias_add(outputs, self.bias)
 		
-		#outputs=self.layer_normalization(outputs)
+		outputs=self.layer_normalization(outputs)
 
-		outputs=self.reg_normalization(outputs)
+		#outputs=self.reg_normalization(outputs)
 
 		return outputs
 
