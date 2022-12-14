@@ -28,7 +28,7 @@ class MaxNorm(tf.keras.regularizers.Regularizer):
 
 	def __init__(self, l=1.0, p=1., **kwargs):
 		self.l=tf.keras.backend.cast_to_floatx(l)
-		self.m=tf.keras.backend.cast_to_floatx(m)
+		self.p=tf.keras.backend.cast_to_floatx(p)
 
 		super(MaxNorm, self).__init__(**kwargs)
 
