@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+from tensorflow_addons.activations import sparsemax
+
 from regularizers.activity_regularizers import OrganizeChannels
 
 class Topographical_Attention_Scores_Regularization(tf.keras.layers.Layer):
@@ -78,7 +80,9 @@ class Topographical_Attention(tf.keras.layers.Layer):
 
 		c = tf.tensordot(X, self.A, axes=[[2], [1]])
 		#c = tf.einsum('NCF,CMF->NCM', X, self.A)
-		W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
+		
+		W = sparsemax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
+		#W = tf.nn.softmax(c, axis=-1)#dimension that is reduced in the next einsum, is the one that sums to one
 		self.attention_scores=W
 
 		#if(self.organize_channels):
