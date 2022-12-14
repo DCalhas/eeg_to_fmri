@@ -36,7 +36,7 @@ class MaxBatchNorm(tf.keras.regularizers.Regularizer):
 	@tf.function(autograph=True)
 	def __call__(self, x):
 		
-		return self.l*tf.reduce_sum(tf.norm(x-self.mu, ord=self.p))#over the batch
+		return self.l*tf.reduce_sum(tf.norm(x-self.mu, ord=self.p, axis=1))#over the batch
 
 	def get_config(self):
 		return {"l": self.l,
