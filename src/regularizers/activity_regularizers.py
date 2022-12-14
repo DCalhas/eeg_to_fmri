@@ -32,7 +32,7 @@ class MaxNorm(tf.keras.regularizers.Regularizer):
 
 		super(MaxNorm, self).__init__(**kwargs)
 
-	@tf.function(autograph=True,input_signature=[tf.TensorSpec([None], tf.float32)])
+	@tf.function(autograph=True)
 	def __call__(self, x):
 		
 		return self.l*tf.reduce_sum(tf.norm(x, ord=self.p))
