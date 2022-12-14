@@ -54,7 +54,6 @@ class LinearClassifier(tf.keras.Model):
 
         self.model.build(input_shape)
         
-
         self.built=True
         
     def call(self, X, training=False):
