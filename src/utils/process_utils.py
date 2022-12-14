@@ -470,6 +470,7 @@ def setup_data_loocv(setting, view, dataset, fold, n_folds_cv, n_processes, epoc
 		#validate
 		launch_process(loocv,
 					(i, setting, view, dataset, hyperparameters[0], epochs, optimizer_name, hyperparameters[2], hyperparameters[1], n_processes*(gpu_mem), seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection, segmentation_mask, aleatoric_uncertainty, style_prior, variational, verbose))
+		
 def load_data_loocv(view, dataset, path_labels):
 	from utils import preprocess_data
 	
@@ -726,7 +727,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 					loss_fn=losses_utils.SeparationEntropyLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 					linearCLF = classifiers.ViewLatentLikelihoodClassifier(path_network=path_network, input_shape=X_train.shape[1:], activation="linear", regularizer="L1",
-																		regularizer_const=l2_reg, variational=variational, aleatoric=aleatoric_uncertainty,)
+																		regularizer_const=0., variational=variational, aleatoric=aleatoric_uncertainty,)
 				else:
 					#the indexation [:,1] is because we were using softmax instead of sigmoid
 					train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
