@@ -42,12 +42,14 @@ class ClassificationLoss(tf.keras.losses.Loss):
 
 class SeparationEntropyLoss(tf.keras.losses.Loss):
 
-    def __init__(self, reduction='auto', **kwargs):
+    def __init__(self, model, reduction='auto', **kwargs):
         super(SeparationEntropyLoss, self).__init__(**kwargs)
+        self.model=model
         self.nll=tf.keras.losses.BinaryCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
 
     def call(self, y_true, y_pred):
-        return 0.*self.nll(tf.repeat(tf.expand_dims(y_true, axis=-1), repeats=y_pred[0].shape[-1], axis=-1), y_pred[0])+self.nll(y_true, y_pred[1])
+        self.model.add_loss(tf.reduce_sum(self.nll(tf.repeat(tf.expand_dims(y_true, axis=-1), repeats=y_pred[0].shape[-1], axis=-1), y_pred[0])))
+        return self.nll(y_true, y_pred[1])
 
 
 class ContrastiveLoss(tf.keras.losses.Loss):

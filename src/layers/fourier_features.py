@@ -157,9 +157,6 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		
 		outputs=self.layer_normalization(outputs)
 
-		#max normalization before normalization mapping
-		outputs=MaxNormalization(l=0.01,)(outputs)
-		
 		return outputs
 
 	def compute_output_shape(self, input_shape):
