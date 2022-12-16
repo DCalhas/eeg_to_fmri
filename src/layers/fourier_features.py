@@ -159,7 +159,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		
 		outputs=self.layer_normalization(outputs)
 
-		outputs=self.reg_normalization(outputs)#does it make sense?
+		outputs=self.reg_normalization(outputs)
 
 		return outputs
 
