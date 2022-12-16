@@ -52,17 +52,26 @@ In terms of code this corresponds to loading the data. First we start by import 
 ```python
 import tensorflow as tf
 import numpy as np
-from utils import tf_config
+import sys
+
+sys.path.append("../src")
+
+import os
+os.environ['EEG_FMRI_DATASETS']="/home/david/eeg_to_fmri/datasets"
+os.environ['EEG_FMRI']="/home/david/eeg_to_fmri"
+
+import eeg_to_fmri
+from eeg_to_fmri.utils import tf_config
 
 dataset="01"
 tf_config.set_seed(seed=2)
-tf_config.setup_tensorflow(device="GPU", memory_limit=1500)
+tf_config.setup_tensorflow(device="GPU", memory_limit=1500, run_eagerly=True)
 
-import GPyOpt
-import argparse
-from utils import preprocess_data, train, losses_utils, metrics, eeg_utils, data_utils, viz_utils
-from models import eeg_to_fmri
-from pathlib import Path
+from eeg_to_fmri.models.synthesizers import EEG_to_fMRI
+from eeg_to_fmri.data import preprocess_data, eeg_utils, data_utils
+from eeg_to_fmri.learning import train, losses
+from eeg_to_fmri import metrics
+from eeg_to_fmri.utils import viz_utils
 ```
 
 Then we specify the number of individuals and $$T$$ (which corresponds to ```interval_eeg```), and load the data:
@@ -72,14 +81,9 @@ n_individuals=getattr(data_utils, "n_individuals_"+dataset)
 interval_eeg=10
 
 with tf.device('/CPU:0'):
-	train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals,
-						interval_eeg=interval_eeg, 
-						ind_volume_fit=False,
-						standardize_fmri=True,
-						iqr=False,
-						verbose=True)
-	eeg_train, fmri_train =train_data
-	eeg_test, fmri_test = test_data
+    train_data, test_data = preprocess_data.dataset(dataset, n_individuals=n_individuals, interval_eeg=interval_eeg, ind_volume_fit=False, standardize_fmri=True, iqr=False, verbose=True)
+    eeg_train, fmri_train =train_data
+    eeg_test, fmri_test = test_data
 print(eeg_train.shape, fmri_train.shape)
 print(eeg_test.shape, fmri_test.shape)
 ```
@@ -92,36 +96,31 @@ The print output corresponds to:
 In total, we are using 2296 instances for training the model and 574 constitute the testing set. After this we can start building the model presented in the first figure. We first unroll the hyperparameters for the neural network: learning rate, weight decay, etc:
 
 ```python
-learning_rate,weight_decay ,kernel_size ,stride_size ,batch_size,latent_dimension,n_channels,max_pool,batch_norm,skip_connections,dropout,n_stacks,outfilter,local=eeg_to_fmri.parameters
+from eeg_to_fmri.models.synthesizers import parameters
+learning_rate,weight_decay ,kernel_size ,stride_size ,batch_size,latent_dimension,n_channels,max_pool,batch_norm,skip_connections,dropout,n_stacks,outfilter,local=parameters
 ```
 
-Additionally, we also load the architecture specification:
-
-```python
-with open(str(Path.home())+"/eeg_to_fmri/na_models_eeg/na_specification_2", "rb") as f:
-	na_specification_eeg = pickle.load(f)
-with open(str(Path.home())+"/eeg_to_fmri/na_models_fmri/na_specification_2", "rb") as f:
-	na_specification_fmri = pickle.load(f)
-```
-
-Note that both the ```eeg_to_fmri.parameters``` and the neural architectures' specification were obtained after exhaustive automatic searches. For the first, the Bayesian optimization algorithm [\[1\]](#references) was used and for the second the automatic neural architecture generation algorithm [\[2\]](#references).
+Note that both the ```eeg_to_fmri.models.synthesizers.parameters``` and the neural architectures' specification were obtained after exhaustive automatic searches. For the first, the Bayesian optimization algorithm [\[1\]](#references) was used and for the second the automatic neural architecture generation algorithm [\[2\]](#references).
 
 With these parameters, we can finally build the model and setup the optimizer, loss, training set and test set:
 
 ```python
+from eeg_to_fmri.models.synthesizers import na_specification_eeg
+from eeg_to_fmri.models.fmri_ae import na_specification_fmri
+
 with tf.device('/CPU:0'):
-	model = eeg_to_fmri.EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
-						weight_decay=weight_decay, skip_connections=True, batch_norm=True, fourier_features=True,
-						random_fourier=True, topographical_attention=True, conditional_attention_style=True,
-						conditional_attention_style_prior=False, local=True, seed=None, 
-						fmri_args = (latent_dimension, fmri_train.shape[1:], kernel_size, stride_size, n_channels, 
-						max_pool, batch_norm, weight_decay, skip_connections,
-						n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
-	model.build(eeg_train.shape, fmri_train.shape)
-	optimizer = tf.keras.optimizers.Adam(learning_rate)
-	loss_fn = losses_utils.mae_cosine
-	train_set = tf.data.Dataset.from_tensor_slices((eeg_train, fmri_train)).batch(batch_size)
-	test_set= tf.data.Dataset.from_tensor_slices((eeg_test, fmri_test)).batch(1)
+    model = EEG_to_fMRI(latent_dimension, eeg_train.shape[1:], na_specification_eeg, n_channels,
+                        weight_decay=weight_decay, skip_connections=True, batch_norm=True, fourier_features=True,
+                        random_fourier=True, topographical_attention=True, conditional_attention_style=True,
+                        conditional_attention_style_prior=False, local=True, seed=None, 
+                        fmri_args = (latent_dimension, fmri_train.shape[1:], kernel_size, stride_size, n_channels, 
+                        max_pool, batch_norm, weight_decay, skip_connections,
+                        n_stacks, True, False, outfilter, dropout, None, False, na_specification_fmri))
+    model.build(eeg_train.shape, fmri_train.shape)
+    optimizer = tf.keras.optimizers.Adam(learning_rate)
+    loss_fn = losses.mae_cosine
+    train_set = tf.data.Dataset.from_tensor_slices((eeg_train, fmri_train)).batch(batch_size)
+    test_set= tf.data.Dataset.from_tensor_slices((eeg_test, fmri_test)).batch(1)
 ```
 
 Note that the loss used minimizes the objective of approximating the EEG with the fMRI, along with the latent representations of each other, meaning:
@@ -154,9 +153,9 @@ The output, running this in my laptop, corresponds to:
 Now we have a trained model that given an EEG representation, gives us an fMRI volume. You can check the visualization by using the visualization utilities file available in this repository:
 
 ```python
-for eeg, fmri in dev_set.repeat(1):
-	viz_utils.plot_3D_representation_projected_slices(model(eeg, fmri)[0].numpy()[0], threshold=0.37).show()
-	break
+for eeg, fmri in test_set.repeat(1):
+    viz_utils.plot_3D_representation_projected_slices(model(eeg, fmri)[0].numpy()[0], threshold=0.37).show()
+    break
 ```
 
 The output of this code corresponds to the figure below. 
