@@ -10,6 +10,7 @@ from tensorflow.keras.layers import Dense#globals get attr
 
 from regularizers.activity_regularizers import InOfDistribution, MaxBatchNorm
 
+from layers.temporal import DenseTemporal
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures, Sinusoids, MaxNormalization
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
@@ -209,11 +210,18 @@ class EEG_to_fMRI(tf.keras.Model):
                         maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],
                         skip_connections=skip_connections, seed=seed)(x)
-        
-        x = tf.keras.layers.Flatten()(x)#TODO: if TRs > 1 this should be changed
-        x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)#TODO: TRs > 1 should only be on spatial dim
-        x = tf.keras.layers.Reshape(latent_shape)(x)#TODO: take into account TRs as last dim
+
+
+        if(time_length>1):
+            x=tf.keras.layers.Reshape(target_shape=(x.shape[1]*x.shape[2]*x.shape[3], time_length))(x)
+            x=DenseTemporal(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)#TODO: TRs > 1 should only be on spatial dim
+            x=tf.keras.layers.Reshape(latent_shape+(time_length,))(x)#TODO: take into account TRs as last dim
+        else:
+            x = tf.keras.layers.Flatten()(x)#TODO: if TRs > 1 this should be changed
+            x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)#TODO: TRs > 1 should only be on spatial dim
+            x = tf.keras.layers.Reshape(latent_shape)(x)#TODO: take into account TRs as last dim
 
         self.eeg_encoder = tf.keras.Model(input_shape, x)
         self.fmri_encoder = self.fmri_ae.encoder
@@ -395,6 +403,7 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "Style": Style,
                 "Latent_EEG_Spatial_Attention": Latent_EEG_Spatial_Attention,
                 "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention,
+                "DenseTemporal": DenseTemporal,
                 "DenseVariational": DenseVariational,
                 "InOfDistribution": InOfDistribution,
                 "MaxBatchNorm": MaxBatchNorm,
