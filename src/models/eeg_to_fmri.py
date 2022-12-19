@@ -26,6 +26,9 @@ import pickle
 
 parameters=(0.002980911194116198, 0.0, (9, 9, 4), (1, 1, 1), 4, (7, 7, 7), 4, True, True, True, True, 3, 1, True)
 
+
+#parameters={"learning_rate": 0.002980911194116198, "weight_decay": 0.0, "kernel_size": (9,9,4), "stride_size": (1,1,1), "batch_size": 4, "latent_dimension": (7,7,7), "n_channels": 4, "max_pool": True, "batch_norm": True, "skip_connections": True, "dropout": True, "n_stacks": 3, "outfilter": 1, "local": True,}
+
 search_space = [{'name': 'learning_rate', 'type': 'continuous',
 					'domain': (1e-5, 1e-2)},
 					{'name': 'reg', 'type': 'continuous',

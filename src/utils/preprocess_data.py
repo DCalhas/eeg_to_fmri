@@ -11,7 +11,10 @@ import tensorflow as tf
 import gc
 
 #should eeg_limit be true??
-def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_eeg=False, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
+def dataset(dataset, n_individuals=8, interval_eeg=6, time_length=1, ind_volume_fit=True, raw_eeg=False, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
+	"""
+	time_length - refers to how big are the temporal segments considered. Default is 1, which indicates prediction of only one volume
+	"""
 
 	if(verbose):
 		if(file_output == None):
@@ -61,27 +64,18 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, ind_volume_fit=True, raw_e
 		else:
 			print("I: Finished Loading Data", file=file_output)
 
-	eeg_train, fmri_train = data_utils.create_eeg_bold_pairs(eeg_train, fmri_train, 
-															raw_eeg=raw_eeg,
-															fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),
-															fs_sample_fmri=f_resample,
-															interval_eeg=interval_eeg, 
-															n_volumes=n_volumes, 
-															n_individuals=n_individuals_train,
-															instances_per_individual=25)
-	eeg_test, fmri_test = data_utils.create_eeg_bold_pairs(eeg_test, fmri_test, 
-															raw_eeg=raw_eeg,
-															fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),
-															fs_sample_fmri=f_resample,
-															interval_eeg=interval_eeg, 
-															n_volumes=n_volumes, 
-															n_individuals=n_individuals_test,
-															instances_per_individual=25)
+	if(time_length>1):
+		eeg_train, fmri_train = create_eeg_bold_temporal_pairs(eeg_train, fmri_train, interval_eeg=interval_eeg,raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_train,instances_per_individual=25)
+		eeg_test, fmri_test = create_eeg_bold_temporal_pairs(eeg_test, fmri_test, interval_eeg=interval_eeg,raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_test,instances_per_individual=25)
+	else:
+		eeg_train, fmri_train = data_utils.create_eeg_bold_pairs(eeg_train, fmri_train, raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_train,instances_per_individual=25)
+		eeg_test, fmri_test = data_utils.create_eeg_bold_pairs(eeg_test, fmri_test, raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_test,instances_per_individual=25)
 
 	eeg_train = np.expand_dims(eeg_train, axis=-1)
-	fmri_train = np.expand_dims(fmri_train, axis=-1)
 	eeg_test = np.expand_dims(eeg_test, axis=-1)
-	fmri_test = np.expand_dims(fmri_test, axis=-1)
+	if(time_length==1):
+		fmri_train = np.expand_dims(fmri_train, axis=-1)
+		fmri_test = np.expand_dims(fmri_test, axis=-1)
 
 	eeg_train = eeg_train.astype('float32')
 	fmri_train = fmri_train.astype('float32')

@@ -338,12 +338,12 @@ def get_data_roi(individuals, raw_eeg=False, masker=None, start_cutoff=3, bold_s
 
     return X, y
 
-def create_eeg_bold_pairs(eeg, bold, raw_eeg=False, fs_sample_eeg=250, fs_sample_fmri=2, interval_eeg=2, n_volumes=300, n_individuals=10, instances_per_individual=16):
+def create_eeg_bold_pairs(eeg, fmri, raw_eeg=False, fs_sample_eeg=250, fs_sample_fmri=2, interval_eeg=2, n_volumes=300, n_individuals=10, instances_per_individual=16):
     if(raw_eeg):
         x_eeg = np.empty((n_individuals*(n_volumes-interval_eeg),)+(eeg.shape[1],int(interval_eeg*fs_sample_eeg*fs_sample_fmri)))
     else:
         x_eeg = np.empty((n_individuals*(n_volumes-interval_eeg),)+eeg.shape[1:]+(interval_eeg,))
-    x_bold = np.empty((n_individuals*(n_volumes-interval_eeg),)+bold.shape[1:])
+    x_fmri = np.empty((n_individuals*(n_volumes-interval_eeg),)+fmri.shape[1:])
 
     for individual in range(n_individuals):
         for index_volume in range(individual*(n_volumes), individual*(n_volumes)+n_volumes-interval_eeg):#the last observation is missing?
@@ -353,11 +353,26 @@ def create_eeg_bold_pairs(eeg, bold, raw_eeg=False, fs_sample_eeg=250, fs_sample
                 if(np.transpose(eeg[index_volume:index_volume+interval_eeg], (1,2,0)).shape[-1]!=interval_eeg):
                     continue
                 x_eeg[index_volume-individual*interval_eeg] = np.transpose(eeg[index_volume:index_volume+interval_eeg], (1,2,0))
-            x_bold[index_volume-individual*interval_eeg] = bold[index_volume+interval_eeg]
+            x_fmri[index_volume-individual*interval_eeg] = fmri[index_volume+interval_eeg]
         
-    return x_eeg, x_bold
+    return x_eeg, x_fmri
 
+def create_eeg_bold_temporal_pairs(eeg, fmri, raw_eeg=False, time_length=2, interval_eeg=10, fs_sample_eeg=250, fs_sample_fmri=2, interval_eeg=2, n_volumes=300, n_individuals=10, instances_per_individual=16):
+    x_eeg = np.empty((n_individuals*int(n_volumes/time_length)-interval_eeg,)+eeg.shape[1:]+(interval_eeg+time_length,))
+    x_fmri = np.empty((n_individuals*int(n_volumes/time_length)-interval_eeg,)+fmri.shape[1:]+(time_length,))
 
+    instance=0
+    for individual in range(n_individuals):
+        for index_volume in range(individual*(n_volumes), individual*(n_volumes)+n_volumes-time_length-interval_eeg, time_length):
+            if(raw_eeg):
+                x_eeg[instance] = np.transpose(eeg[index_volume:index_volume+time_length], (1,0))
+                x_fmri[instance] = np.transpose(fmri[index_volume:index_volume+time_length], (1,2,3,0))
+            else:
+                x_eeg[instance] = np.transpose(eeg[index_volume:index_volume+time_length+interval_eeg], (1,2,0))
+                x_fmri[instance] = np.transpose(fmri[index_volume+interval_eeg:index_volume+interval_eeg+time_length], (1,2,3,0))
+            instance+=1
+
+    return x_eeg, x_fmri
 
 
 
