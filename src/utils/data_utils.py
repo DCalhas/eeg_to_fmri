@@ -372,6 +372,8 @@ def create_eeg_bold_temporal_pairs(eeg, fmri, raw_eeg=False, time_length=2, fs_s
                 x_fmri[instance] = np.transpose(fmri[index_volume+interval_eeg:index_volume+interval_eeg+time_length], (1,2,3,0))
             instance+=1
 
+    print(instance, x_eeg.shape[0])
+
     return x_eeg, x_fmri
 
 
