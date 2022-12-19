@@ -357,7 +357,7 @@ def create_eeg_bold_pairs(eeg, fmri, raw_eeg=False, fs_sample_eeg=250, fs_sample
         
     return x_eeg, x_fmri
 
-def create_eeg_bold_temporal_pairs(eeg, fmri, raw_eeg=False, time_length=2, interval_eeg=10, fs_sample_eeg=250, fs_sample_fmri=2, interval_eeg=2, n_volumes=300, n_individuals=10, instances_per_individual=16):
+def create_eeg_bold_temporal_pairs(eeg, fmri, raw_eeg=False, time_length=2, fs_sample_eeg=250, fs_sample_fmri=2, interval_eeg=2, n_volumes=300, n_individuals=10, instances_per_individual=16):
     x_eeg = np.empty((n_individuals*int(n_volumes/time_length)-interval_eeg,)+eeg.shape[1:]+(interval_eeg+time_length,))
     x_fmri = np.empty((n_individuals*int(n_volumes/time_length)-interval_eeg,)+fmri.shape[1:]+(time_length,))
 
