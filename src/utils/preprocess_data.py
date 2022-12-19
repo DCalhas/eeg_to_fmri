@@ -65,8 +65,8 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, time_length=1, ind_volume_
 			print("I: Finished Loading Data", file=file_output)
 
 	if(time_length>1):
-		eeg_train, fmri_train = create_eeg_bold_temporal_pairs(eeg_train, fmri_train,raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_train,instances_per_individual=25)
-		eeg_test, fmri_test = create_eeg_bold_temporal_pairs(eeg_test, fmri_test,raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_test,instances_per_individual=25)
+		eeg_train, fmri_train = data_utils.create_eeg_bold_temporal_pairs(eeg_train, fmri_train,raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_train,instances_per_individual=25)
+		eeg_test, fmri_test = data_utils.create_eeg_bold_temporal_pairs(eeg_test, fmri_test,raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_test,instances_per_individual=25)
 	else:
 		eeg_train, fmri_train = data_utils.create_eeg_bold_pairs(eeg_train, fmri_train, raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_train,instances_per_individual=25)
 		eeg_test, fmri_test = data_utils.create_eeg_bold_pairs(eeg_test, fmri_test, raw_eeg=raw_eeg,fs_sample_eeg=getattr(eeg_utils, "fs_"+dataset),fs_sample_fmri=f_resample,interval_eeg=interval_eeg, n_volumes=n_volumes, n_individuals=n_individuals_test,instances_per_individual=25)
