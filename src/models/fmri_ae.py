@@ -90,6 +90,7 @@ class fMRI_AE(tf.keras.Model):
 
 
         if(time_length>1):
+            maxpool=False
             x=tf.keras.layers.Permute((4,1,2,3),)(x)
             x=tf.keras.layers.Reshape(x.shape[1:]+(1,))(x)
 
