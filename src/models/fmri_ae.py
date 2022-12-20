@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow_probability as tfp
 
+from layers.temporal import DenseTemporal
 from layers.locally_connected import LocallyConnected3D
 from layers.resnet_block import ResBlock
 
@@ -113,6 +114,7 @@ class fMRI_AE(tf.keras.Model):
             operation=LocallyConnected3D
 
         if(time_length>1):
+            x=tf.keras.layers.Permute((2,3,4,5,1),)(x)
             x=tf.keras.layers.Reshape(target_shape=(x.shape[2]*x.shape[3]*x.shape[4]*x.shape[5], time_length))(x)
             x=DenseTemporal(latent_shape[0]*latent_shape[1]*latent_shape[2], kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
             x=tf.keras.layers.Reshape(latent_shape+(time_length,))(x)#TODO: take into account TRs as last dim
