@@ -76,33 +76,21 @@ def build(*kwargs):
 	return EEG_to_fMRI()
 
 
-"""
-This class implements an architecture for EEG to fMRI transcription
 
-encode: architecture that encodes the EEG signal to a space where an instance of fMRI is also represented
-
-decode: architecture that maps the encoded representation to the fMRI space representation
-
-call: encode and decode
-
-"""
 class EEG_to_fMRI(tf.keras.Model):
+    """
+    This class implements an architecture for EEG to fMRI transcription
 
+    encode: architecture that encodes the EEG signal to a space where an instance of fMRI is also represented
+
+    decode: architecture that maps the encoded representation to the fMRI space representation
+
+    call: encode and decode
 
     """
-        NA_specification - tuple - (list1, list2, bool, tuple1, tuple2)
-                                    * list1 - kernel sizes
-                                    * list2 - stride sizes
-                                    * bool - maxpool
-                                    * tuple1 - kernel size of maxpool
-                                    * tuple2 - stride size of maxpool
-                                    Example:
-                                    na = ([(2,2,2), (2,2,2)], [(1,1,1), (1,1,1)], True, (2,2,2), (1,1,1))
-                                    na is a neural architecture with 2 layers, kernel of size 2 for all 3 dimensions
-                                    stride of size 1 for all dimensions, between each layer a max pooling operation 
-                                    is applied with kernel size 2 for all dimensions and stride size 1 for all dimensions
 
-    """
+
+    
     def __init__(self, latent_shape, input_shape, na_spec, n_channels,
                 weight_decay=0.000, skip_connections=False, batch_norm=True,
                 dropout=False, local=True, fourier_features=False, time_length=1,
@@ -115,6 +103,20 @@ class EEG_to_fMRI(tf.keras.Model):
                 resolution_decoder=None, low_resolution_decoder=False,
                 topographical_attention=False, organize_channels=False,
                  seed=None, fmri_args=None):
+        """
+            NA_specification - tuple - (list1, list2, bool, tuple1, tuple2)
+                                        * list1 - kernel sizes
+                                        * list2 - stride sizes
+                                        * bool - maxpool
+                                        * tuple1 - kernel size of maxpool
+                                        * tuple2 - stride size of maxpool
+                                        Example:
+                                        na = ([(2,2,2), (2,2,2)], [(1,1,1), (1,1,1)], True, (2,2,2), (1,1,1))
+                                        na is a neural architecture with 2 layers, kernel of size 2 for all 3 dimensions
+                                        stride of size 1 for all dimensions, between each layer a max pooling operation 
+                                        is applied with kernel size 2 for all dimensions and stride size 1 for all dimensions
+
+        """
         super(EEG_to_fMRI, self).__init__()
 
         self.training=True
@@ -214,17 +216,20 @@ class EEG_to_fMRI(tf.keras.Model):
 
 
         if(time_length>1):
+            """
+            Here we can not avoid but manipulate the dimensions in order for the shape to be correct for the regularization
+            """
             x=tf.keras.layers.Reshape(target_shape=(x.shape[1]*x.shape[2]*x.shape[4], x.shape[3]))(x)
             x=DenseTemporal(latent_shape[0]*latent_shape[1]*latent_shape[2], kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
             x=tf.keras.layers.Permute((2,1))(x)
             x=DenseTemporal(time_length, kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
             x=tf.keras.layers.Permute((2,1))(x)
-            x=tf.keras.layers.Reshape(latent_shape+(time_length,))(x)#TODO: take into account TRs as last dim
+            x=tf.keras.layers.Reshape(latent_shape+(time_length,))(x)
         else:
-            x = tf.keras.layers.Flatten()(x)#TODO: if TRs > 1 this should be changed
+            x = tf.keras.layers.Flatten()(x)
             x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)#TODO: TRs > 1 should only be on spatial dim
-            x = tf.keras.layers.Reshape(latent_shape)(x)#TODO: take into account TRs as last dim
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+            x = tf.keras.layers.Reshape(latent_shape)(x)
 
         self.eeg_encoder = tf.keras.Model(input_shape, x)
         self.fmri_encoder = self.fmri_ae.encoder
@@ -275,6 +280,7 @@ class EEG_to_fMRI(tf.keras.Model):
             resolution_decoder=latent_shape
 
         if(low_resolution_decoder):
+            assert not time_length>1, "This layers are not set for time length > 1"
             x = tf.keras.layers.Flatten()(x)
 
             assert type(resolution_decoder) is tuple and len(resolution_decoder) == 3
@@ -290,9 +296,11 @@ class EEG_to_fMRI(tf.keras.Model):
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
             x = tf.keras.layers.Reshape(latent_shape)(x)
         if(DFT and not variational_random_padding):#if random padding of frequencies there should not be special waves defined
+            assert not time_length>1, "This layers are not set for time length > 1"
             #convert to Discrete cosine transform low resolution coefficients
             x = DCT3D(latent_shape[0], latent_shape[1], latent_shape[2])(x)
         if(inverse_DFT):
+            assert not time_length>1, "This layers are not set for time length > 1"
             if(variational_iDFT):
                 assert type(variational_coefs) is tuple
                 x = variational_iDCT3D(*(latent_shape + self.fmri_ae.in_shape[:3] + variational_coefs), 
@@ -308,7 +316,6 @@ class EEG_to_fMRI(tf.keras.Model):
         else:
             x = tf.keras.layers.Flatten()(x)
             #upsampling
-            print(x.shape)
             x = tf.keras.layers.Dense(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2],
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
         
@@ -338,12 +345,13 @@ class EEG_to_fMRI(tf.keras.Model):
         self.trainable_variables.append(self.fmri_encoder.trainable_variables)
 
 
-    """
-        Random behaviour of GPU with tf functions does not reproduce the same results
-        Call this function when getting results
-    """
+    
     @tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)], reduce_retracing=True)
     def call(self, x1, x2):
+        """
+        Random behaviour of GPU with tf functions does not reproduce the same results
+        Call this function when getting results
+        """
         if(self.training):
             return [self.decoder(x1), 
                     self.eeg_encoder(x1), 
