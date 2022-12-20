@@ -138,7 +138,7 @@ class fMRI_AE(tf.keras.Model):
 
         #upsampling
         if(self.time_length>1):
-            x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2]**self.in_shape[3],
+            x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2]*self.in_shape[3],
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
         else:
             x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2],
