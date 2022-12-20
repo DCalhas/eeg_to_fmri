@@ -308,6 +308,7 @@ class EEG_to_fMRI(tf.keras.Model):
         else:
             x = tf.keras.layers.Flatten()(x)
             #upsampling
+            print(x.shape)
             x = tf.keras.layers.Dense(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2],
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
         
