@@ -35,9 +35,7 @@ class DenseTemporal(tf.keras.layers.Layer):
 		self.seed = seed
 
 	def build(self, input_shape):
-		assert len(input_shape)==2#only for batch, features rank
-
-		last_dim=input_shape[-1]
+		last_dim=input_shape[1]
 
 		input_shape = tf.TensorShape(input_shape)
 
@@ -70,7 +68,7 @@ class DenseTemporal(tf.keras.layers.Layer):
 		self.loc=0.0
 		self.scale=1.0
 		self.distribution="Normal"
-		
+
 		self.built = True
 
 	@tf.function
