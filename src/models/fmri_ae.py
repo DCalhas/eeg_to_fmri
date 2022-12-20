@@ -122,16 +122,10 @@ class fMRI_AE(tf.keras.Model):
             x = tf.keras.layers.Flatten()(x)#TODO: if TRs > 1 this should be changed
             x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                     kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)#TODO: TRs > 1 should only be on spatial dim
+            if(dropout):
+                x = tf.keras.layers.Dropout(0.5)(x)
             x = tf.keras.layers.Reshape(latent_shape)(x)#TODO: take into account TRs as last dim
 
-        #x = tf.keras.layers.Flatten()(x)
-        #x = tf.keras.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2], 
-        #                            kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
-        
-        if(dropout):
-            x = tf.keras.layers.Dropout(0.5)(x)
-        x = tf.keras.layers.Reshape(self.latent_shape)(x)
-        
         self.encoder = tf.keras.Model(input_shape, x)
 
     def build_decoder(self, outfilter=0, seed=None):
