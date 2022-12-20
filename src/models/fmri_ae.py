@@ -91,7 +91,7 @@ class fMRI_AE(tf.keras.Model):
 
         if(time_length>1):
             x=tf.keras.layers.Permute((4,1,2,3),)(x)
-            x=tf.keras.layers.Reshape(x.shape+(1,))(x)
+            x=tf.keras.layers.Reshape(tf.shape(x)+(1,))(x)
 
         for i in range(n_stacks):
             if(na_spec is not None):
