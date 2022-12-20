@@ -88,6 +88,10 @@ class fMRI_AE(tf.keras.Model):
         if(na_spec is not None):
             n_stacks=len(na_spec[0])
 
+
+        if(time_length>1):
+            x=tf.keras.layers.Permute((0,4,1,2,3),)(x)
+
         for i in range(n_stacks):
             if(na_spec is not None):
                 x = ResBlock("Conv3D", 
@@ -133,8 +137,12 @@ class fMRI_AE(tf.keras.Model):
         x = tf.keras.layers.Flatten()(input_shape)
 
         #upsampling
-        x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2],
-                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+        if(self.time_length>1):
+            x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2]**self.in_shape[3],
+                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+        else:
+            x = tf.keras.layers.Dense(self.in_shape[0]*self.in_shape[1]*self.in_shape[2],
+                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
         x = tf.keras.layers.Reshape(self.in_shape)(x)
 
         #filter
