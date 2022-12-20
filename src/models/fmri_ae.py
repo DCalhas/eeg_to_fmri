@@ -90,6 +90,8 @@ class fMRI_AE(tf.keras.Model):
 
 
         if(time_length>1):
+            if(na_spec is not None):
+                na_spec[2]=False
             maxpool=False
             x=tf.keras.layers.Permute((4,1,2,3),)(x)
             x=tf.keras.layers.Reshape(x.shape[1:]+(1,))(x)
@@ -98,7 +100,7 @@ class fMRI_AE(tf.keras.Model):
             if(na_spec is not None):
                 x = ResBlock("Conv3D", 
                         na_spec[0][i], na_spec[1][i], n_channels,
-                        maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, 
+                        maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],
                         skip_connections=skip_connections, seed=seed)(x)
             else:
