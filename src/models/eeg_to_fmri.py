@@ -150,7 +150,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.fmri_args=fmri_args
         
         if(len(fmri_args)==17):#needs to be update if 
-            self.fmri_ae = fmri_ae.fMRI_AE(*fmri_args)
+            self.fmri_ae = fmri_ae.fMRI_AE(*fmri_args, time_length=time_length)
         else:
             raise NotImplementedError
 
