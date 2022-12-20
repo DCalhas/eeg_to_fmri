@@ -44,7 +44,7 @@ class fMRI_AE(tf.keras.Model):
     
     def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
-                        n_stacks=2, local=True, local_attention=False, outfilter=0, dropout=False, seed=None, _build_decoder=True,
+                        n_stacks=2, local=True, local_attention=False, time_length=1, outfilter=0, dropout=False, seed=None, _build_decoder=True,
                         na_spec=None):
         
         super(fMRI_AE, self).__init__()
@@ -65,18 +65,19 @@ class fMRI_AE(tf.keras.Model):
         self.dropout=dropout
         self.seed=seed
         self.latent_shape = latent_shape
+        self.time_length=time_length
         self.in_shape = input_shape
         self._build_decoder=_build_decoder
         self.na_spec=na_spec
         
-        self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels,
+        self.build_encoder(latent_shape, input_shape, kernel_size, stride_size, n_channels, time_length=time_length
                         maxpool=maxpool, batch_norm=batch_norm, weight_decay=weight_decay, skip_connections=skip_connections,
                         n_stacks=n_stacks, local=local, local_attention=local_attention, dropout=dropout, na_spec=na_spec, seed=seed)
         if(_build_decoder):
             self.build_decoder(outfilter=outfilter, seed=seed)
     
     def build_encoder(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
-                        maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
+                        maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False, time_length=1,
                         n_stacks=2, local=True, local_attention=False, dropout=False, na_spec=None, seed=None):
 
         input_shape = tf.keras.layers.Input(shape=input_shape)
@@ -106,17 +107,23 @@ class fMRI_AE(tf.keras.Model):
         else:
             operation=LocallyConnected3D
 
-        x = tf.keras.layers.Flatten()(x)
-        x = tf.keras.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2], 
-                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+        if(time_length>1):
+            x=tf.keras.layers.Reshape(target_shape=(x.shape[1]*x.shape[2]*x.shape[3], time_length))(x)
+            x=DenseTemporal(latent_shape[0]*latent_shape[1]*latent_shape[2], kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+            x=tf.keras.layers.Reshape(latent_shape+(time_length,))(x)#TODO: take into account TRs as last dim
+        else:
+            x = tf.keras.layers.Flatten()(x)#TODO: if TRs > 1 this should be changed
+            x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)#TODO: TRs > 1 should only be on spatial dim
+            x = tf.keras.layers.Reshape(latent_shape)(x)#TODO: take into account TRs as last dim
+
+        #x = tf.keras.layers.Flatten()(x)
+        #x = tf.keras.layers.Dense(self.latent_shape[0]*self.latent_shape[1]*self.latent_shape[2], 
+        #                            kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+        
         if(dropout):
             x = tf.keras.layers.Dropout(0.5)(x)
         x = tf.keras.layers.Reshape(self.latent_shape)(x)
-
-        if(local_attention):
-            #x = tf.keras.layers.MultiHeadAttention(num_heads=2, key_dim=2, attention_axes=(1, 2, 3))(x,x)
-            x = tf.keras.layers.MultiHeadAttention(num_heads=n_channels, key_dim=x.shape[1]*x.shape[2]*x.shape[3], attention_axes=(1, 2, 3),
-                                                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x,x)
         
         self.encoder = tf.keras.Model(input_shape, x)
 
