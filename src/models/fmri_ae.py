@@ -44,8 +44,8 @@ class fMRI_AE(tf.keras.Model):
     
     def __init__(self, latent_shape, input_shape, kernel_size, stride_size, n_channels,
                         maxpool=True, batch_norm=True, weight_decay=0.000, skip_connections=False,
-                        n_stacks=2, local=True, local_attention=False, time_length=1, outfilter=0, dropout=False, seed=None, _build_decoder=True,
-                        na_spec=None):
+                        n_stacks=2, local=True, local_attention=False, outfilter=0, dropout=False, seed=None, _build_decoder=True,
+                        na_spec=None, time_length=1,):
         
         super(fMRI_AE, self).__init__()
         
