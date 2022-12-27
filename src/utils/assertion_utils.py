@@ -107,6 +107,7 @@ def clf_cv(opt):
 	segmentation_mask=opt.segmentation_mask
 	style_prior=opt.style_prior
 	fourier_norm=opt.fourier_norm
+	batch_norm_reg=opt.batch_norm_reg
 	padded=opt.padded
 	variational=opt.variational
 	variational_clf=opt.variational_clf
@@ -169,6 +170,8 @@ def clf_cv(opt):
 	if(variational_random_padding):
 		assert variational, "Only done with variational flag set to True"
 		setting+="_random_padding"
+	if(batch_norm_reg):
+		setting+="_batch_reg"
 	if(feature_selection):
 		setting+="_feature_selection"
 	if(segmentation_mask):
@@ -181,4 +184,4 @@ def clf_cv(opt):
 	if(view!="fmri"):
 		setting=dataset_clf+"_"+view
 		
-	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,fourier_norm,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability,verbose
+	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,fourier_norm,batch_norm_reg,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability,verbose
