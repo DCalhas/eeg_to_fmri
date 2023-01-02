@@ -2,7 +2,7 @@
 layout: default
 title: Dense Variational
 parent: Layers
-grandparent: Documentation
+grand_parent: Documentation
 nav_order: 1
 mathjax: true
 tags: 
