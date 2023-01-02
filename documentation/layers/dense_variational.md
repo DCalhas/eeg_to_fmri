@@ -3,7 +3,7 @@ layout: default
 title: Dense Variational
 parent: Layers
 grand_parent: Documentation
-nav_order: 1
+nav_order: 2
 mathjax: true
 tags: 
   - latex
@@ -12,7 +12,7 @@ tags:
 
 
 
-### Dense Varitational
+# Dense Varitational
 
 This layer is the bayesian version of the [tf.keras.layers.Dense](https://www.tensorflow.org/api_docs/python/tf/keras/layers/Dense) layer. It is parametrized by $$W,b$$ and transforms the inputs, $$X\in \mathbb{R}^{N}$$, as:
 
