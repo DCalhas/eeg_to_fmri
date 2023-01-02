@@ -5,6 +5,7 @@ parent: Documentation
 nav_order: 1
 has_children: true
 mathjax: true
+permalink: documentation/layers
 tags: 
   - latex
   - math
