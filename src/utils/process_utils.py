@@ -797,7 +797,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, 
 			train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True, seed=seed)
 			loss_fn=losses_utils.ContrastiveClassificationLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 			linearCLF = classifiers.ViewLatentContrastiveClassifier(path_network, X_train.shape[1:], activation="linear", regularizer="L1",
-																regularizer_const=l2_reg, variational=variational, aleatoric=aleatoric_uncertainty,)
+																regularizer_const=l2_regularizer, variational=variational, aleatoric=aleatoric_uncertainty,)
 			#train_set = tf.data.Dataset.from_tensor_slices((X_train, y_train[:,1])).batch(batch_size)
 			#loss_fn=losses_utils.SeparationEntropyLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 			#linearCLF = classifiers.ViewLatentLikelihoodClassifier(path_network=path_network, input_shape=X_train.shape[1:], activation="linear", regularizer="L1",
