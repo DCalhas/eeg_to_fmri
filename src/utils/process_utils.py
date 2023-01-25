@@ -762,11 +762,8 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 
 	print("Best value: ", optimizer.fx_opt)
 	print("Best hyperparameters: \n", optimizer.x_opt)
-
-	if(optimizer_name=="PathAdam"):
-		return (0., int(optimizer.x_opt[0]), float(optimizer.x_opt[1]))
-
-	return optimizer.x_opt
+	
+	return (0., int(optimizer.x_opt[0]), float(optimizer.x_opt[1]))
 
 def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, aleatoric_uncertainty=False, style_prior=False, variational=False, verbose=False):
 	
