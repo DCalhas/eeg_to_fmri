@@ -583,7 +583,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 			with tf.device('/CPU:0'):
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
 				
-				if(view=="fmri"):
+				if(view=="fmri" or view=="fmri_mlp"):
 					#train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True, seed=seed)
 					#loss_fn=losses_utils.ContrastiveClassificationLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 					#linearCLF = classifiers.ViewLatentContrastiveClassifier(path_network, X_train.shape[1:], activation="linear", regularizer="L1",
@@ -719,7 +719,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 			with tf.device('/CPU:0'):
 				test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
 				
-				if(view=="fmri"):
+				if(view=="fmri" or view=="fmri_mlp"):
 					#train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True, seed=seed)
 					#loss_fn=losses_utils.ContrastiveClassificationLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 					#linearCLF = classifiers.ViewLatentContrastiveClassifier(path_network, X_train.shape[1:], activation="linear", regularizer="L1",
@@ -796,7 +796,7 @@ def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, 
 
 	with tf.device('/CPU:0'):
 		test_set = tf.data.Dataset.from_tensor_slices((X_test, y_test[:,1])).batch(1)
-		if(view=="fmri"):
+		if(view=="fmri" or view=="fmri_mlp"):
 			#train_set=preprocess_data.DatasetContrastive(X_train, y_train, batch=batch_size, pairs=1, clf=True, seed=seed)
 			#loss_fn=losses_utils.ContrastiveClassificationLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
 			#linearCLF = classifiers.ViewLatentContrastiveClassifier(path_network, X_train.shape[1:], activation="linear", regularizer="L1",

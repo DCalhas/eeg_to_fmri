@@ -22,7 +22,7 @@ import numpy as np
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('dataset_clf', choices=['10', '11'], help="Which dataset to load for classification")
-	parser.add_argument('view', choices=['raw', 'stft', 'fmri'], help="Which view to consider for classification")
+	parser.add_argument('view', choices=['raw', 'stft', 'fmri', 'fmri_mlp'], help="Which view to consider for classification")
 	parser.add_argument('-dataset_synth', default="01", type=str, help="Which dataset to load for synthesis")
 	parser.add_argument('-feature_selection', action="store_true", help="Perform feature selection with low resolution")
 	parser.add_argument('-segmentation_mask', action="store_true", help="Apply a brain segmentation mask")
@@ -62,7 +62,7 @@ if(not os.path.exists(path_labels+"/"+ setting)):
 	os.makedirs(path_labels+"/"+ setting)
 
 #train neural network synthesis
-if(view=="fmri" and fold==0):
+if("fmri" in view and fold==0):
 	process_utils.launch_process(process_utils.train_synthesis, 
 								(dataset_synth, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, False, fourier_norm, batch_norm_reg, path_save_network, gpu_mem, seed, run_eagerly, verbose))
 
