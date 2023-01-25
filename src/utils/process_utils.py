@@ -751,7 +751,7 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
-	hyperparameters = [{'name': 'reg', 'type': 'discrete', 'domain': (0., 2.)},
+	hyperparameters = [{'name': 'reg', 'type': 'continuous', 'domain': (0., 2.)},
 						{'name': 'batch_size', 'type': 'discrete', 'domain': (4,8,16,32)},
 						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-1)}]
 
