@@ -536,10 +536,10 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 	def optimize_wrapper(theta):
 		from multiprocessing import Manager
 
-		#if(optimizer_name=="Adam"):
-		#	l1_reg, batch_size, learning_rate = (float(theta[:,0]), int(theta[:,1]), float(theta[:,2]))
-		#else:
-		l1_reg, batch_size, learning_rate = (0., int(theta[:,0]), float(theta[:,1]))
+		if(optimizer_name=="Adam"):
+			l1_reg, batch_size, learning_rate = (float(theta[:,0]), int(theta[:,1]), float(theta[:,2]))
+		else:
+			l1_reg, batch_size, learning_rate = (0., int(theta[:,0]), float(theta[:,1]))
 
 		if(n_processes==1):
 			value = Manager().Array('d', range(1))
@@ -751,8 +751,12 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 		if(np.isnan(value[0])):
 			value[0] = 1/1e-9
 
-	hyperparameters = [{'name': 'batch_size', 'type': 'discrete', 'domain': (4,8,16,32)},
+	hyperparameters = [{'name': 'reg', 'type': 'discrete', 'domain': (0., 2.)},
+						{'name': 'batch_size', 'type': 'discrete', 'domain': (4,8,16,32)},
 						{'name': 'learning_rate', 'type': 'continuous', 'domain': (1e-5, 1e-1)}]
+
+	if(optimizer_name=="PathAdam"):
+		hyperparameters=hyperparameters[1:]
 
 	optimizer = GPyOpt.methods.BayesianOptimization(f=optimize_wrapper, 
 													domain=hyperparameters, 
@@ -763,7 +767,10 @@ def cv_opt(fold_loocv, n_processes, n_folds_cv, view, dataset, epochs, optimizer
 	print("Best value: ", optimizer.fx_opt)
 	print("Best hyperparameters: \n", optimizer.x_opt)
 	
-	return (0., int(optimizer.x_opt[0]), float(optimizer.x_opt[1]))
+	if(optimizer_name=="PathAdam"):
+		return (0., int(optimizer.x_opt[0]), float(optimizer.x_opt[1]))
+
+	return optimizer.x_opt
 
 def loocv(fold, setting, view, dataset, l2_regularizer, epochs, optimizer_name, learning_rate, batch_size, gpu_mem, seed, run_eagerly, save_explainability, path_network, path_labels, feature_selection=False, segmentation_mask=False, aleatoric_uncertainty=False, style_prior=False, variational=False, verbose=False):
 	
