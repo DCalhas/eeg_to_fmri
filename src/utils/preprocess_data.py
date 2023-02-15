@@ -280,7 +280,7 @@ class DatasetContrastive:
 		self.clf=clf
 		self.repeat_pairing=repeat_pairing
 		self.tf_dataset=None
-		self.pairs=pairs
+		#self.pairs=pairs
 
 	
 	def shuffle(self):
@@ -298,18 +298,18 @@ class DatasetContrastive:
 		del self.data, self.y, self.y1, self.y2
 		gc.collect()
 		
-		self.data=np.empty((self.X.shape[0]*self.pairs*2,2,)+self.X.shape[1:], dtype=np.float32)
+		self.data=np.empty((self.pairs*2,2,)+self.X.shape[1:], dtype=np.float32)
 		
-		self.y=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
+		self.y=np.empty((self.pairs*2,2), dtype=np.float32)
 
 		if(self.clf):
-			self.y1=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
-			self.y2=np.empty((self.X.shape[0]*self.pairs*2,2), dtype=np.float32)
+			self.y1=np.empty((self.pairs*2,2), dtype=np.float32)
+			self.y2=np.empty((self.pairs*2,2), dtype=np.float32)
 
 		instance=0
 
-		positive=self.X.shape[0]*self.pairs
-		negative=self.X.shape[0]*self.pairs
+		positive=self.pairs
+		negative=self.pairs
 		
 		while(positive>0 or negative>0):
 			
@@ -344,6 +344,10 @@ class DatasetContrastive:
 		"""
 		repeat n times the dataset, this is a wrapper for the train session
 		"""
+
+		#if(not self.repeat_pairing and self.tf_dataset is not None):
+		#	return self.tf_dataset
+
 		del self.tf_dataset
 		gc.collect()
 
