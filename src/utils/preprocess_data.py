@@ -280,8 +280,6 @@ class DatasetContrastive:
 		self.clf=clf
 		self.repeat_pairing=repeat_pairing
 		self.tf_dataset=None
-		#self.pairs=pairs
-
 	
 	def shuffle(self):
 		"""
