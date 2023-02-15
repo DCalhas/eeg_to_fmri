@@ -33,12 +33,12 @@ class LinearClassifier(tf.keras.Model):
         #layers
         self._layers=[tf.keras.layers.Flatten()]
         if(self.variational):
-            self._layers+=[tf.keras.layers.Dense(500)]
-            self._layers+=[tf.keras.layers.Dense(100)]
+            #self._layers+=[tf.keras.layers.Dense(500)]
+            #self._layers+=[tf.keras.layers.Dense(100)]
             self._layers+=[DenseVariational(n_classes)]
         else:
-            self._layers+=[tf.keras.layers.Dense(500, kernel_regularizer=regularizer)]
-            self._layers+=[tf.keras.layers.Dense(100, kernel_regularizer=regularizer)]
+            #self._layers+=[tf.keras.layers.Dense(500, kernel_regularizer=regularizer)]
+            #self._layers+=[tf.keras.layers.Dense(100, kernel_regularizer=regularizer)]
             self._layers+=[tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)]
         if(self.aleatoric):
             self._layers+=[tf.keras.layers.Dense(n_classes, activation=tf.keras.activations.exponential)]
