@@ -33,12 +33,8 @@ class LinearClassifier(tf.keras.Model):
         #layers
         self._layers=[tf.keras.layers.Flatten()]
         if(self.variational):
-            self._layers+=[tf.keras.layers.Dense(500)]
-            self._layers+=[tf.keras.layers.Dense(100)]
             self._layers+=[DenseVariational(n_classes)]
         else:
-            self._layers+=[tf.keras.layers.Dense(500, kernel_regularizer=regularizer)]
-            self._layers+=[tf.keras.layers.Dense(100, kernel_regularizer=regularizer)]
             self._layers+=[tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)]
         if(self.aleatoric):
             self._layers+=[tf.keras.layers.Dense(n_classes, activation=tf.keras.activations.exponential)]
@@ -172,7 +168,7 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             s1=s1/tf.norm(s1.numpy(), ord=2)
             s2=s2/tf.norm(s2.numpy(), ord=2)
 
-            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=self.training), self.clf(z2[0].numpy(), training=self.training)]
+            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0], training=self.training), self.clf(z2[0], training=self.training)]
 
         #also when training only for classification
         return self.clf(self.view(X, training=self.training)[0], training=self.training)
