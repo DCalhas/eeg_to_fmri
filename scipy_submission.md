@@ -13,14 +13,23 @@ The package provides metrics for synthesis evaluation in ```eeg_to_fmri.metrics.
 This is the first package, to the best of our knowledge, that provides a machine learning oriented synthesis between neuroimaging modalities (EEG and fMRI). It is targeted to help the neuroscience community, in tasks such as modality augmentation, resolution enhancement, neuroimaging explainability techniques, among others.
 # References
 \[1\]: Rojas, Gonzalo M et al. 2018 Frontiers in neuroscience.
+
 \[2\]: Abreu, Rodolfo et al. 2021 Brain topography.
+
 \[3\]: Cury, Claire et al. 2020 Frontiers in neuroscience.
+
 \[4\]: Ogbole, Godwin Inalegwu et al. 2018 Pan African Medical Journal.
+
 \[5\]: Calhas, David et al. 2022 arXiv:2203.03481.
+
 \[6\]: Allen, Jonathan 1977 IEEE Transactions ASSP.
+
 \[7\]: He, Kaiming et al. 2016 CVPR.
+
 \[8\]: Calhas, David et al. 2022 CLR AAAI Workshop.
+
 \[9\]: Tancik, Matthew et al. 2020 arXiv:2006.10739.
+
 \[10\]: Deligianni, Fani et al. 2014 Frontiers in Neuroscience.
 
 
