@@ -18,7 +18,7 @@ This is the first package, to the best of our knowledge, that provides a machine
 
 \[3\]: Cury, Claire et al. 2020 Frontiers in neuroscience.
 
-\[4\]: Ogbole, Godwin Inalegwu et al. 2018 Pan African Medical Journal.
+\[4\]: Ogbole, Godwin et al. 2018 Pan African Medical Journal.
 
 \[5\]: Calhas, David et al. 2022 arXiv:2203.03481.
 
