@@ -22,7 +22,7 @@ import numpy as np
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('dataset_clf', choices=['10', '11'], help="Which dataset to load for classification")
-	parser.add_argument('view', choices=['raw', 'stft', 'fmri', 'fmri_nll'], help="Which view to consider for classification")
+	parser.add_argument('view', choices=['raw', 'stft', 'fmri', 'fmri_stft'], help="Which view to consider for classification")
 	parser.add_argument('-dataset_synth', default="01", type=str, help="Which dataset to load for synthesis")
 	parser.add_argument('-feature_selection', action="store_true", help="Perform feature selection with low resolution")
 	parser.add_argument('-segmentation_mask', action="store_true", help="Apply a brain segmentation mask")

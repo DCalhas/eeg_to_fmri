@@ -143,6 +143,9 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             self.clf = PolynomialClassifier(degree=self.degree, variational=self.variational, regularizer=regularizer, aleatoric=self.aleatoric)
 
         self.flatten = tf.keras.layers.Flatten()
+
+        self.flatten_stft = tf.keras.layers.Flatten()
+        self.flatten_fmri = tf.keras.layers.Flatten()
         
         self.dot = tf.keras.layers.Dot(axes=1, normalize=False)
 
@@ -168,7 +171,10 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
             s1=s1/tf.norm(s1.numpy(), ord=2)
             s2=s2/tf.norm(s2.numpy(), ord=2)
 
-            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0], training=self.training), self.clf(z2[0], training=self.training)]
+
+            
+            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(tf.concat([self.flatten_stft(x1), self.flatten_fmri(z1[0].numpy())], axis=-1), training=self.training), self.clf(tf.concat([self.flatten_stft(x2), self.flatten_fmri(z2[0].numpy())], axis=-1), training=self.training)]
+            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=self.training), self.clf(z2[0].numpy(), training=self.training)]
 
         #also when training only for classification
         return self.clf(self.view(X, training=self.training)[0], training=self.training)
