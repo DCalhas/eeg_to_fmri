@@ -176,12 +176,12 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
 
             
-            return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(tf.concat([self.flatten_stft(x1), self.flatten_fmri(z1[0].numpy())], axis=-1), training=self.training), self.clf(tf.concat([self.flatten_stft(x2), self.flatten_fmri(z2[0].numpy())], axis=-1), training=self.training)]
+            #return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(tf.concat([self.flatten_stft(x1), self.flatten_fmri(z1[0].numpy())], axis=-1), training=self.training), self.clf(tf.concat([self.flatten_stft(x2), self.flatten_fmri(z2[0].numpy())], axis=-1), training=self.training)]
             return [(z1[0],z2[0]), tf.abs(s1-s2), self.clf(z1[0].numpy(), training=self.training), self.clf(z2[0].numpy(), training=self.training)]
 
-        return self.clf(tf.concat([self.flatten_stft(X), self.flatten_fmri(self.view(X, training=self.training)[0])], axis=-1), training=self.training)
+        #return self.clf(tf.concat([self.flatten_stft(X), self.flatten_fmri(self.view(X, training=self.training)[0])], axis=-1), training=self.training)
         #also when training only for classification
-        #return self.clf(self.view(X, training=self.training)[0], training=self.training)
+        return self.clf(self.view(X, training=self.training)[0], training=self.training)
 
     def get_config(self,):
 
