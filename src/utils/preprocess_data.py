@@ -167,7 +167,7 @@ class Dataset_CLF_CV:
 			* bool - standardize_eeg whether or not to scale the dataset to be a Normal(0,1)
 			* bool - verbose whether to print state of execution
 		"""
-		assert dataset in ["10", "11"], "Dataset not recognized, may not yet be implemented"
+		assert dataset in ["10", "11", "15"], "Dataset not recognized, may not yet be implemented"
 
 		self.n_individuals=getattr(data_utils, "n_individuals_"+dataset)
 		self.recording_time=getattr(eeg_utils, "recording_time_"+dataset)
