@@ -185,6 +185,8 @@ class Dataset_CLF_CV:
 											eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit, 
 											recording_time=self.recording_time,
 											standardize_eeg=standardize_eeg)
+
+			print(X.shape, y.shape)
 			
 			self.X, self.y = data_utils.create_clf_pairs(self.n_individuals, 
 														X, y, raw_eeg=raw_eeg,
@@ -194,6 +196,7 @@ class Dataset_CLF_CV:
 			
 			self.X = np.expand_dims(self.X, axis=-1)
 
+			print(self.X.shape, self.y.shape)
 			del X,y
 			gc.collect()
 		else:
