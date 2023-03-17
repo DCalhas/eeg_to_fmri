@@ -482,11 +482,13 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
             resblocks[1].right_layers[0].strides=(5,)+resblocks[1].right_layers[0].strides[1:]
         for i in range(len(resblocks)):
             #change stride size according to number of channels
-            if(self._input_shape[0]==41):
+            if(self._input_shape[0]==41):#for dataset 11
                 resblocks[i].left_layers[0].strides=(2,)+resblocks[i].left_layers[0].strides[1:]
                 resblocks[i].right_layers[0].strides=(2,)+resblocks[i].right_layers[0].strides[1:]
                 x = tf.keras.layers.ZeroPadding3D(padding=((0,2), (0,0), (0,0)))(x)
-                #x = tf.pad(x, tf.constant([[0,0],[0, 2], [0, 0], [0,0], [0,0],]), "CONSTANT")
+            elif(self._input_shape[0]==19):#for dataset 15
+                resblocks[i].left_layers[0].strides=(1,)+resblocks[i].left_layers[0].strides[1:]
+                resblocks[i].right_layers[0].strides=(1,)+resblocks[i].right_layers[0].strides[1:]
             x = pretrained_ResBlock(resblocks[i], trainable=True, activation=activation, regularizer=regularizer, seed=seed)(x)
             x = tf.keras.layers.Dropout(0.5)(x)
 
