@@ -171,7 +171,8 @@ class Dataset_CLF_CV:
 
 		self.n_individuals=getattr(data_utils, "n_individuals_"+dataset)
 		self.recording_time=getattr(eeg_utils, "recording_time_"+dataset)
-			
+		self.n_classes=getattr(eeg_utils, "n_classes_"+dataset)
+		
 		self.eeg_limit=eeg_limit
 		self.eeg_f_limit=eeg_f_limit
 		self.interval_eeg=10
@@ -187,6 +188,7 @@ class Dataset_CLF_CV:
 			
 			self.X, self.y = data_utils.create_clf_pairs(self.n_individuals, 
 														X, y, raw_eeg=raw_eeg,
+														n_classes=self.n_classes,
 														recording_time=self.recording_time, 
 														interval_eeg=self.interval_eeg)
 			
@@ -303,6 +305,8 @@ class DatasetContrastive:
 		if(self.clf):
 			self.y1=np.empty((self.pairs*2,2), dtype=np.float32)
 			self.y2=np.empty((self.pairs*2,2), dtype=np.float32)
+
+		#2 class shape will be deprecated in the future
 
 		instance=0
 

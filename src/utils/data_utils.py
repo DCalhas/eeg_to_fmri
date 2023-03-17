@@ -41,6 +41,7 @@ n_individuals_11=31
 n_individuals_12=None
 n_individuals_13=None
 n_individuals_14=None
+n_individuals_15=65#when hc and ad 88 TODO consider multiclassification setting, this will be deprecated in future versions
 
 n_individuals_train_01 = 8
 n_individuals_test_01 = 2
@@ -62,7 +63,8 @@ n_individuals_train_13 = None
 n_individuals_test_13 = None
 n_individuals_train_14 = None
 n_individuals_test_14 = None
-
+n_individuals_train_15=52
+n_individuals_test_15=13
 
 #############################################################################################################
 #
@@ -376,12 +378,12 @@ def create_eeg_bold_temporal_pairs(eeg, fmri, raw_eeg=False, time_length=2, fs_s
 
 
 
-def create_clf_pairs(n_individuals, data, labels, raw_eeg=False, recording_time=90, interval_eeg=10):
+def create_clf_pairs(n_individuals, data, labels, raw_eeg=False, n_classes=2, recording_time=90, interval_eeg=10):
     """
     Inputs:
         * n_individuals - int
         * data - np.ndarray(T, channels, freqs)
-        * labels - np.ndarray(individuals, 2)
+        * labels - np.ndarray(individuals, n_classes)
         * recording_time - int
         * interval_eeg - int
     """
@@ -389,7 +391,7 @@ def create_clf_pairs(n_individuals, data, labels, raw_eeg=False, recording_time=
         X = np.empty(((n_individuals*recording_time)//interval_eeg, data.shape[1], interval_eeg))
     else:
         X = np.empty(((n_individuals*recording_time)//interval_eeg, data.shape[1], data.shape[2], interval_eeg))
-    y = np.empty(((n_individuals*recording_time)//interval_eeg, 2))
+    y = np.empty(((n_individuals*recording_time)//interval_eeg, n_classes))
     
     i = 0
     for ind in range(n_individuals):

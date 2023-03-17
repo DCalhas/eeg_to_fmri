@@ -25,6 +25,7 @@ channels_04=['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 'F7',
 channels_05=['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 'F7', 'F8', 'T7', 'T8', 'P7', 'P8', 'Fz', 'Cz', 'Pz', 'Oz', 'FC1', 'FC2', 'CP1', 'CP2', 'FC5', 'FC6', 'CP5', 'CP6', 'TP9', 'TP10', 'POz', 'F1', 'F2', 'C1', 'C2', 'P1', 'P2', 'AF3', 'AF4', 'FC3', 'FC4', 'CP3', 'CP4', 'PO3', 'PO4', 'F5', 'F6', 'C5', 'C6', 'P5', 'P6', 'AF7', 'AF8', 'FT7', 'FT8', 'TP7', 'TP8', 'PO7', 'PO8', 'FT9', 'FT10', 'Fpz', 'CPz', 'ECG']
 channels_10=["A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12","A13","A14","A15","A16","A17","A18","A19","A20","A21","A22","A23","A24","A25","A26","A27","A28","A29","A30","A31","A32","B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12","B13","B14","B15","B16","B17","B18","B19","B20","B21","B22","B23","B24","B25","B26","B27","B28","B29","B30","B31","B32","C1","C2","C3","C4","C5","C6","C7","C8","C9","C10","C11","C12","C13","C14","C15","C16","C17","C18","C19","C20","C21","C22","C23","C24","C25","C26","C27","C28","C29","C30","C31","C32","D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12","D13","D14","D15","D16","D17","D18","D19","D20","D21","D22","D23","D24","D25","D26","D27","D28","D29","D30","D31","D32","EXG1","EXG2","EXG7","EXG8"]
 channels_11=['Fp1', 'AF3', 'F7', 'F3', 'FC1', 'FC5', 'T7', 'C3', 'CP1', 'CP5', 'P7', 'P3', 'Pz', 'PO3', 'O1', 'Oz', 'O2', 'PO4', 'P4', 'P8', 'CP6', 'CP2', 'C4', 'T8', 'FC6', 'FC2', 'F4', 'F8', 'AF4', 'Fp2', 'Fz', 'Cz', 'EXG1', 'EXG2', 'EXG3', 'EXG4', 'EXG5', 'EXG6', 'EXG7', 'EXG8', 'Status']
+channels_15=['Fp1','Fp2','F3','F4','C3','C4','P3','P4','O1','O2','F7','F8','T3','T4','T5','T6','Fz','Cz','Pz']
 channels_coords_10_20= {"Fpz": (0.5,0.9),"Fp1": (0.40,0.88),"Fp2": (0.6,0.88),"AFz": (0.5,0.8),"AF3": (0.43,0.79),"AF4": (0.57,0.79),"AF7": (0.29,0.83),"AF8": (0.71,0.83),"Fz": (0.5,0.7),"F1": (0.41,0.7),"F2": (0.59,0.7),"F3": (0.32,0.71),"F4": (0.68,0.71),"F5": (0.25,0.725),"F6": (0.75,0.725),"F7": (0.19,0.74),"F8": (0.81,0.74),"F9": (0.12,0.78),"F10": (0.88,0.78),"FCz": (0.5,0.6),"FC1": (0.4,0.6),"FC2": (0.6,0.6),"FC3": (0.3,0.605),"FC4": (0.7,0.605),"FC5": (0.22,0.615),"FC6": (0.78,0.615),"FT7": (0.13,0.63),"FT8": (0.87,0.63),"FT9": (0.05,0.655),"FT10": (0.95,0.655),"Cz": (0.5,0.5),"C1": (0.4,0.5),"C2": (0.6,0.5),"C3": (0.3,0.5),"C4": (0.7,0.5),"C5": (0.2,0.5),"C6": (0.8,0.5),"T7": (0.1,0.5),"T8": (0.9,0.5),"CPz": (0.5,0.4),"CP1": (0.4,0.4),"CP2": (0.6,0.4),"CP3": (0.3,0.395),"CP4": (0.7,0.395),"CP5": (0.22,0.385),"CP6": (0.78,0.385),"TP7": (0.13,0.37),"TP8": (0.87,0.37),"TP9": (0.05,0.345),"TP10": (0.95,0.345),"Pz": (0.5,0.3),"P1": (0.41,0.3),"P2": (0.59,0.3),"P3": (0.32,0.29),"P4": (0.68,0.29),"P5": (0.25,0.275),"P6": (0.75,0.275),"P7": (0.19,0.26),"P8": (0.81,0.26),"P9": (0.12,0.22),"P10": (0.88,0.22),"POz": (0.5,0.2),"PO3": (0.43,0.21),"PO4": (0.57,0.21),"PO7": (0.29,0.17),"PO8": (0.71,0.17),"PO9": (0.25,0.1),"PO10": (0.75,0.1),"Oz": (0.5,0.1),"O1": (0.40,0.12),"O2": (0.6,0.12),"O9": (0.37,0.05),"O10": (0.63,0.05)}
 
 #frequency samples of each EEG dataset
@@ -39,6 +40,7 @@ fs_11=512
 fs_12=None
 fs_13=None
 fs_14=None
+fs_15=500
 
 fs_NEW=None
 recording_time_10=203
@@ -46,6 +48,14 @@ recording_time_11=90
 recording_time_12=None
 recording_time_13=None
 recording_time_14=None
+recording_time_15=100
+
+n_classes_10=2
+n_classes_11=2
+n_classes_12=None
+n_classes_13=None
+n_classes_14=None
+n_classes_15=2
 
 media_directory=os.environ['EEG_FMRI_DATASETS']+"/"
 dataset_01="ds000001"
@@ -60,6 +70,7 @@ dataset_11="ds002778"#parkinson's uc san diego ask authors for validation -- no 
 dataset_12="ds003509"#mne.io.read_raw_eeglab parkinson's
 dataset_13="ds003506"#parkinson's
 dataset_14="ds003944"#schizophrenia
+dataset_15="ds004504"
 
 ##########################################################################################################################
 #
@@ -244,6 +255,24 @@ def get_eeg_instance_13(individual, path_eeg=media_directory+dataset_13+"/", ses
 	
 def get_eeg_instance_14(individual, path_eeg=media_directory+dataset_14+"/", sess_on=True, preprocessed=False):
 	raise NotImplementedError
+
+
+def get_eeg_instance_15(individual, path_eeg=media_directory+dataset_15+"/", mode="ad_hc", preprocessed=True):
+	assert mode in ["ad_hc", "mild_hc", "all"], "Only modes considered are ad_hc, mild_hc and all"
+	assert preprocessed, "Only accepts preprocessed while mode variable is not deprecated"
+	assert mode!="all", "All mode not implemented yet"
+	
+	individuals = sorted([f for f in listdir(path_eeg) if isdir(join(path_eeg, f))])[2:]
+	
+	individual = individuals[individual]
+
+	if(preprocessed):
+		path = path_eeg + "derivatives/"+mode+"/" + individual + "/eeg/"+ individual + "_task-eyesclosed_eeg.set"
+		return mne.io.read_raw_eeglab(path, preload=True)
+	else:
+		path = path_eeg + individual + "/eeg/"+ individual + "_task-eyesclosed_eeg.set"
+		return mne.io.read_raw_eeglab(path, preload=True)
+
 	
 def get_labels_10(individuals, path_eeg=media_directory+dataset_10+"/"):
 	labels=np.zeros((len(individuals), 2))#0 - hc, 1 - p
@@ -284,6 +313,32 @@ def get_labels_13(individuals, path_eeg=media_directory+dataset_13+"/"):
 
 def get_labels_14(individuals, path_eeg=media_directory+dataset_14+"/"):
 	raise NotImplementedError
+
+	
+def get_labels_15(individuals, mode="ad_hc", path_eeg=media_directory+dataset_15+"/"):  
+	assert mode in ["ad_hc", "mild_hc", "all"], "Only modes considered are ad_hc, mild_hc and all"
+	assert mode!="all", "All mode not implemented yet"
+
+	labels=np.zeros((len(individuals), 2))#0 - hc, 1 - fronto dementia or alzheimer
+
+	#participants_info_file = open(path_eeg+"participants.tsv", "r")
+	participants_info_file = open(path_eeg+"derivatives/"+mode+"/participants.tsv", "r")
+
+	participants_info = participants_info_file.readlines()[1:]
+	
+	for ind in range(len(participants_info)):
+		if("C" in participants_info[ind].split("\t")[3]):
+			labels[ind][0] = 1.0
+		elif("A" in participants_info[ind].split("\t")[3]):
+			labels[ind][1] = 1.0
+		elif("F" in participants_info[ind].split("\t")[3]):
+			labels[ind][1] = 1.0
+		else:
+			raise NotImplementedError
+
+	participants_info_file.close()
+
+	return labels
 
 def get_eeg_dataset(number_individuals=16, path_eeg=os.environ['EEG_FMRI']+'/datasets/01/EEG/', preprocessed=True):
 	individuals = []
