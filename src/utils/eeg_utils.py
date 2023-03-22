@@ -48,7 +48,7 @@ recording_time_11=90
 recording_time_12=None
 recording_time_13=None
 recording_time_14=None
-recording_time_15=100
+recording_time_15=300
 
 n_classes_10=2
 n_classes_11=2
