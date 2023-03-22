@@ -158,6 +158,8 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
     def call(self, X):
 
+        self.clf.training=self.training
+
         if(self.training):
             x=tf.split(X, 2, axis=1)
             x1, x2=(tf.squeeze(x[0], axis=1), tf.squeeze(x[1], axis=1))
