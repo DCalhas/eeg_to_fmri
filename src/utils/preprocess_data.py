@@ -27,10 +27,12 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, time_length=1, ind_volume_
 
 	if(dataset in ["02","03","04","05"]):
 		eeg_limit=True
-		eeg_f_limit=135
+		eeg_f_limit_h=135
+		eeg_f_limit_l=0
 	else:
 		eeg_limit=False
-		eeg_f_limit=135
+		eeg_f_limit_h=135
+		eeg_f_limit_l=0
 
 	eeg_train, fmri_train, scalers = data_utils.load_data(list(range(n_individuals)), raw_eeg=raw_eeg, n_voxels=None, 
 															bold_shift=getattr(fmri_utils, "bold_shift_"+dataset), n_partitions=25, 
@@ -39,8 +41,8 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, time_length=1, ind_volume_
 															f_resample=f_resample, fmri_resolution_factor=1, 
 															standardize_eeg=standardize_eeg, standardize_fmri=standardize_fmri,
 															ind_volume_fit=ind_volume_fit, iqr_outlier=iqr,
-															eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit,
-															dataset=dataset)
+															eeg_limit=eeg_limit, eeg_f_limit_h=eeg_f_limit_h,
+															eeg_f_limit_l=eeg_f_limit_l, dataset=dataset)
 
 	eeg_channels=eeg_train.shape[1]
 
@@ -91,13 +93,12 @@ def dataset(dataset, n_individuals=8, interval_eeg=6, time_length=1, ind_volume_
 	return (eeg_train, fmri_train), (eeg_test, fmri_test)
 
 
-def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, file_output=None, standardize_eeg=False, interval_eeg=10, verbose=False):
+def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit_h=135, eeg_f_limit_l=0, file_output=None, standardize_eeg=False, interval_eeg=10, verbose=False):
 
 	n_individuals_train=getattr(data_utils, "n_individuals_train_"+dataset)
 	n_individuals_test=getattr(data_utils, "n_individuals_test_"+dataset)
 	recording_time=getattr(eeg_utils, "recording_time_"+dataset)
 	eeg_limit=getattr(eeg_utils, "fs_"+dataset)>250
-	eeg_f_limit=135
 
 	if(verbose):
 		if(file_output == None):
@@ -108,8 +109,8 @@ def dataset_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, raw_
 	X, y = data_utils.load_data_clf(dataset, n_individuals=n_individuals, 
 									mutate_bands=mutate_bands, f_resample=f_resample, 
 									raw_eeg=raw_eeg, raw_eeg_resample=raw_eeg_resample, 
-									eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit, 
-									recording_time=recording_time,
+									eeg_limit=eeg_limit, eeg_f_limit_h=eeg_f_limit_h, 
+									eeg_f_limit_l=eeg_f_limit_l, recording_time=recording_time,
 									standardize_eeg=standardize_eeg)
 
 	if(verbose):
@@ -154,7 +155,7 @@ class Dataset_CLF_CV:
 	"""
 
 	
-	def __init__(self, dataset, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit=134, standardize_eeg=False, load=True, load_path=None, seed=None, verbose=False):
+	def __init__(self, dataset, mutate_bands=False, f_resample=2, raw_eeg=False, raw_eeg_resample=False, eeg_limit=False, eeg_f_limit_h=134, eeg_f_limit_l=0, standardize_eeg=False, load=True, load_path=None, seed=None, verbose=False):
 		"""
 		Inputs:
 			* str - dataset identifier
@@ -174,7 +175,8 @@ class Dataset_CLF_CV:
 		self.n_classes=getattr(eeg_utils, "n_classes_"+dataset)
 		
 		self.eeg_limit=eeg_limit
-		self.eeg_f_limit=eeg_f_limit
+		self.eeg_f_limit_h=eeg_f_limit_h
+		self.eeg_f_limit_l=eeg_f_limit_l
 		self.interval_eeg=10
 		self.seed=seed
 
@@ -182,8 +184,8 @@ class Dataset_CLF_CV:
 			X, y = data_utils.load_data_clf(dataset, n_individuals=self.n_individuals, 
 											mutate_bands=mutate_bands, f_resample=f_resample, 
 											raw_eeg=raw_eeg, raw_eeg_resample=raw_eeg_resample, 
-											eeg_limit=eeg_limit, eeg_f_limit=eeg_f_limit, 
-											recording_time=self.recording_time,
+											eeg_limit=eeg_limit, eeg_f_limit_h=eeg_f_limit_h, 
+											eeg_f_limit_l=eeg_f_limit_l, recording_time=self.recording_time,
 											standardize_eeg=standardize_eeg)
 
 			print(X.shape, y.shape)
