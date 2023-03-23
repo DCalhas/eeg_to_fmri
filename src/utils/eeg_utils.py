@@ -359,7 +359,7 @@ frequency_bands = {'delta': [0.5,4], 'theta': [4,8], 'alpha': [8,13], 'beta': [1
 
 def compute_fft(channel, fs=128, limit=False, f_limit_h=134, f_limit_l=0):
 	assert f_limit_l < f_limit_h, "Bound frequency limit lower should be lower than higher"
-	assert f_limit_l>0 and f_limit_h>0, "Bounds of frequency should be positive"
+	assert f_limit_l>=0 and f_limit_h>0, "Bounds of frequency should be positive"
 
 	N = int(len(channel)/2)
 
