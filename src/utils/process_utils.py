@@ -476,7 +476,7 @@ def load_data_loocv(view, dataset, path_labels):
 	
 	dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset,
 														eeg_limit=True, raw_eeg=view=="raw", raw_eeg_resample=True,
-														eeg_f_limit=135, standardize_eeg=True, 
+														eeg_f_limit_h=135, standardize_eeg=True, 
 														load=True, load_path=None)
 
 	dataset_clf_wrapper.save(path_labels)
