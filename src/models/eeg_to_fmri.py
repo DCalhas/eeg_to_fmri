@@ -525,7 +525,8 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         if("Fourier" in type(pretrained_model.layers[self.index_model].layers[index]).__name__):
             x = globals()[type(pretrained_model.layers[self.index_model].layers[index]).__name__](
                                             pretrained_model.layers[self.index_model].layers[index].units,
-                                            normalization=pretrained_model.layers[self.index_model].layers[index].normalization,
+                                            normalization="tanh"
+                                            #normalization=pretrained_model.layers[self.index_model].layers[index].normalization,
                                             #scale=pretrained_model.layers[self.index_model].layers[index].kernel_scale.numpy(),
                                             batch_norm_reg=pretrained_model.layers[self.index_model].layers[index].batch_norm_reg,
                                             trainable=True, name="latent_projection")(x)
