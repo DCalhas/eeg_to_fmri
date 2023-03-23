@@ -37,7 +37,7 @@ class LinearClassifier(tf.keras.Model):
         else:
             self._layers+=[tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer)]
         if(self.aleatoric):
-            self._layers+=[tf.keras.layers.Dense(n_classes, kernel_regularizer=regularizer, activation=tf.keras.activations.softplus)]
+            self._layers+=[tf.keras.layers.Dense(n_classes, activation=tf.keras.activations.softplus)]
 
     def build(self, input_shape):
         _input_shape = tf.keras.layers.Input(shape=input_shape)
