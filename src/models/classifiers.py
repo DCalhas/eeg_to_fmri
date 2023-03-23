@@ -197,7 +197,9 @@ class ViewLatentContrastiveClassifier(tf.keras.Model):
 
 
 class ViewLatentLikelihoodClassifier(ViewLatentContrastiveClassifier):
-
+    """
+    To be used with losses_utils.SeparationEntropyLoss
+    """
     def __init__(self, **kwargs):
 
         super(ViewLatentLikelihoodClassifier, self).__init__(**kwargs)
