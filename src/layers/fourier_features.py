@@ -61,7 +61,7 @@ class Sinusoids(tf.keras.layers.Layer):
 
 	def call(self, X):
 		if(self.built and self.consistency):
-			X=X+np.random.normal(loc=0.0, scale=2*np.pi, size=X.shape, dtype=np.float32)
+			X=X+np.random.normal(loc=0.0, scale=2*np.pi, size=X.shape)
 
 		return tf.cos(X)
 
