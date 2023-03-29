@@ -30,6 +30,7 @@ parser.add_argument('-topographical_attention', action="store_true", help="Topog
 parser.add_argument('-channel_organization', action="store_true", help="Organization of EEG channels, without surpressing information from any channel")
 parser.add_argument('-conditional_attention_style', action="store_true", help="Conditional attention style on the latent space")
 parser.add_argument('-conditional_attention_style_prior', action="store_true", help="Style prior on the latent space")
+parser.add_argument('-consistency', action="store_true", help="Apply consistency learning at the sinusoids")
 parser.add_argument('-padded', action="store_true", help="Fill higher resolutions with zero for the upsampling method.")
 parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
 parser.add_argument('-variational_coefs', default=None, type=None, help="Number of extra stochastic resolution coefficients")
@@ -54,7 +55,7 @@ parser.add_argument('-run_eagerly', action="store_true", help="Run eagerly, if n
 parser.add_argument('-seed', default=42, type=int, help="Seed for random generator")
 opt = parser.parse_args()
 
-mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, conditional_attention_style_prior, epochs, batch_size, optimizer, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting = assertion_utils.main(opt)
+mode, dataset, TRs, topographical_attention, channel_organization, consistency, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, conditional_attention_style_prior, epochs, batch_size, optimizer, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting = assertion_utils.main(opt)
 
 #set seed and configuration of memory
 process_utils.process_setup_tensorflow(gpu_mem, seed=seed, run_eagerly=run_eagerly)
@@ -94,7 +95,7 @@ with tf.device('/CPU:0'):
 	if(type(resolution_decoder) is float):
 		_resolution_decoder=(int(fmri_shape[1]/resolution_decoder),int(fmri_shape[2]/resolution_decoder),int(fmri_shape[3]/resolution_decoder))
 
-	model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, 
+	model = EEG_to_fMRI(latent_dimension, eeg_shape[1:], na_specification_eeg, n_channels, weight_decay=weight_decay, consistency=consistency,
 								batch_norm=batch_norm, local=local, fourier_features=fourier_features, random_fourier=random_fourier, 
 								conditional_attention_style=conditional_attention_style, topographical_attention=topographical_attention, 
 								conditional_attention_style_prior=conditional_attention_style_prior, skip_connections=skip_connections,

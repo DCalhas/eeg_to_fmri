@@ -13,6 +13,7 @@ def main(opt):
 	TRs=opt.TRs
 	topographical_attention=opt.topographical_attention
 	channel_organization=opt.channel_organization
+	consistency=opt.consistency
 	padded=opt.padded
 	variational=opt.variational
 	variational_coefs=opt.variational_coefs
@@ -58,6 +59,8 @@ def main(opt):
 		else:
 			assert topographical_attention, "To run conditional_attention_style, topographical_attention needs to be active"
 			setting+="_attention_style"
+	if(consistency):
+		setting+="_consistency"
 	if(padded):
 		assert not variational, "No variational model along with padded version of filling with zeros"
 		assert type(resolution_decoder) is float, "There needs to be a specification of the lower resolution"
@@ -91,7 +94,7 @@ def main(opt):
 
 
 
-	return mode, dataset, TRs, topographical_attention, channel_organization, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, conditional_attention_style_prior, epochs, batch_size, optimizer, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting
+	return mode, dataset, TRs, topographical_attention, channel_organization, consistency, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_features, random_fourier, conditional_attention_style, conditional_attention_style_prior, epochs, batch_size, optimizer, na_path_eeg, na_path_fmri, gpu_mem, verbose, save_metrics, metrics_path, T, seed, run_eagerly, setting
 
 def clf_cv(opt):
 	"""
@@ -108,6 +111,7 @@ def clf_cv(opt):
 	style_prior=opt.style_prior
 	fourier_norm=opt.fourier_norm
 	batch_norm_reg=opt.batch_norm_reg
+	consistency=opt.consistency
 	padded=opt.padded
 	variational=opt.variational
 	variational_clf=opt.variational_clf
@@ -139,6 +143,8 @@ def clf_cv(opt):
 		setting+="_bayesian"
 	assert fourier_norm in ["layer", "tanh"]
 	setting+="_fouriernorm_"+fourier_norm
+	if(consistency):
+		setting+="_consistency"
 	if(padded):
 		assert not variational, "No variational model along with padded version of filling with zeros"
 		assert type(resolution_decoder) is float, "There needs to be a specification of the lower resolution"
@@ -184,4 +190,4 @@ def clf_cv(opt):
 	if(view!="fmri"):
 		setting=dataset_clf+"_"+view
 		
-	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,fourier_norm,batch_norm_reg,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability,verbose
+	return setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,fourier_norm,batch_norm_reg,consistency,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability,verbose

@@ -102,7 +102,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 variational_random_padding=False, fourier_normalization="layer",
                 resolution_decoder=None, low_resolution_decoder=False,
                 topographical_attention=False, organize_channels=False,
-                 seed=None, fmri_args=None):
+                consistency=False, seed=None, fmri_args=None):
         """
             NA_specification - tuple - (list1, list2, bool, tuple1, tuple2)
                                         * list1 - kernel sizes
@@ -149,6 +149,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.topographical_attention=topographical_attention
         self.organize_channels=organize_channels
         self.aleatoric_uncertainty=aleatoric_uncertainty
+        self.consistency=consistency
         self.seed=seed
         self.fmri_args=fmri_args
         
@@ -179,6 +180,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             variational_iDFT_dependent=variational_iDFT_dependent,
                             variational_iDFT_dependent_dim=variational_iDFT_dependent_dim,
                             variational_dist=variational_dist,
+                            consistency=consistency,
                             variational_random_padding=variational_random_padding,
                             outfilter=self.fmri_ae.outfilter, weight_decay=weight_decay, seed=seed)
 
@@ -244,7 +246,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             low_resolution_decoder=False, resolution_decoder=None, 
                             variational_iDFT=False, variational_coefs=None, variational_dist=None,
                             variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
-                            variational_random_padding=False,
+                            variational_random_padding=False, consistency=False,
                             dropout=False, outfilter=0, weight_decay=0., seed=None):
 
         x = tf.keras.layers.Flatten()(output_encoder)#TODO: does it make sense in TRs>1?
@@ -256,7 +258,7 @@ class EEG_to_fMRI(tf.keras.Model):
             else:
                 x = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
                                                                     trainable=True, name="fourier_features")(x)
-            x=Sinusoids()(x)
+            x=Sinusoids(consistency=consistency)(x)
         else:
             x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                             kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
@@ -396,6 +398,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 "variational_dist": self.variational_dist,
                 "variational_random_padding": self.variational_random_padding,
                 "resolution_decoder": self.resolution_decoder,
+                "consistency": self.consistency,
                 "low_resolution_decoder": self.low_resolution_decoder,
                 "topographical_attention": self.topographical_attention,
                 "organize_channels": self.organize_channels,
@@ -444,7 +447,7 @@ class pretrained_EEG_to_fMRI(tf.keras.Model):
         if(segmentation_mask):
             print("WARNING: Segmentation mask is deprecated for "+pretrained_EEG_to_fMRI.__name__)
 
-        self._input_shape = input_shape
+        self._input_shape=input_shape
         self.feature_selection=feature_selection
         self.segmentation_mask=segmentation_mask
         self.latent_contrastive=latent_contrastive

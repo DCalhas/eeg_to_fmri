@@ -53,11 +53,16 @@ def _get_random_features_initializer(initializer, shape, seed=None):
 class Sinusoids(tf.keras.layers.Layer):
 
 
-	def __init__(self, **kwargs):
+	def __init__(self, consistency=False, **kwargs):
 
 		super(Sinusoids, self).__init__(**kwargs)
 
+		self.consistency=consistency
+
 	def call(self, X):
+		if(self.consistency):
+			X=X+2*np.pi
+			
 		return tf.cos(X)
 
 	def get_config(self):

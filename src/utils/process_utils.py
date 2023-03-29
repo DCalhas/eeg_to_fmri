@@ -352,7 +352,7 @@ def cross_validation_eeg_fmri(score, fourier_features, random_fourier,
 	score.value = (score.value-1.0)/n_folds
 
 
-def train_synthesis(dataset, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_norm, batch_norm_reg, save_path, gpu_mem, seed, run_eagerly, verbose):
+def train_synthesis(dataset, epochs, style_prior, consistency, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, aleatoric_uncertainty, fourier_norm, batch_norm_reg, save_path, gpu_mem, seed, run_eagerly, verbose):
 	#imports
 	import tensorflow as tf
 
@@ -414,7 +414,7 @@ def train_synthesis(dataset, epochs, style_prior, padded, variational, variation
 							inverse_DFT=variational or padded, DFT=variational or padded, variational_iDFT=variational, variational_coefs=variational_coefs, 
 							variational_iDFT_dependent=variational_dependent_h>1, variational_iDFT_dependent_dim=variational_dependent_h, aleatoric_uncertainty=aleatoric_uncertainty, 
 							low_resolution_decoder=type(resolution_decoder) is float, variational_random_padding=variational_random_padding, 
-							resolution_decoder=_resolution_decoder, local=True, seed=None, 
+							resolution_decoder=_resolution_decoder, local=True, seed=None, consistency=consistency,
 							fmri_args = (latent_dimension, fmri_train.shape[1:], 
 							kernel_size, stride_size, n_channels, 
 							max_pool, batch_norm, weight_decay, skip_connections,

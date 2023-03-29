@@ -29,6 +29,7 @@ if __name__ == "__main__":
 	parser.add_argument('-style_prior', action="store_true", help="Whether to use a learned style prior or use the attention weights as a probe.")
 	parser.add_argument('-fourier_norm', default="layer", type=str, help="Type of normalization to use at the sinusoids, it can be layer, tanh")
 	parser.add_argument('-batch_norm_reg', action="store_true", help="Batch normalization regularizer for classification.")
+	parser.add_argument('-consistency', action="store_true", help="Apply consistency learning at the sinusoids")
 	parser.add_argument('-padded', action="store_true", help="Fill higher resolutions with zero for the upsampling method.")
 	parser.add_argument('-variational', action="store_true", help="Variational implementation of the model")
 	parser.add_argument('-variational_clf', action="store_true", help="Variational linear classifier with reparametrization trick.")
@@ -52,7 +53,7 @@ if __name__ == "__main__":
 	parser.add_argument('-seed', default=42, type=int, help="Seed for random state")
 	opt = parser.parse_args()
 	
-	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,fourier_norm,batch_norm_reg,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability,verbose = assertion_utils.clf_cv(opt)
+	setting,dataset_synth,dataset_clf,feature_selection,segmentation_mask,style_prior,fourier_norm,batch_norm_reg,consistency,padded,variational,variational_clf,variational_coefs,variational_dependent_h,variational_dist,variational_random_padding,resolution_decoder,aleatoric_uncertainty,view,fold,folds,n_processes,epochs,optimizer,gpu_mem,path_save_network,seed,run_eagerly,path_labels,save_explainability,verbose = assertion_utils.clf_cv(opt)
 
 #limit process memory
 memory_utils.limit_CPU_memory(1024*1024*1024*24, MAX_PROCESSES)
@@ -63,9 +64,8 @@ if(not os.path.exists(path_labels+"/"+ setting)):
 
 #train neural network synthesis
 if("fmri" in view and fold==0):
-	pass
-	#process_utils.launch_process(process_utils.train_synthesis, 
-	#							(dataset_synth, epochs, style_prior, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, False, fourier_norm, batch_norm_reg, path_save_network, gpu_mem, seed, run_eagerly, verbose))
+	process_utils.launch_process(process_utils.train_synthesis, 
+								(dataset_synth, epochs, style_prior, consistency, padded, variational, variational_coefs, variational_dependent_h, variational_dist, variational_random_padding, resolution_decoder, False, fourier_norm, batch_norm_reg, path_save_network, gpu_mem, seed, run_eagerly, verbose))
 
 #create predictions and true labels
 if(fold==0):
