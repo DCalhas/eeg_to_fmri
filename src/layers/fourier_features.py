@@ -53,16 +53,11 @@ def _get_random_features_initializer(initializer, shape, seed=None):
 class Sinusoids(tf.keras.layers.Layer):
 
 
-	def __init__(self, consistency=False, **kwargs):
+	def __init__(self, **kwargs):
 
 		super(Sinusoids, self).__init__(**kwargs)
 
-		self.consistency=consistency
-
 	def call(self, X):
-		if(self.built and self.consistency):
-			X=X+np.random.normal(loc=0.0, scale=2*np.pi, size=(1,)+X.shape[1:])
-
 		return tf.cos(X)
 
 	def get_config(self):
@@ -92,7 +87,7 @@ class TanhNormalization(tf.keras.layers.Layer):
 
 class RandomFourierFeatures(tf.keras.layers.Layer):
 
-	def __init__(self, output_dim, kernel_initializer='gaussian', scale=None, normalization="layer", batch_norm_reg=False, trainable=False, units=None, seed=None, name=None, **kwargs):
+	def __init__(self, output_dim, consistency=False, kernel_initializer='gaussian', scale=None, normalization="layer", batch_norm_reg=False, trainable=False, units=None, seed=None, name=None, **kwargs):
 		if output_dim <= 0:
 			raise ValueError(
 			'`output_dim` should be a positive integer. Given: {}.'.format(
@@ -108,6 +103,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		super(RandomFourierFeatures, self).__init__(name=name)
 		self.output_dim = output_dim
 		self.units=output_dim
+		self.consistency=consistency
 		self.kernel_initializer = kernel_initializer
 		self.batch_norm_reg=batch_norm_reg
 		self.normalization=normalization
@@ -161,6 +157,9 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 	def call(self, inputs):
 		inputs = tf.convert_to_tensor(inputs, dtype=self.dtype)
 		inputs = tf.cast(inputs, tf.float32)
+		if(self.consistency):
+			inputs=inputs+np.random.normal(loc=0.0, scale=1., size=(1,)+inputs.shape[1:])
+
 		kernel = (1.0 / self.kernel_scale) * self.unscaled_kernel
 		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
 		outputs = tf.nn.bias_add(outputs, self.bias)
@@ -187,6 +186,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			kernel_initializer = initializers.serialize(kernel_initializer)
 		config = {
 			'output_dim': self.output_dim,
+			'consistency': self.consistency,
 			'kernel_initializer': kernel_initializer,
 			'scale': self.scale,
 			'units': self.units,

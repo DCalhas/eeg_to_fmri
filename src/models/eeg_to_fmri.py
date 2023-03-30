@@ -253,12 +253,12 @@ class EEG_to_fMRI(tf.keras.Model):
 
         if(fourier_features):
             if(random_fourier):
-                x = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], batch_norm_reg=batch_norm_reg,
+                x = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], batch_norm_reg=batch_norm_reg, consistency=consistency,
                                                                 normalization=fourier_normalization, trainable=True, seed=seed, name="random_fourier_features")(x)
             else:
                 x = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
                                                                     trainable=True, name="fourier_features")(x)
-            x=Sinusoids(consistency=consistency)(x)
+            x=Sinusoids()(x)
         else:
             x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
                                                             kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
