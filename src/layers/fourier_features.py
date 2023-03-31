@@ -109,7 +109,7 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		self.normalization=normalization
 		
 		if(normalization=="layer"):
-			self.layer_normalization=tf.keras.layers.LayerNormalization(beta_initializer=tf.constant_initializer(np.pi/2), gamma_initializer=tf.constant_initializer(np.pi/2), trainable=True)
+			self.layer_normalization=tf.keras.layers.LayerNormalization(beta_initializer=tf.constant_initializer(np.pi/2), gamma_initializer=tf.constant_initializer(np.pi/2), trainable=False)
 		elif(normalization=="tanh"):
 			self.layer_normalization=TanhNormalization()
 
