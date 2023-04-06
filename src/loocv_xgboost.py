@@ -37,7 +37,7 @@ if(dataset=="10"):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('fold',
-					choices=['metrics', 'residues', 'uncertainty', 'mean_residues', 'quality', 'attention_graph', 'mean_attention_graph', 'lrp_eeg_channels', 'lrp_eeg_fmri'],
+					choices=list(range(n_individuals)),
 					help="Fold to run")
 opt = parser.parse_args()
 fold=opt.fold
