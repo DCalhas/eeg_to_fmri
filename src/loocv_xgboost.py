@@ -37,10 +37,10 @@ if(dataset=="10"):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('fold',
-					choices=list(range(n_individuals)),
+					choices=[str(i) for i in list(range(n_individuals))],
 					help="Fold to run")
 opt = parser.parse_args()
-fold=opt.fold
+fold=int(opt.fold)
 
 dataset_clf_wrapper = preprocess_data.Dataset_CLF_CV(dataset, standardize_eeg=True, f_resample=2, eeg_limit=True, eeg_f_limit_h=135, eeg_f_limit_l=0, load=True)
 train_data, test_data = dataset_clf_wrapper.split(fold)
