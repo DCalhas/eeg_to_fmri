@@ -112,6 +112,8 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			self.layer_normalization=tf.keras.layers.LayerNormalization(beta_initializer=tf.constant_initializer(np.pi/2), gamma_initializer=tf.constant_initializer(np.pi/2), trainable=False)
 		elif(normalization=="tanh"):
 			self.layer_normalization=TanhNormalization()
+		else:
+			self.layer_normalization=None
 
 		if(self.batch_norm_reg):
 			self.reg_normalization=MaxNormalization(mu=np.pi/2, l=0.5*(2/np.pi)**0.5, p=2)
@@ -126,14 +128,15 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 		# TODO(pmol): Allow higher dimension inputs. Currently the input is expected
 		# to have shape [batch_size, dimension].
 		if input_shape.rank != 2:
-			raise ValueError(
-			'The rank of the input tensor should be 2. Got {} instead.'.format(
-			input_shape.ndims))
+			pass
+			#raise ValueError(
+			#'The rank of the input tensor should be 2. Got {} instead.'.format(
+			#input_shape.ndims))
 		if input_shape.dims[1].value is None:
 			raise ValueError(
 			'The last dimension of the inputs to `RandomFourierFeatures` '
 			'should be defined. Found `None`.')
-		input_dim = input_shape.dims[1].value
+		input_dim = input_shape.dims[-1].value
 
 		kernel_initializer = _get_random_features_initializer(self.kernel_initializer, shape=(input_dim, self.output_dim), seed=self.seed)
 
@@ -161,10 +164,12 @@ class RandomFourierFeatures(tf.keras.layers.Layer):
 			inputs=inputs+np.random.normal(loc=0.0, scale=1., size=(1,)+inputs.shape[1:])
 
 		kernel = (1.0 / self.kernel_scale) * self.unscaled_kernel
-		outputs = tf.raw_ops.MatMul(a=inputs, b=kernel)
-		outputs = tf.nn.bias_add(outputs, self.bias)
 		
-		outputs=self.layer_normalization(outputs)
+		outputs = tf.matmul(inputs, kernel)
+		outputs += self.bias
+
+		if(self.layer_normalization is not None):
+			outputs=self.layer_normalization(outputs)
 
 		if(self.batch_norm_reg):
 			outputs=self.reg_normalization(outputs)

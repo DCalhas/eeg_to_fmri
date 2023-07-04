@@ -25,6 +25,30 @@ def separate_targets(y):
     else:
         return y,y,y
 
+class TemporalLoss(tf.keras.losses.Loss):
+    """
+    To be used with time_length
+    """
+
+    def __init__(self, reduction='auto', **kwargs):
+
+        super(TemporalLoss, self).__init__(reduction='none', **kwargs)
+
+        self.mae=tf.keras.losses.MeanAbsoluteError(reduction='none')
+
+    def call(self, y_true, y_pred):
+        """
+        matmul
+        """
+        spatial_loss=tf.reduce_mean(self.mae(y_true,y_pred[0]), axis=(1,2,3))
+
+        y_pred[1]=tf.expand_dims(y_pred[1], axis=-1)
+        y_pred[2]=tf.expand_dims(y_pred[2], axis=-1)
+        latent_spatial_loss=tf.reduce_mean(self.mae(y_pred[1],y_pred[2]), axis=(1,2,3,4))
+        latent_temporal_loss=tf.reduce_mean(1.0 - tf.matmul(tf.transpose(y_pred[2], perm=[0,1,2,3,5,4]),y_pred[1])/(tf.norm(y_pred[1], ord=2)*tf.norm(y_pred[2], ord=2)), axis=(1,2,3,4,5))
+        
+        return spatial_loss+latent_temporal_loss+latent_spatial_loss
+
 class ClassificationLoss(tf.keras.losses.Loss):
 
     def __init__(self, from_logits=False, reduction='auto', **kwargs):

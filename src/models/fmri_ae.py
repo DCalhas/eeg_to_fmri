@@ -115,9 +115,10 @@ class fMRI_AE(tf.keras.Model):
 
         if(time_length>1):
             x=tf.keras.layers.Permute((2,3,4,5,1),)(x)
-            x=tf.keras.layers.Reshape(target_shape=(x.shape[2]*x.shape[3]*x.shape[4]*x.shape[5], time_length))(x)
+            x=tf.keras.layers.Reshape(target_shape=(x.shape[1]*x.shape[2]*x.shape[3]*x.shape[4], time_length))(x)
+            #dense operation on the spatial dimension
             x=DenseTemporal(latent_shape[0]*latent_shape[1]*latent_shape[2], kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
-            x=tf.keras.layers.Reshape(latent_shape+(time_length,))(x)#TODO: take into account TRs as last dim
+            x=tf.keras.layers.Reshape(latent_shape+(time_length,))(x)
         else:
             x = tf.keras.layers.Flatten()(x)#TODO: if TRs > 1 this should be changed
             x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],

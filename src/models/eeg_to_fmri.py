@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Dense#globals get attr
 
 from regularizers.activity_regularizers import InOfDistribution, MaxBatchNorm
 
-from layers.temporal import DenseTemporal
+from layers.temporal import DenseTemporal, StridedTemporalLengthEEG, LSTMFourierDecoder
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures, Sinusoids, MaxNormalization
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
@@ -194,7 +194,15 @@ class EEG_to_fMRI(tf.keras.Model):
 
         input_shape = tf.keras.layers.Input(shape=input_shape)
 
-        if(topographical_attention):
+        #strided split of tensor to reshape as (Batch, time_length, channels, frequencies, interval_eeg, 1)
+        if(time_length>1):
+            x=StridedTemporalLengthEEG(time_length=time_length)(input_shape)
+            previous_block_x = x
+        elif(time_length>1 and topographical_attention):
+            raise NotImplementedError
+        elif(topographical_attention):
+            if(time_length>1):
+                raise NotImplementedError
             x = input_shape
             #reshape to flattened features to apply attention mechanism
             x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
@@ -214,20 +222,18 @@ class EEG_to_fMRI(tf.keras.Model):
         for i in range(len(na_spec[0])):
             x = ResBlock("Conv3D", 
                         na_spec[0][i], na_spec[1][i], n_channels,
-                        maxpool=na_spec[2], batch_norm=batch_norm, weight_decay=weight_decay, 
+                        maxpool=na_spec[2] and (not time_length>1), batch_norm=batch_norm, weight_decay=weight_decay, 
                         maxpool_k=na_spec[3], maxpool_s=na_spec[4],
                         skip_connections=skip_connections, seed=seed)(x)
-
 
         if(time_length>1):
             """
             Here we can not avoid but manipulate the dimensions in order for the shape to be correct for the regularization
             """
-            x=tf.keras.layers.Reshape(target_shape=(x.shape[1]*x.shape[2]*x.shape[4], x.shape[3]))(x)
+            x=tf.keras.layers.Permute((2,3,4,5,1),)(x)
+            x=tf.keras.layers.Reshape(target_shape=(x.shape[1]*x.shape[2]*x.shape[3]*x.shape[4], time_length))(x)
+            #dense operation on the spatial dimension
             x=DenseTemporal(latent_shape[0]*latent_shape[1]*latent_shape[2], kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
-            x=tf.keras.layers.Permute((2,1))(x)
-            x=DenseTemporal(time_length, kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
-            x=tf.keras.layers.Permute((2,1))(x)
             x=tf.keras.layers.Reshape(latent_shape+(time_length,))(x)
         else:
             x = tf.keras.layers.Flatten()(x)
@@ -249,88 +255,93 @@ class EEG_to_fMRI(tf.keras.Model):
                             variational_random_padding=False, consistency=False,
                             dropout=False, outfilter=0, weight_decay=0., seed=None):
 
-        x = tf.keras.layers.Flatten()(output_encoder)#TODO: does it make sense in TRs>1?
-
-        if(fourier_features):
-            if(random_fourier):
-                x = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], batch_norm_reg=batch_norm_reg, consistency=consistency,
-                                                                normalization=fourier_normalization, trainable=True, seed=seed, name="random_fourier_features")(x)
-            else:
-                x = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
-                                                                    trainable=True, name="fourier_features")(x)
-            x=Sinusoids()(x)
+        if(time_length>1):
+            x=tf.keras.layers.Reshape((latent_shape[0]*latent_shape[1]*latent_shape[2], time_length),)(output_encoder)
+            x = LSTMFourierDecoder(in_dim=latent_shape[0]*latent_shape[1]*latent_shape[2], out_dim=self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2], time_length=time_length)(x)
+            x = tf.keras.layers.Reshape(self.fmri_ae.in_shape)(x)
         else:
-            x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                            kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
-                                                            name="dense")(x)#TODO: does it make sense in TRs>1?
-        
-        if(conditional_attention_style):
-            if(conditional_attention_style_prior):
-                x = Style(initializer="glorot_uniform", trainable=True, seed=seed, name='style_prior')(x)
-            else:
-                attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
-                self.latent_style = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                                        use_bias=False,
-                                                        name="conditional_attention_style_dense",
-                                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(attention_scores)
-                x = x*self.latent_style
+            x = tf.keras.layers.Flatten()(output_encoder)#TODO: does it make sense in TRs>1?
 
-        if(dropout):
-            x = tf.keras.layers.Dropout(0.5)(x)
-        x = tf.keras.layers.Reshape(latent_shape)(x)
-
-        #placeholder
-        if(resolution_decoder is None):
-            resolution_decoder=latent_shape
-
-        if(low_resolution_decoder):
-            assert not time_length>1, "This layers are not set for time length > 1"
-            x = tf.keras.layers.Flatten()(x)
-
-            assert type(resolution_decoder) is tuple and len(resolution_decoder) == 3
-            latent_shape = resolution_decoder
-
-            #upsampling
-            if(self.aleatoric_uncertainty and not variational_iDFT):#insert a new flag! instead of combination of flags
-                x = DenseVariational(latent_shape[0]*latent_shape[1]*latent_shape[2])(x)
-                #x = tfp.layers.DenseFlipout(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                #                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+            if(fourier_features):
+                if(random_fourier):
+                    x = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], batch_norm_reg=batch_norm_reg, consistency=consistency,
+                                                                    normalization=fourier_normalization, trainable=True, seed=seed, name="random_fourier_features")(x)
+                else:
+                    x = FourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], 
+                                                                        trainable=True, name="fourier_features")(x)
+                x=Sinusoids()(x)
             else:
                 x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
-                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+                                                                kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed),
+                                                                name="dense")(x)#TODO: does it make sense in TRs>1?
+            
+            if(conditional_attention_style):
+                if(conditional_attention_style_prior):
+                    x = Style(initializer="glorot_uniform", trainable=True, seed=seed, name='style_prior')(x)
+                else:
+                    attention_scores = tf.keras.layers.Flatten(name="conditional_attention_style_flatten")(attention_scores)
+                    self.latent_style = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                            use_bias=False,
+                                                            name="conditional_attention_style_dense",
+                                                            kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(attention_scores)
+                    x = x*self.latent_style
+
+            if(dropout):
+                x = tf.keras.layers.Dropout(0.5)(x)
             x = tf.keras.layers.Reshape(latent_shape)(x)
-        if(DFT and not variational_random_padding):#if random padding of frequencies there should not be special waves defined
-            assert not time_length>1, "This layers are not set for time length > 1"
-            #convert to Discrete cosine transform low resolution coefficients
-            x = DCT3D(latent_shape[0], latent_shape[1], latent_shape[2])(x)
-        if(inverse_DFT):
-            assert not time_length>1, "This layers are not set for time length > 1"
-            if(variational_iDFT):
-                assert type(variational_coefs) is tuple
-                x = variational_iDCT3D(*(latent_shape + self.fmri_ae.in_shape[:3] + variational_coefs), 
-                                        coefs_perturb=True, dependent=variational_iDFT_dependent, 
-                                        posterior_dimension=variational_iDFT_dependent_dim, distribution=variational_dist,
-                                        random_padding=variational_random_padding)(x)
+
+            #placeholder
+            if(resolution_decoder is None):
+                resolution_decoder=latent_shape
+
+            if(low_resolution_decoder):
+                assert not time_length>1, "This layers are not set for time length > 1"
+                x = tf.keras.layers.Flatten()(x)
+
+                assert type(resolution_decoder) is tuple and len(resolution_decoder) == 3
+                latent_shape = resolution_decoder
+
+                #upsampling
+                if(self.aleatoric_uncertainty and not variational_iDFT):#insert a new flag! instead of combination of flags
+                    x = DenseVariational(latent_shape[0]*latent_shape[1]*latent_shape[2])(x)
+                    #x = tfp.layers.DenseFlipout(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                    #                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+                else:
+                    x = tf.keras.layers.Dense(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                            kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+                x = tf.keras.layers.Reshape(latent_shape)(x)
+            if(DFT and not variational_random_padding):#if random padding of frequencies there should not be special waves defined
+                assert not time_length>1, "This layers are not set for time length > 1"
+                #convert to Discrete cosine transform low resolution coefficients
+                x = DCT3D(latent_shape[0], latent_shape[1], latent_shape[2])(x)
+            if(inverse_DFT):
+                assert not time_length>1, "This layers are not set for time length > 1"
+                if(variational_iDFT):
+                    assert type(variational_coefs) is tuple
+                    x = variational_iDCT3D(*(latent_shape + self.fmri_ae.in_shape[:3] + variational_coefs), 
+                                            coefs_perturb=True, dependent=variational_iDFT_dependent, 
+                                            posterior_dimension=variational_iDFT_dependent_dim, distribution=variational_dist,
+                                            random_padding=variational_random_padding)(x)
+                else:
+                    x = padded_iDCT3D(latent_shape[0], latent_shape[1], latent_shape[2],
+                                out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(x)
+            elif(self.aleatoric_uncertainty):
+                x = tf.keras.layers.Flatten()(x)
+                x =  DenseVariational(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2])(x)
             else:
-                x = padded_iDCT3D(latent_shape[0], latent_shape[1], latent_shape[2],
-                            out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(x)
-        elif(self.aleatoric_uncertainty):
-            x = tf.keras.layers.Flatten()(x)
-            x =  DenseVariational(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2])(x)
-        else:
-            x = tf.keras.layers.Flatten()(x)
-            #upsampling
-            x = tf.keras.layers.Dense(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2],
+                x = tf.keras.layers.Flatten()(x)
+                #upsampling
+                x = tf.keras.layers.Dense(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2],
+                                            kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+            
+            x = tf.keras.layers.Reshape(self.fmri_ae.in_shape)(x)
+            #filter
+            if(outfilter == 1):
+                x = tf.keras.layers.Conv3D(filters=1, kernel_size=1, strides=1,
                                         kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
-        
-        x = tf.keras.layers.Reshape(self.fmri_ae.in_shape)(x)
-        #filter
-        if(outfilter == 1):
-            x = tf.keras.layers.Conv3D(filters=1, kernel_size=1, strides=1,
-                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
-        elif(outfilter == 2):
-            x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3,
-                                    kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
+            elif(outfilter == 2):
+                x = LocallyConnected3D(filters=1, kernel_size=1, strides=1, implementation=3,
+                                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
 
         output=x
         if(self.aleatoric_uncertainty):
@@ -350,7 +361,7 @@ class EEG_to_fMRI(tf.keras.Model):
 
 
     
-    @tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)], reduce_retracing=True)
+    #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)], reduce_retracing=True)
     def call(self, x1, x2):
         """
         Random behaviour of GPU with tf functions does not reproduce the same results
@@ -424,10 +435,12 @@ custom_objects={"Topographical_Attention": Topographical_Attention,
                 "Latent_fMRI_Spatial_Attention": Latent_fMRI_Spatial_Attention,
                 "DenseTemporal": DenseTemporal,
                 "DenseVariational": DenseVariational,
+                "LSTMFourierDecoder": LSTMFourierDecoder,
                 "InOfDistribution": InOfDistribution,
                 "MaxBatchNorm": MaxBatchNorm,
                 "MaxNormalization": MaxNormalization,
-                "Sinusoids": Sinusoids,}
+                "Sinusoids": Sinusoids,
+                "StridedTemporalLengthEEG": StridedTemporalLengthEEG,}
 
 
 class pretrained_EEG_to_fMRI(tf.keras.Model):
