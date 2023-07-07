@@ -4,12 +4,68 @@ import tensorflow as tf
 
 import tensorflow_probability as tfp
 
-from scipy.stats import ttest_1samp
+from scipy.stats import ttest_1samp, pearsonr
 
 from utils import bnn_utils
 
 from layers import fft
 
+
+def pearson_corr(data, model, variational=False, T=10):
+	"""
+	Temporal error
+
+	Inputs:
+		* data - tf.data.DataLoader
+		* model - tf.keras.Model
+		* variational - bool
+		* T - int
+	Outputs:
+		* pearson correlation coefficient - np.ndarray
+		* pearson correlation pvalue - np.ndarray
+	"""
+	original_shape=None
+	
+	#vectorize pearsonr
+	_pearsonr=np.vectorize(pearsonr, signature='(n),(n)->(),()')
+	
+	#get number of instances
+	for _, fmri in data.repeat(1):
+		original_shape=fmri.shape[:-1]
+		
+	corr=np.empty((data.cardinality().numpy(), )+original_shape[1:])
+	pvalue=np.empty((data.cardinality().numpy(), )+original_shape[1:])
+	instance=0
+	
+	for instance_x, instance_y in data.repeat(1):
+		if(variational):
+			y_pred = bnn_utils.predict_MC(model, (instance_x, instance_y), T=T)
+		else:
+			y_pred = model(instance_x, instance_y)
+			
+		if(type(y_pred) is list):
+			if(type(y_pred[0]) is list):
+				y_pred = y_pred[0][0]
+			else:
+				y_pred = y_pred[0]
+				
+		#convert to numpy
+		y_pred=y_pred.numpy()
+		instance_y=instance_y.numpy()
+		#reshape to flattened representation
+		y_pred=y_pred.reshape((-1,y_pred.shape[-1]))
+		instance_y=instance_y.reshape((-1,instance_y.shape[-1]))
+		#compute pearsonr
+		_corr,_pvalue=_pearsonr(y_pred, instance_y)
+		#reshappe to original representation
+		_corr=_corr.reshape(original_shape)
+		_pvalue=_pvalue.reshape(original_shape)
+		
+		corr[instance]=_corr
+		pvalue[instance]=_pvalue
+		instance+=1
+		
+	return corr, pvalue
 
 """
 ssim:
@@ -46,16 +102,19 @@ def ssim(data, model, factor=3, two_inputs=True, variational=False, T=10):
 		instance_y+=1e-9
 		y_pred+=1e-9
 
-		ssim_img = 0.0
+		#temporal extension of this metric
+		for t in range(instance_y.shape[4]):
+			
+			ssim_img = 0.0
 
-		for axis in range((instance_y[:,:,:,:].shape[3])//factor):
-			im1 = instance_y[:,:,:,axis*factor,:]
-			im2 = y_pred[:,:,:,axis*factor,:]
-			max_val = np.amax([np.amax(im1.numpy()), np.amax(im2.numpy())])
+			for axis in range((instance_y[:,:,:,:].shape[3])//factor):
+				im1 = instance_y[:,:,:,axis*factor,t:t+1]
+				im2 = y_pred[:,:,:,axis*factor,t:t+1]
+				max_val = np.amax([np.amax(im1.numpy()), np.amax(im2.numpy())])
 
-			ssim_img+=tf.image.ssim(im1, im2, max_val=max_val).numpy()[0]
+				ssim_img+=tf.image.ssim(im1, im2, max_val=max_val).numpy()[0]
 
-		_ssim += [ssim_img/((instance_y[:,:,:,:].shape[3])//factor)]
+			_ssim += [ssim_img/((instance_y[:,:,:,:].shape[3])//factor)]
 
 	return _ssim
 

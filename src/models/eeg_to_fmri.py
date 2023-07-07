@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Dense#globals get attr
 
 from regularizers.activity_regularizers import InOfDistribution, MaxBatchNorm
 
-from layers.temporal import DenseTemporal, StridedTemporalLengthEEG, LSTMFourierDecoder
+from layers.temporal import TemporalTopographicalAttention, DenseTemporal, StyleTemporal, StridedTemporalLengthEEG, LSTMFourierDecoder, LSTMFourierConnectivityDecoder
 from layers.fourier_features import RandomFourierFeatures, FourierFeatures, Sinusoids, MaxNormalization
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
@@ -102,7 +102,8 @@ class EEG_to_fMRI(tf.keras.Model):
                 variational_random_padding=False, fourier_normalization="layer",
                 resolution_decoder=None, low_resolution_decoder=False,
                 topographical_attention=False, organize_channels=False,
-                consistency=False, seed=None, fmri_args=None):
+                recurrent_decoder=False, consistency=False, seed=None, 
+                fmri_args=None):
         """
             NA_specification - tuple - (list1, list2, bool, tuple1, tuple2)
                                         * list1 - kernel sizes
@@ -150,6 +151,7 @@ class EEG_to_fMRI(tf.keras.Model):
         self.organize_channels=organize_channels
         self.aleatoric_uncertainty=aleatoric_uncertainty
         self.consistency=consistency
+        self.recurrent_decoder=recurrent_decoder
         self.seed=seed
         self.fmri_args=fmri_args
         
@@ -169,6 +171,7 @@ class EEG_to_fMRI(tf.keras.Model):
                             attention_scores=attention_scores, time_length=time_length,
                             conditional_attention_style=conditional_attention_style,
                             conditional_attention_style_prior=conditional_attention_style_prior,
+                            recurrent_decoder=recurrent_decoder,
                             random_fourier=random_fourier,
                             batch_norm_reg=batch_norm_reg,
                             fourier_features=fourier_features,
@@ -195,14 +198,15 @@ class EEG_to_fMRI(tf.keras.Model):
         input_shape = tf.keras.layers.Input(shape=input_shape)
 
         #strided split of tensor to reshape as (Batch, time_length, channels, frequencies, interval_eeg, 1)
-        if(time_length>1):
+        if(time_length>1 and topographical_attention):
             x=StridedTemporalLengthEEG(time_length=time_length)(input_shape)
-            previous_block_x = x
-        elif(time_length>1 and topographical_attention):
-            raise NotImplementedError
+            x = tf.keras.layers.Reshape((time_length, self._input_shape[0], self._input_shape[1]*(self._input_shape[2]-time_length)))(x)
+            #topographical attention done in spatial dimension with multiple times
+            x, attention_scores = TemporalTopographicalAttention(self._input_shape[0], self._input_shape[1]*(self._input_shape[2]-time_length))(x)
+            x = tf.keras.layers.Reshape((time_length, self._input_shape[0], self._input_shape[1], self._input_shape[2]-time_length,1))(x)
+        elif(time_length>1):
+            x=StridedTemporalLengthEEG(time_length=time_length)(input_shape)
         elif(topographical_attention):
-            if(time_length>1):
-                raise NotImplementedError
             x = input_shape
             #reshape to flattened features to apply attention mechanism
             x = tf.keras.layers.Reshape((self._input_shape[0], self._input_shape[1]*self._input_shape[2]))(x)
@@ -214,10 +218,8 @@ class EEG_to_fMRI(tf.keras.Model):
             #x, attention_scores = Topographical_Attif(organize_channels):
             #reshape back to original shape
             x = tf.keras.layers.Reshape(self._input_shape)(x)
-            previous_block_x = x
         else:
             x = input_shape
-            previous_block_x = input_shape
 
         for i in range(len(na_spec[0])):
             x = ResBlock("Conv3D", 
@@ -249,16 +251,45 @@ class EEG_to_fMRI(tf.keras.Model):
     def build_decoder(self, input_shape, output_encoder, latent_shape, time_length=1, fourier_features=False, random_fourier=False, 
                             attention_scores=None, conditional_attention_style=False, conditional_attention_style_prior=False,
                             inverse_DFT=False, DFT=False, fourier_normalization="layer", batch_norm_reg=False,
-                            low_resolution_decoder=False, resolution_decoder=None, 
+                            low_resolution_decoder=False, resolution_decoder=None, recurrent_decoder=False,
                             variational_iDFT=False, variational_coefs=None, variational_dist=None,
                             variational_iDFT_dependent=False, variational_iDFT_dependent_dim=1,
                             variational_random_padding=False, consistency=False,
                             dropout=False, outfilter=0, weight_decay=0., seed=None):
 
         if(time_length>1):
+            """
+            Explanation of the temporal length > 1 module.
+
+            """
+            #should next two lines go to the encoder?
             x=tf.keras.layers.Reshape((latent_shape[0]*latent_shape[1]*latent_shape[2], time_length),)(output_encoder)
-            x = LSTMFourierDecoder(in_dim=latent_shape[0]*latent_shape[1]*latent_shape[2], out_dim=self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2], time_length=time_length)(x)
+            if(recurrent_decoder):
+                if(conditional_attention_style):
+                    assert not conditional_attention_style_prior
+                    #reshape attention scores
+                    flat_attention_scores = tf.keras.layers.Reshape((time_length, attention_scores.shape[2]*attention_scores.shape[3]))(attention_scores)
+                    x = LSTMFourierConnectivityDecoder(in_dim=latent_shape[0]*latent_shape[1]*latent_shape[2], latent_dim=100, time_length=time_length)(x, flat_attention_scores)
+                else:
+                    x = LSTMFourierDecoder(in_dim=latent_shape[0]*latent_shape[1]*latent_shape[2], latent_dim=100, time_length=time_length)(x)
+            elif(fourier_features and random_fourier):
+                x=tf.keras.layers.Permute((2,1),)(x)
+                x = RandomFourierFeatures(latent_shape[0]*latent_shape[1]*latent_shape[2], batch_norm_reg=batch_norm_reg, consistency=consistency,
+                                                                    normalization=fourier_normalization, trainable=True, seed=seed, name="random_fourier_features")(x)
+                x=Sinusoids()(x)
+                x=tf.keras.layers.Permute((2,1),)(x)
+                if(conditional_attention_style):
+                    x=StyleTemporal(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                                (attention_scores.shape[1], attention_scores.shape[2]*attention_scores.shape[3]),
+                                                use_bias=False,)(x, attention_scores)
+            elif(conditional_attention_style):
+                x=StyleTemporal(latent_shape[0]*latent_shape[1]*latent_shape[2],
+                                            (attention_scores.shape[1], attention_scores.shape[2]*attention_scores.shape[3]),
+                                            use_bias=False,)(x, attention_scores)
+                
+            x = DenseTemporal(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2])(x)
             x = tf.keras.layers.Reshape(self.fmri_ae.in_shape)(x)
+
         else:
             x = tf.keras.layers.Flatten()(output_encoder)#TODO: does it make sense in TRs>1?
 
@@ -359,8 +390,6 @@ class EEG_to_fMRI(tf.keras.Model):
         
         self.trainable_variables.append(self.fmri_encoder.trainable_variables)
 
-
-    
     #@tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)], reduce_retracing=True)
     def call(self, x1, x2):
         """
@@ -400,6 +429,7 @@ class EEG_to_fMRI(tf.keras.Model):
                 "conditional_attention_style": self.conditional_attention_style,
                 "conditional_attention_style_prior": self.conditional_attention_style_prior,
                 "random_fourier": self.random_fourier,
+                "recurrent_decoder": self.recurrent_decoder,
                 "inverse_DFT": self.inverse_DFT,
                 "DFT": self.DFT,
                 "variational_iDFT": self.variational_iDFT,

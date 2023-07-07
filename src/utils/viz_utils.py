@@ -550,6 +550,7 @@ def plot_3D_representation_projected_slices(instance, factor=3, h_resolution=1, 
         text_legend.text(-0.25,0.45, legend_colorbar, size=17, rotation=90)  # This is the position for the colorbar
         cb.ax.get_yaxis().set_ticks([0,1])
         cb.ax.get_yaxis().set_ticklabels(max_min_legend, size=17)
+        cb.ax.yaxis.set_label_position("left")
 
 
     axes.axis("off")
@@ -670,6 +671,7 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
         text_legend.text(-0.25,0.45, legend_colorbar, size=17, rotation=90)  # This is the position for the colorbar
         cb.ax.get_yaxis().set_ticks([0,1])
         cb.ax.get_yaxis().set_ticklabels(max_min_legend, size=17)
+        cb.ax.yaxis.set_label_position("left")
 
 
     axes.axis("off")
