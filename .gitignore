@@ -1,0 +1,16 @@
+cudnn-11.0-linux-x64-v8.0.1.13.tgz
+target_publication.txt
+datasets
+src/gan_demos
+src/notebooks/.ipynb_checkpoints/
+src/__pycache__/
+no_nas_params.txt
+out_corr.txt
+process.txt
+notebooks/nilearn_cache/
+src/notebooks/nilearn_cache/
+src/utils/__pycache__/
+utils/__pycache__/
+src/results_log
+src/results_plots
+plots/

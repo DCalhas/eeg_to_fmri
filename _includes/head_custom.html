@@ -1,0 +1,10 @@
+<link rel="shortcut icon" type="image/x-icon" href="{{ 'favicon.ico' | relative_url }}">
+
+{% if page.mathjax %}
+  <script type="text/x-mathjax-config">
+    {{ site.mathjax.config }};
+  </script>
+  <script type="text/javascript" async 
+    src="{{ site.mathjax.source }}">
+  </script>
+{% endif %}
