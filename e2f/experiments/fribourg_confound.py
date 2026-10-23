@@ -21,11 +21,12 @@ from e2f.data import fribourg
 from e2f.eval import stats
 
 CACHE = os.path.expanduser("~/eeg_to_fmri/runs/fribourg_confound")
+FEATURE_VERSION = "v2"  # v1 caches (X_<mode>.npz) predate the legacy_exact arm
 CS = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
 
 
 def features(mode):
-	f = os.path.join(CACHE, f"X_{mode}.npz")
+	f = os.path.join(CACHE, f"X_{mode}_{FEATURE_VERSION}.npz")
 	if os.path.exists(f):
 		d = np.load(f); return d["X"], d["y"], d["g"]
 	subs, labels = fribourg.subjects()
@@ -73,19 +74,35 @@ if __name__ == "__main__":
 	ap = argparse.ArgumentParser()
 	ap.add_argument("--n_jobs", type=int, default=8)
 	ap.add_argument("--time_average", action="store_true", help="average the 10 STFT frames (band-power-like features)")
+	ap.add_argument("--perm", type=int, default=0, help="subject-level label permutations (full nested LOSO each) for eeg_128")
 	a = ap.parse_args()
 	os.makedirs(CACHE, exist_ok=True)
 	results, subj_scores = {}, {}
 	Xl, y, g = features("legacy")
 	Xe, ye, ge = features("eeg")
-	assert (y == ye).all() and (g == ge).all()
-	sets = {"legacy_132": Xl, "eeg_128": Xe, "exg_only_legacy_pos128_131": Xl[:, 128:132]}
+	Xx, yx, gx = features("legacy_exact")
+	assert (y == ye).all() and (g == ge).all() and (y == yx).all() and (g == gx).all()
+	sets = {"legacy_exact_2023": Xx, "legacy_132": Xl, "eeg_128": Xe, "exg_only_legacy_pos128_131": Xl[:, 128:132]}
 	for name, X in sets.items():
 		if a.time_average:
 			X = X.mean(-1)
 		out, sp, sy = run(X.reshape(len(X), -1), y, g, a.n_jobs)
 		results[name] = out; subj_scores[name] = sp.tolist()
 		print(name, json.dumps({k: v for k, v in out.items() if k != "C_chosen"}), flush=True)
+	if a.perm:
+		X = sets["eeg_128"].mean(-1) if a.time_average else sets["eeg_128"]
+		X = X.reshape(len(X), -1)
+		subs = np.unique(g); lab = np.array([y[g == u][0] for u in subs])
+		rng = np.random.default_rng(0); null = []
+		for b in range(a.perm):
+			pl = dict(zip(subs, rng.permutation(lab)))
+			yp = np.array([pl[u] for u in g])
+			null.append(run(X, yp, g, a.n_jobs)[0]["subject_auc"])
+			print("perm", b, null[-1], flush=True)
+		obs = results["eeg_128"]["subject_auc"]
+		results["eeg_128"]["perm_null"] = null
+		results["eeg_128"]["perm_p_two_sided"] = float((1 + sum(abs(v - 0.5) >= abs(obs - 0.5) for v in null)) / (1 + len(null)))
+		results["eeg_128"]["perm_p_greater"] = float((1 + sum(v >= obs for v in null)) / (1 + len(null)))
 	names = list(sets)
 	for i in range(len(names)):
 		for j in range(i + 1, len(names)):

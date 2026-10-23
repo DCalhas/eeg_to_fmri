@@ -29,6 +29,8 @@ def select_channels(raw, mode):
 	"""legacy: first 132 channels in file order (group-dependent EXG content);
 	eeg: the 128 EEG channels only; exg_legacy: positions 128..131 of the legacy selection."""
 	data = raw.get_data()
+	if mode == "all":
+		return data
 	if mode == "legacy":
 		return data[:132]
 	eeg = [i for i, n in enumerate(raw.ch_names) if not n.startswith("EXG")]
@@ -55,7 +57,12 @@ def stft_legacy(x, fs=FS, window=2, f_high=135):
 def legacy_instances(sub, channel_mode="legacy", recording_time=203, interval=10, task="responder"):
 	"""Returns X (n_inst, C, 134, interval) for one subject, as create_clf_pairs (20 instances for 203 frames)."""
 	raw = read(sub, task)
-	Z = zscore(stft_legacy(select_channels(raw, channel_mode)), axis=0)  # z-score across channels, as in 2023
+	if channel_mode == "legacy_exact":
+		# 2023 order (data_utils.get_data_classification): z-score across ALL file channels (134 for most patients,
+		# incl. EXG3/4), then keep the first 132
+		Z = zscore(stft_legacy(select_channels(raw, "all")), axis=0)[:132]
+	else:
+		Z = zscore(stft_legacy(select_channels(raw, channel_mode)), axis=0)  # z-score across the selected channels
 	Z = np.transpose(Z, (2, 0, 1))[:recording_time]  # (T, C, F)
 	X = [np.transpose(Z[t:t + interval], (1, 2, 0)) for t in range(0, recording_time, interval) if t + interval < recording_time]
 	return np.stack(X).astype(np.float32)

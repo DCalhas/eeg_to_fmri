@@ -17,17 +17,34 @@ def _bids_participants(ds):
 	return pd.read_csv(os.path.join(DATA, ds, "participants.tsv"), sep="\t")
 
 
+EXPECTED = {"fribourg": (19, 24), "fep1": (47, 30), "fep2": (31, 30), "semmelweis": (38, 39), "pd": (25, 25)}
+
+
+def _check(name, recs):
+	"""Fail loudly if label logic or file discovery changed the group sizes (audit B6)."""
+	n_pt = sum(r["label"] == 1 for r in recs); n_hc = sum(r["label"] == 0 for r in recs)
+	assert (n_pt, n_hc) == EXPECTED[name], (name, n_pt, n_hc, EXPECTED[name])
+	assert all(r["label"] in (0, 1) for r in recs)
+	return recs
+
+
 def fribourg(task="responder"):
 	p = _bids_participants("ds004000")
-	return [dict(cohort="fribourg", sub=r.participant_id, label=int(r.group == "P"), fmt="brainvision", task=task,
+	assert set(p.group) == {"HC", "P"}, set(p.group)
+	return _check("fribourg", [dict(cohort="fribourg", sub=r.participant_id, label=int(r.group == "P"), fmt="brainvision", task=task,
 				 path=os.path.join(DATA, "ds004000", r.participant_id, "eeg", f"{r.participant_id}_task-{task}_run-1_eeg.vhdr"),
-				 meta={}) for r in p.itertuples()]
+				 meta={}) for r in p.itertuples()])
 
 
-def _fep(ds, task):
+def _fep(ds, task, dedupe=True):
+	"""dedupe: ds003944 holds 5 people twice (sub-X and sub-XA, same age/sex/race, days apart); keep sub-X."""
 	p = _bids_participants(ds)
+	assert set(p.type) == {"Control", "Psychosis"}, set(p.type)
+	ids = set(p.participant_id)
 	recs = []
 	for r in p.itertuples():
+		if dedupe and r.participant_id.endswith("A") and r.participant_id[:-1] in ids:
+			continue
 		d = os.path.join(DATA, ds, r.participant_id, "eeg")
 		vhdr = [f for f in os.listdir(d) if f.endswith(".vhdr")]
 		assert len(vhdr) == 1, (r.participant_id, vhdr)
@@ -37,16 +54,18 @@ def _fep(ds, task):
 
 
 def fep1():
-	return _fep("ds003944", "Rest")
+	return _check("fep1", _fep("ds003944", "Rest"))
 
 
 def fep2():
-	return _fep("ds003947", "rest")
+	return _check("fep2", _fep("ds003947", "rest"))
 
 
 def semmelweis():
 	d = os.path.join(DATA, "semmelweis")
-	demo = pd.read_excel(os.path.join(d, "schizophrenia_EI_dynamics_table.xlsx"), sheet_name="Demographic")
+	x = pd.read_excel(os.path.join(d, "schizophrenia_EI_dynamics_table.xlsx"), sheet_name=None)
+	demo, patients = x["Demographic"], set(x["PANSS"].code)  # patient = has PANSS (38/39 as in Racz et al. 2025);
+	# 3 PANSS-rated patients lack an F2x BNO code (sch_023 'NMDA', sch_045, sch_047), so BNO alone gives 35/42
 	files = os.path.join(d, "extracted", "sch_resting_64ch_ec")
 	recs = []
 	for r in demo.itertuples():
@@ -54,30 +73,35 @@ def semmelweis():
 		if not os.path.exists(f):
 			continue
 		bno = str(r.BNO)
-		recs.append(dict(cohort="semmelweis", sub=r.code, label=int(bno.startswith("F2")), fmt="curry", task="rest_ec",
+		recs.append(dict(cohort="semmelweis", sub=r.code, label=int(r.code in patients), fmt="curry", task="rest_ec",
 						 path=f, meta=dict(age=r.age, sex=r.sex, bno=bno, edu_years=r.edu_years)))
-	return recs
+	return _check("semmelweis", recs)
 
 
 def pd_cavanagh(med="OFF"):
 	"""ds003490 resting session. Patients: the session recorded with `med` status; controls: ses-01."""
 	p = _bids_participants("ds003490")
+	assert set(p.Group) == {"PD", "CTL"}, set(p.Group)
 	recs = []
 	for r in p.itertuples():
 		if r.Group == "PD":
-			ses = "01" if r.sess1_Med == med else "02"
+			s1, s2 = str(r.sess1_Med).upper(), str(r.sess2_Med).upper()
+			assert {s1, s2} == {"ON", "OFF"}, (r.participant_id, s1, s2)
+			ses = "01" if s1 == med.upper() else "02"
 		else:
 			ses = "01"
 		f = os.path.join(DATA, "ds003490", r.participant_id, f"ses-{ses}", "eeg", f"{r.participant_id}_ses-{ses}_task-Rest_eeg.set")
 		recs.append(dict(cohort="ds003490", sub=r.participant_id, label=int(r.Group == "PD"), fmt="eeglab", task="Rest",
 						 path=f, meta=dict(age=r.age, sex=r.sex, session=ses, med=med if r.Group == "PD" else "n/a")))
-	return recs
+	return _check("pd", recs)
 
 
 COHORTS = {"fribourg": fribourg, "fep1": fep1, "fep2": fep2, "semmelweis": semmelweis, "pd": pd_cavanagh}
 
-_NONEEG = {"HEO": "eog", "VEO": "eog", "VEOG": "eog", "HEOG": "eog", "EKG": "ecg", "ECG": "ecg", "EMG": "emg",
-		   "Trigger": "stim", "X": "misc", "Y": "misc", "Z": "misc"}
+_NONEEG = {"HEO": "eog", "VEO": "eog", "VEOG": "eog", "HEOG": "eog", "EOG": "eog", "EKG": "ecg", "ECG": "ecg", "EMG": "emg",
+		   "Trigger": "stim", "TRIG": "stim", "Status": "stim", "X": "misc", "Y": "misc", "Z": "misc", "RESP": "resp"}
+_BIDS_TYPES = {"eeg": "eeg", "eog": "eog", "veog": "eog", "heog": "eog", "ecg": "ecg", "emg": "emg", "misc": "misc",
+			   "stim": "stim", "trig": "stim", "ref": "misc", "other": "misc", "resp": "resp"}
 
 
 def load_raw(rec, preload=False):
@@ -93,10 +117,13 @@ def load_raw(rec, preload=False):
 	ch_tsv = path.replace("_eeg.vhdr", "_channels.tsv").replace("_eeg.set", "_channels.tsv")
 	if os.path.exists(ch_tsv) and ch_tsv != path:
 		ch = pd.read_csv(ch_tsv, sep="\t")
-		if len(ch) == len(raw.ch_names):
+		assert len(ch) == len(raw.ch_names), (rec["sub"], len(ch), len(raw.ch_names))
+		if list(ch["name"]) != raw.ch_names:
+			# generic file names (EEG001..) -> BIDS names, positional; only allowed when the file names are generic
+			assert all(n.upper().startswith(("EEG", "EOG", "ECG", "MISC", "STI")) for n in raw.ch_names), raw.ch_names[:5]
 			raw.rename_channels(dict(zip(raw.ch_names, ch["name"])))
-			types = {n: str(t).lower() for n, t in zip(ch["name"], ch["type"]) if str(t).lower() in ("eeg", "eog", "ecg", "emg", "misc", "stim")}
-			raw.set_channel_types(types, on_unit_change="ignore")
+		types = {n: _BIDS_TYPES[str(t).lower()] for n, t in zip(ch["name"], ch["type"]) if str(t).lower() in _BIDS_TYPES}
+		raw.set_channel_types(types, on_unit_change="ignore")
 	types = {n: t for n, t in _NONEEG.items() if n in raw.ch_names}
 	types.update({n: "eog" for n in raw.ch_names if n.startswith("EXG")})
 	if types:
