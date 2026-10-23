@@ -28,7 +28,7 @@ def _device():
 
 def _t(x, dev):
 	import torch
-	return torch.as_tensor(np.ascontiguousarray(x), dtype=torch.float32, device=dev)
+	return torch.as_tensor(np.array(x, dtype=np.float32), device=dev)  # copy: broadcast views are read-only
 
 
 def rmse(pred, target):
