@@ -151,7 +151,8 @@ def run_fold(fold, arm, models, args):
 	to_xyz = lambda V: np.transpose(V, (0, 2, 3, 1))  # (V,30,64,64) -> (V,64,64,30) for fidelity (Z last)
 	target = to_xyz(Yte)
 	res = {"template": F.score(to_xyz(Ytr).mean(0), target), "own_mean": F.score(target.mean(0), target)}
-	device = "cuda" if torch.cuda.is_available() else "cpu"
+	device = "cuda"
+	assert torch.cuda.is_available(), "GPU-only rule: run this inside a GPU Slurm allocation"
 	for name in models:
 		t0 = time.time()
 		if name == "ridge":
@@ -178,12 +179,13 @@ if __name__ == "__main__":
 	ap.add_argument("--lr", type=float, default=1e-3)
 	ap.add_argument("--n_shifts", type=int, default=20)
 	ap.add_argument("--seed", type=int, default=0)
+	ap.add_argument("--tag", default="", help="suffix for output files (e.g. smoke)")
 	a = ap.parse_args()
 	folds = make_folds()["fold_sets"][a.fold_set]["folds"]
 	sel = a.folds if a.folds is not None else range(len(folds))
 	os.makedirs(RUNS, exist_ok=True)
 	for i in sel:
-		out = os.path.join(RUNS, f"{a.arm}_{a.fold_set}_fold{i:02d}_seed{a.seed}.json")
+		out = os.path.join(RUNS, f"{a.arm}_{a.fold_set}_fold{i:02d}_seed{a.seed}{('_' + a.tag) if a.tag else ''}.json")
 		if os.path.exists(out):
 			continue
 		r = run_fold(folds[i], a.arm, a.models, a)
