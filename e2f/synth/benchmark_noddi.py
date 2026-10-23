@@ -140,6 +140,33 @@ def ridge_fit(Xtr, Ytr, Xva, Yva, n_x=256, n_y=256):
 	return pred, {"val_ssim": best[0], "alpha": best[1]}
 
 
+# ---------------------------------------------------------------- final models (for the clinical cohorts)
+FINAL_VAL = ["49", "50"]
+
+
+def train_final(args):
+	"""One synthesizer per model trained on 14 NODDI subjects, epoch selection on FINAL_VAL; saves the state dict,
+	the EEG feature mean/sd (training subjects only) and the training-volume template."""
+	subs = noddi.subjects()
+	tr = [s for s in subs if s not in FINAL_VAL]
+	load = lambda ss: [subject_arrays(s, args.arm) for s in ss]
+	a, b = load(tr), load(FINAL_VAL)
+	Xtr, Ytr = np.concatenate([x[0] for x in a]), np.concatenate([x[1] for x in a])
+	Xva, Yva = np.concatenate([x[0] for x in b]), np.concatenate([x[1] for x in b])
+	mu, sd = Xtr.mean(0, keepdims=True), Xtr.std(0, keepdims=True) + 1e-6
+	z = lambda X: ((X - mu) / sd).astype(np.float32)
+	out_dir = os.path.join(RUNS, "final"); os.makedirs(out_dir, exist_ok=True)
+	np.savez(os.path.join(out_dir, f"{args.arm}_featstats.npz"), mu=mu, sd=sd, template=Ytr.mean(0), train=np.array(tr), val=np.array(FINAL_VAL))
+	assert torch.cuda.is_available(), "GPU-only rule"
+	for name in args.models:
+		if name == "ridge":
+			continue
+		model, info = train_torch(name, z(Xtr), Ytr, z(Xva), Yva, args.epochs, args.bs, args.lr, "cuda", args.seed)
+		torch.save({"state_dict": model.state_dict(), "info": info, "x_shape": Xtr.shape[1:], "arm": args.arm},
+				   os.path.join(out_dir, f"{args.arm}_{name}_seed{args.seed}.pt"))
+		print("final", name, info, flush=True)
+
+
 # ---------------------------------------------------------------- run
 def run_fold(fold, arm, models, args):
 	load = lambda subs: [subject_arrays(s, arm) for s in subs]
@@ -182,7 +209,11 @@ if __name__ == "__main__":
 	ap.add_argument("--n_shifts", type=int, default=20)
 	ap.add_argument("--seed", type=int, default=0)
 	ap.add_argument("--tag", default="", help="suffix for output files (e.g. smoke)")
+	ap.add_argument("--final", action="store_true", help="train on all subjects except 2 val (no test) and save weights + feature stats for clinical application")
 	a = ap.parse_args()
+	if a.final:
+		train_final(a)
+		sys.exit(0)
 	folds = make_folds()["fold_sets"][a.fold_set]["folds"]
 	sel = a.folds if a.folds is not None else range(len(folds))
 	os.makedirs(RUNS, exist_ok=True)
