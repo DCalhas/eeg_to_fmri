@@ -2,8 +2,11 @@
 
 All cohorts and the NODDI pretraining data go through the same steps:
   EEG channels picked by type -> 10-05 positions -> notch (line freq harmonics) -> 0.5-45 Hz band-pass ->
-  average reference -> resample 250 Hz -> spherical-spline interpolation onto the 61-channel NODDI montage.
-The NODDI montage is the BrainCap MR 64 minus ECG, O9 and O10 (not in standard_1005).
+  average reference -> resample 250 Hz -> spherical-spline interpolation onto the 57-channel common NODDI montage.
+NODDI_CHANNELS = the 57 EEG channels recorded in every NODDI subject. NODDI has two montages: 10 subjects with
+F1/F2/C1/C2/P1/P2 and 6 (35, 38, 42, 46, 47, 50) with P9/P10/PO9/PO10/O9/O10 in a different channel order, so
+positional channel indexing (legacy, E2fNet) mixes electrodes across subjects. The 57 common channels need no
+interpolation on NODDI; clinical cohorts are interpolated onto them.
 """
 import numpy as np
 import mne
@@ -12,7 +15,7 @@ SFREQ = 250.0
 NODDI_CHANNELS = ['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 'F7', 'F8', 'T7', 'T8', 'P7', 'P8', 'Fz', 'Cz',
 				  'Pz', 'Oz', 'FC1', 'FC2', 'CP1', 'CP2', 'FC5', 'FC6', 'CP5', 'CP6', 'TP9', 'TP10', 'POz', 'AF3', 'AF4', 'FC3',
 				  'FC4', 'CP3', 'CP4', 'PO3', 'PO4', 'F5', 'F6', 'C5', 'C6', 'P5', 'P6', 'AF7', 'AF8', 'FT7', 'FT8', 'TP7', 'TP8',
-				  'PO7', 'PO8', 'FT9', 'FT10', 'P9', 'P10', 'PO9', 'PO10', 'Fpz', 'CPz']
+				  'PO7', 'PO8', 'FT9', 'FT10', 'Fpz', 'CPz']
 _ALIASES = {"T3": "T7", "T4": "T8", "T5": "P7", "T6": "P8"}
 
 

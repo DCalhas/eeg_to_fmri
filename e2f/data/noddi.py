@@ -3,7 +3,7 @@
 Fixes ledger A7: the BVA exports start 13-130 s before the first fMRI volume in 15/16 subjects, so EEG must be
 indexed by the `Scanner/Scan Start` markers (one per volume, TR = 2.16 s), never from the file start.
 Cache per subject (runs/noddi_aligned/<sub>.npz):
-  eeg     (61, N) float32, NODDI montage minus ECG/O9/O10, 0.5-45 Hz, notch 50 Hz, average reference, 250 Hz
+  eeg     (57, N) float32, the 57 channels common to both NODDI montages, by name; 0.5-45 Hz, notch 50 Hz, average reference, 250 Hz
   ecg     (1, N) float32, the ECG channel (same filtering), for the ECG-only control arm only
   onsets  (300,)  seconds of each volume's Scan Start marker in the EEG time base
   fmri    (300, 64, 64, 30) float32, raw EPI intensities (no motion correction; ledger A10)
@@ -16,7 +16,7 @@ import nibabel as nib
 from e2f.data import preprocess as P
 
 ROOT = os.path.expanduser("~/eeg_to_fmri/data/noddi")
-OUT = os.path.expanduser("~/eeg_to_fmri/runs/noddi_aligned")
+OUT = os.path.expanduser("~/eeg_to_fmri/runs/noddi_aligned_v2")  # v2: 57 common channels (two NODDI montages)
 TR = 2.16
 
 
@@ -44,10 +44,10 @@ def build(sub, force=False):
 	raw.set_channel_types({c: "ecg" for c in raw.ch_names if c.upper() in ("ECG", "EKG")})
 	ecg = raw.copy().pick("ecg").load_data().filter(0.5, 45.0, picks="all", verbose=0).resample(P.SFREQ, verbose=0).get_data().astype(np.float32)
 	assert ecg.shape[0] == 1, ecg.shape  # ledger A1: kept separately for the ECG-only control arm, never in the EEG input
-	raw = P.set_positions(raw)  # picks EEG (drops ECG), keeps the 61 channels named in 10-05 (drops O9/O10)
-	raw = P.clean(raw, line_freq=50.0)
-	assert raw.ch_names == [c for c in raw.ch_names if c in P.NODDI_CHANNELS] and len(raw.ch_names) == 61, raw.ch_names
-	raw.reorder_channels(P.NODDI_CHANNELS)
+	raw = P.set_positions(raw)  # picks EEG (drops ECG), keeps channels named in 10-05
+	raw = P.clean(raw, line_freq=50.0)  # average reference over all recorded EEG channels of this subject
+	assert set(P.NODDI_CHANNELS) <= set(raw.ch_names), sorted(set(P.NODDI_CHANNELS) - set(raw.ch_names))
+	raw.pick(P.NODDI_CHANNELS)  # 57 common channels, by name, in a fixed order
 	os.makedirs(OUT, exist_ok=True)
 	eeg = raw.get_data().astype(np.float32)
 	assert ecg.shape[1] == eeg.shape[1], (ecg.shape, eeg.shape)

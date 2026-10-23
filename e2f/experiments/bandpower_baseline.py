@@ -1,7 +1,7 @@
 """Harmonize every clinical cohort to the NODDI montage (cached) and run the EEG band-power baseline.
 
-Per subject: preprocess.harmonized (61 ch, 250 Hz, 0.5-45 Hz, avg ref), fixed crop per cohort, saved to
-runs/harmonized/<cohort>/<sub>.npz. Features: Welch log relative band power (5 bands x 61 ch).
+Per subject: preprocess.harmonized (57 ch, 250 Hz, 0.5-45 Hz, avg ref), fixed crop per cohort, saved to
+runs/harmonized_v2/<cohort>/<sub>.npz. Features: Welch log relative band power (5 bands x 57 ch).
 Models (nested LOSO, subject level): band power; covariates only (age, sex); band power + covariates.
 Inference: bootstrap CI and a subject-level label-permutation null (full nested LOSO per permutation).
 """
@@ -18,7 +18,7 @@ from sklearn.metrics import roc_auc_score
 from e2f.data import cohorts, preprocess as P
 from e2f.eval import stats
 
-OUT = os.path.expanduser("~/eeg_to_fmri/runs/harmonized")
+OUT = os.path.expanduser("~/eeg_to_fmri/runs/harmonized_v2")  # v2: 57-channel common NODDI montage
 LINE = {"fribourg": 50, "fep1": 60, "fep2": 60, "semmelweis": 50, "pd": 60}
 CROP = {"fribourg": (0, 400), "fep1": (0, 300), "fep2": (0, 300), "semmelweis": (0, 118), "pd": (0, 400)}
 CS = [1e-3, 1e-2, 1e-1, 1, 10]

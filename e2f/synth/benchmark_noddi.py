@@ -16,7 +16,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from e2f.data import noddi
+from e2f.data import noddi, preprocess as P
 from e2f.eval import fidelity as F
 
 BASE = os.path.expanduser("~/eeg_to_fmri/baselines")
@@ -51,7 +51,7 @@ def subject_arrays(sub, arm, n_frames=20):
 	sig = d["ecg"] if arm == "ecg_only" else d["eeg"]
 	X, idx, _ = noddi.tr_frames(sig, onsets, n_frames=n_frames)
 	if arm == "ecg_only":
-		X = np.repeat(X, 61, axis=1)
+		X = np.repeat(X, len(P.NODDI_CHANNELS), axis=1)
 	Y = d["fmri"][idx]
 	lo, hi = Y.min(axis=(1, 2, 3), keepdims=True), Y.max(axis=(1, 2, 3), keepdims=True)
 	Y = (Y - lo) / (hi - lo + 1e-10)
