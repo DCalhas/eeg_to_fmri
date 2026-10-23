@@ -67,6 +67,8 @@ def build_model(name, x_shape):
 		return EEG2fMRINet(EEGEncoder(in_channels=T, img_size=64), create_unet(256, 256), fMRIDecoder(256, 30))
 	if name == "spec2vol":
 		sys.path.insert(0, os.path.join(BASE, "Spec2VolCAMU-Net"))
+		from e2f.synth.selective_scan import patch_vmamba
+		patch_vmamba()
 		from Spectrogram2fMRI import Spectrogram2fMRI
 		return Spectrogram2fMRI(in_dim=T, out_dim=30)
 	if name == "cnn_tag":
