@@ -48,8 +48,6 @@ def selective_scan_chunked(u, delta, A, B, C, D=None, z=None, delta_bias=None, d
 	return (out, x[..., -1]) if return_last_state else out
 
 
-def build():
-
 
 def patch_vmamba():
 	"""Install the chunked scan (with activation checkpointing) as vmunet.vmamba.selective_scan_fn."""
