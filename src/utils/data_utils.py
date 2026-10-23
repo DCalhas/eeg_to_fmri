@@ -2,6 +2,7 @@ from utils import eeg_utils
 from utils import fmri_utils
 from utils import outlier_utils
 
+import os
 import numpy as np
 from numpy import correlate
 
@@ -234,6 +235,10 @@ def get_data_classification(individuals, dataset, raw_eeg=False, raw_eeg_resampl
                 if(mutate_bands):
                     Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
                 x_instance += [Zxx]
+
+        #rebuild-2026 audit switch: keep only the first N channels BEFORE z-scoring (Fribourg: 128 = EEG only, drops the group-dependent EXG channels)
+        if(os.environ.get("E2F_CLF_KEEP_CHANNELS")):
+            x_instance = x_instance[:int(os.environ["E2F_CLF_KEEP_CHANNELS"])]
 
         if(standardize_eeg):
             x_instance = zscore(np.array(x_instance))
