@@ -5,6 +5,7 @@ Faithful to src/models/eeg_to_fmri.py and src/models/classifiers.py (TF 2.9), wi
 TF defaults made explicit (Glorot-uniform weights, zero biases, BN eps=1e-3 / momentum 0.99,
 LayerNorm eps=1e-3). Tensors are channels-first: EEG (B, 1, C, F, T), fMRI (B, 1, X, Y, Z).
 """
+import copy
 import math
 import torch
 import torch.nn as nn
@@ -23,6 +24,22 @@ def sparsemax(z, dim=-1):
 	k_z = support.sum(dim=dim, keepdim=True).clamp(min=1)
 	tau = (cs.gather(dim, k_z - 1) - 1) / k_z.to(z.dtype)
 	return torch.clamp(z - tau, min=0)
+
+
+def _glorot_vector_(t):
+	"""Keras GlorotUniform on a 1-D shape: fan_in = fan_out = n -> limit sqrt(3/n)."""
+	n = t.numel()
+	nn.init.uniform_(t, -math.sqrt(3.0 / n), math.sqrt(3.0 / n))
+
+
+def _probe_numel(module, in_shape):
+	"""Output size of `module` for one input, without touching BatchNorm running statistics."""
+	was = module.training
+	module.eval()
+	with torch.no_grad():
+		n = module(torch.zeros(1, 1, *in_shape)).numel()
+	module.train(was)
+	return n
 
 
 def _glorot(m):
@@ -79,6 +96,8 @@ class RandomFourierFeatures(nn.Module):
 		self.ln = nn.LayerNorm(out_dim, eps=1e-3, elementwise_affine=False)
 
 	def forward(self, x):
+		# Keras NonNeg constraint projects scale to >= 0 after each step; scale -> 0 would divide by zero there too.
+		# Here the projection is applied in the forward pass (same feasible set, avoids inf).
 		h = x @ (self.W / self.scale.clamp(min=1e-12)) + self.b
 		return self.ln(h) * (math.pi / 2) + math.pi / 2
 
@@ -96,8 +115,7 @@ class EEGEncoder(nn.Module):
 		for k, s in zip(kernels, strides):
 			blocks.append(ResBlock3d(ch, n_channels, k, s, dropout=dropout)); ch = n_channels
 		self.blocks = nn.Sequential(*blocks)
-		with torch.no_grad():
-			n = self.blocks(torch.zeros(1, 1, *in_shape)).numel()
+		n = _probe_numel(self.blocks, in_shape)
 		self.latent = latent
 		self.dense = nn.Linear(n, math.prod(latent))
 		self.apply(_glorot)
@@ -113,30 +131,32 @@ class FMRIEncoder(nn.Module):
 	"""Encoder of the fMRI autoencoder used only for latent alignment during synthesis training."""
 
 	def __init__(self, in_shape=(64, 64, 30), latent=(7, 7, 7), n_channels=4,
-				 kernels=((14, 6, 12), (6, 4, 6), (12, 47, 5)), strides=((2, 1, 1), (1, 1, 1), (1, 1, 1))):
+				 kernels=((14, 6, 12), (6, 4, 6), (12, 47, 5)), strides=((2, 1, 1), (1, 1, 1), (1, 1, 1)), dropout=0.5):
 		super().__init__()
 		blocks, ch = [], 1
 		for k, s in zip(kernels, strides):
 			blocks.append(ResBlock3d(ch, n_channels, k, s, pool_k=(2, 2, 2), pool_s=(1, 1, 1))); ch = n_channels
 		self.blocks = nn.Sequential(*blocks)
-		with torch.no_grad():
-			n = self.blocks(torch.zeros(1, 1, *in_shape)).numel()
+		n = _probe_numel(self.blocks, in_shape)
 		self.dense = nn.Linear(n, math.prod(latent))
+		self.dropout = nn.Dropout(dropout)  # fmri_ae encoder: Dropout(0.5) after the latent Dense (theta dropout=True)
 		self.apply(_glorot)
 
 	def forward(self, y):
-		return self.dense(self.blocks(y).flatten(1))
+		return self.dropout(self.dense(self.blocks(y).flatten(1)))
 
 
 class Decoder(nn.Module):
-	"""RFF -> cos -> style W (elementwise) -> Dense(voxels) -> 1x1x1 conv."""
+	"""RFF -> cos -> style W (elementwise) -> Dense(voxels) -> 1x1x1 conv.
+	Only the deterministic decoder (the configuration used for the 2023 synthesis/classification) is ported;
+	the padded/variational iDCT decoders of eeg_to_fmri.py are not."""
 
 	def __init__(self, latent_dim=343, out_shape=(64, 64, 30), trainable_scale=True):
 		super().__init__()
 		self.out_shape = out_shape
 		self.rff = RandomFourierFeatures(latent_dim, latent_dim, trainable_scale=trainable_scale)
 		self.style = nn.Parameter(torch.empty(latent_dim))
-		nn.init.uniform_(self.style, -math.sqrt(6 / (latent_dim + 1)), math.sqrt(6 / (latent_dim + 1)))  # glorot on a vector as in Keras
+		_glorot_vector_(self.style)
 		self.dense = nn.Linear(latent_dim, math.prod(out_shape))
 		self.outfilter = nn.Conv3d(1, 1, 1)
 		_glorot(self.dense); _glorot(self.outfilter)
@@ -197,18 +217,22 @@ class LegacyClassificationView(nn.Module):
 	def __init__(self, synth: CNNTAG, eeg_shape, strides=None, use_pretrained_encoder=False, freeze_encoder=False):
 		super().__init__()
 		latent = synth.encoder.latent
-		if strides is None:
-			strides = {132: ((3, 5, 1), (5, 2, 1))}.get(eeg_shape[0], ((3, 5, 1), (2, 2, 1)))
-		self.encoder = EEGEncoder(eeg_shape, latent, strides=strides, attention=False, dropout=0.5)
-		self.rff = RandomFourierFeatures(math.prod(latent), math.prod(latent), scale=float(synth.decoder.rff.scale.detach()), trainable_scale=False)
 		if use_pretrained_encoder:
-			src = synth.encoder
-			for b_new, b_old in zip(self.encoder.blocks, src.blocks):
-				b_new.load_state_dict(b_old.state_dict(), strict=True)
-			if self.encoder.dense.weight.shape == src.dense.weight.shape:
-				self.encoder.dense.load_state_dict(src.dense.state_dict())
-			self.rff.load_state_dict(synth.decoder.rff.state_dict())
+			# the learned EEG->fMRI mapping: the synthesizer's own encoder (attention included) and RFF.
+			# Requires inputs in the synthesizer's montage/shape (harmonize EEG to the NODDI montage first).
+			if tuple(eeg_shape) != tuple(synth.encoder.in_shape):
+				raise ValueError(f"pretrained encoder expects {synth.encoder.in_shape}, got {eeg_shape}; harmonize the montage")
+			self.encoder = copy.deepcopy(synth.encoder)
+			self.rff = copy.deepcopy(synth.decoder.rff)
 			self.rff.scale.requires_grad_(False)
+		else:
+			if strides is None:
+				strides = {132: ((3, 5, 1), (5, 2, 1))}.get(eeg_shape[0], ((3, 5, 1), (2, 2, 1)))
+			self.encoder = EEGEncoder(eeg_shape, latent, strides=strides, attention=False, dropout=0.5)
+			for m in self.encoder.modules():  # pretrained_ResBlock(trainable=True) / Dense: GlorotUniform biases
+				if isinstance(m, (nn.Conv3d, nn.Linear)) and m.bias is not None:
+					_glorot_vector_(m.bias)
+			self.rff = RandomFourierFeatures(math.prod(latent), math.prod(latent), scale=float(synth.decoder.rff.scale.detach()), trainable_scale=False)
 		if freeze_encoder:
 			for p in self.encoder.parameters():
 				p.requires_grad_(False)
