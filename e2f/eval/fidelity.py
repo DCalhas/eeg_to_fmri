@@ -16,19 +16,37 @@ Baselines (no EEG)
 """
 import numpy as np
 
+# Range convention (ledger C10): ssim_2d_e2fnet / psnr assume volumes min-max scaled to [0,1] per volume
+# (E2fNet convention, data_range=1). No transductive statistics: any normalisation uses the volume itself or
+# training subjects only. Metrics run on CUDA when available (GPU-only rule for GPU jobs).
+
+
+def _device():
+	import torch
+	return "cuda" if torch.cuda.is_available() else "cpu"
+
+
+def _t(x, dev):
+	import torch
+	return torch.as_tensor(np.ascontiguousarray(x), dtype=torch.float32, device=dev)
+
 
 def rmse(pred, target):
-	return float(np.sqrt(np.mean((pred - target) ** 2)))
-
-
-def ssim_2d_e2fnet(pred, target, batch=32):
 	import torch
+	dev = _device()
+	p, t = _t(np.broadcast_to(pred, target.shape), dev), _t(target, dev)
+	return float(torch.sqrt(((p - t) ** 2).mean()))
+
+
+def ssim_2d_e2fnet(pred, target, batch=64):
 	from torchmetrics.image import StructuralSimilarityIndexMeasure
-	m = StructuralSimilarityIndexMeasure(data_range=1.0)
+	dev = _device()
+	m = StructuralSimilarityIndexMeasure(data_range=1.0).to(dev)
 	tot, n = 0.0, 0
+	pred = np.broadcast_to(pred, target.shape)
 	for i in range(0, len(target), batch):
-		t = torch.from_numpy(np.ascontiguousarray(np.moveaxis(target[i:i + batch], -1, 1))).float()
-		p = torch.from_numpy(np.ascontiguousarray(np.moveaxis(np.broadcast_to(pred, target.shape)[i:i + batch], -1, 1))).float()
+		t = _t(np.moveaxis(target[i:i + batch], -1, 1), dev)
+		p = _t(np.moveaxis(pred[i:i + batch], -1, 1), dev)
 		tot += m(p, t).item() * len(t); n += len(t)
 	return tot / n
 
@@ -42,13 +60,16 @@ def ssim_3d(pred, target):
 
 def voxel_r(pred, target, mask=None):
 	"""Per-voxel Pearson r over time. Static predictions return nan (no temporal variance)."""
+	import torch
+	dev = _device()
 	pred = np.broadcast_to(pred, target.shape)
 	if mask is None:
 		mask = target.std(0) > 0
-	p, t = pred[:, mask], target[:, mask]
+	p, t = _t(pred[:, mask], dev), _t(target[:, mask], dev)
 	p = p - p.mean(0); t = t - t.mean(0)
-	den = np.sqrt((p ** 2).sum(0) * (t ** 2).sum(0))
-	r = np.where(den > 0, (p * t).sum(0) / np.where(den > 0, den, 1), np.nan)
+	den = torch.sqrt((p ** 2).sum(0) * (t ** 2).sum(0))
+	r = torch.where(den > 0, (p * t).sum(0) / torch.where(den > 0, den, torch.ones_like(den)), torch.full_like(den, float("nan")))
+	r = r.cpu().numpy()
 	return {"mean": float(np.nanmean(r)) if np.isfinite(r).any() else float("nan"),
 			"median": float(np.nanmedian(r)) if np.isfinite(r).any() else float("nan"), "r": r}
 
