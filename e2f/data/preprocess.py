@@ -72,7 +72,7 @@ def harmonized(raw, line_freq, electrodes_tsv=None, crop=None):
 	raw = set_positions(raw, electrodes_tsv)
 	raw = clean(raw, line_freq=line_freq)
 	if crop is not None:
-		raw.crop(*crop)
+		raw.crop(crop[0], min(crop[1], raw.times[-1]))
 	return to_noddi_montage(raw)
 
 

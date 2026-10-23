@@ -31,8 +31,7 @@ def harmonize_one(cohort, rec):
 	mne.set_log_level("ERROR")
 	raw = cohorts.load_raw(rec)
 	el = rec["path"].replace("_task-responder_run-1_eeg.vhdr", "_electrodes.tsv") if cohort == "fribourg" else None
-	tmax = min(CROP[cohort][1], raw.n_times / raw.info["sfreq"] - 1 / raw.info["sfreq"])
-	h = P.harmonized(raw, LINE[cohort], electrodes_tsv=el, crop=(CROP[cohort][0], tmax))
+	h = P.harmonized(raw, LINE[cohort], electrodes_tsv=el, crop=CROP[cohort])
 	np.savez(f, eeg=h.get_data().astype(np.float32), sfreq=h.info["sfreq"], ch=np.array(h.ch_names), label=rec["label"],
 			 duration=h.n_times / h.info["sfreq"])
 	return f
