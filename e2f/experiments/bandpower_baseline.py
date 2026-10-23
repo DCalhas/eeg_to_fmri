@@ -32,8 +32,10 @@ def harmonize_one(cohort, rec):
 	raw = cohorts.load_raw(rec)
 	el = rec["path"].replace("_task-responder_run-1_eeg.vhdr", "_electrodes.tsv") if cohort == "fribourg" else None
 	h = P.harmonized(raw, LINE[cohort], electrodes_tsv=el, crop=CROP[cohort])
-	np.savez(f, eeg=h.get_data().astype(np.float32), sfreq=h.info["sfreq"], ch=np.array(h.ch_names), label=rec["label"],
+	tmp = f + ".tmp.npz"  # atomic write
+	np.savez(tmp, eeg=h.get_data().astype(np.float32), sfreq=h.info["sfreq"], ch=np.array(h.ch_names), label=rec["label"],
 			 duration=h.n_times / h.info["sfreq"])
+	os.replace(tmp, f)
 	return f
 
 

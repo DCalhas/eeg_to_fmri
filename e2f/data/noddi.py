@@ -42,7 +42,7 @@ def build(sub, force=False):
 	assert len(onsets) == fmri.shape[0] == 300, (sub, len(onsets), fmri.shape)
 	assert np.allclose(np.diff(onsets), TR, atol=0.01), (sub, np.diff(onsets).min(), np.diff(onsets).max())
 	raw.set_channel_types({c: "ecg" for c in raw.ch_names if c.upper() in ("ECG", "EKG")})
-	ecg = raw.copy().pick("ecg").load_data().filter(0.5, 45.0, verbose=0).resample(P.SFREQ, verbose=0).get_data().astype(np.float32)
+	ecg = raw.copy().pick("ecg").load_data().filter(0.5, 45.0, picks="all", verbose=0).resample(P.SFREQ, verbose=0).get_data().astype(np.float32)
 	assert ecg.shape[0] == 1, ecg.shape  # ledger A1: kept separately for the ECG-only control arm, never in the EEG input
 	raw = P.set_positions(raw)  # picks EEG (drops ECG), keeps the 61 channels named in 10-05 (drops O9/O10)
 	raw = P.clean(raw, line_freq=50.0)
@@ -51,8 +51,10 @@ def build(sub, force=False):
 	os.makedirs(OUT, exist_ok=True)
 	eeg = raw.get_data().astype(np.float32)
 	assert ecg.shape[1] == eeg.shape[1], (ecg.shape, eeg.shape)
-	np.savez(f, eeg=eeg, ecg=ecg, onsets=onsets, fmri=fmri, sfreq=raw.info["sfreq"],
+	tmp = f + ".tmp.npz"  # atomic write: a killed job must not leave a truncated cache file
+	np.savez(tmp, eeg=eeg, ecg=ecg, onsets=onsets, fmri=fmri, sfreq=raw.info["sfreq"],
 			 affine=img.affine, ch=np.array(raw.ch_names))
+	os.replace(tmp, f)
 	return f
 
 
