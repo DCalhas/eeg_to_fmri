@@ -90,3 +90,43 @@ def score(pred, target, conventions=("rmse", "ssim_2d_e2fnet", "voxel_r")):
 	if "voxel_r" in conventions:
 		vr = voxel_r(pred, target); out["voxel_r_mean"], out["voxel_r_median"] = vr["mean"], vr["median"]
 	return out
+
+
+# ---- Evaluation-time nulls (ledger A9): no retraining, applied to the EEG input of a trained synthesizer ----
+
+def circular_shift(eeg, min_shift=30, rng=None):
+	"""Circularly shift a subject's per-TR EEG sequence (T, ...) by k ~ U[min_shift, T - min_shift] TRs.
+	Keeps EEG statistics and subject identity, breaks EEG-BOLD temporal correspondence."""
+	rng = np.random.default_rng(rng)
+	T = len(eeg)
+	assert T > 2 * min_shift, (T, min_shift)
+	k = int(rng.integers(min_shift, T - min_shift + 1))
+	return np.roll(eeg, k, axis=0), k
+
+
+def cross_subject_swap(eegs, rng=None):
+	"""eegs: dict subject -> (T_s, ...). Returns dict subject -> EEG of a different subject (derangement),
+	truncated/tiled to T_s. Breaks subject identity as well as timing."""
+	rng = np.random.default_rng(rng)
+	subs = list(eegs)
+	while True:
+		perm = rng.permutation(len(subs))
+		if all(perm[i] != i for i in range(len(subs))):
+			break
+	out = {}
+	for i, s in enumerate(subs):
+		src = eegs[subs[perm[i]]]
+		reps = int(np.ceil(len(eegs[s]) / len(src)))
+		out[s] = np.concatenate([src] * reps, 0)[:len(eegs[s])]
+	return out, {s: subs[perm[i]] for i, s in enumerate(subs)}
+
+
+def null_report(predict, eeg, target, n_shifts=20, min_shift=30, rng=0, conventions=("rmse", "voxel_r")):
+	"""predict: callable EEG (T, ...) -> fMRI (T, X, Y, Z). Scores real EEG vs circularly shifted EEG.
+	The model 'uses EEG timing' only if real beats the shift distribution on voxel_r (and RMSE)."""
+	real = score(predict(eeg), target, conventions)
+	g = np.random.default_rng(rng)
+	nulls = [score(predict(circular_shift(eeg, min_shift, g)[0]), target, conventions) for _ in range(n_shifts)]
+	return {"real": real, "shift_null": {k: [n[k] for n in nulls] for k in real},
+			"p_voxel_r": float((1 + sum(n["voxel_r_mean"] >= real["voxel_r_mean"] for n in nulls)) / (1 + n_shifts))
+			if "voxel_r_mean" in real else None}
