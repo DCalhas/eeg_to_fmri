@@ -54,7 +54,8 @@ def build(args, n_roi):
 	a.window_size = (1, a.input_size // model.patch_size); a.patch_size = model.patch_size
 	# labram-base.pth holds numpy scalars; keep torch.load(weights_only=True) and allow-list only those types
 	import numpy.core.multiarray as nca
-	safe = [nca.scalar, np.dtype] + [type(np.dtype(t)) for t in ("float64", "float32", "int64", "int32", "bool")]
+	import argparse
+	safe = [nca.scalar, np.dtype, argparse.Namespace] + [type(np.dtype(t)) for t in ("float64", "float32", "int64", "int32", "bool")]
 	with torch.serialization.safe_globals(safe):
 		M.initialize_encoder(model, a)
 	return M, U, a, model, create_optimizer, LayerDecayValueAssigner, CustomMSECorrLoss
