@@ -85,29 +85,32 @@ def _labels(xml):
 	return {int(l.get("index")) + 1: l.text for l in ET.parse(xml).getroot().iter("label")}
 
 
-def build(sub, force=False, n_jobs=8):
-	f = os.path.join(OUT, f"{sub}.npz")
-	if os.path.exists(f) and not force:
-		return f
+def preprocess_bold(nifti_path, tr, out_npz, n_jobs=8, expect_volumes=None, force=False):
+	"""Dataset-agnostic RQ1b BOLD preprocessing (see module docstring) for one 4D EPI run. Writes out_npz atomically
+	(bold, mask, parcels, parcel_names, motion, fd, mc_mats, n_spikes, atlases in native space, epi2mni, affine)."""
+	if os.path.exists(out_npz) and not force:
+		return out_npz
 	from nilearn import image, masking, signal  # only needed to build (envs without nilearn can read the cache)
-	os.makedirs(OUT, exist_ok=True)
-	work = tempfile.mkdtemp(prefix=f"bold_{sub}_", dir=OUT)
+	os.makedirs(os.path.dirname(out_npz), exist_ok=True)
+	work = tempfile.mkdtemp(prefix="bold_", dir=os.path.dirname(out_npz))
 	try:
-		img = nib.load(glob.glob(os.path.join(noddi.ROOT, "fMRI", sub, "*nw_mepi_rest_with_cross.nii.gz"))[0])
-		assert img.shape[-1] == 300, img.shape
+		img = nib.load(nifti_path)
+		n_vol = img.shape[-1]
+		if expect_volumes is not None:
+			assert n_vol == expect_volumes, img.shape
 		mc, motion, mats = motion_correct(img, work, n_jobs)
 		mean_img = image.mean_img(mc)
 		mask = masking.compute_epi_mask(mean_img)
 		sm = image.smooth_img(mc, 6.0)
-		X = masking.apply_mask(sm, mask)  # (300, V)
+		X = masking.apply_mask(sm, mask)  # (T, V)
 		# Friston-24: params, derivatives and the squares of both (Friston et al. 1996), plus FD spike regressors
 		# for volumes with FD > 0.5 mm (Power et al. 2014)
 		dm = np.r_[np.zeros((1, 6)), np.diff(motion, axis=0)]
 		fd = framewise_displacement(motion)
 		spikes = np.eye(len(fd))[:, fd > 0.5]
 		conf = np.c_[motion, dm, motion ** 2, dm ** 2, spikes]
-		Xc = signal.clean(X, detrend=True, standardize="zscore_sample", confounds=conf, high_pass=0.01, t_r=TR)
-		bold = np.zeros(img.shape[:3] + (300,), np.float32)
+		Xc = signal.clean(X, detrend=True, standardize="zscore_sample", confounds=conf, high_pass=0.01, t_r=tr)
+		bold = np.zeros(img.shape[:3] + (n_vol,), np.float32)
 		bold[np.asarray(mask.dataobj, bool)] = Xc.T
 		bold = np.moveaxis(bold, -1, 0)
 		atlas, e2m = native_atlas(mean_img, work)
@@ -126,14 +129,19 @@ def build(sub, force=False, n_jobs=8):
 			if sel.sum() >= 5:
 				parcels.append(bold[:, sel].mean(1)); pnames.append(f"sub:{nm}")
 		parcels.append(bold[:, m].mean(1)); pnames.append("global")
-		tmp = f + ".tmp.npz"
+		tmp = out_npz + ".tmp.npz"
 		np.savez(tmp, bold=bold.astype(np.float16), mask=m, parcels=np.stack(parcels, 1).astype(np.float32), parcel_names=np.array(pnames),
 				 motion=motion.astype(np.float32), fd=fd.astype(np.float32), mc_mats=mats.astype(np.float32), n_spikes=int(spikes.shape[1]),
-				 atlas_cort=atlas["cort"].astype(np.int16), atlas_sub=atlas["sub"].astype(np.int16), epi2mni=e2m, affine=img.affine)
-		os.replace(tmp, f)
+				 atlas_cort=atlas["cort"].astype(np.int16), atlas_sub=atlas["sub"].astype(np.int16), epi2mni=e2m, affine=img.affine, tr=tr)
+		os.replace(tmp, out_npz)
 	finally:
 		shutil.rmtree(work, ignore_errors=True)
-	return f
+	return out_npz
+
+
+def build(sub, force=False, n_jobs=8):
+	nifti = glob.glob(os.path.join(noddi.ROOT, "fMRI", sub, "*nw_mepi_rest_with_cross.nii.gz"))[0]
+	return preprocess_bold(nifti, TR, os.path.join(OUT, f"{sub}.npz"), n_jobs=n_jobs, expect_volumes=300, force=force)
 
 
 if __name__ == "__main__":
