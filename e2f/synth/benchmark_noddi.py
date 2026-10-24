@@ -193,7 +193,7 @@ def run_fold(fold, arm, models, args):
 		nr = F.null_report(lambda X: to_xyz(pred_fn(X)), Xte, target, n_shifts=args.n_shifts, min_shift=30, rng=args.seed,
 						   conventions=("rmse", "ssim_2d_e2fnet", "voxel_r", "r2"))
 		res[name] = {**nr["real"], **info, "shift_null_mean": {k: float(np.mean(v)) for k, v in nr["shift_null"].items()},
-					 "p_voxel_r": nr["p_voxel_r"], "p_R2_global": nr.get("p_R2_global"), "minutes": (time.time() - t0) / 60}
+					 "p_voxel_r": nr["p_voxel_r"], "p_R2_global": nr.get("p_R2_global"), "p_R2c_global": nr.get("p_R2c_global"), "minutes": (time.time() - t0) / 60}
 		print(arm, fold["test"], name, json.dumps({k: v for k, v in res[name].items() if not isinstance(v, dict)}), flush=True)
 	return res
 

@@ -89,8 +89,15 @@ def r2_temporal(pred, target, mask=None):
 	sst = ((t - t.mean(0)) ** 2).sum(0)
 	r2 = torch.where(sst > 0, 1 - sse / torch.where(sst > 0, sst, torch.ones_like(sst)), torch.full_like(sst, float("nan")))
 	r2 = r2.cpu().numpy()
+	# centred (dynamics) R^2 (ledger A19): both series demeaned over time, so static offsets (anatomy mismatch,
+	# per-volume scaling) are ignored and any static predictor scores exactly 0
+	pc, tc = p - p.mean(0), t - t.mean(0)
+	ssec = ((tc - pc) ** 2).sum(0)
+	r2c = torch.where(sst > 0, 1 - ssec / torch.where(sst > 0, sst, torch.ones_like(sst)), torch.full_like(sst, float("nan"))).cpu().numpy()
 	return {"mean": float(np.nanmean(r2)), "median": float(np.nanmedian(r2)), "frac_pos": float(np.nanmean(r2 > 0)),
-			"global": float(1 - sse.sum().item() / max(sst.sum().item(), 1e-12)), "r2": r2}
+			"global": float(1 - sse.sum().item() / max(sst.sum().item(), 1e-12)), "r2": r2,
+			"c_mean": float(np.nanmean(r2c)), "c_median": float(np.nanmedian(r2c)), "c_frac_pos": float(np.nanmean(r2c > 0)),
+			"c_global": float(1 - ssec.sum().item() / max(sst.sum().item(), 1e-12)), "r2c": r2c}
 
 
 def template(train_subjects):
@@ -133,6 +140,7 @@ def score(pred, target, conventions=("rmse", "ssim_2d_e2fnet", "voxel_r", "r2"))
 	if "r2" in conventions:
 		r2 = r2_temporal(pred, target)
 		out["voxel_R2_mean"], out["voxel_R2_median"], out["voxel_R2_frac_pos"], out["R2_global"] = r2["mean"], r2["median"], r2["frac_pos"], r2["global"]
+		out["voxel_R2c_mean"], out["voxel_R2c_median"], out["voxel_R2c_frac_pos"], out["R2c_global"] = r2["c_mean"], r2["c_median"], r2["c_frac_pos"], r2["c_global"]
 	return out
 
 
@@ -175,4 +183,6 @@ def null_report(predict, eeg, target, n_shifts=20, min_shift=30, rng=0, conventi
 			"p_voxel_r": float((1 + sum(n["voxel_r_mean"] >= real["voxel_r_mean"] for n in nulls)) / (1 + n_shifts))
 			if "voxel_r_mean" in real else None,
 			"p_R2_global": float((1 + sum(n["R2_global"] >= real["R2_global"] for n in nulls)) / (1 + n_shifts))
-			if "R2_global" in real else None}
+			if "R2_global" in real else None,
+			"p_R2c_global": float((1 + sum(n["R2c_global"] >= real["R2c_global"] for n in nulls)) / (1 + n_shifts))
+			if "R2c_global" in real else None}
