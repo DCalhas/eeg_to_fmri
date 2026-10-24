@@ -20,7 +20,7 @@ from sklearn.preprocessing import StandardScaler
 from e2f.data import noddi, noddi_bold
 from e2f.synth.benchmark_noddi import make_folds
 
-RUNS = os.path.expanduser("~/eeg_to_fmri/runs/synth_bold")
+RUNS = os.path.expanduser("~/eeg_to_fmri/runs/synth_bold_v3")  # v3: Friston-24 target, alpha by val R^2, motion+X kinds
 BANDS = ((1, 4), (4, 8), (8, 13), (13, 30), (30, 45))
 ALPHAS = [1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6]
 
@@ -38,6 +38,9 @@ def common_parcels():
 
 
 def features(sub, kind, n_frames=20):
+	if kind.startswith("motion+"):
+		a = features(sub, "motion", n_frames); b2 = features(sub, kind.split("+", 1)[1], n_frames)
+		return (np.c_[a[0], b2[0]],) + a[1:]
 	d = noddi.load(sub)
 	b = np.load(noddi_bold.build(sub))
 	if kind == "motion":
@@ -84,9 +87,11 @@ def run_fold(fold, kind, n_shifts, seed, target):
 		mte = te[0][3].reshape(-1)
 	sc = StandardScaler().fit(Xtr)
 	Xtr, Xva, Xte = sc.transform(Xtr), sc.transform(Xva), sc.transform(Xte)
-	if kind == "spectral":
-		pca = PCA(256, random_state=seed).fit(Xtr)
-		Xtr, Xva, Xte = pca.transform(Xtr), pca.transform(Xva), pca.transform(Xte)
+	if kind.endswith("spectral"):
+		k0 = 42 if kind.startswith("motion+") else 0  # motion block (7 x 6 lags) kept as is, EEG block PCA-reduced
+		pca = PCA(256, random_state=seed).fit(Xtr[:, k0:])
+		f = lambda X: np.c_[X[:, :k0], pca.transform(X[:, k0:])]
+		Xtr, Xva, Xte = f(Xtr), f(Xva), f(Xte)
 	ypca = None
 	if target == "voxels":
 		ypca = PCA(256, random_state=seed).fit(Ytr)
@@ -98,7 +103,7 @@ def run_fold(fold, kind, n_shifts, seed, target):
 		r = Ridge(alpha=a).fit(Xtr, Ytr_)
 		pv = r.predict(Xva)
 		pv = ypca.inverse_transform(pv) if ypca is not None else pv
-		s = np.nanmean(corr_cols(pv, Yva))
+		s = r2_cols(pv, Yva)[1]  # select on validation pooled R^2 (scale-aware); r is scale-free and under-shrinks
 		if best is None or s > best[0]:
 			best = (s, a, r)
 	model = best[2]
@@ -114,9 +119,14 @@ def run_fold(fold, kind, n_shifts, seed, target):
 	real, r2, r2g = score(Xte)
 	rng = np.random.default_rng(seed)
 	T = len(Xte)
-	nulls = [score(np.roll(Xte, int(rng.integers(30, T - 30)), axis=0)) for _ in range(n_shifts)]
+	def shifted():
+		k = int(rng.integers(30, T - 30)); Xs = np.roll(Xte, k, axis=0)
+		if kind.startswith("motion+"):  # null for the EEG/ECG block only: motion stays aligned
+			Xs[:, :42] = Xte[:, :42]
+		return Xs
+	nulls = [score(shifted()) for _ in range(n_shifts)]
 	null_r = [float(np.nanmean(n[0])) for n in nulls]; null_r2g = [n[2] for n in nulls]
-	return {"alpha": best[1], "val_r": float(best[0]), "r_mean": float(np.nanmean(real)), "r_median": float(np.nanmedian(real)),
+	return {"alpha": best[1], "val_R2": float(best[0]), "r_mean": float(np.nanmean(real)), "r_median": float(np.nanmedian(real)),
 			"r2corr_mean": float(np.nanmean(real ** 2)), "R2_mean": float(np.nanmean(r2)), "R2_median": float(np.nanmedian(r2)),
 			"R2_frac_pos": float(np.nanmean(r2 > 0)), "R2_global": r2g, "R2_max": float(np.nanmax(r2)),
 			"r_per_parcel": real.tolist() if target == "parcels" else None, "R2_per_parcel": r2.tolist() if target == "parcels" else None,
@@ -127,7 +137,7 @@ def run_fold(fold, kind, n_shifts, seed, target):
 
 if __name__ == "__main__":
 	ap = argparse.ArgumentParser()
-	ap.add_argument("--kinds", nargs="+", default=["bandpower", "spectral", "ecg", "motion"])
+	ap.add_argument("--kinds", nargs="+", default=["bandpower", "spectral", "ecg", "motion", "motion+spectral", "motion+ecg"])
 	ap.add_argument("--target", default="parcels", choices=["parcels", "voxels"])
 	ap.add_argument("--n_shifts", type=int, default=50)
 	ap.add_argument("--seed", type=int, default=0)

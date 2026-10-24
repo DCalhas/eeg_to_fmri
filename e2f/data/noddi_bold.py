@@ -5,7 +5,7 @@ Per subject (300 volumes, TR 2.16 s, native 64x64x30):
      mcflirt is not part of the Frida FSL install. Motion parameters (3 rotations, 3 translations) and
      framewise displacement (Power 2012, 50 mm sphere) are derived from the matrices.
   2. EPI brain mask (nilearn compute_epi_mask on the corrected mean); spatial smoothing 6 mm FWHM.
-  3. nuisance regression + filtering: 6 motion params + derivatives, linear detrend, high-pass 0.01 Hz,
+  3. nuisance regression + filtering: Friston-24 motion model + FD > 0.5 mm spike regressors, linear detrend, high-pass 0.01 Hz,
      voxelwise z-score (nilearn.signal.clean), inside the mask.
   4. parcels: corrected mean EPI -> MNI152 2 mm (flirt 12 dof, corratio); inverse affine warps the
      Harvard-Oxford cortical (thr25) + subcortical (thr25, grey-matter labels only) atlases to native space
@@ -20,7 +20,7 @@ import nibabel as nib
 from e2f.data import noddi
 
 FSLDIR = os.path.expanduser("~/fsl")
-OUT = os.path.expanduser("~/eeg_to_fmri/runs/noddi_bold_v2")  # v2: centre-based motion params, matrices saved
+OUT = os.path.expanduser("~/eeg_to_fmri/runs/noddi_bold_v3")  # v3: Friston-24 + FD>0.5 mm spikes; v2: centre-based motion
 TR = noddi.TR
 HO_SUB_EXCLUDE = {1, 2, 3, 12, 13, 14}  # L/R cerebral white matter, cerebral cortex, lateral ventricle
 
@@ -100,7 +100,12 @@ def build(sub, force=False, n_jobs=8):
 		mask = masking.compute_epi_mask(mean_img)
 		sm = image.smooth_img(mc, 6.0)
 		X = masking.apply_mask(sm, mask)  # (300, V)
-		conf = np.c_[motion, np.r_[np.zeros((1, 6)), np.diff(motion, axis=0)]]
+		# Friston-24: params, derivatives and the squares of both (Friston et al. 1996), plus FD spike regressors
+		# for volumes with FD > 0.5 mm (Power et al. 2014)
+		dm = np.r_[np.zeros((1, 6)), np.diff(motion, axis=0)]
+		fd = framewise_displacement(motion)
+		spikes = np.eye(len(fd))[:, fd > 0.5]
+		conf = np.c_[motion, dm, motion ** 2, dm ** 2, spikes]
 		Xc = signal.clean(X, detrend=True, standardize="zscore_sample", confounds=conf, high_pass=0.01, t_r=TR)
 		bold = np.zeros(img.shape[:3] + (300,), np.float32)
 		bold[np.asarray(mask.dataobj, bool)] = Xc.T
@@ -123,7 +128,7 @@ def build(sub, force=False, n_jobs=8):
 		parcels.append(bold[:, m].mean(1)); pnames.append("global")
 		tmp = f + ".tmp.npz"
 		np.savez(tmp, bold=bold.astype(np.float16), mask=m, parcels=np.stack(parcels, 1).astype(np.float32), parcel_names=np.array(pnames),
-				 motion=motion.astype(np.float32), fd=framewise_displacement(motion).astype(np.float32), mc_mats=mats.astype(np.float32),
+				 motion=motion.astype(np.float32), fd=fd.astype(np.float32), mc_mats=mats.astype(np.float32), n_spikes=int(spikes.shape[1]),
 				 atlas_cort=atlas["cort"].astype(np.int16), atlas_sub=atlas["sub"].astype(np.int16), epi2mni=e2m, affine=img.affine)
 		os.replace(tmp, f)
 	finally:
