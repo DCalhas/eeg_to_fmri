@@ -45,7 +45,8 @@ def build(args, n_roi):
 	from customized_losses import CustomMSECorrLoss
 	argv = sys.argv
 	sys.argv = ["main.py", "--nb_eegchan", str(len(CH)), "--nb_roi", str(n_roi), "--epochs", str(args.epochs),
-				"--batch_size", str(args.bs), "--pretrained_weights", os.path.join(UNE, "checkpoints", "labram-base.pth")]
+				"--batch_size", str(args.bs), "--pretrained_weights", os.path.join(UNE, "checkpoints", "labram-base.pth"),
+				"--warmup_epochs", str(5 if args.epochs > 5 else 1)]  # authors' 5 warm-up epochs; 1 for short smoke runs
 	try:
 		a = M.get_args()  # the authors' parser reads sys.argv
 	finally:
