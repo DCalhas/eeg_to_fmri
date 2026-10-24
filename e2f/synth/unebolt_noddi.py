@@ -43,11 +43,13 @@ def build(args, n_roi):
 	import utils as U
 	from optim_factory import create_optimizer, LayerDecayValueAssigner
 	from customized_losses import CustomMSECorrLoss
-	a = M.get_args_parser().parse_args([
-		"--nb_eegchan", str(len(CH)), "--nb_roi", str(n_roi), "--epochs", str(args.epochs), "--batch_size", str(args.bs),
-		"--pretrained_weights", os.path.join(UNE, "checkpoints", "labram-base.pth")])
-	if a.difumo_dim is None:
-		a.difumo_dim = a.nb_roi
+	argv = sys.argv
+	sys.argv = ["main.py", "--nb_eegchan", str(len(CH)), "--nb_roi", str(n_roi), "--epochs", str(args.epochs),
+				"--batch_size", str(args.bs), "--pretrained_weights", os.path.join(UNE, "checkpoints", "labram-base.pth")]
+	try:
+		a = M.get_args()  # the authors' parser reads sys.argv
+	finally:
+		sys.argv = argv
 	model = M.get_models(a)
 	a.window_size = (1, a.input_size // model.patch_size); a.patch_size = model.patch_size
 	M.initialize_encoder(model, a)
