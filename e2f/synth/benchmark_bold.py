@@ -40,7 +40,8 @@ def common_parcels():
 def features(sub, kind, n_frames=20):
 	if kind.startswith("motion+"):
 		a = features(sub, "motion", n_frames); b2 = features(sub, kind.split("+", 1)[1], n_frames)
-		return (np.c_[a[0], b2[0]],) + a[1:]
+		common, ia, ib = np.intersect1d(a[5], b2[5], return_indices=True)  # same volumes in both blocks
+		return np.c_[a[0][ia], b2[0][ib]], a[1][ia], a[2][ia], a[3], a[4], common
 	d = noddi.load(sub)
 	b = np.load(noddi_bold.build(sub))
 	if kind == "motion":
@@ -59,7 +60,7 @@ def features(sub, kind, n_frames=20):
 		else:
 			X = F.reshape(len(F), -1)
 	names = list(b["parcel_names"]); cols = [names.index(n) for n in common_parcels()]
-	return X.astype(np.float32), b["parcels"][idx][:, cols], b["bold"][idx], b["mask"], common_parcels()
+	return X.astype(np.float32), b["parcels"][idx][:, cols], b["bold"][idx], b["mask"], common_parcels(), np.asarray(idx)
 
 
 def corr_cols(P, Y):
