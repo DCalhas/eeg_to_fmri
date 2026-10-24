@@ -126,7 +126,15 @@ def gaussian_crps(mu, var, target):
 	return float(np.mean(s * (z * (2 * norm.cdf(z) - 1) + 2 * norm.pdf(z) - 1 / np.sqrt(np.pi))))
 
 
-def score(pred, target, conventions=("rmse", "ssim_2d_e2fnet", "voxel_r", "r2")):
+def detrend_time(A):
+	"""Linear detrend along axis 0 (time) for the dynamics metrics (ledger A20)."""
+	from scipy.signal import detrend
+	return detrend(np.asarray(A, np.float32), axis=0, type="linear")
+
+
+def score(pred, target, conventions=("rmse", "ssim_2d_e2fnet", "voxel_r", "r2"), detrended_dynamics=True):
+	"""Image metrics (rmse, ssim) on the raw volumes; dynamics metrics (voxel_r, R2, R2c) additionally reported on
+	linearly detrended target and prediction (keys suffixed _dt) so shared slow drift cannot score as signal."""
 	out = {}
 	if "rmse" in conventions:
 		out["rmse"] = rmse(np.broadcast_to(pred, target.shape), target)
@@ -141,6 +149,11 @@ def score(pred, target, conventions=("rmse", "ssim_2d_e2fnet", "voxel_r", "r2"))
 		r2 = r2_temporal(pred, target)
 		out["voxel_R2_mean"], out["voxel_R2_median"], out["voxel_R2_frac_pos"], out["R2_global"] = r2["mean"], r2["median"], r2["frac_pos"], r2["global"]
 		out["voxel_R2c_mean"], out["voxel_R2c_median"], out["voxel_R2c_frac_pos"], out["R2c_global"] = r2["c_mean"], r2["c_median"], r2["c_frac_pos"], r2["c_global"]
+	if detrended_dynamics and ("voxel_r" in conventions or "r2" in conventions):
+		mask = target.std(0) > 0
+		pd_, td_ = detrend_time(np.broadcast_to(pred, target.shape)), detrend_time(target)
+		vr = voxel_r(pd_, td_, mask); r2 = r2_temporal(pd_, td_, mask)
+		out["voxel_r_mean_dt"], out["R2c_global_dt"], out["voxel_R2c_median_dt"] = vr["mean"], r2["c_global"], r2["c_median"]
 	return out
 
 
@@ -185,4 +198,6 @@ def null_report(predict, eeg, target, n_shifts=20, min_shift=30, rng=0, conventi
 			"p_R2_global": float((1 + sum(n["R2_global"] >= real["R2_global"] for n in nulls)) / (1 + n_shifts))
 			if "R2_global" in real else None,
 			"p_R2c_global": float((1 + sum(n["R2c_global"] >= real["R2c_global"] for n in nulls)) / (1 + n_shifts))
-			if "R2c_global" in real else None}
+			if "R2c_global" in real else None,
+			"p_R2c_global_dt": float((1 + sum(n["R2c_global_dt"] >= real["R2c_global_dt"] for n in nulls)) / (1 + n_shifts))
+			if "R2c_global_dt" in real else None}

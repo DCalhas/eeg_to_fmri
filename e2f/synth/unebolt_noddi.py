@@ -99,19 +99,23 @@ def run_fold(fold, args):
 		print("epoch", ep, "val", args.select, round(float(s), 4), flush=True)
 	model.load_state_dict(best[1])
 	Xte, Yte = te
+	Yte_d = BB.detrend_cols(Yte)
 	def score(X):
-		Pp = predict(model, X, input_chans)
-		r = BB.corr_cols(Pp, Yte); r2, r2g = BB.r2_cols(Pp, Yte)
+		Pp = BB.detrend_cols(predict(model, X, input_chans))  # detrended scoring (A20)
+		r = BB.corr_cols(Pp, Yte_d); r2, r2g = BB.r2_cols(Pp, Yte_d)
 		return r, r2, r2g
 	r, r2, r2g = score(Xte)
 	rng = np.random.default_rng(args.seed); T = len(Xte)
 	nulls = [score(np.roll(Xte, int(rng.integers(30, T - 30)), axis=0)) for _ in range(args.n_shifts)]
 	nr = [float(np.nanmean(n[0])) for n in nulls]; nr2 = [n[2] for n in nulls]
+	swaps = [score(np.concatenate([t[0]] * int(np.ceil(T / len(t[0]))))[:T]) for t in va]  # other subjects' EEG
+	sr = [float(np.nanmean(n[0])) for n in swaps]; sr2 = [n[2] for n in swaps]
 	return {"best_epoch": best[2], "val_score": float(best[0]), "r_mean": float(np.nanmean(r)), "r_median": float(np.nanmedian(r)),
 			"r2corr_mean": float(np.nanmean(r ** 2)), "R2_mean": float(np.nanmean(r2)), "R2_global": r2g, "R2_frac_pos": float(np.nanmean(r2 > 0)),
 			"R2_max": float(np.nanmax(r2)), "r_per_parcel": r.tolist(), "R2_per_parcel": r2.tolist(), "shift_null_r": nr, "shift_null_R2_global": nr2,
 			"p_shift": float((1 + sum(v >= np.nanmean(r) for v in nr)) / (1 + len(nr))),
-			"p_shift_R2": float((1 + sum(v >= r2g for v in nr2)) / (1 + len(nr2)))}
+			"p_shift_R2": float((1 + sum(v >= r2g for v in nr2)) / (1 + len(nr2))),
+			"swap_null_r": sr, "swap_null_R2_global": sr2, "detrended": True}
 
 
 if __name__ == "__main__":
@@ -120,7 +124,7 @@ if __name__ == "__main__":
 	ap.add_argument("--epochs", type=int, default=20)
 	ap.add_argument("--bs", type=int, default=64)
 	ap.add_argument("--select", default="R2", choices=["R2", "r"])
-	ap.add_argument("--n_shifts", type=int, default=50)
+	ap.add_argument("--n_shifts", type=int, default=100)
 	ap.add_argument("--seed", type=int, default=0)
 	ap.add_argument("--tag", default="")
 	args = ap.parse_args()
