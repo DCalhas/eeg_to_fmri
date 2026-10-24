@@ -74,6 +74,25 @@ def voxel_r(pred, target, mask=None):
 			"median": float(np.nanmedian(r)) if np.isfinite(r).any() else float("nan"), "r": r}
 
 
+def r2_temporal(pred, target, mask=None):
+	"""Out-of-sample coefficient of determination of the BOLD time courses, per voxel/parcel:
+	R2_v = 1 - sum_t (y_vt - yhat_vt)^2 / sum_t (y_vt - mean_t y_v)^2   (can be < 0; a static prediction scores <= 0)
+	and the pooled fraction of temporal variance explained, R2_global = 1 - SSE / SST over all voxels.
+	pred/target: (T, ...) arrays; mask selects voxels with temporal variance."""
+	import torch
+	dev = _device()
+	pred = np.broadcast_to(pred, target.shape)
+	if mask is None:
+		mask = target.std(0) > 0
+	p, t = _t(pred[:, mask], dev), _t(target[:, mask], dev)
+	sse = ((t - p) ** 2).sum(0)
+	sst = ((t - t.mean(0)) ** 2).sum(0)
+	r2 = torch.where(sst > 0, 1 - sse / torch.where(sst > 0, sst, torch.ones_like(sst)), torch.full_like(sst, float("nan")))
+	r2 = r2.cpu().numpy()
+	return {"mean": float(np.nanmean(r2)), "median": float(np.nanmedian(r2)), "frac_pos": float(np.nanmean(r2 > 0)),
+			"global": float(1 - sse.sum().item() / max(sst.sum().item(), 1e-12)), "r2": r2}
+
+
 def template(train_subjects):
 	"""train_subjects: list of (T_i, X, Y, Z) arrays -> mean of per-subject temporal means."""
 	return np.mean([s.mean(0) for s in train_subjects], axis=0)
@@ -100,7 +119,7 @@ def gaussian_crps(mu, var, target):
 	return float(np.mean(s * (z * (2 * norm.cdf(z) - 1) + 2 * norm.pdf(z) - 1 / np.sqrt(np.pi))))
 
 
-def score(pred, target, conventions=("rmse", "ssim_2d_e2fnet", "voxel_r")):
+def score(pred, target, conventions=("rmse", "ssim_2d_e2fnet", "voxel_r", "r2")):
 	out = {}
 	if "rmse" in conventions:
 		out["rmse"] = rmse(np.broadcast_to(pred, target.shape), target)
@@ -110,6 +129,10 @@ def score(pred, target, conventions=("rmse", "ssim_2d_e2fnet", "voxel_r")):
 		out["ssim_3d"] = ssim_3d(pred, target)
 	if "voxel_r" in conventions:
 		vr = voxel_r(pred, target); out["voxel_r_mean"], out["voxel_r_median"] = vr["mean"], vr["median"]
+		out["voxel_r2corr_mean"] = float(np.nanmean(vr["r"] ** 2))  # squared correlation (scale-free)
+	if "r2" in conventions:
+		r2 = r2_temporal(pred, target)
+		out["voxel_R2_mean"], out["voxel_R2_median"], out["voxel_R2_frac_pos"], out["R2_global"] = r2["mean"], r2["median"], r2["frac_pos"], r2["global"]
 	return out
 
 
@@ -142,7 +165,7 @@ def cross_subject_swap(eegs, rng=None):
 	return out, {s: subs[perm[i]] for i, s in enumerate(subs)}
 
 
-def null_report(predict, eeg, target, n_shifts=20, min_shift=30, rng=0, conventions=("rmse", "voxel_r")):
+def null_report(predict, eeg, target, n_shifts=20, min_shift=30, rng=0, conventions=("rmse", "voxel_r", "r2")):
 	"""predict: callable EEG (T, ...) -> fMRI (T, X, Y, Z). Scores real EEG vs circularly shifted EEG.
 	The model 'uses EEG timing' only if real beats the shift distribution on voxel_r (and RMSE)."""
 	real = score(predict(eeg), target, conventions)
@@ -150,4 +173,6 @@ def null_report(predict, eeg, target, n_shifts=20, min_shift=30, rng=0, conventi
 	nulls = [score(predict(circular_shift(eeg, min_shift, g)[0]), target, conventions) for _ in range(n_shifts)]
 	return {"real": real, "shift_null": {k: [n[k] for n in nulls] for k in real},
 			"p_voxel_r": float((1 + sum(n["voxel_r_mean"] >= real["voxel_r_mean"] for n in nulls)) / (1 + n_shifts))
-			if "voxel_r_mean" in real else None}
+			if "voxel_r_mean" in real else None,
+			"p_R2_global": float((1 + sum(n["R2_global"] >= real["R2_global"] for n in nulls)) / (1 + n_shifts))
+			if "R2_global" in real else None}

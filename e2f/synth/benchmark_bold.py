@@ -52,6 +52,12 @@ def corr_cols(P, Y):
 	return np.where(den > 0, (P * Y).sum(0) / np.where(den > 0, den, 1), np.nan)
 
 
+def r2_cols(P, Y):
+	"""Out-of-sample R^2 per column: 1 - SSE/SST (SST around the held-out subject's own mean; can be < 0)."""
+	sse = ((Y - P) ** 2).sum(0); sst = ((Y - Y.mean(0)) ** 2).sum(0)
+	return np.where(sst > 0, 1 - sse / np.where(sst > 0, sst, 1), np.nan), float(1 - sse.sum() / max(sst.sum(), 1e-12))
+
+
 def run_fold(fold, kind, n_shifts, seed, target):
 	load = lambda ss: [features(s, kind) for s in ss]
 	tr, va, te = load(fold["train"]), load(fold["val"]), load(fold["test"])
@@ -85,15 +91,25 @@ def run_fold(fold, kind, n_shifts, seed, target):
 	model = best[2]
 	predict = lambda X: (ypca.inverse_transform(model.predict(X)) if ypca is not None else model.predict(X))
 	def score(X):
-		rr = corr_cols(predict(X), Yte)
-		return rr[mte] if target == "voxels" else rr
-	real = score(Xte)
+		P = predict(X)
+		rr = corr_cols(P, Yte); r2, r2g = r2_cols(P, Yte)
+		if target == "voxels":
+			rr, r2 = rr[mte], r2[mte]
+			sse = ((Yte[:, mte] - P[:, mte]) ** 2).sum(); sst = ((Yte[:, mte] - Yte[:, mte].mean(0)) ** 2).sum()
+			r2g = float(1 - sse / max(sst, 1e-12))
+		return rr, r2, r2g
+	real, r2, r2g = score(Xte)
 	rng = np.random.default_rng(seed)
 	T = len(Xte)
-	null = [np.nanmean(score(np.roll(Xte, int(rng.integers(30, T - 30)), axis=0))) for _ in range(n_shifts)]
+	nulls = [score(np.roll(Xte, int(rng.integers(30, T - 30)), axis=0)) for _ in range(n_shifts)]
+	null_r = [float(np.nanmean(n[0])) for n in nulls]; null_r2g = [n[2] for n in nulls]
 	return {"alpha": best[1], "val_r": float(best[0]), "r_mean": float(np.nanmean(real)), "r_median": float(np.nanmedian(real)),
-			"r_per_parcel": real.tolist() if target == "parcels" else None, "r_p95": float(np.nanpercentile(real, 95)),
-			"shift_null": [float(v) for v in null], "p_shift": float((1 + sum(v >= np.nanmean(real) for v in null)) / (1 + n_shifts))}
+			"r2corr_mean": float(np.nanmean(real ** 2)), "R2_mean": float(np.nanmean(r2)), "R2_median": float(np.nanmedian(r2)),
+			"R2_frac_pos": float(np.nanmean(r2 > 0)), "R2_global": r2g, "R2_max": float(np.nanmax(r2)),
+			"r_per_parcel": real.tolist() if target == "parcels" else None, "R2_per_parcel": r2.tolist() if target == "parcels" else None,
+			"r_p95": float(np.nanpercentile(real, 95)), "shift_null_r": null_r, "shift_null_R2_global": null_r2g,
+			"p_shift": float((1 + sum(v >= np.nanmean(real) for v in null_r)) / (1 + n_shifts)),
+			"p_shift_R2": float((1 + sum(v >= r2g for v in null_r2g)) / (1 + n_shifts))}
 
 
 if __name__ == "__main__":
@@ -114,5 +130,5 @@ if __name__ == "__main__":
 		for i, f in enumerate(folds):
 			r = run_fold(f, kind, a.n_shifts, a.seed, a.target)
 			res.append({"test": f["test"], **r})
-			print(a.target, kind, f["test"], {k: v for k, v in r.items() if k not in ("r_per_parcel", "shift_null")}, flush=True)
+			print(a.target, kind, f["test"], {k: v for k, v in r.items() if not isinstance(v, list)}, flush=True)
 		json.dump({"target": a.target, "kind": kind, "parcel_names": names, "folds": res}, open(out, "w"), indent=1)

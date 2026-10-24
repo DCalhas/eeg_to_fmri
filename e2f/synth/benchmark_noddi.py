@@ -179,7 +179,8 @@ def run_fold(fold, arm, models, args):
 	Xtr, Xva, Xte = z(Xtr), z(Xva), z(Xte)
 	to_xyz = lambda V: np.transpose(V, (0, 2, 3, 1))  # (V,30,64,64) -> (V,64,64,30) for fidelity (Z last)
 	target = to_xyz(Yte)
-	res = {"template": F.score(to_xyz(Ytr).mean(0), target), "own_mean": F.score(target.mean(0), target)}
+	conv = ("rmse", "ssim_2d_e2fnet", "voxel_r", "r2")
+	res = {"template": F.score(to_xyz(Ytr).mean(0), target, conv), "own_mean": F.score(target.mean(0), target, conv)}
 	device = "cuda"
 	assert torch.cuda.is_available(), "GPU-only rule: run this inside a GPU Slurm allocation"
 	for name in models:
@@ -190,9 +191,9 @@ def run_fold(fold, arm, models, args):
 			model, info = train_torch(name, Xtr, Ytr, Xva, Yva, args.epochs, args.bs, args.lr, device, args.seed)
 			pred_fn = lambda X, model=model: np.clip(predict(model, X, device), 0, 1)
 		nr = F.null_report(lambda X: to_xyz(pred_fn(X)), Xte, target, n_shifts=args.n_shifts, min_shift=30, rng=args.seed,
-						   conventions=("rmse", "ssim_2d_e2fnet", "voxel_r"))
+						   conventions=("rmse", "ssim_2d_e2fnet", "voxel_r", "r2"))
 		res[name] = {**nr["real"], **info, "shift_null_mean": {k: float(np.mean(v)) for k, v in nr["shift_null"].items()},
-					 "p_voxel_r": nr["p_voxel_r"], "minutes": (time.time() - t0) / 60}
+					 "p_voxel_r": nr["p_voxel_r"], "p_R2_global": nr.get("p_R2_global"), "minutes": (time.time() - t0) / 60}
 		print(arm, fold["test"], name, json.dumps({k: v for k, v in res[name].items() if not isinstance(v, dict)}), flush=True)
 	return res
 
