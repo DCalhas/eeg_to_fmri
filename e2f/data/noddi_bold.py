@@ -65,11 +65,20 @@ def motion_correct(img, work, n_jobs=8):
 	return nib.Nifti1Image(vols, img.affine, img.header), motion, mats
 
 
-def native_atlas(mean_img, work):
+def native_atlas(mean_img, work, t1_path=None):
+	"""EPI->MNI affine (directly, or via the subject T1 when t1_path is given: EPI->T1 6 dof corratio, T1->MNI 12 dof;
+	useful for partial-coverage EPI such as XP2's 16 slices), then HO atlases warped back to EPI (nearest neighbour)."""
 	mean_f = os.path.join(work, "mean_mc.nii.gz"); nib.save(mean_img, mean_f)
-	mni = os.path.join(FSLDIR, "data/standard/MNI152_T1_2mm_brain.nii.gz")
 	e2m, m2e = os.path.join(work, "epi2mni.mat"), os.path.join(work, "mni2epi.mat")
-	_fsl("flirt", "-in", mean_f, "-ref", mni, "-omat", e2m, "-dof", "12", "-cost", "corratio")
+	if t1_path is None:
+		mni = os.path.join(FSLDIR, "data/standard/MNI152_T1_2mm_brain.nii.gz")
+		_fsl("flirt", "-in", mean_f, "-ref", mni, "-omat", e2m, "-dof", "12", "-cost", "corratio")
+	else:
+		mni = os.path.join(FSLDIR, "data/standard/MNI152_T1_2mm.nii.gz")  # with skull, to match a non-stripped T1
+		e2t, t2m = os.path.join(work, "epi2t1.mat"), os.path.join(work, "t12mni.mat")
+		_fsl("flirt", "-in", mean_f, "-ref", t1_path, "-omat", e2t, "-dof", "6", "-cost", "corratio")
+		_fsl("flirt", "-in", t1_path, "-ref", mni, "-omat", t2m, "-dof", "12")
+		np.savetxt(e2m, np.loadtxt(t2m) @ np.loadtxt(e2t))  # convert_xfm -concat t2m e2t
 	np.savetxt(m2e, np.linalg.inv(np.loadtxt(e2m)))  # convert_xfm -inverse (not in the Frida FSL install)
 	ho = os.path.join(FSLDIR, "data/atlases/HarvardOxford")
 	out = {}
@@ -85,9 +94,11 @@ def _labels(xml):
 	return {int(l.get("index")) + 1: l.text for l in ET.parse(xml).getroot().iter("label")}
 
 
-def preprocess_bold(nifti_path, tr, out_npz, n_jobs=8, expect_volumes=None, force=False):
+def preprocess_bold(nifti_path, tr, out_npz, n_jobs=8, expect_volumes=None, force=False, t1_path=None, native_atlas_npz=None):
 	"""Dataset-agnostic RQ1b BOLD preprocessing (see module docstring) for one 4D EPI run. Writes out_npz atomically
-	(bold, mask, parcels, parcel_names, motion, fd, mc_mats, n_spikes, atlases in native space, epi2mni, affine)."""
+	(bold, mask, parcels, parcel_names, motion, fd, mc_mats, n_spikes, atlases in native space, epi2mni, affine).
+	t1_path: register via the subject T1 (partial-coverage EPI). native_atlas_npz: precomputed native-space atlases
+	(npz with int arrays 'cort' and 'sub' on the EPI grid, HO label values) instead of registering."""
 	if os.path.exists(out_npz) and not force:
 		return out_npz
 	from nilearn import image, masking, signal  # only needed to build (envs without nilearn can read the cache)
@@ -113,7 +124,11 @@ def preprocess_bold(nifti_path, tr, out_npz, n_jobs=8, expect_volumes=None, forc
 		bold = np.zeros(img.shape[:3] + (n_vol,), np.float32)
 		bold[np.asarray(mask.dataobj, bool)] = Xc.T
 		bold = np.moveaxis(bold, -1, 0)
-		atlas, e2m = native_atlas(mean_img, work)
+		if native_atlas_npz is not None:
+			na = np.load(native_atlas_npz); atlas, e2m = {"cort": na["cort"].astype(int), "sub": na["sub"].astype(int)}, np.full((4, 4), np.nan)
+			assert atlas["cort"].shape == img.shape[:3], (atlas["cort"].shape, img.shape)
+		else:
+			atlas, e2m = native_atlas(mean_img, work, t1_path)
 		ho = os.path.join(FSLDIR, "data/atlases")
 		names_c, names_s = _labels(os.path.join(ho, "HarvardOxford-Cortical.xml")), _labels(os.path.join(ho, "HarvardOxford-Subcortical.xml"))
 		m = np.asarray(mask.dataobj, bool)
