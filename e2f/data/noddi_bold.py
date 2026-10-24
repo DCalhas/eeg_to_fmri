@@ -20,7 +20,7 @@ import nibabel as nib
 from e2f.data import noddi
 
 FSLDIR = os.path.expanduser("~/fsl")
-OUT = os.path.expanduser("~/eeg_to_fmri/runs/noddi_bold_v1")
+OUT = os.path.expanduser("~/eeg_to_fmri/runs/noddi_bold_v2")  # v2: centre-based motion params, matrices saved
 TR = noddi.TR
 HO_SUB_EXCLUDE = {1, 2, 3, 12, 13, 14}  # L/R cerebral white matter, cerebral cortex, lateral ventricle
 
@@ -33,11 +33,13 @@ def _fsl(*args):
 	return r.stdout
 
 
-def _rigid_params(M):
-	"""4x4 flirt matrix (mm, scaled-world coords) -> rotations (rad, x/y/z) and translations (mm)."""
+def _rigid_params(M, centre_mm):
+	"""4x4 flirt matrix (scaled-voxel mm coordinates with the origin at the image corner) -> rotations (rad, x/y/z)
+	and translations (mm) of the volume centre. flirt rotates about the corner, so the raw M[:3, 3] mixes rotation
+	into translation (mm-scale artefacts for 0.01-rad rotations); the centre displacement R c + t - c does not."""
 	R = M[:3, :3]
 	rx = np.arctan2(R[2, 1], R[2, 2]); ry = np.arcsin(-np.clip(R[2, 0], -1, 1)); rz = np.arctan2(R[1, 0], R[0, 0])
-	return np.r_[rx, ry, rz, M[:3, 3]]
+	return np.r_[rx, ry, rz, R @ centre_mm + M[:3, 3] - centre_mm]
 
 
 def framewise_displacement(motion, radius=50.0):
@@ -57,8 +59,10 @@ def motion_correct(img, work, n_jobs=8):
 		return np.asarray(nib.load(vout).dataobj, dtype=np.float32), np.loadtxt(mat)
 	res = Parallel(n_jobs=n_jobs)(delayed(one)(k) for k in range(data.shape[-1]))
 	vols = np.stack([r[0] for r in res], -1)
-	motion = np.stack([_rigid_params(r[1]) for r in res])
-	return nib.Nifti1Image(vols, img.affine, img.header), motion
+	centre = (np.array(img.shape[:3]) - 1) / 2 * np.array(img.header.get_zooms()[:3])
+	mats = np.stack([r[1] for r in res])
+	motion = np.stack([_rigid_params(m, centre) for m in mats])
+	return nib.Nifti1Image(vols, img.affine, img.header), motion, mats
 
 
 def native_atlas(mean_img, work):
@@ -91,7 +95,7 @@ def build(sub, force=False, n_jobs=8):
 	try:
 		img = nib.load(glob.glob(os.path.join(noddi.ROOT, "fMRI", sub, "*nw_mepi_rest_with_cross.nii.gz"))[0])
 		assert img.shape[-1] == 300, img.shape
-		mc, motion = motion_correct(img, work, n_jobs)
+		mc, motion, mats = motion_correct(img, work, n_jobs)
 		mean_img = image.mean_img(mc)
 		mask = masking.compute_epi_mask(mean_img)
 		sm = image.smooth_img(mc, 6.0)
@@ -119,7 +123,7 @@ def build(sub, force=False, n_jobs=8):
 		parcels.append(bold[:, m].mean(1)); pnames.append("global")
 		tmp = f + ".tmp.npz"
 		np.savez(tmp, bold=bold.astype(np.float16), mask=m, parcels=np.stack(parcels, 1).astype(np.float32), parcel_names=np.array(pnames),
-				 motion=motion.astype(np.float32), fd=framewise_displacement(motion).astype(np.float32),
+				 motion=motion.astype(np.float32), fd=framewise_displacement(motion).astype(np.float32), mc_mats=mats.astype(np.float32),
 				 atlas_cort=atlas["cort"].astype(np.int16), atlas_sub=atlas["sub"].astype(np.int16), epi2mni=e2m, affine=img.affine)
 		os.replace(tmp, f)
 	finally:

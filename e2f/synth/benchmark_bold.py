@@ -25,6 +25,18 @@ BANDS = ((1, 4), (4, 8), (8, 13), (13, 30), (30, 45))
 ALPHAS = [1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6]
 
 
+_COMMON = None
+
+
+def common_parcels():
+	"""Parcel names present in every subject (parcels with < 5 in-mask voxels are dropped per subject)."""
+	global _COMMON
+	if _COMMON is None:
+		sets = [list(np.load(noddi_bold.build(s))["parcel_names"]) for s in noddi.subjects()]
+		_COMMON = [n for n in sets[0] if all(n in t for t in sets)]
+	return _COMMON
+
+
 def features(sub, kind, n_frames=20):
 	d = noddi.load(sub)
 	b = np.load(noddi_bold.build(sub))
@@ -43,7 +55,8 @@ def features(sub, kind, n_frames=20):
 			X = X.reshape(len(X), -1)
 		else:
 			X = F.reshape(len(F), -1)
-	return X.astype(np.float32), b["parcels"][idx], b["bold"][idx], b["mask"], list(b["parcel_names"])
+	names = list(b["parcel_names"]); cols = [names.index(n) for n in common_parcels()]
+	return X.astype(np.float32), b["parcels"][idx][:, cols], b["bold"][idx], b["mask"], common_parcels()
 
 
 def corr_cols(P, Y):
