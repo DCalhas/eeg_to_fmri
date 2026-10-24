@@ -86,10 +86,10 @@ def _labels(xml):
 
 
 def build(sub, force=False, n_jobs=8):
-	from nilearn import image, masking, signal
 	f = os.path.join(OUT, f"{sub}.npz")
 	if os.path.exists(f) and not force:
 		return f
+	from nilearn import image, masking, signal  # only needed to build (envs without nilearn can read the cache)
 	os.makedirs(OUT, exist_ok=True)
 	work = tempfile.mkdtemp(prefix=f"bold_{sub}_", dir=OUT)
 	try:
