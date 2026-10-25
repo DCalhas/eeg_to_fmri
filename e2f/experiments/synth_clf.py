@@ -113,7 +113,8 @@ def classify(cohort, models, n_perm, n_jobs):
 		if name.startswith("bandpower+synth_"):
 			d, ci = stats.paired_bootstrap_delta(scores[name], scores["bandpower"], y, n_boot=2000)
 			out[name]["delta_vs_bandpower"] = {"delta": d, "ci95": list(ci)}
-	json.dump(out, open(os.path.join(OUT, f"{cohort}_clf.json"), "w"), indent=1, default=float)
+	tag = "-".join(sorted({m.replace("_untrained", "") for m in models}))  # never overwrite results of other model sets
+	json.dump(out, open(os.path.join(OUT, f"{cohort}_clf_{tag}.json"), "w"), indent=1, default=float)
 
 
 if __name__ == "__main__":
