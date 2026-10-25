@@ -44,7 +44,7 @@ def prep(Xtr, Xs, kind, seed):
 	sc = StandardScaler().fit(Xtr)
 	Xtr, Xs = sc.transform(Xtr), [sc.transform(x) for x in Xs]
 	if kind == "spectral":
-		p = PCA(256, random_state=seed).fit(Xtr); Xtr, Xs = p.transform(Xtr), [p.transform(x) for x in Xs]
+		p = PCA(min(256, Xtr.shape[0] // 2), random_state=seed).fit(Xtr); Xtr, Xs = p.transform(Xtr), [p.transform(x) for x in Xs]
 	return Xtr, Xs
 
 
