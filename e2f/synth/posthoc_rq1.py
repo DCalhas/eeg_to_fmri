@@ -9,8 +9,9 @@ and score the dynamics on
   linearly detrended target and prediction,
   optionally Friston-24 motion traces (from the RQ1b flirt estimates of the same run) regressed out of both,
 in three voxel sets: all in-brain voxels, edge voxels (brain mask minus its 2-voxel erosion), interior voxels.
-Statistics: pooled R2c (= 2 cov / SST difference vs a shift), variance-free pooled r (mean of per-voxel r) and
-median voxel r; permutation p vs shifts with the +1 correction; swap reported alongside.
+Statistics (shift null): pooled covariance, variance-free pooled r (mean of per-voxel r) and median voxel r;
+permutation p with the +1 correction; swap reported alongside. Pooled R2c is descriptive only, never tested against
+shifts (a shifted trend becomes a sawtooth that linear detrending leaves in; ledger Post-hoc v2).
 """
 import os, sys, json, argparse, glob
 import numpy as np
@@ -50,7 +51,8 @@ def dyn_stats(P, Y, sets):
 		r2c = 1 - ((yc - pc) ** 2).sum() / torch.clamp(sst, min=1e-12)
 		den = torch.sqrt((pc ** 2).sum(0) * (yc ** 2).sum(0))
 		r = torch.where(den > 0, (pc * yc).sum(0) / torch.where(den > 0, den, torch.ones_like(den)), torch.full_like(den, float("nan")))
-		out[name] = {"R2c": float(r2c), "r_mean": float(torch.nanmean(r)), "r_median": float(torch.nanmedian(r))}
+		cov = float((pc * yc).sum() / (yc.shape[0] * yc.shape[1]))  # pooled covariance (shift-null statistic, Post-hoc v2)
+		out[name] = {"R2c": float(r2c), "cov": cov, "r_mean": float(torch.nanmean(r)), "r_median": float(torch.nanmedian(r))}
 	return out
 
 
@@ -86,7 +88,8 @@ def score_fold(arm, name, fold_i, seed, n_shifts, n_skip, motion, device="cuda")
 		swaps.append(dyn_stats(prep(predict(Xv)), Yp, sets))
 	res = {"test": sub, "model": name, "arm": arm, "seed": seed, "n_skip": n_skip, "motion_regressed": motion, "real": real, "swap": swaps}
 	for s_ in sets:
-		for k in ("R2c", "r_mean", "r_median"):
+		for k in ("cov", "r_mean", "r_median", "R2c"):  # R2c kept descriptive only: a circularly shifted trend becomes a
+			# sawtooth that linear detrending leaves in, so detrended R2c vs shifts is anti-conservative (Post-hoc v2)
 			nul = [x[s_][k] for x in shifts]
 			res.setdefault("shift_mean", {}).setdefault(s_, {})[k] = float(np.mean(nul))
 			res.setdefault("p_shift", {}).setdefault(s_, {})[k] = perm_p(real[s_][k], nul)

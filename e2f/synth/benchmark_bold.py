@@ -151,7 +151,7 @@ def run_fold(fold, kind, n_shifts, seed, target):
 			"r_per_parcel": real.tolist() if target == "parcels" else None, "R2_per_parcel": r2.tolist() if target == "parcels" else None,
 			"r_p95": float(np.nanpercentile(real, 95)), "shift_null_r": null_r, "shift_null_R2_global": null_r2g,
 			"p_shift": float((1 + sum(v >= np.nanmean(real) for v in null_r)) / (1 + n_shifts)),
-			"p_shift_R2": float((1 + sum(v >= r2g for v in null_r2g)) / (1 + n_shifts)),
+			"p_shift_R2_descriptive_only": float((1 + sum(v >= r2g for v in null_r2g)) / (1 + n_shifts)),
 			"swap_null_r": swap_r, "swap_null_R2_global": swap_r2g, "detrended": True}
 
 

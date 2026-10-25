@@ -120,7 +120,7 @@ def run_fold(fold, args):
 			"r2corr_mean": float(np.nanmean(r ** 2)), "R2_mean": float(np.nanmean(r2)), "R2_global": r2g, "R2_frac_pos": float(np.nanmean(r2 > 0)),
 			"R2_max": float(np.nanmax(r2)), "r_per_parcel": r.tolist(), "R2_per_parcel": r2.tolist(), "shift_null_r": nr, "shift_null_R2_global": nr2,
 			"p_shift": float((1 + sum(v >= np.nanmean(r) for v in nr)) / (1 + len(nr))),
-			"p_shift_R2": float((1 + sum(v >= r2g for v in nr2)) / (1 + len(nr2))),
+			"p_shift_R2_descriptive_only": float((1 + sum(v >= r2g for v in nr2)) / (1 + len(nr2))),
 			"swap_null_r": sr, "swap_null_R2_global": sr2, "detrended": True}
 
 
