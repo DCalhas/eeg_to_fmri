@@ -183,13 +183,21 @@ def run_fold(fold, arm, models, args):
 	res = {"template": F.score(to_xyz(Ytr).mean(0), target, conv), "own_mean": F.score(target.mean(0), target, conv)}
 	device = "cuda"
 	assert torch.cuda.is_available(), "GPU-only rule: run this inside a GPU Slurm allocation"
+	mdir = os.path.join(RUNS, "models")
+	if getattr(args, "save_models", False):
+		os.makedirs(mdir, exist_ok=True)
+		np.savez(os.path.join(mdir, f"{arm}_fold{fold['_index']:02d}_seed{args.seed}_featstats.npz"), mu=mu, sd=sd,
+				 template=Ytr.mean(0), test=np.array(fold["test"]), val=np.array(fold["val"]))
 	for name in models:
 		t0 = time.time()
 		if name == "ridge":
-			pred_fn, info = ridge_fit(Xtr, Ytr, Xva, Yva)
+			pred_fn, info = ridge_fit(Xtr, Ytr, Xva, Yva)  # deterministic: refit post hoc instead of saving
 		else:
 			model, info = train_torch(name, Xtr, Ytr, Xva, Yva, args.epochs, args.bs, args.lr, device, args.seed)
 			pred_fn = lambda X, model=model: np.clip(predict(model, X, device), 0, 1)
+			if getattr(args, "save_models", False):
+				torch.save({"state_dict": model.state_dict(), "info": info, "x_shape": Xtr.shape[1:]},
+						   os.path.join(mdir, f"{arm}_{name}_fold{fold['_index']:02d}_seed{args.seed}.pt"))
 		nr = F.null_report(lambda X: to_xyz(pred_fn(X)), Xte, target, n_shifts=args.n_shifts, min_shift=30, rng=args.seed,
 						   conventions=("rmse", "ssim_2d_e2fnet", "voxel_r", "r2"))
 		res[name] = {**nr["real"], **info, "shift_null_mean": {k: float(np.mean(v)) for k, v in nr["shift_null"].items()},
@@ -210,6 +218,7 @@ if __name__ == "__main__":
 	ap.add_argument("--n_shifts", type=int, default=20)
 	ap.add_argument("--seed", type=int, default=0)
 	ap.add_argument("--tag", default="", help="suffix for output files (e.g. smoke)")
+	ap.add_argument("--save_models", action="store_true", help="save per-fold models + feature stats for post-hoc null scoring")
 	ap.add_argument("--final", action="store_true", help="train on all subjects except 2 val (no test) and save weights + feature stats for clinical application")
 	a = ap.parse_args()
 	if a.final:
@@ -222,5 +231,6 @@ if __name__ == "__main__":
 		out = os.path.join(RUNS, f"{a.arm}_{a.fold_set}_fold{i:02d}_seed{a.seed}{('_' + a.tag) if a.tag else ''}.json")
 		if os.path.exists(out):
 			continue
+		folds[i]["_index"] = i
 		r = run_fold(folds[i], a.arm, a.models, a)
-		json.dump({"fold": folds[i], "arm": a.arm, "args": vars(a), "results": r}, open(out, "w"), indent=1, default=float)
+		json.dump({"fold": {k: v for k, v in folds[i].items() if k != "_index"}, "arm": a.arm, "args": vars(a), "results": r}, open(out, "w"), indent=1, default=float)
