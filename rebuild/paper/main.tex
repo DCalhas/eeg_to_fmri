@@ -84,7 +84,7 @@ Medication (chlorpromazine-equivalent dose), illness duration, education and PAN
 Resting EEG from the University of New Mexico \citep{cavanagh_ds003490} (OpenNeuro ds003490): 25 patients with Parkinson's disease and 25 matched controls.
 Patients were recorded twice, a week apart, once ON and once OFF dopaminergic medication (order counterbalanced: 13 ON first, 12 OFF first); controls were recorded once.
 We analysed the OFF-medication session of each patient and the single control session.
-63 EEG channels plus vertical EOG and a three-axis accelerometer on the most tremor-affected hand (Brain Vision ActiChamp, 500\,Hz, reference CPz, 60\,Hz mains); the rest recording contains instructed one-minute eyes-open and eyes-closed spans.
+63 EEG channels plus vertical EOG and a three-axis accelerometer on the most tremor-affected hand (Brain Vision ActiChamp, 500\,Hz, reference CPz, 60\,Hz mains); the rest recording contains instructed one-minute eyes-closed and eyes-open spans (the first beginning about 27\,s into the recording), so the analysed 400\,s mix both conditions in the same proportion for every subject.
 This is the cohort from which \citet{yao2025catd} used eight subjects.
 
 \paragraph{Schizophrenia-spectrum, task EEG (Fribourg).}
@@ -99,15 +99,19 @@ This cohort was used by \citet{calhas2023medrxiv}; we include it as a leakage ca
 \small
 \begin{tabular}{llccccl}
 \toprule
-Cohort & Disease & \pt/\hc & Age \pt & Age \hc & Sex \pt/\hc (M/F) & Recording (analysed EEG) \\
+Cohort & Disease & \pt/\hc & Age \pt & Age \hc & Sex M/F (\pt\,|\,\hc) & Recording (analysed EEG) \\
 \midrule
-FEP1 (ds003944) & First-episode psychosis & 47/30 & \todo{} & \todo{} & \todo{} & rest, eyes open, 61 ch, 1\,kHz (300\,s) \\
-FEP2 (ds003947) & First-episode psychosis & 31/30 & \todo{} & \todo{} & \todo{} & rest, eyes open, 61 ch, 1\,kHz (300\,s) \\
-Semmelweis & Schizophrenia (chronic) & 38/39 & \todo{} & \todo{} & \todo{} & rest, eyes closed, 64 ch, 1\,kHz (118\,s) \\
-PD (ds003490) & Parkinson's disease (OFF) & 25/25 & \todo{} & \todo{} & \todo{} & rest, EO/EC spans, 63 ch, 500\,Hz (400\,s) \\
-Fribourg (ds004000) & Schizophrenia spectrum & 19/24 & n/a & n/a & n/a & Ultimatum Game, 128 ch, 2\,kHz (400\,s) \\
+FEP1 (ds003944) & First-episode psychosis & 47/30 & $22.5\pm5.1$ & $21.6\pm4.1$ & 33/14 \,|\, 18/12 & rest, eyes open, 61 ch, 1\,kHz (300\,s) \\
+FEP2 (ds003947) & First-episode psychosis & 31/30 & $23.4\pm4.7$ & $24.2\pm5.1$ & 22/9 \,|\, 16/14 & rest, eyes open, 61 ch, 1\,kHz (300\,s) \\
+Semmelweis & Schizophrenia (chronic) & 38/39 & $33.9\pm10.6$ & $32.7\pm9.7$ & 24/14 \,|\, 24/15 & rest, eyes closed, 64 ch, 1\,kHz (118\,s$^{a}$) \\
+PD (ds003490) & Parkinson's disease (OFF) & 25/25 & $69.7\pm8.7$ & $69.3\pm9.6$ & 16/9 \,|\, 16/9 & rest, EO/EC spans, 63 ch, 500\,Hz (400\,s) \\
+Fribourg (ds004000) & Schizophrenia spectrum & 19/24 & n/a$^{b}$ & n/a$^{b}$ & n/a$^{b}$ & Ultimatum Game, 128 ch, 2\,kHz (400\,s) \\
 \bottomrule
 \end{tabular}
+
+\raggedright\footnotesize
+$^{a}$One control recording is 109.7\,s long and was used in full. $^{b}$Not in the public release; group-level demographics are reported in \citet{horat2018}.
+No group differed in age (all cohorts) or sex distribution \todo{add tests}.
 \end{table}
 
 \section{Methods}
