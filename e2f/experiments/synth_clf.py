@@ -28,7 +28,11 @@ def synthesize(cohort, model_name, arm="aligned", untrained=False, seed=0):
 	assert torch.cuda.is_available(), "GPU-only rule"
 	st = np.load(os.path.join(FINAL, f"{arm}_featstats.npz"))
 	ck = torch.load(os.path.join(FINAL, f"{arm}_{model_name}_seed{seed}.pt"), map_location="cpu", weights_only=False)
-	model = build_model(model_name, tuple(ck["x_shape"]))
+	if model_name == "ntvit":
+		from e2f.synth import ntvit_final as NT
+		model = NT.build(ck["hparams"])
+	else:
+		model = build_model(model_name, tuple(ck["x_shape"]))
 	if not untrained:
 		model.load_state_dict(ck["state_dict"])
 	model = model.cuda().eval()
@@ -37,10 +41,14 @@ def synthesize(cohort, model_name, arm="aligned", untrained=False, seed=0):
 		d = np.load(os.path.join(HARM, cohort, f"{rec['sub']}.npz"))
 		eeg = d["eeg"]
 		onsets = np.arange(20, int(eeg.shape[1] / 250 / noddi.TR)) * noddi.TR  # pseudo-TRs after a 20-frame history
-		X, idx, _ = noddi.tr_frames(eeg, onsets, n_frames=20)
-		X = ((np.transpose(X, (0, 3, 1, 2)) - st["mu"]) / st["sd"]).astype(np.float32)
-		with torch.no_grad():
-			Y = torch.cat([model(torch.from_numpy(X[i:i + 64]).cuda()).clamp(0, 1) for i in range(0, len(X), 64)])
+		if model_name == "ntvit":  # raw waveforms, same 20-TR window ending at each pseudo-onset
+			W, _ = NT.raw_windows(eeg, onsets)
+			Y = torch.from_numpy(NT.predict(model, W)).cuda()
+		else:
+			X, idx, _ = noddi.tr_frames(eeg, onsets, n_frames=20)
+			X = ((np.transpose(X, (0, 3, 1, 2)) - st["mu"]) / st["sd"]).astype(np.float32)
+			with torch.no_grad():
+				Y = torch.cat([model(torch.from_numpy(X[i:i + 64]).cuda()).clamp(0, 1) for i in range(0, len(X), 64)])
 		feats.append(torch.cat([Y.mean(0).flatten(), Y.std(0).flatten()]).cpu().numpy().astype(np.float32))
 		labels.append(rec["label"]); subs.append(rec["sub"])
 	os.makedirs(os.path.join(OUT, cohort), exist_ok=True)
