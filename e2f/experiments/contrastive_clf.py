@@ -109,7 +109,9 @@ if __name__ == "__main__":
 	ap.add_argument("--epochs", type=int, default=10)
 	ap.add_argument("--lr", type=float, default=1e-3)
 	ap.add_argument("--l1", type=float, default=1e-4)
+	ap.add_argument("--out_dir", default=OUT)
 	a = ap.parse_args()
+	OUT = a.out_dir
 	assert torch.cuda.is_available(), "GPU-only rule"
 	dev = "cuda"
 	os.makedirs(OUT, exist_ok=True)
