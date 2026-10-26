@@ -17,7 +17,7 @@ A leakage-audited benchmark in psychosis, schizophrenia and Parkinson's disease}
 \begin{abstract}
 EEG-to-fMRI synthesis has been proposed as a way to bring fMRI-like spatial information into low-cost, EEG-only clinical settings, and two reports have used synthesized fMRI to classify patients (schizophrenia; Parkinson's disease).
 We test that proposition with a controlled classification benchmark.
-Three EEG-to-fMRI synthesizers (a CNN with topographical attention and random Fourier features, E2fNet and Spec2VolCAMU-Net) were trained on the NODDI simultaneous EEG--fMRI dataset with a corrected, scanner-trigger-aligned protocol, and applied to resting EEG from five public clinical cohorts:
+Four EEG-to-fMRI synthesizers (a CNN with topographical attention and random Fourier features, E2fNet, Spec2VolCAMU-Net and NT-ViT) were trained on the NODDI simultaneous EEG--fMRI dataset with a corrected, scanner-trigger-aligned protocol, and applied to resting EEG from five public clinical cohorts:
 two first-episode psychosis samples ($n=77$ and $n=61$), a chronic schizophrenia sample ($n=77$), a Parkinson's disease sample ($n=50$) and a task-EEG schizophrenia-spectrum sample ($n=43$).
 For each cohort we compared EEG band power, synthesized fMRI, and their combination with L2 logistic regression under repeated stratified cross-validation and label-permutation tests, and added an architecture-only control in which the same synthesizers were applied with random (untrained) weights.
 A leakage audit preceded the benchmark: in the task-EEG cohort, the channel layout of auxiliary electrodes differs between patients and controls, and a previously published synthesized-fMRI pipeline (AUC 0.93) loses all discrimination (AUC 0.49) once those channels are removed.
@@ -44,7 +44,7 @@ We report such a benchmark.
 Our contributions are:
 \begin{enumerate}
 \item A leakage audit of the clinical data, which shows that the schizophrenia result of \citet{calhas2023medrxiv} is explained by a group-dependent auxiliary-channel layout in the source dataset (Section~\ref{sec:res_leak}).
-\item A classification benchmark of three EEG-to-fMRI synthesizers on five public clinical cohorts covering first-episode psychosis, chronic schizophrenia, a schizophrenia-spectrum task cohort and Parkinson's disease, with EEG band-power, fusion and untrained-network controls (Sections~\ref{sec:res_eeg}--\ref{sec:res_untrained}).
+\item A classification benchmark of four EEG-to-fMRI synthesizers, plus the contrastive fine-tuning method of \citet{calhas2023medrxiv}, on five public clinical cohorts covering first-episode psychosis, chronic schizophrenia, a schizophrenia-spectrum task cohort and Parkinson's disease, with EEG band-power, fusion and untrained-network controls (Sections~\ref{sec:res_eeg}--\ref{sec:res_untrained}).
 \item Supporting evidence on the synthesizers themselves: a trigger-aligned training protocol for the NODDI dataset, an EEG-free template baseline, and a fair-target test of how much BOLD variance EEG predicts (Section~\ref{sec:res_fidelity}).
 \end{enumerate}
 
@@ -136,7 +136,15 @@ Synthesizers used in the classification benchmark were trained on 14 NODDI subje
 (i) \textbf{CNN-TAG} \citep{calhas2023mlhc}: sparsemax topographical attention over channels, two 3D residual blocks, a dense latent layer, random Fourier features with layer normalisation centred at $\pi/2$, cosine projection, a learned style vector and a dense voxel decoder (43\,M parameters); re-implemented in PyTorch from the original TensorFlow code.
 (ii) \textbf{E2fNet} \citep{roos2025e2fnet}: convolutional EEG encoder followed by a 2D U-Net and a convolutional fMRI decoder; authors' model code.
 (iii) \textbf{Spec2VolCAMU-Net} \citep{he2025spec2vol}: multi-scale convolutional spectrogram encoder with temporal self-attention and a Vision-Mamba U-Net decoder; authors' model code, with the selective scan computed by an exact pure-PyTorch chunked recurrence because the CUDA kernel was unavailable.
-CATD \citep{yao2025catd} could not be included because no code is available. NT-ViT \citep{lanzino2024ntvit} and NeuroBOLT/UnEBOLT \citep{li2024neurobolt,li2026unebolt} were evaluated for synthesis fidelity only (Section~\ref{sec:res_fidelity}); \todo{decide whether to add NT-ViT to the classification benchmark}.
+(iv) \textbf{NT-ViT} \citep{lanzino2024ntvit}: mel-spectrogram vision-transformer encoder and decoder with a domain-matching loss; authors' code and hyperparameters (three layers, hidden size 256, AdamW, learning rate $5\times10^{-4}$, batch 128, 30 epochs). NT-ViT computes its own spectrograms, so it received the same 43.2\,s window of trigger-aligned EEG as raw waveforms; the published model used a simultaneous 2.16\,s window without haemodynamic lag.
+CATD \citep{yao2025catd} could not be included because no code is available. NeuroBOLT/UnEBOLT \citep{li2024neurobolt,li2026unebolt} predict parcel time series rather than volumes and were evaluated for synthesis fidelity only (Section~\ref{sec:res_fidelity}).
+
+\paragraph{Contrastive fine-tuning of the synthesizer.}
+We also re-evaluated the method of \citet{calhas2023medrxiv}, which adapts the CNN-TAG synthesizer to the diagnostic task.
+Its encoder output is projected to random Fourier features normalised to $[0,\pi]$ (the ``sinusoid'' space); a contrastive loss on pairs of EEG windows pulls same-diagnosis windows together and pushes different-diagnosis windows to a margin $m=0.5$, while a linear classifier with an L1 penalty is trained on the synthesized fMRI view (detached from the encoder), and the voxel decoder stays frozen at its NODDI weights.
+Two variants were run: \emph{as in 2023}, in which the encoder and Fourier projection are re-initialised (what the original implementation did), and \emph{pretrained}, in which they start from the NODDI-trained synthesizer and are fine-tuned.
+Each synthesized window (one per pseudo-TR) is an instance; a subject's score is the mean predicted probability over its windows.
+Training used a fixed budget (10 epochs, Adam, learning rate $10^{-3}$, batches of 16 pairs, L1 weight $10^{-4}$), without per-fold tuning; validation was repeated stratified 10-fold at the subject level (3 repeats) with 20 label permutations (minimum attainable $p\approx0.048$).
 
 \paragraph{Untrained controls.}
 For each synthesizer, the same architecture with random initial weights (PyTorch default initialisation, one draw) was passed through the identical pipeline.
@@ -259,8 +267,8 @@ We recommend that synthesis studies report an EEG-free template, voxel or parcel
 \item EEG itself carried weak signal in the psychosis and schizophrenia cohorts; the benchmark is most informative in Parkinson's disease.
 \item Synthesizers were trained on one resting-state, eyes-open, 1.5\,T dataset of 16 healthy adults; clinical EEG differed in system, montage (interpolated), eye condition (Semmelweis eyes closed) and paradigm (Fribourg task).
 \item Patients were medicated in the FEP and Semmelweis cohorts; Semmelweis patients were recorded earlier in the day.
-\item The contrastive fine-tuning of the synthesizer's latent space proposed in \citet{calhas2023medrxiv} was not re-evaluated on the clean cohorts. \todo{run or justify}
-\item CATD could not be evaluated (no code); NT-ViT and NeuroBOLT/UnEBOLT were evaluated for fidelity only.
+\item The contrastive fine-tuning was run with fixed hyperparameters and fewer permutations than the other views, for computational reasons.
+\item CATD could not be evaluated (no code); NeuroBOLT/UnEBOLT produce parcel time series and were evaluated for fidelity only.
 \item Each subject's synthesized sequence was summarised by its temporal mean and standard deviation; other summaries (e.g.\ synthesized connectivity) were not tested.
 \end{itemize}
 
