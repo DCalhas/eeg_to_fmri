@@ -92,7 +92,7 @@ class Pairs(torch.utils.data.Dataset):
 
 
 @torch.no_grad()
-def predict(model, W, device="cuda", bs=64):
+def predict(model, W, device="cuda", bs=16):
 	model.eval()
 	out = []
 	for i in range(0, len(W), bs):
