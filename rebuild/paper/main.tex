@@ -136,7 +136,7 @@ Synthesizers used in the classification benchmark were trained on 14 NODDI subje
 (i) \textbf{CNN-TAG} \citep{calhas2023mlhc}: sparsemax topographical attention over channels, two 3D residual blocks, a dense latent layer, random Fourier features with layer normalisation centred at $\pi/2$, cosine projection, a learned style vector and a dense voxel decoder (43\,M parameters); re-implemented in PyTorch from the original TensorFlow code.
 (ii) \textbf{E2fNet} \citep{roos2025e2fnet}: convolutional EEG encoder followed by a 2D U-Net and a convolutional fMRI decoder; authors' model code.
 (iii) \textbf{Spec2VolCAMU-Net} \citep{he2025spec2vol}: multi-scale convolutional spectrogram encoder with temporal self-attention and a Vision-Mamba U-Net decoder; authors' model code, with the selective scan computed by an exact pure-PyTorch chunked recurrence because the CUDA kernel was unavailable.
-(iv) \textbf{NT-ViT} \citep{lanzino2024ntvit}: mel-spectrogram vision-transformer encoder and decoder with a domain-matching loss; authors' code and hyperparameters (three layers, hidden size 256, AdamW, learning rate $5\times10^{-4}$, batch 128, 30 epochs). NT-ViT computes its own spectrograms, so it received the same 43.2\,s window of trigger-aligned EEG as raw waveforms; the published model used a simultaneous 2.16\,s window without haemodynamic lag.
+(iv) \textbf{NT-ViT} \citep{lanzino2024ntvit}: mel-spectrogram vision-transformer encoder and decoder with a domain-matching loss; authors' code and hyperparameters (three layers, hidden size 256, AdamW, learning rate $5\times10^{-4}$, 30 epochs), with batch size 32 instead of 128 because the longer input window did not fit in GPU memory at 128. NT-ViT computes its own spectrograms, so it received the same 43.2\,s window of trigger-aligned EEG as raw waveforms; the published model used a simultaneous 2.16\,s window without haemodynamic lag.
 CATD \citep{yao2025catd} could not be included because no code is available. NeuroBOLT/UnEBOLT \citep{li2024neurobolt,li2026unebolt} predict parcel time series rather than volumes and were evaluated for synthesis fidelity only (Section~\ref{sec:res_fidelity}).
 
 \paragraph{Contrastive fine-tuning of the synthesizer.}
@@ -238,6 +238,28 @@ In the psychosis and schizophrenia cohorts no synthesized view was significant e
 
 Combining synthesized fMRI with band power changed AUC by $-0.046$ to $+0.112$.
 Four of 15 confidence intervals exclude or touch zero from above (Semmelweis E2fNet $+0.065$; Semmelweis Spec2VolCAMU-Net $+0.112$; PD Spec2VolCAMU-Net $+0.035$; Fribourg E2fNet $+0.075$), none of which would survive a correction for 15 comparisons, and each is matched by its untrained control (next section).
+
+\subsection{Contrastive fine-tuning}\label{sec:res_contrastive}
+The contrastive fine-tuning method discriminated only in Parkinson's disease, at the smallest attainable permutation $p$ (Table~\ref{tab:contrastive}), and stayed below band power there (0.70 and 0.66 vs 0.79).
+Initialising the encoder from the NODDI-trained synthesizer did not improve on random initialisation.
+
+\begin{table}[t]
+\centering
+\caption{Contrastive fine-tuning \citep{calhas2023medrxiv}: AUC (repeated stratified 10-fold, 3 repeats), 95\% bootstrap CI and permutation $p$ (20 permutations; minimum 0.048).}
+\label{tab:contrastive}
+\small
+\begin{tabular}{lccc}
+\toprule
+Cohort & As in 2023 (re-initialised encoder) & Pretrained encoder & Band power \\
+\midrule
+FEP1 & 0.485 [0.39, 0.67] ($p=0.57$) & 0.599 [0.48, 0.73] ($p=0.19$) & 0.620 \\
+FEP2 & 0.476 [0.34, 0.63] ($p=0.52$) & 0.433 [0.27, 0.54] ($p=0.76$) & 0.646 \\
+Semmelweis & 0.538 [0.46, 0.72] ($p=0.33$) & 0.562 [0.45, 0.70] ($p=0.24$) & 0.571 \\
+PD & 0.701 [0.58, 0.86] ($p=0.048$) & 0.660 [0.53, 0.82] ($p=0.048$) & 0.786 \\
+Fribourg & 0.559 [0.38, 0.74] ($p=0.33$) & 0.602 [0.44, 0.77] ($p=0.14$) & 0.539 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Untrained synthesizers match trained ones}\label{sec:res_untrained}
 Applying the same architectures with random weights gave comparable or higher AUCs where synthesized views discriminated: in PD 0.702 (CNN-TAG), 0.707 (E2fNet) and 0.740 (Spec2VolCAMU-Net) against 0.484, 0.741 and 0.694 trained; in Semmelweis, the untrained Spec2VolCAMU-Net reached 0.738 against 0.620 trained, and its fusion gain ($+0.168$) exceeded that of the trained model ($+0.112$).
