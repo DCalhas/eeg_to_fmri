@@ -1,0 +1,9 @@
+template/
+submission/*.aux
+submission/*.log
+submission/*.out
+submission/*.bbl
+submission/*.blg
+submission/*.fls
+submission/*.fdb_latexmk
+submission/*.synctex.gz

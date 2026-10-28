@@ -1,0 +1,24 @@
+\documentclass[11pt]{letter}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\verify}[1]{\textcolor{red}{[VERIFY: #1]}}
+\signature{David Calhas, on behalf of all authors\\\verify{affiliation}\\davidcalhas@gmail.com}
+\address{\verify{affiliation and postal address}}
+\begin{document}
+\begin{letter}{The Editors-in-Chief\\\textit{Brain Informatics}\\Springer Nature}
+\opening{Dear Editors,}
+
+We submit the research article \textbf{``Does EEG to fMRI Synthesis Aid Medical Decision? An Evaluation in Psychosis, Schizophrenia and Parkinson's Disease''} for consideration in \textit{Brain Informatics}.
+
+EEG-to-fMRI synthesis, which predicts fMRI volumes from scalp EEG, is an active area of brain informatics, and several recent methods motivate it by its potential to support diagnosis where fMRI is unavailable. Whether synthesized fMRI adds diagnostic information beyond the EEG it is computed from has not, to our knowledge, been tested with the controls such a claim requires. Our study provides this test. We train four synthesizers, including our earlier CNN-TAG model and three published architectures (E2fNet, Spec2VolCAMU-Net and NT-ViT), on a public simultaneous EEG-fMRI dataset with scanner-trigger alignment. We then apply them to resting EEG from five public clinical cohorts: two first-episode psychosis samples, chronic schizophrenia, Parkinson's disease and a schizophrenia-spectrum cohort recorded during a task. All EEG is harmonised to a common montage, and classification uses nested repeated cross-validation, permutation tests and paired bootstrap comparisons against an EEG band-power baseline. Untrained (random-weight) synthesizers serve as an architecture-only control, and a contrastive fine-tuning method is evaluated alongside.
+
+The main findings are as follows. Synthesized fMRI discriminated Parkinson's disease from controls but stayed below EEG band power there. Its addition to band power gave no gain that survived correction for multiple comparisons. Untrained synthesizers reproduced most of its discriminative content. In supporting analyses, the synthesizers did not outperform an EEG-free template image under the image metrics used in the field, and EEG explained a negligible part of the BOLD signal. We believe these results, the evaluation protocol and the released code will be useful to researchers developing cross-modal neuroimaging methods and to those considering them for clinical use. This fits the journal's scope at the intersection of brain science, informatics and medical decision support.
+
+The manuscript is original and has not been published elsewhere, and it is not under consideration by any other journal. An earlier version of the synthesis-to-classification approach was posted as a preprint on medRxiv (doi:10.1101/2023.08.07.23293748 \verify{DOI}); the present manuscript reports new experiments, cohorts and analyses. All analysed datasets are public, and all code is available \verify{repository URL}. All authors have read and approved the manuscript and agree with its submission. The authors declare no competing interests. \verify{confirm}
+
+\verify{Optional: suggested reviewers (name, affiliation, e-mail, expertise), none with a conflict of interest; and any reviewers to exclude.}
+
+\closing{Yours sincerely,}
+\end{letter}
+\end{document}
