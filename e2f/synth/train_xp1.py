@@ -125,7 +125,7 @@ def synthesize(names):
 
 if __name__ == "__main__":
 	ap = argparse.ArgumentParser()
-	ap.add_argument("--models", nargs="+", default=["cnn_tag", "e2fnet", "spec2vol"])
+	ap.add_argument("--models", nargs="*", default=["cnn_tag", "e2fnet", "spec2vol"])
 	ap.add_argument("--ntvit", action="store_true")
 	ap.add_argument("--synthesize", action="store_true")
 	ap.add_argument("--epochs", type=int, default=50)

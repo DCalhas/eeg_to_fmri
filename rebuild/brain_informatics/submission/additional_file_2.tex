@@ -1,0 +1,321 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=2cm,landscape]{geometry}
+\usepackage{amsmath,amssymb,booktabs,longtable,xcolor}
+\renewcommand{\thetable}{S\arabic{table}}
+\newcommand{\verify}[1]{\textcolor{red}{[VERIFY: #1]}}
+\title{Additional file 2\\[4pt]\large What Does EEG-to-fMRI Synthesis Add to EEG-Based Diagnosis? A Controlled Benchmark in Psychosis, Schizophrenia and Parkinson's Disease}
+\author{\normalsize Supplementary tables}
+\date{}
+\begin{document}
+\maketitle
+
+\footnotesize
+\begin{longtable}{l l l l r c c r r r}
+\caption{Added value of synthesized fMRI, full precision. $\Delta$AUC of the combined view over the baseline; 95\% and Bonferroni-level (40 comparisons) percentile intervals of a paired stratified bootstrap over subjects (20,000 resamples); two-sided bootstrap $p$; Holm-adjusted $p$ within the 20 trained-synthesizer comparisons (XP1: within the 20 XP1 comparisons) and within the 40 comparisons including untrained synthesizers.}\label{tab:s_delta}\\
+\toprule
+Baseline & Cohort & Synthesizer & Weights & $\Delta$AUC & 95\% CI & Bonferroni-40 CI & $p$ & Holm (20) & Holm (40) \\
+\midrule
+\endfirsthead
+\toprule
+Baseline & Cohort & Synthesizer & Weights & $\Delta$AUC & 95\% CI & Bonferroni-40 CI & $p$ & Holm (20) & Holm (40) \\
+\midrule
+\endhead
+        band power & FEP1 & CNN-TAG & trained (NODDI) & $-0.042$ & [$-0.113$, $+0.029$] & [$-0.159$, $+0.076$] & $0.2535$ & $1.000$ & $1.000$ \\
+        band power & FEP1 & CNN-TAG & untrained & $-0.095$ & [$-0.163$, $-0.036$] & [$-0.220$, $-0.004$] & $0.0005$ & -- & $0.019$ \\
+        band power & FEP1 & CNN-TAG & trained (XP1) & $-0.130$ & [$-0.223$, $-0.043$] & [$-0.285$, $+0.017$] & $0.0035$ & $0.063$ & -- \\
+        band power & FEP1 & E2fNet & trained (NODDI) & $+0.006$ & [$-0.074$, $+0.081$] & [$-0.123$, $+0.136$] & $0.8799$ & $1.000$ & $1.000$ \\
+        band power & FEP1 & E2fNet & untrained & $-0.013$ & [$-0.071$, $+0.046$] & [$-0.112$, $+0.093$] & $0.6469$ & -- & $1.000$ \\
+        band power & FEP1 & E2fNet & trained (XP1) & $-0.043$ & [$-0.125$, $+0.036$] & [$-0.188$, $+0.082$] & $0.2989$ & $1.000$ & -- \\
+        band power & FEP1 & Spec2VolCAMU-Net & trained (NODDI) & $-0.052$ & [$-0.123$, $+0.014$] & [$-0.175$, $+0.060$] & $0.1370$ & $1.000$ & $1.000$ \\
+        band power & FEP1 & Spec2VolCAMU-Net & untrained & $+0.006$ & [$-0.051$, $+0.062$] & [$-0.092$, $+0.100$] & $0.8392$ & -- & $1.000$ \\
+        band power & FEP1 & Spec2VolCAMU-Net & trained (XP1) & $-0.105$ & [$-0.177$, $-0.038$] & [$-0.234$, $+0.001$] & $0.0014$ & $0.027$ & -- \\
+        band power & FEP1 & NT-ViT & trained (NODDI) & $-0.028$ & [$-0.091$, $+0.031$] & [$-0.140$, $+0.065$] & $0.3525$ & $1.000$ & $1.000$ \\
+        band power & FEP1 & NT-ViT & untrained & $+0.018$ & [$-0.035$, $+0.072$] & [$-0.073$, $+0.107$] & $0.5014$ & -- & $1.000$ \\
+        band power & FEP1 & NT-ViT & trained (XP1) & $+0.013$ & [$-0.045$, $+0.070$] & [$-0.088$, $+0.107$] & $0.6463$ & $1.000$ & -- \\
+        band power & FEP2 & CNN-TAG & trained (NODDI) & $-0.024$ & [$-0.068$, $+0.017$] & [$-0.104$, $+0.047$] & $0.2648$ & $1.000$ & $1.000$ \\
+        band power & FEP2 & CNN-TAG & untrained & $+0.028$ & [$-0.016$, $+0.083$] & [$-0.042$, $+0.133$] & $0.2368$ & -- & $1.000$ \\
+        band power & FEP2 & CNN-TAG & trained (XP1) & $+0.025$ & [$-0.031$, $+0.086$] & [$-0.073$, $+0.134$] & $0.3916$ & $1.000$ & -- \\
+        band power & FEP2 & E2fNet & trained (NODDI) & $-0.003$ & [$-0.042$, $+0.037$] & [$-0.069$, $+0.067$] & $0.8823$ & $1.000$ & $1.000$ \\
+        band power & FEP2 & E2fNet & untrained & $+0.001$ & [$-0.037$, $+0.038$] & [$-0.066$, $+0.065$] & $0.9637$ & -- & $1.000$ \\
+        band power & FEP2 & E2fNet & trained (XP1) & $-0.004$ & [$-0.042$, $+0.032$] & [$-0.068$, $+0.062$] & $0.8328$ & $1.000$ & -- \\
+        band power & FEP2 & Spec2VolCAMU-Net & trained (NODDI) & $+0.023$ & [$-0.026$, $+0.072$] & [$-0.061$, $+0.109$] & $0.3550$ & $1.000$ & $1.000$ \\
+        band power & FEP2 & Spec2VolCAMU-Net & untrained & $+0.005$ & [$-0.037$, $+0.046$] & [$-0.068$, $+0.074$] & $0.8046$ & -- & $1.000$ \\
+        band power & FEP2 & Spec2VolCAMU-Net & trained (XP1) & $-0.032$ & [$-0.077$, $+0.009$] & [$-0.112$, $+0.038$] & $0.1250$ & $1.000$ & -- \\
+        band power & FEP2 & NT-ViT & trained (NODDI) & $+0.012$ & [$-0.020$, $+0.045$] & [$-0.043$, $+0.074$] & $0.4683$ & $1.000$ & $1.000$ \\
+        band power & FEP2 & NT-ViT & untrained & $+0.001$ & [$-0.034$, $+0.036$] & [$-0.061$, $+0.062$] & $0.9647$ & -- & $1.000$ \\
+        band power & FEP2 & NT-ViT & trained (XP1) & $-0.000$ & [$-0.022$, $+0.023$] & [$-0.039$, $+0.039$] & $1.0000$ & $1.000$ & -- \\
+        band power & Semmelweis & CNN-TAG & trained (NODDI) & $+0.007$ & [$-0.053$, $+0.068$] & [$-0.093$, $+0.111$] & $0.8459$ & $1.000$ & $1.000$ \\
+        band power & Semmelweis & CNN-TAG & untrained & $+0.073$ & [$+0.001$, $+0.150$] & [$-0.047$, $+0.207$] & $0.0477$ & -- & $1.000$ \\
+        band power & Semmelweis & CNN-TAG & trained (XP1) & $+0.032$ & [$-0.049$, $+0.116$] & [$-0.104$, $+0.175$] & $0.4455$ & $1.000$ & -- \\
+        band power & Semmelweis & E2fNet & trained (NODDI) & $+0.067$ & [$+0.013$, $+0.125$] & [$-0.022$, $+0.166$] & $0.0158$ & $0.269$ & $0.521$ \\
+        band power & Semmelweis & E2fNet & untrained & $-0.001$ & [$-0.061$, $+0.059$] & [$-0.103$, $+0.098$] & $0.9866$ & -- & $1.000$ \\
+        band power & Semmelweis & E2fNet & trained (XP1) & $+0.070$ & [$+0.008$, $+0.136$] & [$-0.039$, $+0.185$] & $0.0291$ & $0.466$ & -- \\
+        band power & Semmelweis & Spec2VolCAMU-Net & trained (NODDI) & $+0.112$ & [$+0.035$, $+0.196$] & [$-0.009$, $+0.261$] & $0.0038$ & $0.072$ & $0.133$ \\
+        band power & Semmelweis & Spec2VolCAMU-Net & untrained & $+0.165$ & [$+0.089$, $+0.248$] & [$+0.046$, $+0.319$] & $0.0000$ & -- & $0.000$ \\
+        band power & Semmelweis & Spec2VolCAMU-Net & trained (XP1) & $+0.155$ & [$+0.078$, $+0.241$] & [$+0.036$, $+0.309$] & $0.0000$ & $0.000$ & -- \\
+        band power & Semmelweis & NT-ViT & trained (NODDI) & $-0.013$ & [$-0.107$, $+0.086$] & [$-0.163$, $+0.160$] & $0.7660$ & $1.000$ & $1.000$ \\
+        band power & Semmelweis & NT-ViT & untrained & $+0.096$ & [$+0.032$, $+0.166$] & [$-0.010$, $+0.223$] & $0.0034$ & -- & $0.122$ \\
+        band power & Semmelweis & NT-ViT & trained (XP1) & $-0.039$ & [$-0.121$, $+0.042$] & [$-0.182$, $+0.095$] & $0.3468$ & $1.000$ & -- \\
+        band power & PD & CNN-TAG & trained (NODDI) & $+0.019$ & [$-0.006$, $+0.053$] & [$-0.021$, $+0.086$] & $0.1623$ & $1.000$ & $1.000$ \\
+        band power & PD & CNN-TAG & untrained & $+0.013$ & [$-0.026$, $+0.050$] & [$-0.065$, $+0.082$] & $0.4672$ & -- & $1.000$ \\
+        band power & PD & CNN-TAG & trained (XP1) & $-0.018$ & [$-0.054$, $+0.013$] & [$-0.093$, $+0.034$] & $0.2712$ & $1.000$ & -- \\
+        band power & PD & E2fNet & trained (NODDI) & $+0.005$ & [$-0.024$, $+0.038$] & [$-0.045$, $+0.073$] & $0.8016$ & $1.000$ & $1.000$ \\
+        band power & PD & E2fNet & untrained & $+0.029$ & [$-0.002$, $+0.066$] & [$-0.021$, $+0.101$] & $0.0644$ & -- & $1.000$ \\
+        band power & PD & E2fNet & trained (XP1) & $-0.008$ & [$-0.051$, $+0.030$] & [$-0.092$, $+0.065$] & $0.7287$ & $1.000$ & -- \\
+        band power & PD & Spec2VolCAMU-Net & trained (NODDI) & $+0.035$ & [$+0.010$, $+0.072$] & [$+0.000$, $+0.107$] & $0.0025$ & $0.050$ & $0.095$ \\
+        band power & PD & Spec2VolCAMU-Net & untrained & $-0.019$ & [$-0.077$, $+0.026$] & [$-0.130$, $+0.056$] & $0.4917$ & -- & $1.000$ \\
+        band power & PD & Spec2VolCAMU-Net & trained (XP1) & $-0.003$ & [$-0.061$, $+0.040$] & [$-0.112$, $+0.074$] & $1.0000$ & $1.000$ & -- \\
+        band power & PD & NT-ViT & trained (NODDI) & $+0.038$ & [$+0.010$, $+0.078$] & [$-0.010$, $+0.117$] & $0.0092$ & $0.166$ & $0.313$ \\
+        band power & PD & NT-ViT & untrained & $+0.027$ & [$-0.000$, $+0.062$] & [$-0.023$, $+0.094$] & $0.0624$ & -- & $1.000$ \\
+        band power & PD & NT-ViT & trained (XP1) & $+0.021$ & [$-0.003$, $+0.051$] & [$-0.022$, $+0.083$] & $0.1098$ & $1.000$ & -- \\
+        band power & Fribourg & CNN-TAG & trained (NODDI) & $-0.000$ & [$-0.072$, $+0.068$] & [$-0.129$, $+0.123$] & $1.0000$ & $1.000$ & $1.000$ \\
+        band power & Fribourg & CNN-TAG & untrained & $+0.002$ & [$-0.066$, $+0.075$] & [$-0.121$, $+0.136$] & $0.9677$ & -- & $1.000$ \\
+        band power & Fribourg & CNN-TAG & trained (XP1) & $-0.050$ & [$-0.136$, $+0.031$] & [$-0.198$, $+0.083$] & $0.2366$ & $1.000$ & -- \\
+        band power & Fribourg & E2fNet & trained (NODDI) & $+0.079$ & [$+0.004$, $+0.160$] & [$-0.044$, $+0.228$] & $0.0352$ & $0.563$ & $1.000$ \\
+        band power & Fribourg & E2fNet & untrained & $+0.061$ & [$+0.018$, $+0.118$] & [$-0.004$, $+0.169$] & $0.0026$ & -- & $0.096$ \\
+        band power & Fribourg & E2fNet & trained (XP1) & $+0.077$ & [$+0.020$, $+0.151$] & [$-0.011$, $+0.213$] & $0.0084$ & $0.143$ & -- \\
+        band power & Fribourg & Spec2VolCAMU-Net & trained (NODDI) & $+0.013$ & [$-0.048$, $+0.066$] & [$-0.101$, $+0.105$] & $0.6147$ & $1.000$ & $1.000$ \\
+        band power & Fribourg & Spec2VolCAMU-Net & untrained & $+0.042$ & [$-0.009$, $+0.105$] & [$-0.044$, $+0.160$] & $0.1232$ & -- & $1.000$ \\
+        band power & Fribourg & Spec2VolCAMU-Net & trained (XP1) & $+0.011$ & [$-0.061$, $+0.081$] & [$-0.122$, $+0.128$] & $0.7604$ & $1.000$ & -- \\
+        band power & Fribourg & NT-ViT & trained (NODDI) & $-0.007$ & [$-0.048$, $+0.031$] & [$-0.089$, $+0.058$] & $0.7827$ & $1.000$ & $1.000$ \\
+        band power & Fribourg & NT-ViT & untrained & $+0.033$ & [$-0.009$, $+0.081$] & [$-0.042$, $+0.126$] & $0.1349$ & -- & $1.000$ \\
+        band power & Fribourg & NT-ViT & trained (XP1) & $+0.018$ & [$-0.022$, $+0.057$] & [$-0.063$, $+0.092$] & $0.3569$ & $1.000$ & -- \\
+        information-matched EEG & FEP1 & CNN-TAG & trained (NODDI) & $-0.008$ & [$-0.132$, $+0.118$] & [$-0.225$, $+0.204$] & $0.9143$ & $1.000$ & $1.000$ \\
+        information-matched EEG & FEP1 & CNN-TAG & untrained & $-0.133$ & [$-0.243$, $-0.031$] & [$-0.315$, $+0.031$] & $0.0099$ & -- & $0.376$ \\
+        information-matched EEG & FEP1 & CNN-TAG & trained (XP1) & $-0.030$ & [$-0.160$, $+0.093$] & [$-0.252$, $+0.167$] & $0.6458$ & $1.000$ & -- \\
+        information-matched EEG & FEP1 & E2fNet & trained (NODDI) & $-0.070$ & [$-0.183$, $+0.038$] & [$-0.260$, $+0.103$] & $0.2139$ & $1.000$ & $1.000$ \\
+        information-matched EEG & FEP1 & E2fNet & untrained & $+0.018$ & [$-0.079$, $+0.113$] & [$-0.140$, $+0.163$] & $0.6829$ & -- & $1.000$ \\
+        information-matched EEG & FEP1 & E2fNet & trained (XP1) & $-0.045$ & [$-0.162$, $+0.067$] & [$-0.239$, $+0.141$] & $0.4408$ & $1.000$ & -- \\
+        information-matched EEG & FEP1 & Spec2VolCAMU-Net & trained (NODDI) & $+0.018$ & [$-0.107$, $+0.138$] & [$-0.195$, $+0.207$] & $0.7698$ & $1.000$ & $1.000$ \\
+        information-matched EEG & FEP1 & Spec2VolCAMU-Net & untrained & $-0.036$ & [$-0.116$, $+0.040$] & [$-0.167$, $+0.089$] & $0.3600$ & -- & $1.000$ \\
+        information-matched EEG & FEP1 & Spec2VolCAMU-Net & trained (XP1) & $-0.101$ & [$-0.212$, $+0.006$] & [$-0.296$, $+0.069$] & $0.0659$ & $1.000$ & -- \\
+        information-matched EEG & FEP1 & NT-ViT & trained (NODDI) & $-0.044$ & [$-0.126$, $+0.038$] & [$-0.191$, $+0.091$] & $0.3011$ & $1.000$ & $1.000$ \\
+        information-matched EEG & FEP1 & NT-ViT & untrained & $+0.055$ & [$-0.016$, $+0.132$] & [$-0.055$, $+0.191$] & $0.1348$ & -- & $1.000$ \\
+        information-matched EEG & FEP1 & NT-ViT & trained (XP1) & $+0.043$ & [$-0.028$, $+0.118$] & [$-0.072$, $+0.166$] & $0.2335$ & $1.000$ & -- \\
+        information-matched EEG & FEP2 & CNN-TAG & trained (NODDI) & $-0.226$ & [$-0.354$, $-0.099$] & [$-0.449$, $-0.012$] & $0.0005$ & $0.010$ & $0.020$ \\
+        information-matched EEG & FEP2 & CNN-TAG & untrained & $-0.080$ & [$-0.200$, $+0.034$] & [$-0.281$, $+0.109$] & $0.1825$ & -- & $1.000$ \\
+        information-matched EEG & FEP2 & CNN-TAG & trained (XP1) & $+0.033$ & [$-0.108$, $+0.177$] & [$-0.196$, $+0.275$] & $0.6409$ & $1.000$ & -- \\
+        information-matched EEG & FEP2 & E2fNet & trained (NODDI) & $-0.033$ & [$-0.124$, $+0.052$] & [$-0.186$, $+0.105$] & $0.4662$ & $1.000$ & $1.000$ \\
+        information-matched EEG & FEP2 & E2fNet & untrained & $-0.037$ & [$-0.137$, $+0.055$] & [$-0.209$, $+0.112$] & $0.4562$ & -- & $1.000$ \\
+        information-matched EEG & FEP2 & E2fNet & trained (XP1) & $-0.063$ & [$-0.176$, $+0.048$] & [$-0.253$, $+0.120$] & $0.2724$ & $1.000$ & -- \\
+        information-matched EEG & FEP2 & Spec2VolCAMU-Net & trained (NODDI) & $+0.057$ & [$-0.070$, $+0.183$] & [$-0.158$, $+0.267$] & $0.3763$ & $1.000$ & $1.000$ \\
+        information-matched EEG & FEP2 & Spec2VolCAMU-Net & untrained & $-0.017$ & [$-0.094$, $+0.055$] & [$-0.148$, $+0.106$] & $0.6594$ & -- & $1.000$ \\
+        information-matched EEG & FEP2 & Spec2VolCAMU-Net & trained (XP1) & $-0.075$ & [$-0.191$, $+0.035$] & [$-0.275$, $+0.110$] & $0.1836$ & $1.000$ & -- \\
+        information-matched EEG & FEP2 & NT-ViT & trained (NODDI) & $-0.015$ & [$-0.086$, $+0.056$] & [$-0.134$, $+0.103$] & $0.6718$ & $1.000$ & $1.000$ \\
+        information-matched EEG & FEP2 & NT-ViT & untrained & $-0.009$ & [$-0.095$, $+0.073$] & [$-0.158$, $+0.126$] & $0.8660$ & -- & $1.000$ \\
+        information-matched EEG & FEP2 & NT-ViT & trained (XP1) & $-0.011$ & [$-0.089$, $+0.066$] & [$-0.144$, $+0.116$] & $0.7961$ & $1.000$ & -- \\
+        information-matched EEG & Semmelweis & CNN-TAG & trained (NODDI) & $+0.093$ & [$-0.034$, $+0.221$] & [$-0.113$, $+0.310$] & $0.1532$ & $1.000$ & $1.000$ \\
+        information-matched EEG & Semmelweis & CNN-TAG & untrained & $+0.072$ & [$-0.040$, $+0.186$] & [$-0.116$, $+0.263$] & $0.2149$ & -- & $1.000$ \\
+        information-matched EEG & Semmelweis & CNN-TAG & trained (XP1) & $+0.004$ & [$-0.115$, $+0.120$] & [$-0.195$, $+0.198$] & $0.9356$ & $1.000$ & -- \\
+        information-matched EEG & Semmelweis & E2fNet & trained (NODDI) & $+0.078$ & [$-0.033$, $+0.192$] & [$-0.107$, $+0.268$] & $0.1732$ & $1.000$ & $1.000$ \\
+        information-matched EEG & Semmelweis & E2fNet & untrained & $+0.036$ & [$-0.063$, $+0.133$] & [$-0.131$, $+0.193$] & $0.4822$ & -- & $1.000$ \\
+        information-matched EEG & Semmelweis & E2fNet & trained (XP1) & $+0.036$ & [$-0.061$, $+0.130$] & [$-0.130$, $+0.191$] & $0.4517$ & $1.000$ & -- \\
+        information-matched EEG & Semmelweis & Spec2VolCAMU-Net & trained (NODDI) & $+0.004$ & [$-0.096$, $+0.101$] & [$-0.159$, $+0.165$] & $0.9385$ & $1.000$ & $1.000$ \\
+        information-matched EEG & Semmelweis & Spec2VolCAMU-Net & untrained & $+0.169$ & [$+0.073$, $+0.265$] & [$+0.011$, $+0.327$] & $0.0006$ & -- & $0.023$ \\
+        information-matched EEG & Semmelweis & Spec2VolCAMU-Net & trained (XP1) & $+0.085$ & [$-0.014$, $+0.187$] & [$-0.078$, $+0.259$] & $0.0945$ & $1.000$ & -- \\
+        information-matched EEG & Semmelweis & NT-ViT & trained (NODDI) & $-0.021$ & [$-0.161$, $+0.117$] & [$-0.253$, $+0.210$] & $0.7733$ & $1.000$ & $1.000$ \\
+        information-matched EEG & Semmelweis & NT-ViT & untrained & $+0.026$ & [$-0.046$, $+0.099$] & [$-0.092$, $+0.150$] & $0.4827$ & -- & $1.000$ \\
+        information-matched EEG & Semmelweis & NT-ViT & trained (XP1) & $-0.013$ & [$-0.145$, $+0.122$] & [$-0.231$, $+0.204$] & $0.8468$ & $1.000$ & -- \\
+        information-matched EEG & PD & CNN-TAG & trained (NODDI) & $-0.070$ & [$-0.176$, $+0.034$] & [$-0.246$, $+0.096$] & $0.1924$ & $1.000$ & $1.000$ \\
+        information-matched EEG & PD & CNN-TAG & untrained & $-0.027$ & [$-0.141$, $+0.075$] & [$-0.228$, $+0.138$] & $0.6488$ & -- & $1.000$ \\
+        information-matched EEG & PD & CNN-TAG & trained (XP1) & $-0.083$ & [$-0.197$, $+0.024$] & [$-0.274$, $+0.103$] & $0.1308$ & $1.000$ & -- \\
+        information-matched EEG & PD & E2fNet & trained (NODDI) & $-0.008$ & [$-0.066$, $+0.054$] & [$-0.114$, $+0.102$] & $0.7752$ & $1.000$ & $1.000$ \\
+        information-matched EEG & PD & E2fNet & untrained & $-0.056$ & [$-0.122$, $-0.002$] & [$-0.181$, $+0.033$] & $0.0429$ & -- & $1.000$ \\
+        information-matched EEG & PD & E2fNet & trained (XP1) & $-0.078$ & [$-0.173$, $+0.005$] & [$-0.234$, $+0.059$] & $0.0653$ & $1.000$ & -- \\
+        information-matched EEG & PD & Spec2VolCAMU-Net & trained (NODDI) & $+0.014$ & [$-0.053$, $+0.086$] & [$-0.098$, $+0.142$] & $0.6928$ & $1.000$ & $1.000$ \\
+        information-matched EEG & PD & Spec2VolCAMU-Net & untrained & $-0.014$ & [$-0.109$, $+0.074$] & [$-0.196$, $+0.138$] & $0.7661$ & -- & $1.000$ \\
+        information-matched EEG & PD & Spec2VolCAMU-Net & trained (XP1) & $-0.008$ & [$-0.096$, $+0.090$] & [$-0.156$, $+0.170$] & $0.8534$ & $1.000$ & -- \\
+        information-matched EEG & PD & NT-ViT & trained (NODDI) & $+0.006$ & [$-0.051$, $+0.064$] & [$-0.095$, $+0.106$] & $0.8353$ & $1.000$ & $1.000$ \\
+        information-matched EEG & PD & NT-ViT & untrained & $+0.024$ & [$-0.024$, $+0.077$] & [$-0.070$, $+0.118$] & $0.3317$ & -- & $1.000$ \\
+        information-matched EEG & PD & NT-ViT & trained (XP1) & $+0.000$ & [$-0.056$, $+0.056$] & [$-0.102$, $+0.095$] & $1.0000$ & $1.000$ & -- \\
+        information-matched EEG & Fribourg & CNN-TAG & trained (NODDI) & $+0.018$ & [$-0.178$, $+0.215$] & [$-0.307$, $+0.327$] & $0.8447$ & $1.000$ & $1.000$ \\
+        information-matched EEG & Fribourg & CNN-TAG & untrained & $-0.029$ & [$-0.151$, $+0.094$] & [$-0.238$, $+0.183$] & $0.6619$ & -- & $1.000$ \\
+        information-matched EEG & Fribourg & CNN-TAG & trained (XP1) & $-0.127$ & [$-0.272$, $+0.022$] & [$-0.370$, $+0.136$] & $0.0932$ & $1.000$ & -- \\
+        information-matched EEG & Fribourg & E2fNet & trained (NODDI) & $-0.029$ & [$-0.160$, $+0.099$] & [$-0.261$, $+0.188$] & $0.6643$ & $1.000$ & $1.000$ \\
+        information-matched EEG & Fribourg & E2fNet & untrained & $+0.004$ & [$-0.121$, $+0.127$] & [$-0.209$, $+0.212$] & $0.9359$ & -- & $1.000$ \\
+        information-matched EEG & Fribourg & E2fNet & trained (XP1) & $+0.035$ & [$-0.105$, $+0.180$] & [$-0.193$, $+0.283$] & $0.6435$ & $1.000$ & -- \\
+        information-matched EEG & Fribourg & Spec2VolCAMU-Net & trained (NODDI) & $+0.009$ & [$-0.154$, $+0.162$] & [$-0.261$, $+0.263$] & $0.9010$ & $1.000$ & $1.000$ \\
+        information-matched EEG & Fribourg & Spec2VolCAMU-Net & untrained & $-0.013$ & [$-0.116$, $+0.096$] & [$-0.178$, $+0.181$] & $0.8070$ & -- & $1.000$ \\
+        information-matched EEG & Fribourg & Spec2VolCAMU-Net & trained (XP1) & $-0.081$ & [$-0.235$, $+0.061$] & [$-0.342$, $+0.156$] & $0.2788$ & $1.000$ & -- \\
+        information-matched EEG & Fribourg & NT-ViT & trained (NODDI) & $+0.068$ & [$-0.064$, $+0.202$] & [$-0.166$, $+0.295$] & $0.3006$ & $1.000$ & $1.000$ \\
+        information-matched EEG & Fribourg & NT-ViT & untrained & $-0.018$ & [$-0.158$, $+0.112$] & [$-0.254$, $+0.193$] & $0.8343$ & -- & $1.000$ \\
+        information-matched EEG & Fribourg & NT-ViT & trained (XP1) & $-0.061$ & [$-0.149$, $+0.020$] & [$-0.224$, $+0.076$] & $0.1493$ & $1.000$ & -- \\
+\bottomrule
+\end{longtable}
+
+\begin{longtable}{l l l c c c c c c c c}
+\caption{Sensitivity analyses: AUC of each synthesized view with 20 (primary), 5, 10 or 40 principal components, average pooling in $3\times4\times4$-voxel blocks, covariates regressed out within training folds, ICA-cleaned inputs (ocular components removed), and synthesizers trained on XP1 (last column; for the last row of each cohort, CNN-TAG trained for 50 epochs). Covariates: age and sex (all cohorts with these data), chlorpromazine-equivalent dose (FEP1, FEP2), recording hour (Semmelweis, Fribourg), recording year (Fribourg).}\label{tab:s_sens}\\
+\toprule
+Cohort & Synthesizer & Weights & $k=20$ & $k=5$ & $k=10$ & $k=40$ & Blocks & Covariates & ICA & XP1 \\
+\midrule
+\endfirsthead
+\toprule
+Cohort & Synthesizer & Weights & $k=20$ & $k=5$ & $k=10$ & $k=40$ & Blocks & Covariates & ICA & XP1 \\
+\midrule
+\endhead
+FEP1 & CNN-TAG & trained & 0.57 & 0.55 & 0.49 & 0.53 & 0.58 & 0.60 & 0.50 & 0.50 \\
+ &  & untrained & 0.41 & 0.47 & 0.46 & 0.46 & 0.39 & 0.53 & -- &  \\
+ & E2fNet & trained & 0.53 & 0.58 & 0.58 & 0.51 & 0.50 & 0.52 & -- & 0.55 \\
+ &  & untrained & 0.63 & 0.64 & 0.69 & 0.59 & 0.64 & 0.60 & -- &  \\
+ & Spec2VolCAMU-Net & trained & 0.60 & 0.47 & 0.46 & 0.65 & 0.57 & 0.57 & -- & 0.51 \\
+ &  & untrained & 0.52 & 0.59 & 0.55 & 0.51 & 0.52 & 0.46 & -- &  \\
+ & NT-ViT & trained & 0.50 & 0.51 & 0.52 & 0.53 & 0.49 & 0.48 & -- & 0.63 \\
+ &  & untrained & 0.60 & 0.55 & 0.60 & 0.54 & 0.58 & 0.48 & -- &  \\
+ & \multicolumn{2}{l}{Band power / information-matched} & 0.62 / 0.52 & & & & & 0.54 / 0.52 & 0.54 / 0.55 & \\
+ & \multicolumn{2}{l}{Band power without 30--45\,Hz; CNN-TAG 50 epochs} & 0.73 & & & & & & & 0.49 \\ \midrule
+FEP2 & CNN-TAG & trained & 0.33 & 0.42 & 0.35 & 0.41 & 0.36 & 0.44 & -- & 0.54 \\
+ &  & untrained & 0.55 & 0.50 & 0.55 & 0.54 & 0.61 & 0.59 & -- &  \\
+ & E2fNet & trained & 0.57 & 0.45 & 0.56 & 0.52 & 0.55 & 0.52 & -- & 0.49 \\
+ &  & untrained & 0.57 & 0.59 & 0.62 & 0.51 & 0.54 & 0.47 & -- &  \\
+ & Spec2VolCAMU-Net & trained & 0.61 & 0.58 & 0.53 & 0.62 & 0.59 & 0.48 & -- & 0.47 \\
+ &  & untrained & 0.57 & 0.69 & 0.64 & 0.54 & 0.55 & 0.46 & -- &  \\
+ & NT-ViT & trained & 0.60 & 0.54 & 0.59 & 0.59 & 0.54 & 0.59 & -- & 0.57 \\
+ &  & untrained & 0.63 & 0.62 & 0.61 & 0.62 & 0.55 & 0.52 & -- &  \\
+ & \multicolumn{2}{l}{Band power / information-matched} & 0.65 / 0.57 & & & & & 0.64 / 0.55 & -- / -- & \\
+ & \multicolumn{2}{l}{Band power without 30--45\,Hz; CNN-TAG 50 epochs} & 0.65 & & & & & & & 0.48 \\ \midrule
+Semmelweis & CNN-TAG & trained & 0.58 & 0.53 & 0.60 & 0.63 & 0.61 & 0.54 & -- & 0.51 \\
+ &  & untrained & 0.56 & 0.54 & 0.55 & 0.62 & 0.58 & 0.64 & -- &  \\
+ & E2fNet & trained & 0.53 & 0.49 & 0.46 & 0.66 & 0.53 & 0.50 & -- & 0.59 \\
+ &  & untrained & 0.47 & 0.51 & 0.45 & 0.53 & 0.47 & 0.43 & -- &  \\
+ & Spec2VolCAMU-Net & trained & 0.62 & 0.68 & 0.67 & 0.62 & 0.64 & 0.63 & -- & 0.66 \\
+ &  & untrained & 0.74 & 0.56 & 0.66 & 0.79 & 0.76 & 0.62 & -- &  \\
+ & NT-ViT & trained & 0.47 & 0.44 & 0.46 & 0.51 & 0.51 & 0.49 & -- & 0.48 \\
+ &  & untrained & 0.57 & 0.56 & 0.54 & 0.57 & 0.57 & 0.54 & -- &  \\
+ & \multicolumn{2}{l}{Band power / information-matched} & 0.57 / 0.54 & & & & & 0.55 / 0.53 & -- / -- & \\
+ & \multicolumn{2}{l}{Band power without 30--45\,Hz; CNN-TAG 50 epochs} & 0.54 & & & & & & & 0.74 \\ \midrule
+PD & CNN-TAG & trained & 0.48 & 0.62 & 0.58 & 0.48 & 0.47 & 0.50 & -- & 0.52 \\
+ &  & untrained & 0.70 & 0.66 & 0.68 & 0.73 & 0.78 & 0.69 & -- &  \\
+ & E2fNet & trained & 0.74 & 0.67 & 0.66 & 0.74 & 0.72 & 0.75 & -- & 0.66 \\
+ &  & untrained & 0.71 & 0.34 & 0.54 & 0.77 & 0.71 & 0.69 & -- &  \\
+ & Spec2VolCAMU-Net & trained & 0.69 & 0.46 & 0.57 & 0.63 & 0.66 & 0.67 & -- & 0.68 \\
+ &  & untrained & 0.74 & 0.45 & 0.63 & 0.75 & 0.76 & 0.68 & -- &  \\
+ & NT-ViT & trained & 0.67 & 0.68 & 0.69 & 0.67 & 0.67 & 0.51 & -- & 0.62 \\
+ &  & untrained & 0.69 & 0.73 & 0.71 & 0.72 & 0.70 & 0.65 & -- &  \\
+ & \multicolumn{2}{l}{Band power / information-matched} & 0.79 / 0.83 & & & & & 0.80 / 0.83 & -- / -- & \\
+ & \multicolumn{2}{l}{Band power without 30--45\,Hz; CNN-TAG 50 epochs} & 0.78 & & & & & & & 0.65 \\ \midrule
+Fribourg & CNN-TAG & trained & 0.60 & 0.49 & 0.55 & 0.63 & 0.65 & 0.58 & -- & 0.37 \\
+ &  & untrained & 0.55 & 0.44 & 0.43 & 0.60 & 0.68 & 0.62 & -- &  \\
+ & E2fNet & trained & 0.54 & 0.58 & 0.51 & 0.51 & 0.56 & 0.56 & -- & 0.54 \\
+ &  & untrained & 0.54 & 0.30 & 0.38 & 0.51 & 0.63 & 0.51 & -- &  \\
+ & Spec2VolCAMU-Net & trained & 0.61 & 0.52 & 0.63 & 0.61 & 0.60 & 0.62 & -- & 0.52 \\
+ &  & untrained & 0.49 & 0.46 & 0.39 & 0.57 & 0.45 & 0.55 & -- &  \\
+ & NT-ViT & trained & 0.63 & 0.63 & 0.63 & 0.63 & 0.67 & 0.48 & -- & 0.34 \\
+ &  & untrained & 0.53 & 0.56 & 0.53 & 0.52 & 0.51 & 0.54 & -- &  \\
+ & \multicolumn{2}{l}{Band power / information-matched} & 0.54 / 0.56 & & & & & 0.52 / 0.49 & -- / -- & \\
+ & \multicolumn{2}{l}{Band power without 30--45\,Hz; CNN-TAG 50 epochs} & 0.56 & & & & & & & 0.66 \\ \midrule
+\bottomrule
+\end{longtable}
+
+\begin{longtable}{l l r r r r}
+\caption{Recording metadata and artefact measures by group: patient and control means, AUC of the measure for the label (Mann--Whitney) and two-sided $p$; categorical fields with Fisher or $\chi^2$ tests. Artefact measures: fraction of pseudo-TRs exceeding 150\,$\mu$V peak-to-peak or an EMG-like 30--45\,Hz power, median peak-to-peak amplitude ($\mu$V), median log 30--45\,Hz power, log RMS of the EOG channels and (PD) of the accelerometer, over the analysed crop.}\label{tab:s_meta}\\
+\toprule
+Cohort & Measure & Patients & Controls & AUC & $p$ \\
+\midrule
+\endfirsthead
+\toprule
+Cohort & Measure & Patients & Controls & AUC & $p$ \\
+\midrule
+\endhead
+FEP1 & age & 22.49 & 21.60 & 0.53 & 0.6609 \\
+FEP1 & duration & 306.40 & 307.82 & 0.48 & 0.7883 \\
+FEP1 & file mb & 78.44 & 83.98 & 0.47 & 0.6468 \\
+FEP1 & lowpass & \multicolumn{2}{l}{1500.0001500000149: 0/1; 500.0: 47/29 (pt/hc)} & & 0.3896 \\
+FEP1 & sex & \multicolumn{2}{l}{F: 14/12; M: 33/18 (pt/hc)} & & 0.4595 \\
+FEP1 & sfreq & \multicolumn{2}{l}{1000.0: 47/29; 3000.0003000000297: 0/1 (pt/hc)} & & 0.3896 \\
+FEP1 & eog log rms (artefact) & -10.504 & -10.695 & 0.51 & 0.8879 \\
+FEP1 & frac rejected (artefact) & 0.574 & 0.695 & 0.38 & 0.0891 \\
+FEP1 & hf logpow 30 45 (artefact) & -17.320 & -17.056 & 0.41 & 0.1696 \\
+FEP1 & median p2p uV (artefact) & 419.003 & 284.109 & 0.43 & 0.2938 \\
+FEP1 & ocular ICA components removed & 1.13 & 1.07 & & 0.6210 \\
+\midrule
+FEP2 & age & 23.38 & 24.19 & 0.47 & 0.7346 \\
+FEP2 & duration & 314.29 & 307.15 & 0.65 & 0.0437 \\
+FEP2 & file mb & 221.08 & 220.43 & 0.60 & 0.1907 \\
+FEP2 & lowpass & \multicolumn{2}{l}{1500.0001500000149: 27/27; 500.0: 4/3 (pt/hc)} & & 1.0000 \\
+FEP2 & sex & \multicolumn{2}{l}{F: 9/14; M: 22/16 (pt/hc)} & & 0.1919 \\
+FEP2 & sfreq & \multicolumn{2}{l}{1000.0: 4/3; 3000.0003000000297: 27/27 (pt/hc)} & & 1.0000 \\
+FEP2 & eog log rms (artefact) & -10.980 & -10.739 & 0.37 & 0.0796 \\
+FEP2 & frac rejected (artefact) & 0.764 & 0.906 & 0.37 & 0.0745 \\
+FEP2 & hf logpow 30 45 (artefact) & -17.159 & -16.705 & 0.40 & 0.1774 \\
+FEP2 & median p2p uV (artefact) & 400.192 & 521.909 & 0.31 & 0.0109 \\
+FEP2 & ocular ICA components removed & 0.94 & 1.17 & & 0.1481 \\
+\midrule
+Semmelweis & age & 33.92 & 32.69 & 0.54 & 0.5853 \\
+Semmelweis & duration & 135.68 & 129.58 & 0.36 & 0.0369 \\
+Semmelweis & edu years & \multicolumn{2}{l}{10: 2/0; 11: 1/0; 11.5: 1/0; 12: 3/4; 13: 3/4; 14: 4/3; 14.5: 1/1; 15: 1/2; 16: 7/6; 17: 3/6; 18: 9/13; 8: 1/0; 9: 1/0 (pt/hc)} & & 0.7433 \\
+Semmelweis & file mb & 37.45 & 35.76 & 0.36 & 0.0369 \\
+Semmelweis & hour & 14.03 & 16.33 & 0.28 & 0.0007 \\
+Semmelweis & month & 7.05 & 6.62 & 0.56 & 0.3935 \\
+Semmelweis & n annot & 0.11 & 0.28 & 0.50 & 0.9463 \\
+Semmelweis & sex & \multicolumn{2}{l}{f: 14/15; m: 24/24 (pt/hc)} & & 1.0000 \\
+Semmelweis & year & \multicolumn{2}{l}{2016: 9/5; 2017: 18/23; 2018: 11/11 (pt/hc)} & & 0.4190 \\
+Semmelweis & eog log rms (artefact) & -10.088 & -10.403 & 0.60 & 0.1382 \\
+Semmelweis & frac rejected (artefact) & 0.693 & 0.450 & 0.69 & 0.0033 \\
+Semmelweis & hf logpow 30 45 (artefact) & -17.465 & -17.954 & 0.63 & 0.0574 \\
+Semmelweis & median p2p uV (artefact) & 527.290 & 396.886 & 0.67 & 0.0120 \\
+Semmelweis & ocular ICA components removed & 1.11 & 0.79 & & 0.0670 \\
+\midrule
+PD & age & 69.68 & 69.32 & 0.53 & 0.6976 \\
+PD & duration & 594.21 & 601.28 & 0.51 & 0.8996 \\
+PD & file mb & 79.62 & 80.57 & 0.51 & 0.8996 \\
+PD & n annot & 317.80 & 315.64 & 0.54 & 0.5864 \\
+PD & sex & \multicolumn{2}{l}{Female: 9/9; Male: 16/16 (pt/hc)} & & 1.0000 \\
+PD & acc log rms (artefact) & -4.423 & -4.223 & 0.41 & 0.2772 \\
+PD & eog log rms (artefact) & -5.041 & -4.494 & 0.26 & 0.0036 \\
+PD & frac rejected (artefact) & 0.657 & 0.783 & 0.36 & 0.0806 \\
+PD & hf logpow 30 45 (artefact) & -16.953 & -16.624 & 0.42 & 0.3320 \\
+PD & median p2p uV (artefact) & 255.542 & 425.297 & 0.26 & 0.0036 \\
+PD & ocular ICA components removed & 1.32 & 1.32 & & 0.9383 \\
+\midrule
+Fribourg & duration & 509.05 & 527.00 & 0.25 & 0.0035 \\
+Fribourg & file mb & 279.18 & 284.93 & 0.50 & 0.9704 \\
+Fribourg & hour & 9.00 & 9.88 & 0.29 & 0.0147 \\
+Fribourg & month & 6.89 & 7.00 & 0.51 & 0.9022 \\
+Fribourg & n annot & 783.74 & 775.50 & 0.47 & 0.7879 \\
+Fribourg & n channels & \multicolumn{2}{l}{132: 1/24; 134: 18/0 (pt/hc)} & & 0.0000 \\
+Fribourg & year & \multicolumn{2}{l}{2014: 3/15; 2015: 7/9; 2016: 9/0 (pt/hc)} & & 0.0002 \\
+Fribourg & eog log rms (artefact) & -10.443 & -10.329 & 0.46 & 0.6334 \\
+Fribourg & frac rejected (artefact) & 0.784 & 0.806 & 0.48 & 0.7866 \\
+Fribourg & hf logpow 30 45 (artefact) & -17.311 & -17.170 & 0.43 & 0.4411 \\
+Fribourg & median p2p uV (artefact) & 212.456 & 232.647 & 0.45 & 0.5990 \\
+Fribourg & ocular ICA components removed & 0.42 & 0.42 & & 0.8747 \\
+\bottomrule
+\end{longtable}
+
+\begin{longtable}{l l l r r r}
+\caption{Fidelity of the final synthesizers used for the clinical cohorts on the held-out validation subjects (NODDI 49 and 50; XP1 sub-xp109 and sub-xp110, pooled), and RMSE of the leave-one-subject-out NODDI evaluation (fidelity table of the main text). $r$: mean voxelwise temporal correlation.}\label{tab:s_fid}\\
+\toprule
+Data & Held-out subjects & Model & SSIM & RMSE & $r$ \\
+\midrule
+NODDI & 49 & EEG-free template & 0.716 & 0.0750 & +0.0000 \\
+NODDI & 49 & CNN-TAG & 0.686 & 0.0847 & -0.0118 \\
+NODDI & 49 & E2fNet & 0.706 & 0.0888 & +0.0028 \\
+NODDI & 49 & Spec2VolCAMU-Net & 0.717 & 0.0792 & +0.0001 \\
+NODDI & 49 & NT-ViT & 0.690 & 0.0780 & -0.0001 \\
+NODDI & 50 & EEG-free template & 0.692 & 0.0803 & +0.0000 \\
+NODDI & 50 & CNN-TAG & 0.638 & 0.0936 & +0.0004 \\
+NODDI & 50 & E2fNet & 0.713 & 0.0915 & +0.0020 \\
+NODDI & 50 & Spec2VolCAMU-Net & 0.720 & 0.0866 & +0.0150 \\
+NODDI & 50 & NT-ViT & 0.700 & 0.0780 & +0.0004 \\
+XP1 & sub-xp109, sub-xp110 & EEG-free template & 0.684 & 0.0963 & -- \\
+XP1 & sub-xp109, sub-xp110 & CNN-TAG (epoch 0) & 0.699 & 0.0949 & +0.0722 \\
+XP1 & sub-xp109, sub-xp110 & E2fNet (epoch 11) & 0.690 & 0.0956 & +0.0380 \\
+XP1 & sub-xp109, sub-xp110 & NT-ViT (epoch 21) & 0.662 & 0.0914 & -0.0002 \\
+XP1 & sub-xp109, sub-xp110 & Spec2VolCAMU-Net (epoch 8) & 0.680 & 0.0978 & +0.0045 \\
+\midrule
+NODDI LOSO (aligned) & 16 subjects & EEG-free template & 0.675 & 0.0884$\pm$0.0133 & +0.0000 \\
+NODDI LOSO (aligned) & 16 subjects & Ridge (spectra) & 0.631 & 0.1018$\pm$0.0135 & -0.0012 \\
+NODDI LOSO (aligned) & 16 subjects & CNN-TAG & 0.655 & 0.0981$\pm$0.0128 & +0.0012 \\
+NODDI LOSO (aligned) & 16 subjects & E2fNet & 0.655 & 0.1055$\pm$0.0154 & -0.0029 \\
+NODDI LOSO (aligned) & 16 subjects & Spec2VolCAMU-Net & 0.679 & 0.0936$\pm$0.0148 & -0.0003 \\
+NODDI LOSO (filestart) & 16 subjects & EEG-free template & 0.675 & 0.0884$\pm$0.0133 & +0.0000 \\
+NODDI LOSO (filestart) & 16 subjects & Ridge (spectra) & 0.631 & 0.1015$\pm$0.0133 & -0.0014 \\
+NODDI LOSO (filestart) & 16 subjects & CNN-TAG & 0.640 & 0.1004$\pm$0.0142 & -0.0040 \\
+NODDI LOSO (filestart) & 16 subjects & E2fNet & 0.661 & 0.1040$\pm$0.0162 & +0.0015 \\
+NODDI LOSO (ecg only) & 16 subjects & EEG-free template & 0.675 & 0.0884$\pm$0.0133 & +0.0000 \\
+NODDI LOSO (ecg only) & 16 subjects & Ridge (spectra) & 0.600 & 0.1087$\pm$0.0171 & -0.0002 \\
+NODDI LOSO (ecg only) & 16 subjects & CNN-TAG & 0.650 & 0.0999$\pm$0.0132 & -0.0039 \\
+NODDI LOSO (ecg only) & 16 subjects & E2fNet & 0.648 & 0.1094$\pm$0.0204 & -0.0006 \\
+\bottomrule
+\end{longtable}
+\end{document}

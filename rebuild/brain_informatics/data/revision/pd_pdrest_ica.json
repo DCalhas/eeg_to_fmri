@@ -1,0 +1,1182 @@
+{
+ "views": {
+  "bp_rel": {
+   "auc": 0.81888,
+   "auc_repeats": [
+    0.8128,
+    0.8032,
+    0.8048,
+    0.8288,
+    0.8304,
+    0.8399999999999999,
+    0.8448,
+    0.7968,
+    0.8128,
+    0.7552,
+    0.8256,
+    0.8240000000000001,
+    0.768,
+    0.8656,
+    0.7984,
+    0.856,
+    0.8752,
+    0.8400000000000001,
+    0.7999999999999999,
+    0.7952
+   ],
+   "auc_ci95": [
+    0.7247599999999998,
+    0.9408
+   ],
+   "n_features": 285
+  },
+  "stft_ms": {
+   "auc": 0.748,
+   "auc_repeats": [
+    0.7536,
+    0.7264,
+    0.7408,
+    0.7584,
+    0.752,
+    0.736,
+    0.8032,
+    0.7408,
+    0.7679999999999999,
+    0.7264,
+    0.736,
+    0.7200000000000001,
+    0.7024,
+    0.7472,
+    0.7472,
+    0.7487999999999999,
+    0.7632,
+    0.7488,
+    0.7584,
+    0.7824
+   ],
+   "auc_ci95": [
+    0.6208,
+    0.8848
+   ],
+   "n_features": 11058
+  }
+ },
+ "metadata_tests": {
+  "age": {
+   "auc": 0.5328,
+   "p": 0.6975523907268765,
+   "mean_pt": 69.68,
+   "mean_hc": 69.32
+  },
+  "sex": {
+   "table": {
+    "Female": [
+     9,
+     9
+    ],
+    "Male": [
+     16,
+     16
+    ]
+   },
+   "p": 1.0
+  },
+  "duration": {
+   "auc": 0.5112,
+   "p": 0.8996357067265068,
+   "mean_pt": 594.206,
+   "mean_hc": 601.2779999999999
+  },
+  "n_annot": {
+   "auc": 0.5448,
+   "p": 0.5864158977856005,
+   "mean_pt": 317.8,
+   "mean_hc": 315.64
+  },
+  "file_mb": {
+   "auc": 0.5112,
+   "p": 0.8996357067265068,
+   "mean_pt": 79.623604,
+   "mean_hc": 80.571252
+  }
+ },
+ "artefact_tests": {
+  "frac_rejected": {
+   "auc": 0.4184,
+   "p": 0.3266748552009826,
+   "mean_pt": 0.3583427160585393,
+   "mean_hc": 0.42430619418837423
+  },
+  "median_p2p_uV": {
+   "auc": 0.4144,
+   "p": 0.3037847253883319,
+   "mean_pt": 131.31353149414062,
+   "mean_hc": 205.59255981445312
+  },
+  "hf_logpow_30_45": {
+   "auc": 0.4272,
+   "p": 0.3825931773694824,
+   "mean_pt": -17.082782745361328,
+   "mean_hc": -16.798408012390137
+  },
+  "eog_log_rms": {
+   "auc": 0.2592,
+   "p": 0.0036093469359454364,
+   "mean_pt": -5.041360353532835,
+   "mean_hc": -4.4941193035444345
+  },
+  "acc_log_rms": {
+   "auc": 0.4096,
+   "p": 0.2772314876173122,
+   "mean_pt": -4.422581266222852,
+   "mean_hc": -4.2229377716200895
+  }
+ },
+ "artefact_channels": {
+  "eog": [
+   "VEOG"
+  ],
+  "acc": [
+   "X",
+   "Y",
+   "Z"
+  ]
+ },
+ "covariates": [
+  "age",
+  "male"
+ ],
+ "pd_eye_order": [
+  {
+   "sub": "sub-001",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-002",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-003",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 155,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-004",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 155,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-005",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 265,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-006",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 165,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-007",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 207,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-008",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-009",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 205,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-010",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-011",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 215,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-012",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 170,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-013",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 217,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-014",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-015",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 192,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-016",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms"
+   ],
+   "n_events": 121,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-017",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 153,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-018",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-019",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 211,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-020",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-021",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-022",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 159,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-023",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 241,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-024",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 222,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-025",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 193,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-026",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 209,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-027",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 174,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-028",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 218,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-029",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-030",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-031",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 153,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-032",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 169,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-033",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms"
+   ],
+   "n_events": 4,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-034",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 192,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-035",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 195,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-036",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 205,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-037",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 223,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-038",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 225,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-039",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 203,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-040",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 189,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-041",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 228,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-042",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 198,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-043",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 217,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-044",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-045",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-046",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-047",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 239,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-048",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 188,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-049",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 236,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-050",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 217,
+   "first_onset": 0.0
+  }
+ ]
+}

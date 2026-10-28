@@ -1,0 +1,26 @@
+{
+ "val_ssim": 0.662002953542941,
+ "best_epoch": 21,
+ "val": {
+  "model": {
+   "rmse": 0.09144230931997299,
+   "ssim_2d_e2fnet": 0.662002953542941,
+   "voxel_r_mean": -0.00021963697508908808,
+   "voxel_r_median": -0.00012241455260664225,
+   "voxel_r2corr_mean": 0.0015166401863098145,
+   "voxel_r_mean_dt": 0.0003105681680608541,
+   "R2c_global_dt": -4.271556364621176e-06,
+   "voxel_R2c_median_dt": 0.0
+  },
+  "template": {
+   "rmse": 0.09626390039920807,
+   "ssim_2d_e2fnet": 0.6840717859532701,
+   "voxel_r_mean": 1.477985591691322e-07,
+   "voxel_r_median": 9.226538821849317e-08,
+   "voxel_r2corr_mean": 3.43143807639279e-13,
+   "voxel_r_mean_dt": -0.0013707714388146996,
+   "R2c_global_dt": 0.0,
+   "voxel_R2c_median_dt": 0.0
+  }
+ }
+}

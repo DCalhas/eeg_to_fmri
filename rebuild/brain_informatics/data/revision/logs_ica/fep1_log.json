@@ -1,0 +1,623 @@
+{
+ "eog_channels": [
+  "VEOG"
+ ],
+ "subjects": [
+  {
+   "sub": "sub-1448",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-1824",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-1971",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 10,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-1983",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-1989",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-1990",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-1998",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-1999",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2000",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2002",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2009",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 10,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2015",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2017",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 11,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2018",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2020",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2025",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2028",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 13,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2034",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 14,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2038",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2041",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2044",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2054",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 12,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2067",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2070",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2071",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2072",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2073",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2081",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2082",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 1,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2086",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2089",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2092",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 14,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2093",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2095",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 11,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2096",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2105",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2109",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2110",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2117",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2122",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2124",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2125",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2128",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2129",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 10,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2131",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2133",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2134",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2135",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 11,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2136",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 11,
+   "n_ic_excluded": 1,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2137",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2138",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 13,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2141",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2142",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2143",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2149",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 2,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2171",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2174",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2176",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2177",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2178",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2179",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 10,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2187",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2193",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2195",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2196",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2197",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2199",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2213",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2218",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2221",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 10,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2222",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2223",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2140A",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 16,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2170A",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2184A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 12,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2214A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2217A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  }
+ ]
+}

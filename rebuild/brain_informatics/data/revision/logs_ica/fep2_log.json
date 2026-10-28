@@ -1,0 +1,495 @@
+{
+ "eog_channels": [
+  "VEOG"
+ ],
+ "subjects": [
+  {
+   "sub": "sub-2235A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2237A",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2238A",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 10,
+   "n_ic_excluded": 0,
+   "duration": 300.0
+  },
+  {
+   "sub": "sub-2240A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2245A",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2246A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2249A",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2252A",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2259A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2262A",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2266A",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 16,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2267A",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2268A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2269A",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2276A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2279A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 14,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2290A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2318A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 14,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2320A",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 10,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2336A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2342A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2350A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 14,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2351A",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 13,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2355A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2356A",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2367A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2372A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 11,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2379A",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2384A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 15,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2387A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 15,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2389A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 12,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2392A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2397A",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2403A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2406A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2418A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2419A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2426A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 15,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2430A",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2431A",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 13,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2442A",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 11,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2448A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2456A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2476A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 12,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2477A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2479A",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2480A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2494A",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2496A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2498A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 15,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2503A",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2505A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2512A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2514A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2518A",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2526A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2530A",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 2,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2538A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2574A",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2578A",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 0,
+   "duration": 300.004
+  },
+  {
+   "sub": "sub-2581A",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 300.004
+  }
+ ]
+}

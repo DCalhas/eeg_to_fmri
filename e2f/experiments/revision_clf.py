@@ -30,7 +30,7 @@ import numpy as np
 import pandas as pd
 
 OUT = os.path.expanduser("~/eeg_to_fmri/runs/revision")
-HARM = os.path.expanduser("~/eeg_to_fmri/runs/harmonized_v2")
+HARM = os.path.expanduser(os.environ.get("REV_HARM", "~/eeg_to_fmri/runs/harmonized_v2"))  # variants: runs/harmonized_<variant>
 SYN = os.path.expanduser("~/eeg_to_fmri/runs/synth_clf")
 DATA = os.path.expanduser("~/eeg_to_fmri/data")
 CROP = {"fribourg": (0, 400), "fep1": (0, 300), "fep2": (0, 300), "semmelweis": (0, 118), "pd": (0, 400)}
@@ -367,7 +367,8 @@ def run(cohort, n_perm, n_jobs, models, only=None, synth_tags=None, out_tag="", 
 		V[f"synth_{tag}_cov"] = (np.c_[X, Q], pc(X), q, 0, None)
 	if not eeg_views:  # extra synth tags: keep the two baselines (no permutations) for the added-value comparisons
 		V = {k: (v[0], v[1], v[2], 0 if k in ("bp_rel", "stft_ms") else v[3], v[4]) for k, v in V.items()
-			 if k in ("bp_rel", "stft_ms") or k.startswith(("synth_", "bp_rel+synth_", "stft_ms+synth_"))}
+			 if k in ("bp_rel", "stft_ms") or (k.startswith(("synth_", "bp_rel+synth_", "stft_ms+synth_"))
+												 and not k.endswith(("_k5", "_k10", "_k40", "_block", "_cov")))}
 	if only:
 		V = {k: v for k, v in V.items() if k in only}
 

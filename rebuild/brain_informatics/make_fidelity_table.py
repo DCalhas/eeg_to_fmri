@@ -40,7 +40,7 @@ def summarise(per, m):
 if __name__ == "__main__":
 	rows = []
 	res = {}
-	for arm, label in [("aligned", "Trigger-aligned EEG"), ("filestart", "EEG from file start"), ("ecg_only", "ECG only")]:
+	for arm, label in [("aligned", "Aligned EEG"), ("filestart", "File-start EEG"), ("ecg_only", "ECG only")]:
 		per = collect(arm)
 		if arm == "aligned":
 			per2 = collect(arm, "_s2v")
@@ -54,14 +54,14 @@ if __name__ == "__main__":
 	lines = []
 	last = None
 	for label, name, s in rows:
-		if name == "EEG-free template" and label != "Trigger-aligned EEG":
+		if name == "EEG-free template" and label != "Aligned EEG":
 			continue
 		arm = label if label != last else ""
 		last = label
-		r = f2(s["r"]) if "r" in s else "--"
-		rn = f2(s["r_null"]) if "r_null" in s else "--"
+		r = f"${s['r'][0]:+.3f}$" if "r" in s else "--"
+		rn = f"${s['r_null'][0]:+.3f}$" if "r_null" in s else "--"
 		ep = f"{s['epoch_median']:.0f}" if s.get("epoch_median") is not None else "--"
-		lines.append(f"        {arm} & {name} & {f2(s['ssim'])} & {f2(s['psnr'], 1)} & {f2(s['rmse'])} & {r} & {rn} & {ep} \\\\")
+		lines.append(f"        {arm} & {name} & {f2(s['ssim'])} & {f2(s['psnr'], 1)} & {r} & {rn} & {ep} \\\\")
 	open(os.path.join(HERE, "submission", "table_fidelity_rows.tex"), "w").write("\n".join(lines) + "\n")
 	for l in lines:
 		print(l)

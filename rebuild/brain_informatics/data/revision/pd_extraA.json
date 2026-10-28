@@ -1,0 +1,1828 @@
+{
+ "views": {
+  "bp_rel": {
+   "auc": 0.7861600000000001,
+   "auc_repeats": [
+    0.8096000000000001,
+    0.76,
+    0.8240000000000001,
+    0.808,
+    0.7904,
+    0.7584,
+    0.8,
+    0.7968000000000001,
+    0.7728,
+    0.7664,
+    0.7232,
+    0.8128,
+    0.7936,
+    0.7472,
+    0.7632000000000001,
+    0.7696000000000001,
+    0.8079999999999999,
+    0.8336,
+    0.8400000000000001,
+    0.7456
+   ],
+   "auc_ci95": [
+    0.6336,
+    0.9199999999999999
+   ],
+   "n_features": 285
+  },
+  "stft_ms": {
+   "auc": 0.8250400000000001,
+   "auc_repeats": [
+    0.8735999999999999,
+    0.784,
+    0.8016,
+    0.8464,
+    0.8208,
+    0.8048000000000001,
+    0.8192,
+    0.8128,
+    0.8032,
+    0.832,
+    0.8336,
+    0.8688,
+    0.8160000000000001,
+    0.8320000000000001,
+    0.8304,
+    0.8032,
+    0.8416,
+    0.8384,
+    0.8464,
+    0.792
+   ],
+   "auc_ci95": [
+    0.7216,
+    0.9471999999999999
+   ],
+   "n_features": 11058
+  },
+  "synth_xp1_cnn_tag": {
+   "auc": 0.51768,
+   "auc_repeats": [
+    0.592,
+    0.4928,
+    0.4896,
+    0.5551999999999999,
+    0.5808,
+    0.5296,
+    0.5024000000000001,
+    0.408,
+    0.46240000000000003,
+    0.5568,
+    0.48160000000000003,
+    0.5216,
+    0.5232,
+    0.488,
+    0.5599999999999999,
+    0.5184000000000001,
+    0.4816,
+    0.576,
+    0.5232,
+    0.5104
+   ],
+   "auc_ci95": [
+    0.3584,
+    0.6912399999999999
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.37623762376237624,
+   "perm_p_less": 0.6336633663366337,
+   "n_perm": 100,
+   "null_mean": 0.494392,
+   "null_sd": 0.10736068524371481
+  },
+  "bp_rel+synth_xp1_cnn_tag": {
+   "auc": 0.75776,
+   "auc_repeats": [
+    0.7856,
+    0.7584,
+    0.7936000000000001,
+    0.7392,
+    0.7984,
+    0.7584000000000001,
+    0.7712,
+    0.7776000000000001,
+    0.7136,
+    0.7056,
+    0.752,
+    0.8000000000000002,
+    0.776,
+    0.7536,
+    0.7552000000000001,
+    0.7136,
+    0.7584,
+    0.8048,
+    0.7728,
+    0.6672
+   ],
+   "auc_ci95": [
+    0.6160000000000001,
+    0.9056399999999999
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": -0.01759999999999995,
+    "ci95": [
+     -0.054400000000000004,
+     0.012799999999999923
+    ],
+    "ci_bonf20": [
+     -0.08480199999999999,
+     0.031999999999999806
+    ],
+    "ci_bonf40": [
+     -0.09280000000000005,
+     0.03359999999999996
+    ],
+    "p_boot": 0.2712,
+    "se_boot": 0.016787564601263637
+   }
+  },
+  "stft_ms+synth_xp1_cnn_tag": {
+   "auc": 0.74528,
+   "auc_repeats": [
+    0.832,
+    0.7392000000000001,
+    0.7872,
+    0.6624,
+    0.6992,
+    0.7103999999999999,
+    0.7104,
+    0.7216,
+    0.7744,
+    0.7632,
+    0.728,
+    0.7872,
+    0.7296000000000001,
+    0.7615999999999999,
+    0.7839999999999999,
+    0.8,
+    0.7487999999999999,
+    0.7184,
+    0.76,
+    0.6880000000000001
+   ],
+   "auc_ci95": [
+    0.61588,
+    0.8848
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": -0.08320000000000005,
+    "ci95": [
+     -0.19679999999999997,
+     0.02399999999999991
+    ],
+    "ci_bonf20": [
+     -0.26080200000000014,
+     0.07999999999999996
+    ],
+    "ci_bonf40": [
+     -0.274401,
+     0.10320500000000467
+    ],
+    "p_boot": 0.1308,
+    "se_boot": 0.05568908940040589
+   }
+  },
+  "synth_xp1_e2fnet": {
+   "auc": 0.66008,
+   "auc_repeats": [
+    0.6639999999999999,
+    0.7232,
+    0.6288,
+    0.672,
+    0.648,
+    0.6704,
+    0.7312,
+    0.7024000000000001,
+    0.7232,
+    0.5648,
+    0.5615999999999999,
+    0.6496000000000001,
+    0.5808,
+    0.5968,
+    0.7024000000000001,
+    0.6335999999999999,
+    0.6528,
+    0.7343999999999999,
+    0.704,
+    0.6576
+   ],
+   "auc_ci95": [
+    0.5296,
+    0.8271999999999999
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.0594059405940594,
+   "perm_p_less": 0.9504950495049505,
+   "n_perm": 100,
+   "null_mean": 0.482648,
+   "null_sd": 0.10943296439373285
+  },
+  "bp_rel+synth_xp1_e2fnet": {
+   "auc": 0.7788,
+   "auc_repeats": [
+    0.784,
+    0.768,
+    0.8112000000000001,
+    0.7935999999999999,
+    0.8336,
+    0.7712,
+    0.7872000000000001,
+    0.8064,
+    0.7407999999999999,
+    0.7616,
+    0.6976,
+    0.7872,
+    0.7696000000000001,
+    0.7264,
+    0.7904,
+    0.752,
+    0.776,
+    0.8288,
+    0.8176000000000001,
+    0.7727999999999999
+   ],
+   "auc_ci95": [
+    0.6256,
+    0.9151999999999999
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": -0.008000000000000007,
+    "ci95": [
+     -0.05120000000000002,
+     0.030400000000000094
+    ],
+    "ci_bonf20": [
+     -0.08319999999999994,
+     0.05919999999999992
+    ],
+    "ci_bonf40": [
+     -0.09200099999999997,
+     0.06480100000000112
+    ],
+    "p_boot": 0.7287,
+    "se_boot": 0.02077072536062234
+   }
+  },
+  "stft_ms+synth_xp1_e2fnet": {
+   "auc": 0.7421599999999999,
+   "auc_repeats": [
+    0.7104,
+    0.7679999999999999,
+    0.7328000000000001,
+    0.7584,
+    0.7264,
+    0.768,
+    0.7568,
+    0.7456,
+    0.736,
+    0.6880000000000001,
+    0.7135999999999999,
+    0.7472,
+    0.6784,
+    0.7088,
+    0.7888,
+    0.7936,
+    0.7375999999999999,
+    0.7968,
+    0.7456,
+    0.7424
+   ],
+   "auc_ci95": [
+    0.6208,
+    0.8896
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": -0.07840000000000003,
+    "ci95": [
+     -0.17279999999999995,
+     0.0047999999999999154
+    ],
+    "ci_bonf20": [
+     -0.22560000000000002,
+     0.04799999999999993
+    ],
+    "ci_bonf40": [
+     -0.23359999999999992,
+     0.059202000000001836
+    ],
+    "p_boot": 0.0653,
+    "se_boot": 0.04466904201553465
+   }
+  },
+  "synth_xp1_spec2vol": {
+   "auc": 0.6761600000000001,
+   "auc_repeats": [
+    0.6096,
+    0.7152000000000001,
+    0.7552,
+    0.6592,
+    0.7424000000000001,
+    0.6848000000000001,
+    0.6896,
+    0.6896,
+    0.6559999999999999,
+    0.5952,
+    0.6848000000000001,
+    0.6576,
+    0.6608,
+    0.6272,
+    0.808,
+    0.6527999999999999,
+    0.6816,
+    0.6703999999999999,
+    0.6255999999999999,
+    0.6576
+   ],
+   "auc_ci95": [
+    0.5504,
+    0.8480399999999999
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.04950495049504951,
+   "perm_p_less": 0.9603960396039604,
+   "n_perm": 100,
+   "null_mean": 0.49028799999999995,
+   "null_sd": 0.10770466404014267
+  },
+  "bp_rel+synth_xp1_spec2vol": {
+   "auc": 0.7884,
+   "auc_repeats": [
+    0.7888,
+    0.7888,
+    0.8400000000000001,
+    0.768,
+    0.8112,
+    0.752,
+    0.7984,
+    0.7951999999999999,
+    0.8016,
+    0.7743999999999999,
+    0.7664,
+    0.8208,
+    0.7712,
+    0.792,
+    0.7792000000000001,
+    0.7567999999999999,
+    0.7919999999999999,
+    0.8080000000000002,
+    0.7936,
+    0.7696000000000001
+   ],
+   "auc_ci95": [
+    0.63188,
+    0.92
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": -0.0032000000000000917,
+    "ci95": [
+     -0.060799999999999965,
+     0.040000000000000036
+    ],
+    "ci_bonf20": [
+     -0.10240000000000005,
+     0.06879999999999986
+    ],
+    "ci_bonf40": [
+     -0.11199999999999999,
+     0.0736
+    ],
+    "p_boot": 1.0,
+    "se_boot": 0.0254991952461563
+   }
+  },
+  "stft_ms+synth_xp1_spec2vol": {
+   "auc": 0.7899199999999998,
+   "auc_repeats": [
+    0.7408,
+    0.8176,
+    0.8848,
+    0.696,
+    0.7984,
+    0.7919999999999999,
+    0.7504,
+    0.8064,
+    0.8128,
+    0.7744,
+    0.7951999999999999,
+    0.8031999999999999,
+    0.8,
+    0.8128000000000001,
+    0.8288,
+    0.7679999999999999,
+    0.7456,
+    0.7904,
+    0.7664,
+    0.8144
+   ],
+   "auc_ci95": [
+    0.7136,
+    0.936
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": -0.008000000000000007,
+    "ci95": [
+     -0.09600000000000009,
+     0.0895999999999999
+    ],
+    "ci_bonf20": [
+     -0.1504020000000001,
+     0.15680000000000005
+    ],
+    "ci_bonf40": [
+     -0.15600100000000008,
+     0.16960200000000178
+    ],
+    "p_boot": 0.8534,
+    "se_boot": 0.04715323587596507
+   }
+  },
+  "synth_xp1_ntvit": {
+   "auc": 0.6243999999999998,
+   "auc_repeats": [
+    0.6944,
+    0.5984,
+    0.6528,
+    0.632,
+    0.632,
+    0.6112,
+    0.6176,
+    0.6272,
+    0.6256,
+    0.5935999999999999,
+    0.5872,
+    0.632,
+    0.5711999999999999,
+    0.5904,
+    0.648,
+    0.6304,
+    0.6176,
+    0.6512000000000001,
+    0.6624,
+    0.6128
+   ],
+   "auc_ci95": [
+    0.45760000000000006,
+    0.7743999999999999
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.0297029702970297,
+   "perm_p_less": 0.9801980198019802,
+   "n_perm": 100,
+   "null_mean": 0.4507919999999999,
+   "null_sd": 0.09230297902018114
+  },
+  "bp_rel+synth_xp1_ntvit": {
+   "auc": 0.81104,
+   "auc_repeats": [
+    0.8352,
+    0.776,
+    0.8464,
+    0.8191999999999999,
+    0.8128000000000001,
+    0.808,
+    0.808,
+    0.832,
+    0.8128,
+    0.8016,
+    0.7728,
+    0.8176,
+    0.8032,
+    0.7952,
+    0.8175999999999999,
+    0.7952,
+    0.8288,
+    0.84,
+    0.8208,
+    0.7776000000000001
+   ],
+   "auc_ci95": [
+    0.6575599999999999,
+    0.9391999999999998
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": 0.02080000000000004,
+    "ci95": [
+     -0.0031999999999999806,
+     0.05120000000000002
+    ],
+    "ci_bonf20": [
+     -0.019199999999999995,
+     0.07839999999999991
+    ],
+    "ci_bonf40": [
+     -0.022399999999999975,
+     0.08319999999999994
+    ],
+    "p_boot": 0.1098,
+    "se_boot": 0.014108844794666925
+   }
+  },
+  "stft_ms+synth_xp1_ntvit": {
+   "auc": 0.82032,
+   "auc_repeats": [
+    0.8528,
+    0.8368,
+    0.8752,
+    0.8031999999999999,
+    0.7696,
+    0.8351999999999999,
+    0.8256,
+    0.7952,
+    0.8048,
+    0.8031999999999999,
+    0.7968000000000001,
+    0.8608,
+    0.7808,
+    0.8368,
+    0.7824,
+    0.7936000000000001,
+    0.8335999999999999,
+    0.8544,
+    0.848,
+    0.8176
+   ],
+   "auc_ci95": [
+    0.7183599999999999,
+    0.9488
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": 0.0,
+    "ci95": [
+     -0.05600000000000005,
+     0.05599999999999994
+    ],
+    "ci_bonf20": [
+     -0.09440000000000004,
+     0.09279999999999988
+    ],
+    "ci_bonf40": [
+     -0.10160100000000002,
+     0.09520100000000094
+    ],
+    "p_boot": 1.0,
+    "se_boot": 0.028243179625530832
+   }
+  },
+  "synth_cnn_tag_ep50": {
+   "auc": 0.6471199999999999,
+   "auc_repeats": [
+    0.624,
+    0.6544,
+    0.6447999999999999,
+    0.6639999999999999,
+    0.6832,
+    0.6672000000000001,
+    0.6656,
+    0.6624,
+    0.5824,
+    0.64,
+    0.624,
+    0.6704,
+    0.5968,
+    0.6752,
+    0.6304,
+    0.64,
+    0.6352,
+    0.7263999999999999,
+    0.6272,
+    0.6288
+   ],
+   "auc_ci95": [
+    0.51992,
+    0.8144
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.12871287128712872,
+   "perm_p_less": 0.8811881188118812,
+   "n_perm": 100,
+   "null_mean": 0.510392,
+   "null_sd": 0.10608769172717446
+  },
+  "bp_rel+synth_cnn_tag_ep50": {
+   "auc": 0.7976800000000001,
+   "auc_repeats": [
+    0.7872,
+    0.7807999999999999,
+    0.8159999999999998,
+    0.808,
+    0.7984,
+    0.7888,
+    0.7936000000000001,
+    0.8368,
+    0.7856000000000001,
+    0.7696000000000001,
+    0.7759999999999999,
+    0.8304,
+    0.8096,
+    0.7808000000000002,
+    0.7888000000000001,
+    0.7568,
+    0.7888000000000001,
+    0.8351999999999999,
+    0.8384,
+    0.784
+   ],
+   "auc_ci95": [
+    0.6496000000000001,
+    0.9279999999999999
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": 0.009600000000000053,
+    "ci95": [
+     -0.02079999999999993,
+     0.04159999999999997
+    ],
+    "ci_bonf20": [
+     -0.04479999999999984,
+     0.06559999999999999
+    ],
+    "ci_bonf40": [
+     -0.04799999999999982,
+     0.06800100000000099
+    ],
+    "p_boot": 0.5309,
+    "se_boot": 0.01545688849433805
+   }
+  },
+  "stft_ms+synth_cnn_tag_ep50": {
+   "auc": 0.7763199999999999,
+   "auc_repeats": [
+    0.7552000000000001,
+    0.7488,
+    0.7807999999999999,
+    0.808,
+    0.7632,
+    0.7904,
+    0.7696,
+    0.7856,
+    0.808,
+    0.68,
+    0.8096,
+    0.7904,
+    0.7552,
+    0.784,
+    0.7632,
+    0.7727999999999999,
+    0.8128,
+    0.8304,
+    0.7632,
+    0.7552
+   ],
+   "auc_ci95": [
+    0.6672,
+    0.912
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": -0.040000000000000036,
+    "ci95": [
+     -0.1279999999999999,
+     0.04479999999999995
+    ],
+    "ci_bonf20": [
+     -0.18559999999999988,
+     0.09760200000000188
+    ],
+    "ci_bonf40": [
+     -0.20000000000000007,
+     0.11760100000000091
+    ],
+    "p_boot": 0.3516,
+    "se_boot": 0.043918180435241164
+   }
+  }
+ },
+ "metadata_tests": {
+  "age": {
+   "auc": 0.5328,
+   "p": 0.6975523907268765,
+   "mean_pt": 69.68,
+   "mean_hc": 69.32
+  },
+  "sex": {
+   "table": {
+    "Female": [
+     9,
+     9
+    ],
+    "Male": [
+     16,
+     16
+    ]
+   },
+   "p": 1.0
+  },
+  "duration": {
+   "auc": 0.5112,
+   "p": 0.8996357067265068,
+   "mean_pt": 594.206,
+   "mean_hc": 601.2779999999999
+  },
+  "n_annot": {
+   "auc": 0.5448,
+   "p": 0.5864158977856005,
+   "mean_pt": 317.8,
+   "mean_hc": 315.64
+  },
+  "file_mb": {
+   "auc": 0.5112,
+   "p": 0.8996357067265068,
+   "mean_pt": 79.623604,
+   "mean_hc": 80.571252
+  }
+ },
+ "artefact_tests": {
+  "frac_rejected": {
+   "auc": 0.35519999999999996,
+   "p": 0.08059162105189478,
+   "mean_pt": 0.6572121212121211,
+   "mean_hc": 0.7830303030303031
+  },
+  "median_p2p_uV": {
+   "auc": 0.2592,
+   "p": 0.0036093469359454364,
+   "mean_pt": 255.5423519897461,
+   "mean_hc": 425.29674346923827
+  },
+  "hf_logpow_30_45": {
+   "auc": 0.4192,
+   "p": 0.33197546708273695,
+   "mean_pt": -16.953467712402343,
+   "mean_hc": -16.624200859069823
+  },
+  "eog_log_rms": {
+   "auc": 0.2592,
+   "p": 0.0036093469359454364,
+   "mean_pt": -5.041360353532835,
+   "mean_hc": -4.4941193035444345
+  },
+  "acc_log_rms": {
+   "auc": 0.4096,
+   "p": 0.2772314876173122,
+   "mean_pt": -4.422581266222852,
+   "mean_hc": -4.2229377716200895
+  }
+ },
+ "artefact_channels": {
+  "eog": [
+   "VEOG"
+  ],
+  "acc": [
+   "X",
+   "Y",
+   "Z"
+  ]
+ },
+ "covariates": [
+  "age",
+  "male"
+ ],
+ "pd_eye_order": [
+  {
+   "sub": "sub-001",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-002",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-003",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 155,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-004",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 155,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-005",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 265,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-006",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 165,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-007",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 207,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-008",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-009",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 205,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-010",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-011",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 215,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-012",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 170,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-013",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 217,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-014",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-015",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 192,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-016",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms"
+   ],
+   "n_events": 121,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-017",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 153,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-018",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-019",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 211,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-020",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-021",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-022",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 159,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-023",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 241,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-024",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 222,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-025",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 193,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-026",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 209,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-027",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 174,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-028",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 218,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-029",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-030",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-031",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 153,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-032",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 169,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-033",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms"
+   ],
+   "n_events": 4,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-034",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 192,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-035",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 195,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-036",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 205,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-037",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 223,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-038",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 225,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-039",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 203,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-040",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 189,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-041",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 228,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-042",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 198,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-043",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 217,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-044",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-045",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-046",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-047",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 239,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-048",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 188,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-049",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 236,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-050",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 217,
+   "first_onset": 0.0
+  }
+ ],
+ "minutes": 38.80676207145055
+}

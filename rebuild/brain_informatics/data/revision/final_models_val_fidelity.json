@@ -1,0 +1,126 @@
+{
+ "49": {
+  "template": {
+   "rmse": 0.07500670105218887,
+   "ssim_2d_e2fnet": 0.7159582523934102,
+   "voxel_r_mean": 4.92468359425402e-08,
+   "voxel_r_median": 1.0679760187315424e-08,
+   "voxel_r2corr_mean": 1.1397936630977434e-12,
+   "voxel_r_mean_dt": 0.0005442726542241871,
+   "R2c_global_dt": 0.0,
+   "voxel_R2c_median_dt": 0.0
+  },
+  "cnn_tag": {
+   "rmse": 0.08468414098024368,
+   "ssim_2d_e2fnet": 0.6859784273735737,
+   "voxel_r_mean": -0.011791682802140713,
+   "voxel_r_median": 0.007449015974998474,
+   "voxel_r2corr_mean": 0.04408261179924011,
+   "voxel_r_mean_dt": -0.008004634641110897,
+   "R2c_global_dt": -3.966842957142024,
+   "voxel_R2c_median_dt": -0.3375307321548462
+  },
+  "e2fnet": {
+   "rmse": 0.08879663795232773,
+   "ssim_2d_e2fnet": 0.7057745500308711,
+   "voxel_r_mean": 0.00283423182554543,
+   "voxel_r_median": 0.0013039421755820513,
+   "voxel_r2corr_mean": 0.023024018853902817,
+   "voxel_r_mean_dt": 0.004992842674255371,
+   "R2c_global_dt": -3.9981812897664897,
+   "voxel_R2c_median_dt": -0.05332976579666138
+  },
+  "spec2vol": {
+   "rmse": 0.07917681336402893,
+   "ssim_2d_e2fnet": 0.7167669725750382,
+   "voxel_r_mean": 0.0001305086479987949,
+   "voxel_r_median": -1.2083927686035167e-05,
+   "voxel_r2corr_mean": 0.016155801713466644,
+   "voxel_r_mean_dt": -0.00033726324909366667,
+   "R2c_global_dt": 4.5198822840042396e-07,
+   "voxel_R2c_median_dt": 0.0
+  },
+  "ntvit": {
+   "rmse": 0.0779675841331482,
+   "ssim_2d_e2fnet": 0.6904000527375228,
+   "voxel_r_mean": -0.00011090958287240937,
+   "voxel_r_median": -0.00029877095948904753,
+   "voxel_r2corr_mean": 0.0042069414630532265,
+   "voxel_r_mean_dt": 0.0008796214242465794,
+   "R2c_global_dt": -2.7141160723109792e-05,
+   "voxel_R2c_median_dt": 0.0
+  },
+  "template_ntvit_volumes": {
+   "rmse": 0.07500629127025604,
+   "ssim_2d_e2fnet": 0.7159537889740684,
+   "voxel_r_mean": 6.179229927738561e-08,
+   "voxel_r_median": 1.1921925668900712e-08,
+   "voxel_r2corr_mean": 1.147137506513074e-12,
+   "voxel_r_mean_dt": 0.0007334465626627207,
+   "R2c_global_dt": 0.0,
+   "voxel_R2c_median_dt": 0.0
+  }
+ },
+ "50": {
+  "template": {
+   "rmse": 0.08033771812915802,
+   "ssim_2d_e2fnet": 0.6918816011957175,
+   "voxel_r_mean": 5.2724551835581224e-08,
+   "voxel_r_median": 1.1513927589135164e-08,
+   "voxel_r2corr_mean": 1.465586549689868e-12,
+   "voxel_r_mean_dt": 0.00019068323308601975,
+   "R2c_global_dt": 0.0,
+   "voxel_R2c_median_dt": 0.0
+  },
+  "cnn_tag": {
+   "rmse": 0.09363087266683578,
+   "ssim_2d_e2fnet": 0.6382354350455547,
+   "voxel_r_mean": 0.0003988840035162866,
+   "voxel_r_median": -0.002788941375911236,
+   "voxel_r2corr_mean": 0.028709840029478073,
+   "voxel_r_mean_dt": -0.00025350897340103984,
+   "R2c_global_dt": -5.893757095373456,
+   "voxel_R2c_median_dt": -0.6476727724075317
+  },
+  "e2fnet": {
+   "rmse": 0.09154049307107925,
+   "ssim_2d_e2fnet": 0.7132548527850506,
+   "voxel_r_mean": 0.0019575105980038643,
+   "voxel_r_median": -0.0012473897077143192,
+   "voxel_r2corr_mean": 0.039398375898599625,
+   "voxel_r_mean_dt": -0.0022780175786465406,
+   "R2c_global_dt": -4.050292612154029,
+   "voxel_R2c_median_dt": -0.13584840297698975
+  },
+  "spec2vol": {
+   "rmse": 0.08659205585718155,
+   "ssim_2d_e2fnet": 0.7197690313286067,
+   "voxel_r_mean": 0.015040322206914425,
+   "voxel_r_median": 0.003740171901881695,
+   "voxel_r2corr_mean": 0.0598902627825737,
+   "voxel_r_mean_dt": 0.004163007251918316,
+   "R2c_global_dt": 2.0945751898482357e-06,
+   "voxel_R2c_median_dt": 5.960464477539063e-08
+  },
+  "ntvit": {
+   "rmse": 0.0780271664261818,
+   "ssim_2d_e2fnet": 0.6995963891903003,
+   "voxel_r_mean": 0.0004293698293622583,
+   "voxel_r_median": 0.0002773962332867086,
+   "voxel_r2corr_mean": 0.0036555917467921972,
+   "voxel_r_mean_dt": 0.0004285511386115104,
+   "R2c_global_dt": -2.6055614599451715e-05,
+   "voxel_R2c_median_dt": 0.0
+  },
+  "template_ntvit_volumes": {
+   "rmse": 0.08033481240272522,
+   "ssim_2d_e2fnet": 0.691888135629934,
+   "voxel_r_mean": 6.476640379560195e-08,
+   "voxel_r_median": 1.472494837173599e-08,
+   "voxel_r2corr_mean": 1.4953915926721462e-12,
+   "voxel_r_mean_dt": 3.4974280424648896e-05,
+   "R2c_global_dt": 1.1684132106282163e-07,
+   "voxel_R2c_median_dt": 0.0
+  }
+ }
+}

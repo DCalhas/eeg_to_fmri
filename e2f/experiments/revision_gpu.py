@@ -88,10 +88,16 @@ if __name__ == "__main__":
 	ap.add_argument("--cnn_ep50", action="store_true")
 	ap.add_argument("--examples", action="store_true")
 	ap.add_argument("--models", nargs="+", default=MODELS)
+	ap.add_argument("--variant_tag", default=None, help="with REV_HARM=runs/harmonized_<v>: synthesize trained and untrained features as <m>[_untrained]_<v>")
 	a = ap.parse_args()
 	assert torch.cuda.is_available(), "GPU-only rule"
 	st = np.load(os.path.join(FINAL, "aligned_featstats.npz"))
 	mu, sd = st["mu"], st["sd"]
+	if a.variant_tag:
+		cs = [c for c in COHORTS if os.path.isdir(os.path.join(HARM, c))]
+		for m in a.models:
+			for untrained in (False, True):
+				synthesize_cohorts(load_model(m, untrained=untrained), m, mu, sd, f"{m}{'_untrained' if untrained else ''}_{a.variant_tag}", cohorts=cs)
 	if a.clean:
 		for m in a.models:
 			for untrained in (False, True):

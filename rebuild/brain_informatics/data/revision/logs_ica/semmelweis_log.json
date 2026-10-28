@@ -1,0 +1,624 @@
+{
+ "eog_channels": [
+  "HEO",
+  "VEO"
+ ],
+ "subjects": [
+  {
+   "sub": "sch_002",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_003",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_004",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_005",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_006",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_007",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_008",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_009",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_012",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_013",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_014",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_016",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_018",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_021",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_022",
+   "label": 1,
+   "n_ic_eog": 3,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 3,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_023",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_025",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_026",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_027",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_028",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_029",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 6,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_030",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_031",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_033",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 8,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_034",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_035",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_036",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_037",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_038",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_039",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_040",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_044",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_045",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_046",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_047",
+   "label": 1,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_048",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_049",
+   "label": 1,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 11,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_050",
+   "label": 1,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_101",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_102",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_103",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_104",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_105",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_106",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_107",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_108",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_109",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_110",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_111",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_112",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_113",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 9,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_115",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_116",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_117",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_118",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_119",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_120",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_121",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_122",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 11,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_123",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 12,
+   "n_ic_excluded": 2,
+   "duration": 109.7
+  },
+  {
+   "sub": "sch_124",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_125",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_126",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_127",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 1,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_128",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_129",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_130",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_131",
+   "label": 0,
+   "n_ic_eog": 0,
+   "n_ic_muscle": 14,
+   "n_ic_excluded": 0,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_132",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 2,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_133",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 10,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_134",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 11,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_135",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 4,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_136",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_137",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 7,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_138",
+   "label": 0,
+   "n_ic_eog": 2,
+   "n_ic_muscle": 0,
+   "n_ic_excluded": 2,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_140",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 5,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  },
+  {
+   "sub": "sch_333",
+   "label": 0,
+   "n_ic_eog": 1,
+   "n_ic_muscle": 3,
+   "n_ic_excluded": 1,
+   "duration": 118.004
+  }
+ ]
+}
