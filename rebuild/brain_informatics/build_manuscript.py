@@ -1,7 +1,10 @@
 """Convert rebuild/paper_ni/main.tex (article class, inline bibliography) into a Brain Informatics submission
 (Springer Nature sn-jnl template, Basic Springer reference style, double spacing + line numbers, Declarations).
 Re-run after editing paper_ni/main.tex; the BI-specific blocks (abstract, keywords, abbreviations, declarations,
-ethics and LLM statements) are defined here."""
+ethics and LLM statements) are defined here.
+
+One-time conversion: since the reframing for Brain Informatics (2026-10-28), submission/manuscript.tex is edited directly
+and this script refuses to overwrite it unless run with --force."""
 import re, os, shutil
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -9,6 +12,9 @@ SRC = os.path.join(HERE, "..", "paper_ni", "main.tex")
 TPL = os.path.join(HERE, "template", "sn-article-template")
 OUT = os.path.join(HERE, "submission")
 os.makedirs(OUT, exist_ok=True)
+import sys
+if os.path.exists(os.path.join(OUT, "manuscript.tex")) and "--force" not in sys.argv:
+	sys.exit("submission/manuscript.tex is now the source; run with --force to regenerate it from paper_ni")
 for f in ["sn-jnl.cls", "bst/sn-basic.bst"]:
 	shutil.copy(os.path.join(TPL, f), OUT)
 for f in ["stft.png", "fmri.png"]:

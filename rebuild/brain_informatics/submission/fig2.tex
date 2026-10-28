@@ -18,78 +18,68 @@
 \setlength{\textwidth}{372pt}
 \begin{document}
 \begin{tikzpicture}
-        [scale=0.7,
-        inner sep=0.5mm,
-        pd/.style={circle,draw=red!50,fill=red!20,thick},
-        hc/.style={circle,draw=blue!50,fill=blue!20,thick}]
+        [inner sep=2mm, scale=0.87]
+
+        \node (x) at (0,0) {};
         
-        \node (sinusoid1) at (0,0) {};
+        \node (stft) at ($(x)+(-1.2,0.3)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
+        \node (stft) at ($(stft)+(0.1,-0.1)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
+        \node (stft) at ($(stft)+(0.1,-0.1)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
+        \node (stft) at ($(stft)+(0.1,-0.1)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
+        \node (stft) at ($(stft)+(0.1,-0.1)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
         
-        \draw[black, thick, ->] ($(sinusoid1)+(-2,0.3)$) -- ($(sinusoid1)+(1.2,0.3)$);%xaxis
-        \draw[thin, black!50] ($(sinusoid1)+(0.9,0.3)$) sin ($(sinusoid1)+(0.45,-0.3)$);
-        \draw[thin, black!50] ($(sinusoid1)+(0.45,-0.3)$) cos ($(sinusoid1)+(0.,0.3)$);
-        \draw[thin, black!50] ($(sinusoid1)+(0.,0.3)$) sin ($(sinusoid1)+(-0.45,0.9)$);
-        \draw[thin, black!50] ($(sinusoid1)+(-0.45,0.9)$) cos ($(sinusoid1)+(-0.9,0.3)$);
-        \draw[thin, black!50] ($(sinusoid1)+(-0.9,0.3)$) sin ($(sinusoid1)+(-1.35,-0.3)$);
-        \draw[thin, black!50] ($(sinusoid1)+(-1.35,-0.3)$) cos ($(sinusoid1)+(-1.8,0.3)$);
+        \node at ($(stft)+(-0.2,-0.9)$) {$\vec{x}_1$};
         
-        
-        \draw[black, thick] ($(sinusoid1)+(-1.8,0.36)$) -- ($(sinusoid1)+(-1.8,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(-1.35,0.36)$) -- ($(sinusoid1)+(-1.35,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(-0.9,0.36)$) -- ($(sinusoid1)+(-0.9,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(-0.45,0.36)$) -- ($(sinusoid1)+(-0.45,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(0.,0.36)$) -- ($(sinusoid1)+(0.,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(0.45,0.36)$) -- ($(sinusoid1)+(0.45,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(0.9,0.36)$) -- ($(sinusoid1)+(0.9,0.24)$);
-        
-        \node at ($(sinusoid1)+(-1.35,-0.6)$) {$-\pi$};
-        \node at ($(sinusoid1)+(-0.45,-0.6)$) {$0$};
-        \node at ($(sinusoid1)+(0.45,-0.6)$) {$\pi$};
-        
-        \node (ind1) at ($(sinusoid1)+(-0.45,0.9)$) [pd] {};
-        \node (ind1) at ($(sinusoid1)+(0.45,-0.3)$) [hc] {};
-        
-        \node (ind1) at ($(sinusoid1)+(-0.45,0.9)$) [pd] {};
-        \node (ind1) at ($(sinusoid1)+(0.45,-0.3)$) [hc] {};
+        \node (encoder) at ($(x)+(2.3,0)$) {\tikz {\draw[rounded corners, draw=black!50,fill=black!20,thick, dash pattern=on 7pt off 2pt] (0,0) rectangle ++(3.4,3);}};
+        \node (decoder) at ($(x)+(7.8,0)$) {\tikz {\draw[rounded corners, draw=brown!70,fill=green!20,thick, dash pattern=on 7pt off 2pt] (0,0) rectangle ++(4.5,3);}};
+        \node (legend_encoder) at ($(encoder)+(0,-1.9)$) {Encoder};
+        \node (legend_decoder) at ($(decoder)+(0,-1.9)$) {Decoder};
         
         
-        \node (sinusoid2) at ($(sinusoid1)+(0,-2.5)$) {};
-        
-        \draw[black, thick, ->] ($(sinusoid2)+(-2,0.3)$) -- ($(sinusoid2)+(1.2,0.3)$);%xaxis
-        \draw[thin, black!50] ($(sinusoid2)+(0.9,0.3)$) sin ($(sinusoid2)+(0.45,-0.3)$);
-        \draw[thin, black!50] ($(sinusoid2)+(0.45,-0.3)$) cos ($(sinusoid2)+(0.,0.3)$);
-        \draw[thin, black!50] ($(sinusoid2)+(0.,0.3)$) sin ($(sinusoid2)+(-0.45,0.9)$);
-        \draw[thin, black!50] ($(sinusoid2)+(-0.45,0.9)$) cos ($(sinusoid2)+(-0.9,0.3)$);
-        \draw[thin, black!50] ($(sinusoid2)+(-0.9,0.3)$) sin ($(sinusoid2)+(-1.35,-0.3)$);
-        \draw[thin, black!50] ($(sinusoid2)+(-1.35,-0.3)$) cos ($(sinusoid2)+(-1.8,0.3)$);
-        
-        
-        \draw[black, thick] ($(sinusoid2)+(-1.8,0.36)$) -- ($(sinusoid2)+(-1.8,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(-1.35,0.36)$) -- ($(sinusoid2)+(-1.35,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(-0.9,0.36)$) -- ($(sinusoid2)+(-0.9,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(-0.45,0.36)$) -- ($(sinusoid2)+(-0.45,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(0.,0.36)$) -- ($(sinusoid2)+(0.,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(0.45,0.36)$) -- ($(sinusoid2)+(0.45,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(0.9,0.36)$) -- ($(sinusoid2)+(0.9,0.24)$);
-        
-        \node at ($(sinusoid2)+(-1.35,-0.6)$) {$-\pi$};
-        \node at ($(sinusoid2)+(-0.45,-0.6)$) {$0$};
-        \node at ($(sinusoid2)+(0.45,-0.6)$) {$\pi$};
-        
-        \node (ind1) at ($(sinusoid2)+(-0.9,0.3)$) [pd] {};
-        \node (ind1) at ($(sinusoid2)+(0.,0.3)$) [hc] {};
+        \node (channel_organization) at ($(x)+(1,0)$) {\tikz {\draw[draw=blue!50,fill=blue!20,thick] (0,0) rectangle ++(0.3,2);}};
+
+        \node (T) at ($(channel_organization)+(0.7,0)$) {$T$};
+
+        \node (resblock1) at ($(T)+(0.7,0)$) {\tikz {\draw[rounded corners, draw=red!40,fill=red!20,thick] (0,0) rectangle ++(0.3,2);}};
+
+        \node (resblock2) at ($(resblock1)+(0.7,0)$) {\tikz {\draw[rounded corners, draw=red!40,fill=red!20,thick] (0,0) rectangle ++(0.3,2);}};
+
+        \node (latent_affine) at ($(resblock2)+(0.7,0)$) {\tikz {\draw[draw=orange!40,fill=orange!20,thick] (0,0) rectangle ++(0.3,2);}};
+
+        \node (latent) at ($(latent_affine)+(1,0)$) {$\vec{z}$};
+
+        \node (fourier) at ($(latent)+(2,0)$) {$cos(\omega \cdot \vec{z} + \beta)$};
+
+        \node (style) at ($(fourier)+(2,0)$) {$\odot $};
+        \node (style_weight) at ($(style)+(0,1.3)$) {$W$};
+
+        \node (decoder_affine) at ($(style)+(1,0)$) {\tikz {\draw[draw=orange!40,fill=orange!20,thick] (0,0) rectangle ++(0.3,2);}};
+
+        \node (output) at ($(decoder_affine)+(1.7,0)$) {\includegraphics[width=0.1\textwidth]{fmri.png}};
+        \node at ($(output)+(0,-1.3)$) {$\vec{x}_2$};
         
         
-        \node at ($(sinusoid1)+(-0.45,1.2)$) {$x_1$};
-        \node at ($(sinusoid1)+(0.9,-0.5)$) {$x_2$};
+        \draw[-latex, line width=1pt, black!60] ($(x)+(0.2,0)$) -- ($(channel_organization)+(-0.25,0)$);
+        \draw[-latex, line width=1pt, black!60] ($(channel_organization)+(0.2,0)$) -- ($(T)+(-0.2,0)$);
+        \draw[-latex, line width=1pt, black!60] ($(T)+(0.2,0)$) -- ($(resblock1)+(-0.2,0)$);
+        \draw[-latex, line width=1pt, black!60] ($(resblock1)+(0.2,0)$) -- ($(resblock2)+(-0.2,0)$);
+        \draw[-latex, line width=1pt, black!60] ($(resblock2)+(0.2,0)$) -- ($(latent_affine)+(-0.2,0)$);
+        \draw[-latex, line width=1pt, black!60] ($(latent_affine)+(0.25,0)$) -- ($(latent)+(-0.25,0)$);
+        \draw[-latex, line width=1pt, black!60] ($(latent)+(0.25,0)$) -- ($(fourier)+(-1.25,0)$);
+        \draw[-latex, line width=1pt, black!60] ($(fourier)+(1.25,0)$) -- ($(style)+(-0.25,0)$);
+        \draw[-latex, line width=1pt, black!60] ($(style)+(0.25,0)$) -- ($(decoder_affine)+(-0.25,0)$);
+        \draw[-latex, line width=1pt, black!60] ($(decoder_affine)+(0.25,0)$) -- ($(output)+(-0.8,0)$);
+        \draw[-latex, line width=2pt, red!60] ($(style_weight)+(0,-0.25)$) -- ($(style)+(0,0.25)$);
         
-        \node at ($(sinusoid2)+(-1.1,0.55)$) {$x_3$};
-        \node at ($(sinusoid2)+(0.2,0.55)$) {$x_4$};
+        \node (attention_legend) at ($(encoder)+(-3.5,-3.4)$) {\tikz {\draw[draw=blue!50,fill=blue!20,thick] (0,0) rectangle ++(0.3,2);}};
+        \node (resblock_legend) at ($(attention_legend)+(2.5,0)$) {\tikz {\draw[rounded corners, draw=red!40,fill=red!20,thick] (0,0) rectangle ++(0.3,2);}};
+        \node (affine_legend) at ($(resblock_legend)+(3,0)$) {\tikz {\draw[draw=orange!40,fill=orange!20,thick] (0,0) rectangle ++(0.3,2);}};
+        \node (hadamard_legend) at ($(affine_legend)+(3.8,0)$) {$\odot$};
+
+        \node[align=left] at ($(affine_legend)+(1.7,0)$) {Affine projection};
+        \node[align=left] at ($(attention_legend)+(1.1,0)$) {Attention};
+        \node[align=left] at ($(resblock_legend)+(1.4,0)$) {Resnet block};
+        \node at ($(hadamard_legend)+(2.,0)$) {Hadamard product};
         
-        \node (distance1) at ($(sinusoid1)+(5,0.8)$) {$x_1, x_2 \sim \mathcal{X}_1: ||x_1-x_2||_1=\pi$};
-        \node at ($(distance1)+(0,-1)$) {$x \sim \mathcal{X}_1: \mathbb{E}[x] = \frac{\pi}{2} \wedge \mbox{Var}[x]=\frac{\pi}{2}$};
-        
-        \node (distance2) at ($(sinusoid2)+(5,0.8)$) {$x_3, x_4 \sim \mathcal{X}_2: ||x_3-x_4||_1=\pi$};
-        \node at ($(distance2)+(0,-1)$) {$x \sim \mathcal{X}_2: \mathbb{E}[x] = 0 \wedge \mbox{Var}[x]=\frac{\pi}{2}$};
     \end{tikzpicture}
 \end{document}

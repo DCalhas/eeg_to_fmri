@@ -1,85 +1,46 @@
-\documentclass[border=4pt]{standalone}
-\usepackage{graphicx,amsmath,amssymb,amsfonts,xcolor}
+\documentclass[border=3pt]{standalone}
+\usepackage{amsmath,amssymb}
 \usepackage{tikz}
-\usepackage{pgfplots}
-\usepackage{scalerel}
-\usetikzlibrary{positioning, decorations.pathreplacing, calligraphy, calc, shapes.geometric, intersections, arrows}
-\usepgfplotslibrary{fillbetween}
-\pgfplotsset{compat=1.18}
-
-\newcommand{\fmri}{functional magnetic resonance imaging}
-\newcommand{\FMRI}{Functional magnetic resonance imaging}
-\newcommand{\fmriabbrv}{fMRI}
-\newcommand{\eeg}{electroencephalography}
-\newcommand{\EEG}{Electroencephalography}
-\newcommand{\eegabbrv}{EEG}
-\newcommand{\verify}[1]{\textcolor{red}{[VERIFY: #1]}}
-
-\setlength{\textwidth}{372pt}
+\usetikzlibrary{positioning,arrows.meta,calc}
 \begin{document}
-\begin{tikzpicture}
-        [inner sep=2mm, scale=0.87]
+\footnotesize
+\begin{tikzpicture}[
+    node distance=3.5mm and 4.5mm,
+    box/.style={draw=black!60, rounded corners=1.5pt, align=center, inner sep=2.2pt, minimum height=9mm,
+        execute at begin node={\hyphenpenalty=10000}, fill=#1},
+    box/.default=white,
+    arr/.style={-{Stealth[length=1.5mm]}, black!70, semithick},
+    lane/.style={font=\scriptsize\bfseries, text=black!65, anchor=south west, inner sep=0pt}]
 
-        \node (x) at (0,0) {};
-        
-        \node (stft) at ($(x)+(-1.2,0.3)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
-        \node (stft) at ($(stft)+(0.1,-0.1)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
-        \node (stft) at ($(stft)+(0.1,-0.1)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
-        \node (stft) at ($(stft)+(0.1,-0.1)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
-        \node (stft) at ($(stft)+(0.1,-0.1)$) {\includegraphics[width=0.1\textwidth]{stft.png}};
-        
-        \node at ($(stft)+(-0.2,-0.9)$) {$\vec{x}_1$};
-        
-        \node (encoder) at ($(x)+(2.3,0)$) {\tikz {\draw[rounded corners, draw=black!50,fill=black!20,thick, dash pattern=on 7pt off 2pt] (0,0) rectangle ++(3.4,3);}};
-        \node (decoder) at ($(x)+(7.8,0)$) {\tikz {\draw[rounded corners, draw=brown!70,fill=green!20,thick, dash pattern=on 7pt off 2pt] (0,0) rectangle ++(4.5,3);}};
-        \node (legend_encoder) at ($(encoder)+(0,-1.9)$) {Encoder};
-        \node (legend_decoder) at ($(decoder)+(0,-1.9)$) {Decoder};
-        
-        
-        \node (channel_organization) at ($(x)+(1,0)$) {\tikz {\draw[draw=blue!50,fill=blue!20,thick] (0,0) rectangle ++(0.3,2);}};
+% ---- A: synthesis training (top row)
+\node[box=gray!12, text width=2.45cm] (noddi) {NODDI EEG-fMRI\\16 healthy adults};
+\node[box=gray!12, text width=2.45cm, right=of noddi] (align) {Trigger alignment\\57 channels by name};
+\node[box=blue!8, text width=2.95cm, right=of align] (synth) {4 synthesizers\\CNN-TAG, E2fNet,\\Spec2VolCAMU-Net,\\NT-ViT};
+\node[box=gray!12, text width=2.4cm, right=of synth] (sup) {Fidelity tests\\EEG-free template,\\shift and swap\\nulls, BOLD target};
+\draw[arr] (noddi) -- (align);
+\draw[arr] (align) -- (synth);
+\draw[arr] (synth) -- (sup);
 
-        \node (T) at ($(channel_organization)+(0.7,0)$) {$T$};
+% ---- B: diagnostic evaluation (bottom rows)
+\node[box=orange!10, text width=2.45cm, below=17mm of noddi] (clin) {5 clinical cohorts\\FEP1, FEP2,\\Semmelweis, PD,\\Fribourg, $n{=}308$};
+\node[box=orange!10, text width=2.45cm, right=of clin] (harm) {Harmonisation\\channels by type\\57-ch montage\\0.5--45\,Hz, 250\,Hz};
+\node[box, text width=2.95cm, below=8mm of synth] (syn) {Synthesized fMRI $v_2$\\trained or untrained};
+\node[box, text width=2.95cm, below=2mm of syn] (con) {Contrastive fine-tuning\\of CNN-TAG};
+\node[box, text width=2.95cm, below=2mm of con, minimum height=6mm] (bp) {Band power $v_0$};
+\draw[arr] (clin) -- (harm);
+\coordinate (split) at ($(harm.east)+(2.2mm,0)$);
+\draw[arr] (harm.east) -- (split) |- (syn.west);
+\draw[arr] (split) |- (con.west);
+\draw[arr] (split) |- (bp.west);
+\draw[arr, dashed] (synth.south) -- node[right, font=\scriptsize, text=black!65, inner sep=1.5pt] {fixed weights} (syn.north);
 
-        \node (resblock1) at ($(T)+(0.7,0)$) {\tikz {\draw[rounded corners, draw=red!40,fill=red!20,thick] (0,0) rectangle ++(0.3,2);}};
+\node[box=green!8, text width=2.4cm, right=of con] (clf) {Logistic regression\\on $v_0$, $v_2$, $v_0{\oplus}v_2$\\nested repeated CV\\permutation $p$\\paired $\Delta$AUC};
+\coordinate (merge) at ($(clf.west)+(-2.2mm,0)$);
+\draw[black!70, semithick] (syn.east) -| (merge);
+\draw[black!70, semithick] (bp.east) -| (merge);
+\draw[arr] (con.east) -- (clf.west);
 
-        \node (resblock2) at ($(resblock1)+(0.7,0)$) {\tikz {\draw[rounded corners, draw=red!40,fill=red!20,thick] (0,0) rectangle ++(0.3,2);}};
-
-        \node (latent_affine) at ($(resblock2)+(0.7,0)$) {\tikz {\draw[draw=orange!40,fill=orange!20,thick] (0,0) rectangle ++(0.3,2);}};
-
-        \node (latent) at ($(latent_affine)+(1,0)$) {$\vec{z}$};
-
-        \node (fourier) at ($(latent)+(2,0)$) {$cos(\omega \cdot \vec{z} + \beta)$};
-
-        \node (style) at ($(fourier)+(2,0)$) {$\odot $};
-        \node (style_weight) at ($(style)+(0,1.3)$) {$W$};
-
-        \node (decoder_affine) at ($(style)+(1,0)$) {\tikz {\draw[draw=orange!40,fill=orange!20,thick] (0,0) rectangle ++(0.3,2);}};
-
-        \node (output) at ($(decoder_affine)+(1.7,0)$) {\includegraphics[width=0.1\textwidth]{fmri.png}};
-        \node at ($(output)+(0,-1.3)$) {$\vec{x}_2$};
-        
-        
-        \draw[-latex, line width=1pt, black!60] ($(x)+(0.2,0)$) -- ($(channel_organization)+(-0.25,0)$);
-        \draw[-latex, line width=1pt, black!60] ($(channel_organization)+(0.2,0)$) -- ($(T)+(-0.2,0)$);
-        \draw[-latex, line width=1pt, black!60] ($(T)+(0.2,0)$) -- ($(resblock1)+(-0.2,0)$);
-        \draw[-latex, line width=1pt, black!60] ($(resblock1)+(0.2,0)$) -- ($(resblock2)+(-0.2,0)$);
-        \draw[-latex, line width=1pt, black!60] ($(resblock2)+(0.2,0)$) -- ($(latent_affine)+(-0.2,0)$);
-        \draw[-latex, line width=1pt, black!60] ($(latent_affine)+(0.25,0)$) -- ($(latent)+(-0.25,0)$);
-        \draw[-latex, line width=1pt, black!60] ($(latent)+(0.25,0)$) -- ($(fourier)+(-1.25,0)$);
-        \draw[-latex, line width=1pt, black!60] ($(fourier)+(1.25,0)$) -- ($(style)+(-0.25,0)$);
-        \draw[-latex, line width=1pt, black!60] ($(style)+(0.25,0)$) -- ($(decoder_affine)+(-0.25,0)$);
-        \draw[-latex, line width=1pt, black!60] ($(decoder_affine)+(0.25,0)$) -- ($(output)+(-0.8,0)$);
-        \draw[-latex, line width=2pt, red!60] ($(style_weight)+(0,-0.25)$) -- ($(style)+(0,0.25)$);
-        
-        \node (attention_legend) at ($(encoder)+(-3.5,-3.4)$) {\tikz {\draw[draw=blue!50,fill=blue!20,thick] (0,0) rectangle ++(0.3,2);}};
-        \node (resblock_legend) at ($(attention_legend)+(2.5,0)$) {\tikz {\draw[rounded corners, draw=red!40,fill=red!20,thick] (0,0) rectangle ++(0.3,2);}};
-        \node (affine_legend) at ($(resblock_legend)+(3,0)$) {\tikz {\draw[draw=orange!40,fill=orange!20,thick] (0,0) rectangle ++(0.3,2);}};
-        \node (hadamard_legend) at ($(affine_legend)+(3.8,0)$) {$\odot$};
-
-        \node[align=left] at ($(affine_legend)+(1.7,0)$) {Affine projection};
-        \node[align=left] at ($(attention_legend)+(1.1,0)$) {Attention};
-        \node[align=left] at ($(resblock_legend)+(1.4,0)$) {Resnet block};
-        \node at ($(hadamard_legend)+(2.,0)$) {Hadamard product};
-        
-    \end{tikzpicture}
+\node[lane] at ($(noddi.north west)+(0,1.2mm)$) {A\quad Synthesis training};
+\node[lane] at ($(clin.north west |- harm.north)+(0,1.2mm)$) {B\quad Diagnostic evaluation};
+\end{tikzpicture}
 \end{document}

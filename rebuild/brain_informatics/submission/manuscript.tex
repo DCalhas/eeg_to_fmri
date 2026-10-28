@@ -10,6 +10,7 @@
 \usepackage[title]{appendix}%
 \usepackage{xcolor}%
 \usepackage{booktabs}%
+\usepackage{array}%
 \usepackage{algorithm}%
 \usepackage{algorithmicx}%
 \usepackage{algpseudocode}%
@@ -28,15 +29,12 @@
 \newcommand{\eegabbrv}{EEG}
 \newcommand{\verify}[1]{\textcolor{red}{[VERIFY: #1]}}
 
-\theoremstyle{thmstyleone}%
-\newtheorem{theorem}{Theorem}%
-
 \raggedbottom
 
 \begin{document}
 \linenumbers
 
-\title[Does EEG to fMRI Synthesis Aid Medical Decision?]{Does EEG to fMRI Synthesis Aid Medical Decision? An Evaluation in Psychosis, Schizophrenia and Parkinson's Disease}
+\title[Benchmarking EEG-to-fMRI synthesis for diagnosis]{What Does EEG-to-fMRI Synthesis Add to EEG-Based Diagnosis? A Controlled Benchmark in Psychosis, Schizophrenia and Parkinson's Disease}
 
 \author*[1]{\fnm{David} \sur{Calhas}}\email{davidcalhas@gmail.com}
 \author[2]{\fnm{Rui} \sur{Henriques}}\email{\verify{email}}
@@ -44,14 +42,17 @@
 \affil*[1]{\orgdiv{\verify{department}}, \orgname{\verify{institution}}, \orgaddress{\city{\verify{city}}, \country{\verify{country}}}}
 \affil[2]{\orgdiv{\verify{department}}, \orgname{\verify{institution}}, \orgaddress{\city{\verify{city}}, \country{\verify{country}}}}
 
-\abstract{Functional magnetic resonance imaging (fMRI) maps brain activity in space but is expensive, while electroencephalography (EEG) is cheap and portable. EEG-to-fMRI synthesis has been proposed to bring fMRI-like information to EEG-only clinical settings; we tested whether it improves diagnosis. Four synthesizers were trained on a simultaneous EEG-fMRI dataset of healthy adults with scanner-trigger alignment and applied to resting EEG from five public cohorts: two first-episode psychosis samples (77 and 61 participants), chronic schizophrenia (77), Parkinson's disease (50) and a task-EEG schizophrenia-spectrum sample (43). Each cohort was classified from EEG band power, synthesized fMRI and their combination with linear models under repeated cross-validation and permutation tests, with untrained (random-weight) synthesizers as an architecture-only control and contrastive fine-tuning of the synthesizers evaluated alongside. Band power separated Parkinson's disease from controls (area under the ROC curve, AUC, 0.79) but not the psychosis or schizophrenia cohorts (0.54--0.65). Synthesized fMRI classified Parkinson's disease (best AUC 0.74) but stayed below band power there, and elsewhere only one synthesized view was significant, with its untrained version scoring higher. Adding synthesized fMRI to band power gave no gain that survived correction for multiple comparisons, untrained synthesizers reproduced the Parkinson's disease result (AUC 0.70--0.74), and contrastive fine-tuning reached at most 0.70. In supporting analyses, the synthesizers did not outperform an EEG-free template image, and EEG explained a negligible part of preprocessed blood-oxygen-level-dependent signal (correlation about 0.03). Synthesized fMRI carried EEG spectral information rather than learned haemodynamics and did not reliably improve EEG-based diagnosis in these cohorts.}
+\abstract{\textbf{Background:} Electroencephalography (EEG) is inexpensive, whereas functional magnetic resonance imaging (fMRI) is spatially detailed but costly. EEG-to-fMRI synthesis has been proposed to support EEG-only diagnosis, but whether synthesized fMRI adds information beyond the EEG it is computed from has not been tested with appropriate controls.
 
-\keywords{Electroencephalography, EEG-to-fMRI synthesis, Functional MRI, Schizophrenia, First-episode psychosis, Parkinson's disease, Diagnostic classification, Cross-modal generation, Benchmark}
+\textbf{Methods:} We introduce a controlled evaluation protocol and apply it to four synthesizers, trained on simultaneous EEG-fMRI from healthy adults, and to harmonised resting EEG from five public cohorts: two first-episode psychosis samples (77 and 61 participants), chronic schizophrenia (77), Parkinson's disease (50) and a task-EEG schizophrenia-spectrum sample (43). Synthesized fMRI, an EEG band-power baseline and their combination are compared under nested repeated cross-validation, permutation tests and paired bootstrap, with untrained (random-weight) synthesizers as an architecture control.
+
+\textbf{Results:} Band power separated Parkinson's disease from controls (area under the ROC curve, AUC, 0.79) but not the psychosis or schizophrenia cohorts (0.54--0.65). Synthesized fMRI classified Parkinson's disease (best AUC 0.74) but stayed below band power; adding it to band power gave no gain that survived correction for multiple comparisons; untrained synthesizers reproduced the Parkinson's disease result (0.70--0.74); and contrastive fine-tuning reached at most 0.70. The synthesizers did not outperform an EEG-free template image, and EEG explained a negligible part of the blood-oxygen-level-dependent signal (correlation 0.03).
+
+\textbf{Conclusions:} Synthesized fMRI reflected EEG spectra, largely through the network architecture, and added no reliable diagnostic information beyond band power. The protocol, code and checklist of controls set a baseline for future diagnostic claims.}
+
+\keywords{Electroencephalography, EEG-to-fMRI synthesis, Functional MRI, Schizophrenia, First-episode psychosis, Parkinson's disease, Diagnostic classification, Cross-modal generation, Benchmark, Evaluation protocol}
 
 \maketitle
-
-
-
 
 \section{Introduction}\label{section:introduction}
 
@@ -59,9 +60,85 @@ fMRI resolves brain activity in space but is costly and scarce, especially in lo
 
 Whether synthesized fMRI adds diagnostic information beyond the EEG it is computed from has not been tested with the controls such a claim requires: classification data without acquisition differences between groups; a comparison, under identical validation, with an EEG-only view and with the combination of both; and a test of whether any discrimination comes from the learned EEG-to-fMRI mapping or from the network architecture alone, which can be done by applying the same networks with untrained weights. We report such an evaluation across four synthesizers and five clinical cohorts.
 
-\textbf{Key contributions:} (1) a classification benchmark of four EEG-to-fMRI synthesizers and of the contrastive sinusoid-separation method \cite{calhas2023medrxiv} on five public cohorts covering first-episode psychosis, chronic schizophrenia, a schizophrenia-spectrum task cohort and Parkinson's disease, with EEG-only, fusion, untrained-network and permutation controls; (2) supporting evidence on what the synthesizers learn: a scanner-trigger-aligned training protocol for the NODDI dataset, an EEG-free template baseline, and a fair-target test of how much BOLD variance EEG predicts.
+\textbf{Contributions.} (1) An evaluation protocol for diagnostic claims from synthesized fMRI: a harmonisation pipeline that maps any clinical EEG onto the synthesizers' training montage and removes non-EEG channels by type; an EEG-only baseline and a fusion test under identical nested validation; untrained-network controls; and subject-level permutation and paired bootstrap inference. (2) A benchmark applying this protocol to four synthesizers (CNN-TAG, E2fNet, Spec2VolCAMU-Net and NT-ViT) and to a contrastive fine-tuning method \cite{calhas2023medrxiv} on five public cohorts spanning first-episode psychosis, chronic schizophrenia, a schizophrenia-spectrum task cohort and Parkinson's disease. (3) Supporting evidence on what the synthesizers learn: a scanner-trigger-aligned training protocol for the NODDI dataset, an EEG-free template baseline and a fair-target test of how much BOLD variance EEG predicts. (4) A checklist of controls for diagnostic uses of synthesized fMRI (Section~\ref{section:discussion}), with open code. In brief, the synthesized volumes carried the EEG spectral information they are computed from, largely through the network architecture, and added no reliable diagnostic information beyond EEG band power in these cohorts.
 
-\subsection*{Problem description}\label{section:problem_description}
+\section{Related work}\label{section:related_work}
+
+\noindent\textbf{EEG-to-fMRI synthesis.} Convolutional transcoders \cite{liu2019convolutional, liu2020latent}, attention- and Fourier-feature-based encoder-decoders \cite{calhas2022eeg}, U-Net and Mamba decoders \cite{roos2025brainwaves,he2025spec2vol}, vision transformers \cite{lanzino2024ntvit} and diffusion models \cite{yao2025catd} synthesize volumes, while NeuroBOLT and UnEBOLT \cite{li2024neurobolt,li2026unebolt} and distributed-lag models \cite{mehta2025time} predict region time series; the latter work showed, within subjects and with surrogate tests, that EEG predicts BOLD in task-relevant regions. Downstream diagnostic use has been reported for schizophrenia \cite{calhas2023medrxiv} and Parkinson's disease \cite{yao2025catd}.
+
+\noindent\textbf{Schizophrenia.}\label{related_work:schizophrenia} Schizophrenia is marked by cognitive and structural brain alterations \cite{sui2018multimodal}. fMRI-based classification of controls and patients has shown promise \cite{de2019machine}, with consistent findings of frontal and temporal volume reductions \cite{chin2018recognition} and white-matter abnormalities \cite{cetin2020white}. EEG-based classification is common, but its pitfalls, including small samples and validation that is not at the subject level, have been documented \cite{barros2021advanced}; acquisition differences between groups in public releases are a further risk.
+
+\noindent\textbf{Interpretability.}\label{related_work:interpretability} For EEG, interpretability remains a challenge. \citet{pinto2022interpretable} applied evolutionary feature selection and \textit{apriori} association rules to explain seizure detection, identifying key features across spectral, temporal, and electrode dimensions. Band power, used here as the EEG baseline, is itself spatially organised over the scalp and has established clinical interpretations in schizophrenia \cite{roach2008event,bates2009low}; the case for synthesized fMRI as a more interpretable view would require spatial maps validated against real fMRI in patients, which the present data cannot provide.
+
+\section{Materials and methods}\label{section:methods}
+
+Figure~\ref{fig:overview} summarises the study design.
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig1.pdf}
+    \caption{\textbf{Study design.} Four synthesizers are trained on simultaneous EEG-fMRI of healthy adults (NODDI) with scanner-trigger alignment and kept fixed. Resting EEG of five clinical cohorts is harmonised to the training montage and represented by band power ($v_0$), by the synthesized fMRI of each synthesizer with learned or random weights ($v_2$), and by their combination ($v_0\oplus v_2$); a contrastive fine-tuning of CNN-TAG is evaluated alongside. Every view is classified with the same nested cross-validation and permutation tests. Supporting analyses on NODDI test what the synthesizers learn.}
+    \label{fig:overview}
+\end{figure*}
+
+\subsection{Datasets}\label{materials:data}
+
+Table~\ref{tab:data_description} summarises the datasets. All are previously published, anonymised public releases analysed here as secondary data.
+
+\noindent\textbf{First-episode psychosis (FEP1, FEP2).} Two independently collected samples from the University of Pittsburgh (OpenNeuro ds003944 and ds003947) \cite{salisbury_ds003944,salisbury_ds003947}: individuals with a first episode of psychosis and healthy controls; five minutes of eyes-open resting EEG recorded with a 10-10 cap inside an Elekta Neuromag Vectorview MEG system (61 EEG channels, 1000\,Hz, reference TP9). Age, sex, symptom and functioning scales (BPRS, SANS, SAPS, GAF, SFS), cognition (MATRICS, WASI) and chlorpromazine-equivalent medication are released. FEP1 lists 82 recordings, but five people appear twice under the identifiers \texttt{sub-X} and \texttt{sub-XA} (same age, sex and race, recorded days apart); we kept one recording per person (47 patients, 30 controls). FEP2 contains 31 patients and 30 controls and excludes, by construction, the subjects shared with FEP1.
+
+\noindent\textbf{Chronic schizophrenia (Semmelweis).} Resting EEG from Semmelweis University, Budapest \cite{racz2025}: 38 patients with schizophrenia and 39 age- and sex-matched controls; about two minutes of eyes-closed rest, 64-channel Neuroscan amplifier at 1000\,Hz. Patients are identified by the presence of PANSS ratings, which reproduces the 38/39 split of the source publication (35 of the 38 carry an ICD-10 F20/F25 code in the released table; three have a missing or non-F2 code). Medication, illness duration, education and PANSS scores are released.
+
+\noindent\textbf{Parkinson's disease (PD).} Resting EEG from the University of New Mexico (OpenNeuro ds003490) \cite{cavanagh_ds003490}: 25 patients with Parkinson's disease and 25 matched controls; 63 EEG channels, 500\,Hz (Brain Vision ActiChamp; reference CPz), instructed one-minute eyes-closed and eyes-open spans, plus EOG and a three-axis accelerometer on the most tremor-affected hand. Patients were recorded twice, a week apart, ON and OFF dopaminergic medication (13 ON first, 12 OFF first); we analysed the OFF session. Eight subjects of this cohort were used by \cite{yao2025catd}.
+
+\noindent\textbf{Schizophrenia spectrum, task EEG (Fribourg).} The cohort used in \cite{calhas2023medrxiv}, released by \cite{dataset2022fribourg}: 19 patients with a psychotic disorder (ICD-10) and 24 controls, recorded during the Ultimatum Game (responder role), 128-channel Biosemi ActiveTwo at 2048\,Hz; the release includes additional EXG channels whose layout differs between groups (four in all controls, six in 18 of 19 patients), which are excluded by the channel selection of Section~\ref{section:adaptation}. The public release distributes the group label only; group-level characteristics are reported in \cite{horat2018impaired}.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Characteristics and roles of the datasets. \textit{pt}: patients; \textit{hc}: healthy controls; age as mean $\pm$ standard deviation (years); analysed EEG is the fixed crop used for every subject of a cohort.}
+    \label{tab:data_description}
+    \small
+    \begin{tabular}{p{1.75cm} | p{1.95cm} | p{0.85cm} | p{2.0cm} | p{1.3cm} | p{2.65cm}}
+        \hline
+        \hline
+         \hfil Dataset & \hfil Role / disease & \hfil pt/hc & \hfil Age pt | hc & \hfil Sex (M/F) pt | hc & \hfil Recording (analysed EEG) \\
+         \hline
+         NODDI & synthesis training & 0/16 & \hfil $32.8\pm8.1^{a}$ & \hfil 11/6$^{a}$ & rest, eyes open, simultaneous EEG-fMRI, 64 ch, 250\,Hz \\
+         FEP1 (ds003944) & first-episode psychosis & 47/30 & $22.5\pm5.1$ | $21.6\pm4.1$ & 33/14 | 18/12 & rest, eyes open, 61 ch, 1\,kHz (300\,s) \\
+         FEP2 (ds003947) & first-episode psychosis & 31/30 & $23.4\pm4.7$ | $24.2\pm5.1$ & 22/9 | 16/14 & rest, eyes open, 61 ch, 1\,kHz (300\,s) \\
+         Semmelweis & schizophrenia (chronic) & 38/39 & $33.9\pm10.6$ | $32.7\pm9.7$ & 24/14 | 24/15 & rest, eyes closed, 64 ch, 1\,kHz (118\,s$^{b}$) \\
+         PD (ds003490) & Parkinson's disease (OFF) & 25/25 & $69.7\pm8.7$ | $69.3\pm9.6$ & 16/9 | 16/9 & rest, eyes closed/open spans, 63 ch, 500\,Hz (400\,s) \\
+         Fribourg (ds004000) & schizophrenia spectrum & 19/24 & n/a & n/a & Ultimatum Game, 128 ch, 2048\,Hz (400\,s) \\
+         \hline
+         \hline
+    \end{tabular}
+
+    \raggedright\footnotesize $^{a}$For the 17 acquired participants; version 2 of the release contains 16. $^{b}$One control recording is 109.7\,s long and was used in full.
+\end{table}
+
+\noindent\textbf{Data checks.} For every cohort we checked for repeated participants, verified group sizes against the source publications, and tested whether recording metadata (channel set, sampling rate, filters, duration, recording date and hour, file size) differs between groups; fixed-length crops remove duration differences.
+
+\subsection{Simultaneous EEG-fMRI for synthesis (NODDI)}\label{section:fmri_data}
+
+fMRI is available only in the synthesis training dataset, NODDI \cite{dataset_01,deligianni2016}; the clinical cohorts are EEG-only and contain no fMRI. In NODDI, fMRI was acquired simultaneously with EEG at rest (eyes open, fixation) on a 1.5\,T Siemens Avanto: T2*-weighted gradient-echo EPI, TR/TE 2160/30\,ms, 30 slices of 3\,mm (1\,mm gap), effective voxel size $3.3\times3.3\times4.0$\,mm, $64\times64\times30$ voxels, 300 volumes; EEG with a 64-channel MR-compatible cap (BrainCap MR), recorded at 5\,kHz, released at 250\,Hz after artefact correction.
+
+Two properties of this release matter for synthesis and, to our knowledge, have not been reported. First, in 15 of the 16 subjects the EEG begins 13--130\,s before the first fMRI volume; pairing EEG and fMRI from the start of the file would pair EEG with volumes 6--60 TRs away. We pair them through the scanner volume markers in the EEG file (one per TR). Second, two electrode montages are present: 10 subjects have F1/F2/C1/C2/P1/P2 and 6 have P9/P10/PO9/PO10/O9/O10, in a different channel order, so positional channel indexing mixes electrodes across subjects. We use the 57 channels recorded in all subjects, selected by name; the ECG channel is excluded.
+
+\subsection{EEG harmonisation and preprocessing}\label{section:adaptation}
+
+EEG datasets differ in electrode count and layout, sampling rate, reference and paradigm, which changes their representation in $\mathbb{R}^{C \times T}$. We apply a single harmonisation to every recording, clinical or not, so that each synthesizer receives inputs in exactly the montage and sampling rate it was trained on:
+
+\noindent\textbf{Channel selection by type.} EEG channels are selected by their declared type, never by position; EOG, ECG, EMG, accelerometer, trigger and auxiliary (EXG) channels are removed. Selection by type also keeps acquisition differences unrelated to the disease out of the input: in the Fribourg release, for example, the auxiliary (EXG) channel layout differs between patients and controls.
+
+\noindent\textbf{Montage harmonisation.} Channels are mapped to standard 10-05 positions and interpolated with spherical splines onto the 57 EEG channels recorded in every NODDI subject (Section~\ref{section:fmri_data}).
+
+\noindent\textbf{Common filtering and resampling.} Notch filtering at the mains frequency and harmonics, 0.5--45\,Hz band-pass, average reference and resampling to 250\,Hz. Frequencies above 45\,Hz are discarded for every dataset, so all synthesizers see the same frequency range.
+
+Clinical EEG has no fMRI volume markers; the synthesizers are applied to consecutive pseudo-TRs of 2.16\,s starting 43.2\,s into each recording, so that every synthesized volume has a full 20-segment history.
+
+All recordings went through this harmonisation (MNE-Python). Each clinical recording was cropped to a fixed duration per cohort (Table~\ref{tab:data_description}), identical for patients and controls, to remove duration differences between groups. The cleaned NODDI EEG released by the dataset authors, in which scanner (gradient) and pulse (ballistocardiographic) artefacts were removed \cite{dataset_01}, was used as is before harmonisation.
+
+\subsection{Problem formulation and EEG views}\label{section:problem_description}
 
 Let $\mathcal{V} = \{v_1, \dots, v_n\}$ be a set of different views, such that $\forall i \in \{1, \dots, n\}: v_i = \{F_i, \theta_i\}$. A view $v_i$ is characterized by a function structure, $F_i$, and its parameters, $\theta_i$. Each projection $F_i: \mathbb{R}^{D_0} \to \mathbb{R}^{D_i}$ is performed from the original feature space, $\mathbb{R}^{D_0}$, to its view space, $\mathbb{R}^{D_i}$. Each subject's recording, $\vec{x}_0$, is paired with a label $y \in \{0,1\}^K: \sum_k y_k=1$, where $K=2$ (patient or control). A view, $v_i$, is evaluated by a linear classifier minimizing
 \begin{equation}\label{equation:loss}
@@ -69,20 +146,15 @@ Let $\mathcal{V} = \{v_1, \dots, v_n\}$ be a set of different views, such that $
 \end{equation}
 where $W^i_f \in \mathbb{R}^{K \times D_i}$ and $b^i_f \in \mathbb{R}^K$ are the parameters of the linear classifier, referred to as $\theta_C^i = W^i_f \bigcup b^i_f$, using the softmax activation, $\sigma$, plus an $l_2$ penalty on $W^i_f$. The question is whether a synthesized \textit{fmri} view, alone or added to an EEG view, lowers the expected loss on unseen subjects relative to the EEG view alone.
 
-\section{Background: Defining the EEG views}\label{section:eeg_views}
-
-This section defines the views compared in our experiments: an EEG spectral view, \textit{bandpower}; the time-frequency representation that feeds the synthesizers, \textit{stft}; and the synthesized fMRI, \textit{fmri}, produced by four synthesizers.
-
-\subsection{\textit{bandpower} view}\label{eeg_views:bandpower}
+\subsubsection{\textit{bandpower} view}\label{eeg_views:bandpower}
 
 Frequency-domain EEG features are long-established markers in schizophrenia and Parkinson's disease \cite{itil1977qualitative,roach2008event,bates2009low,barros2021advanced}. We use the simplest such view: for each of the $C=57$ channels (Section~\ref{section:adaptation}), Welch power spectra (4\,s windows) summarised as relative log power in five bands (1--4, 4--8, 8--13, 13--30, 30--45\,Hz), so $v_0(\vec{x}_0) \in \mathbb{R}^{C\times5}$. Band power is spatially organised over the scalp and clinically interpretable, so it is both the natural EEG-only baseline and the information any synthesized view starts from.
 
-\subsection{\textit{stft} view}\label{eeg_views:channel_freq_time}
+\subsubsection{\textit{stft} view}\label{eeg_views:channel_freq_time}
 
 Research studies, along the years, have had a common trend of extracting time frequency features from the EEG signal \cite{fingelkurts2007impaired,burgess2002functional,albrecht2018time,roach2008event,bates2009low}. The synthesizers take a short-time Fourier representation \cite{jacobsen2003sliding} as input, $v_1=\{F_1, \theta_1\}$ with $\vec{x}_1 \in \mathbb{R}^{D_1}$, $D_1 = C \times F \times T$: log-magnitude spectra of $T=20$ consecutive EEG segments of one fMRI repetition time (TR, 2.16\,s) each, between 0.46 and 45\,Hz ($F=97$ bins), i.e. the 43.2\,s of EEG preceding an fMRI volume, which covers the haemodynamic delay. This view is not classified directly; it defines the input of the \textit{fmri} views.
 
-\subsection{EEG to fMRI synthesis: \textit{fmri} view}\label{eeg_views:eeg_to_fmri}
-
+\subsection{Synthesizers and the synthesized fMRI view}\label{eeg_views:eeg_to_fmri}
 
 \begin{figure*}[!t]
     \centering
@@ -151,10 +223,9 @@ Research studies, along the years, have had a common trend of extracting time fr
         \node at ($(hadamard_legend)+(2.,0)$) {Hadamard product};
         
     \end{tikzpicture}
-    \caption{\textbf{Architecture of the CNN-TAG synthesizer} The neural architecture has two components: an Encoder (shaded in grey) and a Decoder (shaded in green). The input is the \textit{stft} $v_1$ representation. The output is the synthesized \textit{fmri}. The Encoder begins with a simple attention mechanism on the channels dimension of the \textit{stft}. After, it is processed by two Resnet blocks and an affine layer. This produces the latent representation $\vec{z}$. Following, the Decoder picks this representation and builds the cosine bases through the projection $\omega \cdot \vec{z} + \beta$. The sinusoids are style induced with $cos(\omega \cdot \vec{z} + \beta)\odot W$. The vector $W$ is a style fixed pretrained vector of an \textit{fmri} representation, learned from a simultaneous EEG and fMRI dataset (described in Section \ref{section:fmri_data}). Finally, an affine layer projects it to the \textit{fmri} space.}
+    \caption{\textbf{Architecture of the CNN-TAG synthesizer.} The neural architecture has two components: an Encoder (shaded in grey) and a Decoder (shaded in green). The input is the \textit{stft} $v_1$ representation. The output is the synthesized \textit{fmri}. The Encoder begins with a simple attention mechanism on the channels dimension of the \textit{stft}. After, it is processed by two Resnet blocks and an affine layer. This produces the latent representation $\vec{z}$. Following, the Decoder picks this representation and builds the cosine bases through the projection $\omega \cdot \vec{z} + \beta$. The sinusoids are style induced with $cos(\omega \cdot \vec{z} + \beta)\odot W$. The vector $W$ is a style fixed pretrained vector of an \textit{fmri} representation, learned from a simultaneous EEG and fMRI dataset (described in Section \ref{section:fmri_data}). Finally, an affine layer projects it to the \textit{fmri} space.}
     \label{fig:horizontal_architecture}
 \end{figure*}
-
 
 The first synthesizer is the network introduced and validated in our earlier work \cite{calhas2022eeg}; its architecture is adopted from that study, not proposed here, and the present work re-implements it in PyTorch and retrains it with the protocol of Section~\ref{section:fmri_data}. We refer to it as CNN-TAG. Its flow is illustrated in Figure \ref{fig:horizontal_architecture}. Its input is the \textit{stft} view, $\vec{x}_1$; its output is the \textit{fmri} view, $\vec{x}_2 \in \mathbb{R}^{M_1 \times M_2 \times M_3}$, a volume of $64\times64\times30$ voxels. Zooming out of the neural network, we describe this view as $v_2 = \{ F_2, \theta_2\}$, where $F_2 = F_1 \bigcup F$ is the union of the \textit{stft} transform and the network $F$, and $\theta_2 = \theta_1 \bigcup \theta_F$.
 
@@ -168,142 +239,19 @@ $T$ is processed by two residual blocks \cite{he2016deep} and a fully connected 
 
 \noindent\textbf{Untrained controls.} For each synthesizer, the same architecture with random initial weights was passed through the identical pipeline. A fixed nonlinear projection of EEG spectra into a voxel grid can support classification on its own; this control separates that effect from the learned EEG-to-fMRI mapping.
 
-\section{Adaptation to new data}\label{section:adaptation}
-
-EEG datasets differ in electrode count and layout, sampling rate, reference and paradigm, which changes their representation in $\mathbb{R}^{C \times T}$. We apply a single harmonisation to every recording, clinical or not, so that each synthesizer receives inputs in exactly the montage and sampling rate it was trained on:
-
-\noindent\textbf{Channel selection by type.} EEG channels are selected by their declared type, never by position; EOG, ECG, EMG, accelerometer, trigger and auxiliary (EXG) channels are removed. Selection by type also keeps acquisition differences unrelated to the disease out of the input: in the Fribourg release, for example, the auxiliary (EXG) channel layout differs between patients and controls.
-
-\noindent\textbf{Montage harmonisation.} Channels are mapped to standard 10-05 positions and interpolated with spherical splines onto the 57 EEG channels recorded in every NODDI subject (Section~\ref{section:fmri_data}).
-
-\noindent\textbf{Common filtering and resampling.} Notch filtering at the mains frequency and harmonics, 0.5--45\,Hz band-pass, average reference and resampling to 250\,Hz. Frequencies above 45\,Hz are discarded for every dataset, so all synthesizers see the same frequency range.
-
-Clinical EEG has no fMRI volume markers; the synthesizers are applied to consecutive pseudo-TRs of 2.16\,s starting 43.2\,s into each recording, so that every synthesized volume has a full 20-segment history.
-
-\section{Methods}\label{section:methods}
-
-\subsection{EEG Preprocessing and Analysis}
-
-All recordings went through the harmonisation of Section~\ref{section:adaptation} (MNE-Python). Each clinical recording was cropped to a fixed duration per cohort (Table~\ref{tab:data_description}), identical for patients and controls, to remove duration differences between groups. The cleaned NODDI EEG released by the dataset authors, in which scanner (gradient) and pulse (ballistocardiographic) artefacts were removed \cite{dataset_01}, was used as is before harmonisation.
-
-\subsection{fMRI Data Collection and Analysis}\label{section:fmri_data}
-
-fMRI is available only in the synthesis training dataset, NODDI \cite{dataset_01,deligianni2016}; the clinical cohorts are EEG-only and contain no fMRI. In NODDI, fMRI was acquired simultaneously with EEG at rest (eyes open, fixation) on a 1.5\,T Siemens Avanto: T2*-weighted gradient-echo EPI, TR/TE 2160/30\,ms, 30 slices of 3\,mm (1\,mm gap), effective voxel size $3.3\times3.3\times4.0$\,mm, $64\times64\times30$ voxels, 300 volumes; EEG with a 64-channel MR-compatible cap (BrainCap MR), recorded at 5\,kHz, released at 250\,Hz after artefact correction.
-
-Two properties of this release matter for synthesis and, to our knowledge, have not been reported. First, in 15 of the 16 subjects the EEG begins 13--130\,s before the first fMRI volume; pairing EEG and fMRI from the start of the file would pair EEG with volumes 6--60 TRs away. We pair them through the scanner volume markers in the EEG file (one per TR). Second, two electrode montages are present: 10 subjects have F1/F2/C1/C2/P1/P2 and 6 have P9/P10/PO9/PO10/O9/O10, in a different channel order, so positional channel indexing mixes electrodes across subjects. We use the 57 channels recorded in all subjects, selected by name; the ECG channel is excluded.
-
 \noindent\textbf{Synthesizer training.} The synthesis target is the raw EPI volume min--max scaled to $[0,1]$ per volume, the convention of the published volumetric synthesizers. Synthesizers used for classification were trained on 14 NODDI subjects, with two subjects held out to select the training epoch; loss $0.5(1-\mathrm{SSIM})+0.5\,\mathrm{MSE}$, Adam, learning rate $10^{-3}$, batch size 32, mini-batches shuffled across subjects, 50 epochs (15 for Spec2VolCAMU-Net). NT-ViT used the authors' recipe (AdamW, learning rate $5\times10^{-4}$, 30 epochs) with batch size 32 instead of 128, because the 43.2\,s input did not fit in memory at 128. Input features were standardised with training-subject statistics only. NODDI carries no diagnostic labels and is never used for classification.
 
 \noindent\textbf{From synthesized volumes to a subject view.} For each clinical subject, the synthesized volumes (one per pseudo-TR, clipped to $[0,1]$) are summarised by their voxelwise temporal mean and standard deviation, giving $2\times64\times64\times30$ features; this is the \textit{fmri} view classified in Section~\ref{section:setting}.
 
-\subsection{Integration Approach}\label{section:integration}
+\subsection{Contrastive sinusoid separation}\label{methods:separation}
 
-To fairly compare views, we employ a linear classifier, which allows a direct assessment of representational discriminative power and easy interpretation \cite{treviso2020explanation}. In addition, we evaluate the integration approach of the earlier version of this work, which adapts the CNN-TAG synthesizer to the diagnostic task by separating classes in its sinusoid space while the voxel decoder is kept fixed.
+In addition to the four synthesizers, we evaluate the integration approach of the earlier version of this work, which adapts the CNN-TAG synthesizer to the diagnostic task by separating classes in its sinusoid space while the voxel decoder is kept fixed.
 
-For the synthesized fMRI view $v_2$, which involves sinusoidal projections, a challenge arises: separation of data via $y|\vec{x}_1$ may be disrupted. Since EEG data inherently contains label-relevant information, preserving the distribution through the sinusoidal transformation is crucial. We address this by ensuring the projection $y|\omega \cdot \vec{z} + \beta$ maintains the same distribution as $y|\vec{x}_2$, enabling effective class separation while preserving sinusoidal structure.
-
-\subsubsection{Sinusoid separation}\label{methods:separation}
-
-\begin{figure}[ht]
-    \centering
-    \begin{tikzpicture}
-        [scale=0.7,
-        inner sep=0.5mm,
-        pd/.style={circle,draw=red!50,fill=red!20,thick},
-        hc/.style={circle,draw=blue!50,fill=blue!20,thick}]
-        
-        \node (sinusoid1) at (0,0) {};
-        
-        \draw[black, thick, ->] ($(sinusoid1)+(-2,0.3)$) -- ($(sinusoid1)+(1.2,0.3)$);%xaxis
-        \draw[thin, black!50] ($(sinusoid1)+(0.9,0.3)$) sin ($(sinusoid1)+(0.45,-0.3)$);
-        \draw[thin, black!50] ($(sinusoid1)+(0.45,-0.3)$) cos ($(sinusoid1)+(0.,0.3)$);
-        \draw[thin, black!50] ($(sinusoid1)+(0.,0.3)$) sin ($(sinusoid1)+(-0.45,0.9)$);
-        \draw[thin, black!50] ($(sinusoid1)+(-0.45,0.9)$) cos ($(sinusoid1)+(-0.9,0.3)$);
-        \draw[thin, black!50] ($(sinusoid1)+(-0.9,0.3)$) sin ($(sinusoid1)+(-1.35,-0.3)$);
-        \draw[thin, black!50] ($(sinusoid1)+(-1.35,-0.3)$) cos ($(sinusoid1)+(-1.8,0.3)$);
-        
-        
-        \draw[black, thick] ($(sinusoid1)+(-1.8,0.36)$) -- ($(sinusoid1)+(-1.8,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(-1.35,0.36)$) -- ($(sinusoid1)+(-1.35,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(-0.9,0.36)$) -- ($(sinusoid1)+(-0.9,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(-0.45,0.36)$) -- ($(sinusoid1)+(-0.45,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(0.,0.36)$) -- ($(sinusoid1)+(0.,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(0.45,0.36)$) -- ($(sinusoid1)+(0.45,0.24)$);
-        \draw[black, thick] ($(sinusoid1)+(0.9,0.36)$) -- ($(sinusoid1)+(0.9,0.24)$);
-        
-        \node at ($(sinusoid1)+(-1.35,-0.6)$) {$-\pi$};
-        \node at ($(sinusoid1)+(-0.45,-0.6)$) {$0$};
-        \node at ($(sinusoid1)+(0.45,-0.6)$) {$\pi$};
-        
-        \node (ind1) at ($(sinusoid1)+(-0.45,0.9)$) [pd] {};
-        \node (ind1) at ($(sinusoid1)+(0.45,-0.3)$) [hc] {};
-        
-        \node (ind1) at ($(sinusoid1)+(-0.45,0.9)$) [pd] {};
-        \node (ind1) at ($(sinusoid1)+(0.45,-0.3)$) [hc] {};
-        
-        
-        \node (sinusoid2) at ($(sinusoid1)+(0,-2.5)$) {};
-        
-        \draw[black, thick, ->] ($(sinusoid2)+(-2,0.3)$) -- ($(sinusoid2)+(1.2,0.3)$);%xaxis
-        \draw[thin, black!50] ($(sinusoid2)+(0.9,0.3)$) sin ($(sinusoid2)+(0.45,-0.3)$);
-        \draw[thin, black!50] ($(sinusoid2)+(0.45,-0.3)$) cos ($(sinusoid2)+(0.,0.3)$);
-        \draw[thin, black!50] ($(sinusoid2)+(0.,0.3)$) sin ($(sinusoid2)+(-0.45,0.9)$);
-        \draw[thin, black!50] ($(sinusoid2)+(-0.45,0.9)$) cos ($(sinusoid2)+(-0.9,0.3)$);
-        \draw[thin, black!50] ($(sinusoid2)+(-0.9,0.3)$) sin ($(sinusoid2)+(-1.35,-0.3)$);
-        \draw[thin, black!50] ($(sinusoid2)+(-1.35,-0.3)$) cos ($(sinusoid2)+(-1.8,0.3)$);
-        
-        
-        \draw[black, thick] ($(sinusoid2)+(-1.8,0.36)$) -- ($(sinusoid2)+(-1.8,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(-1.35,0.36)$) -- ($(sinusoid2)+(-1.35,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(-0.9,0.36)$) -- ($(sinusoid2)+(-0.9,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(-0.45,0.36)$) -- ($(sinusoid2)+(-0.45,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(0.,0.36)$) -- ($(sinusoid2)+(0.,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(0.45,0.36)$) -- ($(sinusoid2)+(0.45,0.24)$);
-        \draw[black, thick] ($(sinusoid2)+(0.9,0.36)$) -- ($(sinusoid2)+(0.9,0.24)$);
-        
-        \node at ($(sinusoid2)+(-1.35,-0.6)$) {$-\pi$};
-        \node at ($(sinusoid2)+(-0.45,-0.6)$) {$0$};
-        \node at ($(sinusoid2)+(0.45,-0.6)$) {$\pi$};
-        
-        \node (ind1) at ($(sinusoid2)+(-0.9,0.3)$) [pd] {};
-        \node (ind1) at ($(sinusoid2)+(0.,0.3)$) [hc] {};
-        
-        
-        \node at ($(sinusoid1)+(-0.45,1.2)$) {$x_1$};
-        \node at ($(sinusoid1)+(0.9,-0.5)$) {$x_2$};
-        
-        \node at ($(sinusoid2)+(-1.1,0.55)$) {$x_3$};
-        \node at ($(sinusoid2)+(0.2,0.55)$) {$x_4$};
-        
-        \node (distance1) at ($(sinusoid1)+(5,0.8)$) {$x_1, x_2 \sim \mathcal{X}_1: ||x_1-x_2||_1=\pi$};
-        \node at ($(distance1)+(0,-1)$) {$x \sim \mathcal{X}_1: \mathbb{E}[x] = \frac{\pi}{2} \wedge \mbox{Var}[x]=\frac{\pi}{2}$};
-        
-        \node (distance2) at ($(sinusoid2)+(5,0.8)$) {$x_3, x_4 \sim \mathcal{X}_2: ||x_3-x_4||_1=\pi$};
-        \node at ($(distance2)+(0,-1)$) {$x \sim \mathcal{X}_2: \mathbb{E}[x] = 0 \wedge \mbox{Var}[x]=\frac{\pi}{2}$};
-    \end{tikzpicture}
-    \caption{\textbf{Periodicity of the cosine projection} Description of how two similarly distributed samples, taken from $\mathcal{X}_1$ and $\mathcal{X}_2$, can lead to different portions of the cosine function image, since a sinusoid is periodic. Two distributions $\mathcal{X}_1$ and $\mathcal{X}_2$, may be mapped to the same image (second/bottom example). This is why a cosine is a shift invariant function. However, there are intervals a shift can be made and it is not invariant. Such intervals take the form $\forall i \in \mathbb{Z}: [i \pi, (i+1)\pi]$.}
-    \label{fig:normalization_shift}
-\end{figure}
-
-In order to separate data along the projection of cosines, we have to operate in a sub-domain interval where the $cos$ is not periodic. Layer normalization \cite{ba2016layer}, with center in $\frac{\pi}{2}$ and standard deviation of $\frac{\pi}{2}$, maps most of the data to such an interval of the cosine. See Figure \ref{fig:normalization_shift} for an illustration example.
-
-Nonetheless, the assurance that the projections are likely in a non periodic sub-domain of the cosine function, does not alone complete separation of the data. This is because the distribution $y|\omega \cdot \vec{z} +\beta$ needs to be separated accordingly. We propose a modified contrastive loss defined as
+CNN-TAG passes its encoder output $\vec{z}$ through random Fourier features, $\cos(\omega\cdot\vec{z}+\beta)$. Because the cosine is periodic, classes separated in $\vec{z}$ can overlap after the projection. The method therefore layer-normalises \cite{ba2016layer} $\vec{z}$ around $\pi/2$ with standard deviation $\pi/2$, which places most projections in an interval where the cosine is monotonic, and trains the encoder with the contrastive loss
 \begin{equation}\label{equation:contrastive}
     \mathcal{L}_D(p_1, p_2, y_p) = y_p \times D(p_1, p_2) + (1-y_p) \times ||D(p_1,p_2)-m||_1,
 \end{equation}
-where $p_1, p_2$ formulate a pair of two instances and $y_p \in \{0,1\}$ defines the pairwise label, being $0$ when the label of $p_1, p_2$ mismatch and $1$ when they match. $D(p_1,p_2)$ is the $l$1 distance $||p_1-p_2||_1^1$. Setting $m\in[\epsilon, \pi]: \epsilon>0$, together with the described layer normalization, allows separation of the data within a non periodic sub domain of the cosine. The minimization of $\mathcal{L}_D$, together with the layer normalization, separates the data when projected by the cosine function, as formalised below (proof in Appendix~\ref{app:proof}).
-\begin{theorem}[Separation under Cosine Projection]
-Let $z_1, z_2 \in \mathbb{R}^d$ be two latent vectors such that each coordinate lies in $[0, \pi]$. Let the projection be defined as
-\[
-\phi(z) = \cos(\omega^\top z + \beta),
-\]
-where $\omega \sim \mathcal{N}(0, I_d)$ and $\beta \sim \mathrm{Uniform}[0, 2\pi]$. Then, for $\|z_1 - z_2\|_2 \geq \epsilon > 0$, the expected cosine similarity between $\phi(z_1)$ and $\phi(z_2)$ satisfies
-\[
-\mathbb{E}_{\omega, \beta}[\phi(z_1)^\top \phi(z_2)] < d.
-\]
-Moreover, this expected similarity decreases exponentially with increasing $\|z_1 - z_2\|_2$, so a contrastive margin $m$ that increases the latent distance between classes decreases their expected similarity after projection.
-\end{theorem}
-In Figure \ref{fig:sinusoid_separation}, we illustrate the effects of this methodology, before and after the learning session.
+where $p_1, p_2$ formulate a pair of two instances and $y_p \in \{0,1\}$ defines the pairwise label, being $0$ when the label of $p_1, p_2$ mismatch and $1$ when they match. $D(p_1,p_2)$ is the $l$1 distance $||p_1-p_2||_1^1$. Setting $m\in[\epsilon, \pi]: \epsilon>0$, together with the described layer normalization, allows separation of the data within a non periodic sub domain of the cosine. Under the random projection, the expected similarity of two projected points decreases exponentially with their latent distance, so a margin that separates the classes in $\vec{z}$ also separates them after projection; Additional file~1 gives the statement, its proof and an illustration of the periodicity problem. Figure~\ref{fig:sinusoid_separation} illustrates the effect before and after training.
 
 \noindent\textbf{Training.} The encoder is trained with $\mathcal{L}_D$ on pairs of EEG windows, while a linear classifier with an $l_1$ penalty is trained with $\mathcal{L}_C$ on the synthesized volume (detached from the encoder); the style vector and the voxel decoder stay frozen at their NODDI weights. Each synthesized window is an instance, and a subject's score is the mean predicted probability over its windows. We run two variants: \emph{re-initialised}, in which the encoder and Fourier projection start from random weights while the decoder keeps its NODDI weights, as in the original formulation, and \emph{pretrained}, in which they start from the NODDI-trained synthesizer and are fine-tuned. Training uses a fixed budget (10 epochs, Adam, learning rate $10^{-3}$, batches of 16 pairs, $l_1$ weight $10^{-4}$), without per-fold tuning.
 
@@ -447,59 +395,15 @@ In Figure \ref{fig:sinusoid_separation}, we illustrate the effects of this metho
         %\node (stats2) at ($(uni_circle2)+(0,-4)$) {$\mathbb{E}[f_x(x)]=\frac{\pi}{2}, \mbox{Var}[f_x(x)]=\frac{\pi}{2}$};
         
     \end{tikzpicture}
-    \caption{\textbf{Contrastive separation of sinusoids} Normalization of data points inside the unit circle, using layer normalization, along with the optimization of a contrastive loss lead to correct separation of sinusoids. Data points belong to two classes, $HC$ and $SZ$, that are separated after the minimization of $\mathcal{L}_D$. Because we separate false pairs, according to $(1-y_p) \times ||D(x_1,x_2)-m||_1$, all points are placed within a shift variant interval of the cosine. The variance needed for classification.}
+    \caption{\textbf{Contrastive separation of sinusoids.} Normalization of data points inside the unit circle, using layer normalization, along with the optimization of a contrastive loss lead to correct separation of sinusoids. Data points belong to two classes, $HC$ and $SZ$, that are separated after the minimization of $\mathcal{L}_D$. Because we separate false pairs, according to $(1-y_p) \times ||D(x_1,x_2)-m||_1$, all points are placed within a shift variant interval of the cosine. The variance needed for classification.}
     \label{fig:sinusoid_separation}
 \end{figure}
 
+\subsection{Classification and statistical analysis}\label{section:setting}
 
-\subsection{Ethics approval and use of language models}\label{section:ethics}
+The experiments compare, per cohort, the following views, each classified with an $l_2$-regularised logistic regression (Equation~\ref{equation:loss}), a linear classifier that allows a direct assessment of representational discriminative power and easy interpretation \cite{treviso2020explanation}: the \textit{bandpower} view $v_0$; the \textit{fmri} view $v_2$ of each synthesizer, reduced to 20 principal components; their combination $v_0 \oplus v_2$; the same \textit{fmri} and combined views from the untrained synthesizers; and the contrastive sinusoid-separation classifier of Section~\ref{methods:separation} (two variants). All transformations (standardisation, principal components) are fit on training folds only. All experiments were run on NVIDIA A100, H100 and L4 GPUs (synthesis) and CPU nodes (linear models).
 
-This study is a secondary analysis of anonymised, publicly released data; no new data were collected. All original studies were approved by the responsible committees and obtained informed consent from participants, as reported by the data providers: NODDI, approval ID 4290/001 \cite{dataset_01}; first-episode psychosis datasets, University of Pittsburgh \verify{approval ID} \cite{salisbury_ds003944,salisbury_ds003947}; Semmelweis dataset, Semmelweis University \verify{approval ID} \cite{racz2025}; Parkinson's disease dataset, University of New Mexico \verify{approval ID} \cite{cavanagh_ds003490}; Fribourg dataset, approval ID 054/13-CER-FR \cite{dataset2022fribourg}. The analyses were carried out in accordance with the relevant guidelines and regulations and the Declaration of Helsinki.
-
-A large language model (Claude, Anthropic) was used to assist with writing analysis code and drafting and editing the manuscript text. All analyses, results and text were reviewed and verified by the authors, who take full responsibility for the content. \verify{adjust to the actual use}
-
-\subsection{Dataset Characteristics}\label{materials:data}
-
-Table~\ref{tab:data_description} summarises the datasets. All are previously published, anonymised public releases analysed here as secondary data.
-
-\noindent\textbf{First-episode psychosis (FEP1, FEP2).} Two independently collected samples from the University of Pittsburgh (OpenNeuro ds003944 and ds003947) \cite{salisbury_ds003944,salisbury_ds003947}: individuals with a first episode of psychosis and healthy controls; five minutes of eyes-open resting EEG recorded with a 10-10 cap inside an Elekta Neuromag Vectorview MEG system (61 EEG channels, 1000\,Hz, reference TP9). Age, sex, symptom and functioning scales (BPRS, SANS, SAPS, GAF, SFS), cognition (MATRICS, WASI) and chlorpromazine-equivalent medication are released. FEP1 lists 82 recordings, but five people appear twice under the identifiers \texttt{sub-X} and \texttt{sub-XA} (same age, sex and race, recorded days apart); we kept one recording per person (47 patients, 30 controls). FEP2 contains 31 patients and 30 controls and excludes, by construction, the subjects shared with FEP1.
-
-\noindent\textbf{Chronic schizophrenia (Semmelweis).} Resting EEG from Semmelweis University, Budapest \cite{racz2025}: 38 patients with schizophrenia and 39 age- and sex-matched controls; about two minutes of eyes-closed rest, 64-channel Neuroscan amplifier at 1000\,Hz. Patients are identified by the presence of PANSS ratings, which reproduces the 38/39 split of the source publication (35 of the 38 carry an ICD-10 F20/F25 code in the released table; three have a missing or non-F2 code). Medication, illness duration, education and PANSS scores are released.
-
-\noindent\textbf{Parkinson's disease (PD).} Resting EEG from the University of New Mexico (OpenNeuro ds003490) \cite{cavanagh_ds003490}: 25 patients with Parkinson's disease and 25 matched controls; 63 EEG channels, 500\,Hz (Brain Vision ActiChamp; reference CPz), instructed one-minute eyes-closed and eyes-open spans, plus EOG and a three-axis accelerometer on the most tremor-affected hand. Patients were recorded twice, a week apart, ON and OFF dopaminergic medication (13 ON first, 12 OFF first); we analysed the OFF session. Eight subjects of this cohort were used by \cite{yao2025catd}.
-
-\noindent\textbf{Schizophrenia spectrum, task EEG (Fribourg).} The cohort used in \cite{calhas2023medrxiv}, released by \cite{dataset2022fribourg}: 19 patients with a psychotic disorder (ICD-10) and 24 controls, recorded during the Ultimatum Game (responder role), 128-channel Biosemi ActiveTwo at 2048\,Hz; the release includes additional EXG channels whose layout differs between groups (four in all controls, six in 18 of 19 patients), which are excluded by the channel selection of Section~\ref{section:adaptation}. The public release distributes the group label only; group-level characteristics are reported in \cite{horat2018impaired}.
-
-\begin{table}[!htbp]
-    \centering
-    \caption{Characteristics and roles of the datasets. \textit{pt}: patients; \textit{hc}: healthy controls; age as mean $\pm$ standard deviation (years); analysed EEG is the fixed crop used for every subject of a cohort.}
-    \label{tab:data_description}
-    \small
-    \begin{tabular}{p{1.75cm} | p{1.95cm} | p{0.85cm} | p{2.0cm} | p{1.3cm} | p{2.65cm}}
-        \hline
-        \hline
-         \hfil Dataset & \hfil Role / disease & \hfil pt/hc & \hfil Age pt | hc & \hfil Sex (M/F) pt | hc & \hfil Recording (analysed EEG) \\
-         \hline
-         NODDI & synthesis training & 0/16 & \hfil $32.8\pm8.1^{a}$ & \hfil 11/6$^{a}$ & rest, eyes open, simultaneous EEG-fMRI, 64 ch, 250\,Hz \\
-         FEP1 (ds003944) & first-episode psychosis & 47/30 & $22.5\pm5.1$ | $21.6\pm4.1$ & 33/14 | 18/12 & rest, eyes open, 61 ch, 1\,kHz (300\,s) \\
-         FEP2 (ds003947) & first-episode psychosis & 31/30 & $23.4\pm4.7$ | $24.2\pm5.1$ & 22/9 | 16/14 & rest, eyes open, 61 ch, 1\,kHz (300\,s) \\
-         Semmelweis & schizophrenia (chronic) & 38/39 & $33.9\pm10.6$ | $32.7\pm9.7$ & 24/14 | 24/15 & rest, eyes closed, 64 ch, 1\,kHz (118\,s$^{b}$) \\
-         PD (ds003490) & Parkinson's disease (OFF) & 25/25 & $69.7\pm8.7$ | $69.3\pm9.6$ & 16/9 | 16/9 & rest, eyes closed/open spans, 63 ch, 500\,Hz (400\,s) \\
-         Fribourg (ds004000) & schizophrenia spectrum & 19/24 & n/a & n/a & Ultimatum Game, 128 ch, 2048\,Hz (400\,s) \\
-         \hline
-         \hline
-    \end{tabular}
-
-    \raggedright\footnotesize $^{a}$For the 17 acquired participants; version 2 of the release contains 16. $^{b}$One control recording is 109.7\,s long and was used in full.
-\end{table}
-
-\noindent\textbf{Data checks.} For every cohort we checked for repeated participants, verified group sizes against the source publications, and tested whether recording metadata (channel set, sampling rate, filters, duration, recording date and hour, file size) differs between groups; fixed-length crops remove duration differences.
-
-\section{Experimental setting}\label{section:setting}\vskip0.2cm
-
-The experiments compare, per cohort, the following views, each classified with an $l_2$-regularised logistic regression (Equation~\ref{equation:loss}): the \textit{bandpower} view $v_0$; the \textit{fmri} view $v_2$ of each synthesizer, reduced to 20 principal components; their combination $v_0 \oplus v_2$; the same \textit{fmri} and combined views from the untrained synthesizers; and the contrastive sinusoid-separation classifier of Section~\ref{methods:separation} (two variants). All transformations (standardisation, principal components) are fit on training folds only. All experiments were run on NVIDIA A100, H100 and L4 GPUs (synthesis) and CPU nodes (linear models).
-
-\subsection{Validation}\label{section:validation}
+\subsubsection{Validation}\label{section:validation}
 
 To validate each view $v_i$, we perform repeated stratified 10-fold cross-validation at the subject level (20 repeats; 3 for the contrastive classifier), with one recording per person, and select the regularisation strength $C \in \{10^{-3},10^{-2},10^{-1},1,10\}$ by inner stratified 5-fold cross-validation within each training fold (Algorithm~\ref{alg:nested-cv}). We report the AUC averaged over repeats with a 95\% bootstrap confidence interval (2,000 stratified resamples of subjects), and a one-sided label-permutation $p$-value, $p=(1+\#\{\mathrm{AUC}_{\mathrm{perm}}\geq\mathrm{AUC}\})/(1+N)$, from $N=100$ permutations that each re-run the full nested procedure ($N=20$ for the contrastive classifier, minimum $p\approx0.048$). The added value of synthesis is $\Delta\mathrm{AUC}=\mathrm{AUC}(v_0\oplus v_2)-\mathrm{AUC}(v_0)$, with a paired bootstrap interval over subjects. Leave-one-subject-out estimates are reported only as a sensitivity analysis: with weak features they are biased below chance, because the class balance of each training set mirrors the held-out label \cite{varoquaux2018}.
 
@@ -524,11 +428,24 @@ To validate each view $v_i$, we perform repeated stratified 10-fold cross-valida
 
 To interpret the classification results we characterise what the synthesizers learn on NODDI. (a) \emph{Image protocol}: leave-one-subject-out over the 16 subjects (two validation subjects per fold for model selection), scored with SSIM, RMSE and voxelwise temporal correlation against an EEG-free population template (the mean training volume), with trigger-aligned EEG, EEG paired from the file start, and ECG only. (b) \emph{Fair target}: BOLD motion-corrected (rigid registration, FSL), cleaned with the Friston-24 motion model and spike regressors for framewise displacement above 0.5\,mm \cite{friston1996,power2014}, high-passed at 0.01\,Hz, z-scored, smoothed (6\,mm) and averaged into the 48 Harvard-Oxford grey-matter parcels present in every subject plus the global signal; ridge regression from lagged band power or full spectra, and UnEBOLT \cite{li2026unebolt} with its pretrained EEG encoder \cite{jiang2024labram}, predicted the parcel time series of held-out subjects. Significance used circular-shift and cross-subject swap nulls on detrended predictions and targets, and IAAFT surrogates of the BOLD with model refitting \cite{schreiber1996,mehta2025time}.
 
+\subsection{Ethics approval and use of language models}\label{section:ethics}
+
+This study is a secondary analysis of anonymised, publicly released data; no new data were collected. All original studies were approved by the responsible committees and obtained informed consent from participants, as reported by the data providers: NODDI, approval ID 4290/001 \cite{dataset_01}; first-episode psychosis datasets, University of Pittsburgh \verify{approval ID} \cite{salisbury_ds003944,salisbury_ds003947}; Semmelweis dataset, Semmelweis University \verify{approval ID} \cite{racz2025}; Parkinson's disease dataset, University of New Mexico \verify{approval ID} \cite{cavanagh_ds003490}; Fribourg dataset, approval ID 054/13-CER-FR \cite{dataset2022fribourg}. The analyses were carried out in accordance with the relevant guidelines and regulations and the Declaration of Helsinki.
+
+A large language model (Claude, Anthropic) was used to assist with writing analysis code and drafting and editing the manuscript text. All analyses, results and text were reviewed and verified by the authors, who take full responsibility for the content. \verify{adjust to the actual use}
+
 \section{Results}\label{section:results}
 
 \subsection{Classification}\label{section:res_clf}
 
-Band power separated Parkinson's disease from controls (AUC $0.786$, 95\% CI $0.63$--$0.92$, $p=0.010$) but not the psychosis or schizophrenia cohorts (Table~\ref{tab:clf}): FEP1 $0.620$ ($p=0.12$), FEP2 $0.646$ ($p=0.06$), FEP1 and FEP2 pooled ($n=138$) $0.568$ ($p=0.14$), Semmelweis $0.571$ ($p=0.17$), Fribourg $0.539$ ($p=0.31$).
+Band power separated Parkinson's disease from controls (AUC $0.786$, 95\% CI $0.63$--$0.92$, $p=0.010$) but not the psychosis or schizophrenia cohorts (Fig.~\ref{fig:results}, Table~\ref{tab:clf}): FEP1 $0.620$ ($p=0.12$), FEP2 $0.646$ ($p=0.06$), FEP1 and FEP2 pooled ($n=138$) $0.568$ ($p=0.14$), Semmelweis $0.571$ ($p=0.17$), Fribourg $0.539$ ($p=0.31$).
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig4.pdf}
+    \caption{\textbf{Classification AUC by cohort and view.} Mean AUC over 20 repeats of stratified 10-fold cross-validation with 95\% bootstrap intervals, for EEG band power (squares) and the synthesized fMRI view of each synthesizer with learned weights (filled circles) or random weights (open circles). Dashed line: chance; grey line: band-power AUC. FEP1, FEP2: first-episode psychosis; Semmelweis: chronic schizophrenia; PD: Parkinson's disease; Fribourg: schizophrenia spectrum, task EEG.}
+    \label{fig:results}
+\end{figure}
 
 In Parkinson's disease, where band power discriminates, synthesized views also discriminated but stayed below band power (E2fNet $0.741$, $p=0.01$; Spec2VolCAMU-Net $0.694$, $p=0.04$; NT-ViT $0.674$, $p=0.02$; CNN-TAG $0.484$, $p=0.54$). In the psychosis and schizophrenia cohorts, where band power did not discriminate, some synthesized views scored numerically above it (Semmelweis: Spec2VolCAMU-Net $0.620$; Fribourg: $0.597$--$0.614$ for CNN-TAG, Spec2VolCAMU-Net and NT-ViT), but only Spec2VolCAMU-Net in Semmelweis was significant ($p=0.03$). Combining synthesized fMRI with band power changed AUC by $-0.046$ to $+0.112$. Five of the 20 uncorrected 95\% intervals exclude zero (E2fNet and Spec2VolCAMU-Net in Semmelweis, Spec2VolCAMU-Net and NT-ViT in Parkinson's disease, E2fNet in Fribourg); under a normal approximation to the bootstrap distribution none reaches the Bonferroni threshold for 20 comparisons (largest $z\approx2.7$, threshold $3.02$). The untrained control gave a similar gain for three of the five, but not for E2fNet in Semmelweis ($+0.004$) or Spec2VolCAMU-Net in Parkinson's disease ($-0.024$).
 
@@ -602,7 +519,7 @@ In Parkinson's disease, where band power discriminates, synthesized views also d
 
 \subsection{What the synthesizers learn}\label{section:res_fidelity}
 
-On NODDI, the EEG-free template reaches SSIM $0.676$ and PSNR $21.2$ under the protocol of \cite{roos2025brainwaves}, at or above the published values of E2fNet ($0.605$), NT-ViT ($0.581$) and Spec2VolCAMU-Net ($0.693$),. Retrained with trigger-aligned EEG, all synthesizers lost to or tied the template (SSIM $0.631$--$0.669$ against $0.675$; RMSE worse, $p\leq0.02$), performed the same with EEG paired from the file start or with ECG alone, and showed no voxelwise temporal correlation beyond shifted or swapped EEG after detrending, motion regression and selection of steady-state volumes (three seeds; edge and interior voxels). With the fair target, EEG predicted a statistically detectable but negligible part of BOLD in held-out subjects: ridge from full spectra $r=0.026$, UnEBOLT $r=0.035$ (above shift and swap nulls, $p=0.02$ and $p=0.03$), with $R^2\approx0$ for both; within subjects, $r\approx0$.
+On NODDI, the EEG-free template reaches SSIM $0.676$ and PSNR $21.2$ under the protocol of \cite{roos2025brainwaves}, at or above the published values of E2fNet ($0.605$), NT-ViT ($0.581$) and Spec2VolCAMU-Net ($0.693$). Retrained with trigger-aligned EEG, all synthesizers lost to or tied the template (SSIM $0.631$--$0.669$ against $0.675$; RMSE worse, $p\leq0.02$), performed the same with EEG paired from the file start or with ECG alone, and showed no voxelwise temporal correlation beyond shifted or swapped EEG after detrending, motion regression and selection of steady-state volumes (three seeds; edge and interior voxels). With the fair target, EEG predicted a statistically detectable but negligible part of BOLD in held-out subjects: ridge from full spectra $r=0.026$, UnEBOLT $r=0.035$ (above shift and swap nulls, $p=0.02$ and $p=0.03$), with $R^2\approx0$ for both; within subjects, $r\approx0$.
 
 \section{Discussion}\label{section:discussion}
 
@@ -610,57 +527,44 @@ On NODDI, the EEG-free template reaches SSIM $0.676$ and PSNR $21.2$ under the p
 
 \noindent\textbf{Why.} A synthesized volume can only carry information present in the EEG it is computed from, and the supporting analyses show how little of that information is haemodynamic. Under the image protocol used by published synthesizers, models reproduce the static anatomy that an EEG-free template already captures and ignore EEG timing; under a fair BOLD target, EEG predicts a statistically detectable but negligible share of the variance, even with a state-of-the-art model. The psychosis and schizophrenia cohorts add a second limit: resting band power itself discriminated only weakly there, so there was little EEG signal for any view to transform.
 
-\noindent\textbf{Recommendations.} The NODDI dataset, the most used benchmark for volumetric synthesis, requires pairing EEG and fMRI through the scanner markers and selecting channels by name, two steps invisible to SSIM and PSNR, which an EEG-free template already maximises. We recommend that synthesis studies report an EEG-free template and temporal metrics against shift and swap nulls, and that diagnostic uses of synthesized fMRI report an EEG-only baseline, untrained-network controls and checks for acquisition differences between groups.
+\noindent\textbf{A checklist for diagnostic claims.} Table~\ref{tab:checklist} lists the controls of the protocol, the alternative explanation each rules out and what it showed here. Two of them concern synthesis itself: the NODDI dataset, the most used benchmark for volumetric synthesis, requires pairing EEG and fMRI through the scanner markers and selecting channels by name, two steps invisible to SSIM and PSNR, which an EEG-free template already maximises. We recommend that synthesis studies report an EEG-free template and temporal metrics against shift and swap nulls, and that diagnostic uses of synthesized fMRI report an EEG-only baseline, untrained-network controls and checks for acquisition differences between groups. A synthesizer that passes these controls would provide the first evidence that synthesized fMRI adds diagnostic information; the released code implements them and can be applied to new synthesizers.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Controls for diagnostic claims from synthesized fMRI: what each rules out and what it showed in this study.}
+    \label{tab:checklist}
+    \footnotesize
+    \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{4.4cm}@{}}
+        \hline
+        Control & Alternative explanation ruled out & In this study \\
+        \hline
+        EEG-only baseline under identical validation & Synthesized fMRI adds nothing beyond the EEG it is computed from & Band power above every synthesized view in Parkinson's disease \\
+        Fusion test, paired bootstrap, correction for multiplicity & Chance gains among many model--cohort comparisons & No trained gain survived correction for 20 comparisons \\
+        Untrained-network control & Discrimination by a fixed random projection of EEG spectra & Untrained synthesizers matched trained ones in Parkinson's disease (AUC $0.70$--$0.74$) \\
+        Channel selection by type; acquisition checks & Group differences in recording set-up & Auxiliary-channel layout differed between groups in one release (Fribourg) \\
+        Subject-level nested cross-validation; permutation tests & Windows of one subject in training and test folds; tuning on test data; anti-learning bias of leave-one-out & All estimates subject-level with permutation $p$ \\
+        EEG-free template image & Fidelity that reflects static anatomy & Template matched or exceeded all synthesizers (SSIM) \\
+        Temporal metrics against shift and swap nulls & Fidelity unrelated to EEG timing & Voxelwise $r\approx0$; parcel $r\approx0.03$ on a fair BOLD target \\
+        Trigger alignment and channels by name (NODDI) & EEG paired with the wrong volumes or electrodes & EEG starts 13--130\,s before the first volume in 15 of 16 subjects \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \subsection{Limitations}\label{section:limitations}
 
 Sample sizes are modest (43--77 subjects per cohort), so AUC intervals are wide; null results bound but do not exclude small effects. Resting EEG carried weak signal in the psychosis and schizophrenia cohorts, so the evaluation is most informative in Parkinson's disease. The synthesizers were trained on one resting-state, eyes-open, 1.5\,T dataset of 16 healthy adults; the clinical EEG differed in system, montage (interpolated), eye condition (Semmelweis eyes closed) and paradigm (Fribourg task), and no clinical cohort has paired fMRI, so synthesis fidelity in patients cannot be measured. Patients were medicated in the psychosis and schizophrenia cohorts, and Semmelweis patients were recorded earlier in the day. Each subject's synthesized sequence was summarised by its temporal mean and standard deviation; other summaries, such as synthesized connectivity, were not tested. The contrastive classifier used fixed hyperparameters and fewer permutations than the other views. CATD could not be evaluated, and NeuroBOLT/UnEBOLT were used for fidelity only.
 
-\section{Related work}\label{section:related_work}
+\section{Conclusions}\label{section:conclusion}
 
-\noindent\textbf{EEG-to-fMRI synthesis.} Convolutional transcoders \cite{liu2019convolutional, liu2020latent}, attention- and Fourier-feature-based encoder-decoders \cite{calhas2022eeg}, U-Net and Mamba decoders \cite{roos2025brainwaves,he2025spec2vol}, vision transformers \cite{lanzino2024ntvit} and diffusion models \cite{yao2025catd} synthesize volumes, while NeuroBOLT and UnEBOLT \cite{li2024neurobolt,li2026unebolt} and distributed-lag models \cite{mehta2025time} predict region time series; the latter work showed, within subjects and with surrogate tests, that EEG predicts BOLD in task-relevant regions. Downstream diagnostic use has been reported for schizophrenia \cite{calhas2023medrxiv} and Parkinson's disease \cite{yao2025catd}.
-
-\noindent\textbf{Schizophrenia.}\label{related_work:schizophrenia} Schizophrenia is marked by cognitive and structural brain alterations \cite{sui2018multimodal}. fMRI-based classification of controls and patients has shown promise \cite{de2019machine}, with consistent findings of frontal and temporal volume reductions \cite{chin2018recognition} and white-matter abnormalities \cite{cetin2020white}. EEG-based classification is common, but its pitfalls, including small samples and validation that is not at the subject level, have been documented \cite{barros2021advanced}; acquisition differences between groups in public releases are a further risk.
-
-\noindent\textbf{Interpretability.}\label{related_work:interpretability} For EEG, interpretability remains a challenge. \citet{pinto2022interpretable} applied evolutionary feature selection and \textit{apriori} association rules to explain seizure detection, identifying key features across spectral, temporal, and electrode dimensions. Band power, used here as the EEG baseline, is itself spatially organised over the scalp and has established clinical interpretations in schizophrenia \cite{roach2008event,bates2009low}; the case for synthesized fMRI as a more interpretable view would require spatial maps validated against real fMRI in patients, which the present data cannot provide.
-
-\section{Conclusion}\label{section:conclusion}
-
-In five public cohorts spanning first-episode psychosis, chronic schizophrenia and Parkinson's disease, EEG-synthesized fMRI did not reliably improve classification over EEG band power (no gain survived correction for multiple comparisons), untrained networks reproduced most of its discriminative content, and the contrastive sinusoid-separation method did not change this. Claims that synthesized fMRI aids diagnosis should be tested against EEG-only baselines and untrained-network controls. The contrastive formulation itself extends to more than two classes, as sketched below, but its value depends on the synthesized space carrying diagnostic information beyond the EEG, which we did not find. A multi class solution is to consider the unitary circle in Figure \ref{future_work:fig:multi_label_sinusoid}. Let the pairs of data be $(x_1, x_2, y_1, y_2, y_p)$. By definition $x_1 := \mathbf{x}_2 \in \mathbb{R}^E$. And consider the targets $y_1, y_2 \in [0,1]^C$. Now $y_p$ instead of being in $[0,1]$, consider $y_p=||argmax(y_1) - argmax(y_2)||_1^1 \times \frac{\pi}{C}$ so that the possible values are $\in \{0,\frac{\pi}{C}, \dots, \frac{C\pi}{C}\}$. The contrastive loss now only needs one of its terms and can be written as
-\begin{equation}\label{future_work:equation:multi_contrastive}
-    \mathcal{L}_D(x_1, x_2, y_p) = ||D(x_1, x_2)-y_p||_1^1 .
-\end{equation}
-The other change that is needed is to apply the softmax at the output of the classifier, so that $y\in \Delta^C$.
-
-\begin{figure}[ht]
-    \centering
-    \begin{tikzpicture}
-        [scale=1.,
-        inner sep=0.5mm,
-        pd/.style={circle,draw=red!50,fill=red!20,thick},
-        hc/.style={circle,draw=blue!50,fill=blue!20,thick}]
-        
-        %draw unit circle
-        \node (uni_circle1) at (0,0) {};
-        \draw[black!50, thin] ($(uni_circle1)$) circle [radius=1];
-        \draw[black, thick, ->] ($(uni_circle1)+(-1.5,0)$) -- ($(uni_circle1)+(1.5,0)$);%xaxis
-        \draw[black, thick, ->] ($(uni_circle1)+(0,-1.5)$) -- ($(uni_circle1)+(0,1.5)$);%yaxis       
-
-        \draw [dotted, ultra thick,red,domain=0:45] plot ({cos(\x)}, {sin(\x)});
-        \draw [dashed, ultra thick,blue,domain=45:90] plot ({cos(\x)}, {sin(\x)});
-        \draw [dotted, ultra thick,magenta,domain=90:135] plot ({cos(\x)}, {sin(\x)});
-        \draw [dashed, ultra thick,cyan,domain=135:180] plot ({cos(\x)}, {sin(\x)});
-
-        
-    \end{tikzpicture}
-    \caption{\textbf{Sinusoid separation for more than two classes} Hypothesis to separate multiple groups of data using the sinusoid projection. The example considers $C=4$.}
-    \label{future_work:fig:multi_label_sinusoid}
-\end{figure}
+We introduced a controlled protocol for testing whether EEG-synthesized fMRI aids diagnosis and applied it to four synthesizers and five public cohorts spanning first-episode psychosis, chronic schizophrenia and Parkinson's disease. Synthesized fMRI did not reliably improve classification over EEG band power (no gain survived correction for multiple comparisons), untrained networks reproduced most of its discriminative content, and the contrastive sinusoid-separation method did not change this. These results set a baseline: claims that synthesized fMRI aids diagnosis should be tested against an EEG-only baseline and untrained-network controls, and synthesizers should first show fidelity beyond an EEG-free template and EEG-timing nulls. The protocol, code and checklist are released so that future synthesizers can be evaluated in the same way. An extension of the contrastive formulation to more than two classes is sketched in Additional file~1.
 
 \section*{List of abbreviations}
 AUC: area under the receiver operating characteristic curve; BOLD: blood-oxygen-level-dependent; BPRS: Brief Psychiatric Rating Scale; CI: confidence interval; CNN-TAG: convolutional neural network with topographical attention graph; ECG: electrocardiogram; EEG: electroencephalography; EOG: electrooculogram; EPI: echo-planar imaging; FEP: first-episode psychosis; fMRI: functional magnetic resonance imaging; IAAFT: iterative amplitude-adjusted Fourier transform; ICD-10: International Classification of Diseases, 10th revision; LOOCV: leave-one-out cross-validation; MSE: mean squared error; PANSS: Positive and Negative Syndrome Scale; PCA: principal component analysis; PD: Parkinson's disease; PSNR: peak signal-to-noise ratio; RMSE: root mean squared error; SSIM: structural similarity index measure; STFT: short-time Fourier transform; TR: repetition time.
 
 \backmatter
+
+\bmhead{Supplementary information}
+\textbf{Additional file 1} (PDF). Contrastive sinusoid separation: periodicity of the cosine projection (Fig.~S1), the separation property with its proof (Proposition~S1) and the extension to more than two classes (Fig.~S2).
 
 \section*{Declarations}
 
@@ -678,59 +582,6 @@ The authors declare that they have no competing interests. \verify{confirm}
 
 \bmhead{Acknowledgements}
 We thank the groups that collected and publicly released the datasets used in this study. \verify{add any further acknowledgements}
-
-\begin{appendices}
-
-\section{Proof of Theorem 1}\label{app:proof}
-
-\begin{proof}[Proof of Theorem 1]
-Let $\phi(z) = \left[ \cos(\omega_1^\top z + \beta_1), \dots, \cos(\omega_d^\top z + \beta_d) \right]$, where each $\omega_i \sim \mathcal{N}(0, I_d)$ and $\beta_i \sim \mathrm{Uniform}[0, 2\pi]$. The inner product between projected vectors is:
-\[
-\phi(z_1)^\top \phi(z_2) = \sum_{i=1}^d \cos(\omega_i^\top z_1 + \beta_i) \cos(\omega_i^\top z_2 + \beta_i).
-\]
-Using the trigonometric identity:
-\[
-\cos(a)\cos(b) = \frac{1}{2}[\cos(a - b) + \cos(a + b)],
-\]
-we write:
-\begin{align*}
-    &\cos(\omega_i^\top z_1 + \beta_i) \cos(\omega_i^\top z_2 + \beta_i) = \\
-&\frac{1}{2} \left[ \cos(\omega_i^\top(z_1 - z_2)) + \cos(\omega_i^\top(z_1 + z_2) + 2\beta_i) \right].    
-\end{align*}
-
-
-Taking the expectation over $\beta_i \sim \mathrm{Uniform}[0, 2\pi]$, the second term vanishes:
-\[
-\mathbb{E}_{\beta_i}[\cos(\omega_i^\top(z_1 + z_2) + 2\beta_i)] = 0.
-\]
-
-Thus,
-\[
-\mathbb{E}_{\omega, \beta}[\phi(z_1)^\top \phi(z_2)] = \frac{1}{2} \sum_{i=1}^d \mathbb{E}_{\omega_i}[\cos(\omega_i^\top(z_1 - z_2))].
-\]
-
-Let $\delta = z_1 - z_2$. Since $\omega_i^\top \delta \sim \mathcal{N}(0, \|\delta\|_2^2)$, we use the identity:
-\[
-\mathbb{E}_{x \sim \mathcal{N}(0, \sigma^2)}[\cos(x)] = e^{-\frac{1}{2}\sigma^2},
-\]
-to obtain:
-\[
-\mathbb{E}_{\omega_i}[\cos(\omega_i^\top \delta)] = e^{-\frac{1}{2}\|\delta\|_2^2}.
-\]
-
-Putting it together:
-\[
-\mathbb{E}_{\omega, \beta}[\phi(z_1)^\top \phi(z_2)] = \frac{d}{2} e^{-\frac{1}{2}\|z_1 - z_2\|_2^2}.
-\]
-
-Therefore, for any $\|z_1 - z_2\|_2 > 0$, we have:
-\[
-\mathbb{E}_{\omega, \beta}[\phi(z_1)^\top \phi(z_2)] < \frac{d}{2} < d,
-\]
-proving the result.
-\end{proof}
-
-\end{appendices}
 
 \bibliography{references}
 
