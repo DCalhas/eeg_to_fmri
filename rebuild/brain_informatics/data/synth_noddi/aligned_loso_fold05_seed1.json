@@ -1,0 +1,147 @@
+{
+ "fold": {
+  "test": [
+   "39"
+  ],
+  "val": [
+   "40",
+   "42"
+  ],
+  "train": [
+   "32",
+   "35",
+   "36",
+   "37",
+   "38",
+   "43",
+   "44",
+   "45",
+   "46",
+   "47",
+   "48",
+   "49",
+   "50"
+  ]
+ },
+ "arm": "aligned",
+ "args": {
+  "arm": "aligned",
+  "models": [
+   "cnn_tag",
+   "e2fnet"
+  ],
+  "fold_set": "loso",
+  "folds": null,
+  "epochs": 50,
+  "bs": 32,
+  "lr": 0.001,
+  "n_shifts": 20,
+  "seed": 1,
+  "tag": "",
+  "final": false
+ },
+ "results": {
+  "template": {
+   "rmse": 0.129461407661438,
+   "ssim_2d_e2fnet": 0.5357066480318705,
+   "voxel_r_mean": 1.644597062977482e-07,
+   "voxel_r_median": 6.724198442498164e-08,
+   "voxel_r2corr_mean": 3.846988645608146e-13,
+   "voxel_R2_mean": -24.499462127685547,
+   "voxel_R2_median": -1.175386667251587,
+   "voxel_R2_frac_pos": 8.267195767195768e-06,
+   "R2_global": -30.320468023969312,
+   "voxel_R2c_mean": -1.202835164804128e-09,
+   "voxel_R2c_median": 0.0,
+   "voxel_R2c_frac_pos": 0.059375,
+   "R2c_global": 0.0
+  },
+  "own_mean": {
+   "rmse": 0.023132694885134697,
+   "ssim_2d_e2fnet": 0.9589197134971619,
+   "voxel_r_mean": 1.9294552089377248e-07,
+   "voxel_r_median": 7.652478473119118e-08,
+   "voxel_r2corr_mean": 4.0548673359980247e-13,
+   "voxel_R2_mean": -4.689627797205276e-09,
+   "voxel_R2_median": 0.0,
+   "voxel_R2_frac_pos": 0.15694444444444444,
+   "R2_global": 0.0,
+   "voxel_R2c_mean": -8.741620205476863e-10,
+   "voxel_R2c_median": 0.0,
+   "voxel_R2c_frac_pos": 0.06302083333333333,
+   "R2c_global": 0.0
+  },
+  "cnn_tag": {
+   "rmse": 0.1313285529613495,
+   "ssim_2d_e2fnet": 0.5123103713989258,
+   "voxel_r_mean": 0.00901731476187706,
+   "voxel_r_median": 0.009939505718648434,
+   "voxel_r2corr_mean": 0.033920031040906906,
+   "voxel_R2_mean": -25.568517684936523,
+   "voxel_R2_median": -2.053492307662964,
+   "voxel_R2_frac_pos": 0.007680224867724868,
+   "R2_global": -31.230413993709554,
+   "voxel_R2c_mean": -0.24065402150154114,
+   "voxel_R2c_median": -0.12726157903671265,
+   "voxel_R2c_frac_pos": 0.1322337962962963,
+   "R2c_global": -0.16282255558148484,
+   "val_ssim": 0.7066111205416251,
+   "best_epoch": 0,
+   "shift_null_mean": {
+    "rmse": 0.13136202618479728,
+    "ssim_2d_e2fnet": 0.5122051105499267,
+    "voxel_r_mean": -0.004248701424512546,
+    "voxel_r_median": -0.004291994818777312,
+    "voxel_r2corr_mean": 0.016991140274330973,
+    "voxel_R2_mean": -25.578064060211183,
+    "voxel_R2_median": -2.058903360366821,
+    "voxel_R2_frac_pos": 0.004243138227513228,
+    "R2_global": -31.246847446074934,
+    "voxel_R2c_mean": -0.25020001381635665,
+    "voxel_R2c_median": -0.13712003231048583,
+    "voxel_R2c_frac_pos": 0.08901331018518518,
+    "R2c_global": -0.1792573346689002
+   },
+   "p_voxel_r": 0.23809523809523808,
+   "p_R2_global": 0.23809523809523808,
+   "p_R2c_global": 0.23809523809523808,
+   "minutes": 2.4137266834576923
+  },
+  "e2fnet": {
+   "rmse": 0.15598514676094055,
+   "ssim_2d_e2fnet": 0.488269598086675,
+   "voxel_r_mean": -0.010038807988166809,
+   "voxel_r_median": -0.004510560072958469,
+   "voxel_r2corr_mean": 0.041389286518096924,
+   "voxel_R2_mean": -34.127685546875,
+   "voxel_R2_median": -2.1511964797973633,
+   "voxel_R2_frac_pos": 0.020477843915343914,
+   "R2_global": -44.468809210539995,
+   "voxel_R2c_mean": -0.8712435960769653,
+   "voxel_R2c_median": -0.03489840030670166,
+   "voxel_R2c_frac_pos": 0.20680390211640212,
+   "R2c_global": -0.8531997911699916,
+   "val_ssim": 0.7225690033280591,
+   "best_epoch": 17,
+   "shift_null_mean": {
+    "rmse": 0.15590344965457917,
+    "ssim_2d_e2fnet": 0.4882908642292022,
+    "voxel_r_mean": 0.0015784511146193837,
+    "voxel_r_median": 0.0007978581779752858,
+    "voxel_r2corr_mean": 0.02274432135745883,
+    "voxel_R2_mean": -34.08837947845459,
+    "voxel_R2_median": -2.1266105651855467,
+    "voxel_R2_frac_pos": 0.018039021164021167,
+    "R2_global": -44.42119549338268,
+    "voxel_R2c_mean": -0.8319362491369248,
+    "voxel_R2c_median": -0.03691814541816711,
+    "voxel_R2c_frac_pos": 0.1814959490740741,
+    "R2c_global": -0.8055896581423456
+   },
+   "p_voxel_r": 1.0,
+   "p_R2_global": 1.0,
+   "p_R2c_global": 1.0,
+   "minutes": 13.649546813964843
+  }
+ }
+}
