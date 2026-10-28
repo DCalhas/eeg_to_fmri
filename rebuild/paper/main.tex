@@ -22,7 +22,7 @@ two first-episode psychosis samples ($n=77$ and $n=61$), a chronic schizophrenia
 For each cohort we compared EEG band power, synthesized fMRI, and their combination with L2 logistic regression under repeated stratified cross-validation and label-permutation tests, and added an architecture-only control in which the same synthesizers were applied with random (untrained) weights.
 A leakage audit preceded the benchmark: in the task-EEG cohort, the channel layout of auxiliary electrodes differs between patients and controls, and a previously published synthesized-fMRI pipeline (AUC 0.93) loses all discrimination (AUC 0.49) once those channels are removed.
 In the clean cohorts, band power separated Parkinson's disease from controls (AUC 0.79, $p=0.01$) but not psychosis or schizophrenia (AUC 0.54--0.65).
-Synthesized fMRI classified Parkinson's disease (best AUC 0.74) but never outperformed band power, and adding it to band power did not change AUC beyond what untrained networks of the same architecture produced (e.g.\ 0.70--0.74 for untrained synthesizers in Parkinson's disease).
+Synthesized fMRI classified Parkinson's disease (best AUC 0.74) but never outperformed band power; neither did the contrastive fine-tuning of \citet{calhas2023medrxiv} (best AUC 0.70), and adding it to band power did not change AUC beyond what untrained networks of the same architecture produced (0.70--0.74 for untrained synthesizers in Parkinson's disease).
 Supporting analyses show why: on NODDI, the synthesizers do not beat an EEG-free population template on standard image metrics, and EEG predicts a statistically detectable but negligible part of preprocessed BOLD (parcel $r\approx0.03$, $R^2\approx0$) even with a state-of-the-art model.
 Synthesized fMRI therefore carries EEG spectral information, not learned haemodynamic information, and does not improve EEG-based diagnosis in these cohorts.
 \end{abstract}
@@ -197,47 +197,52 @@ Band power separated Parkinson's disease from controls (AUC 0.786, 95\% CI 0.63-
 
 \begin{table}[t]
 \centering
-\caption{Classification AUC (repeated stratified 10-fold cross-validation, mean over 20 repeats; permutation $p$ in parentheses for single views). $\Delta$: AUC(band power + synthesized) $-$ AUC(band power) with 95\% paired bootstrap CI. ``Untr.'': same synthesizer with untrained weights. Uncorrected; 15 trained-synthesizer $\Delta$ comparisons.}
+\caption{Classification AUC (repeated stratified 10-fold cross-validation, mean over 20 repeats; permutation $p$ in parentheses for single views). $\Delta$: AUC(band power + synthesized) $-$ AUC(band power) with 95\% paired bootstrap CI. ``Untr.'': same synthesizer with untrained weights. Uncorrected; 20 trained-synthesizer $\Delta$ comparisons.}
 \label{tab:clf}
 \small
 \begin{tabular}{llcccc}
 \toprule
 Cohort & View & Trained & Untr. & $\Delta$ trained [95\% CI] & $\Delta$ untr. \\
 \midrule
-\multirow{4}{*}{FEP1} & Band power & 0.620 (0.12) & & & \\
+\multirow{5}{*}{FEP1} & Band power & 0.620 (0.12) & & & \\
  & CNN-TAG & 0.574 (0.21) & 0.413 & $-0.043$ [$-0.11$, $0.03$] & $-0.088$ \\
  & E2fNet & 0.527 (0.31) & 0.634 & $+0.005$ [$-0.08$, $0.08$] & $-0.008$ \\
  & Spec2VolCAMU-Net & 0.598 (0.12) & 0.516 & $-0.046$ [$-0.12$, $0.02$] & $+0.006$ \\
+ & NT-ViT & 0.506 (0.34) & 0.585 & $-0.023$ [$-0.08$, $0.03$] & $+0.009$ \\
 \midrule
-\multirow{4}{*}{FEP2} & Band power & 0.646 (0.06) & & & \\
+\multirow{5}{*}{FEP2} & Band power & 0.646 (0.06) & & & \\
  & CNN-TAG & 0.328 (1.00) & 0.555 & $-0.025$ [$-0.07$, $0.02$] & $+0.028$ \\
  & E2fNet & 0.572 (0.22) & 0.571 & $+0.000$ [$-0.04$, $0.04$] & $-0.001$ \\
  & Spec2VolCAMU-Net & 0.608 (0.16) & 0.575 & $+0.024$ [$-0.02$, $0.07$] & $-0.001$ \\
+ & NT-ViT & 0.595 (0.06) & 0.617 & $+0.003$ [$-0.03$, $0.03$] & $-0.003$ \\
 \midrule
-\multirow{4}{*}{Semmelweis} & Band power & 0.571 (0.17) & & & \\
+\multirow{5}{*}{Semmelweis} & Band power & 0.571 (0.17) & & & \\
  & CNN-TAG & 0.583 (0.17) & 0.562 & $+0.010$ [$-0.05$, $0.07$] & $+0.071$ \\
  & E2fNet & 0.539 (0.29) & 0.469 & $+0.065$ [$0.01$, $0.12$] & $+0.004$ \\
  & Spec2VolCAMU-Net & 0.620 (0.03) & 0.738 & $+0.112$ [$0.04$, $0.20$] & $+0.168$ \\
+ & NT-ViT & 0.471 (0.60) & 0.587 & $-0.018$ [$-0.11$, $0.08$] & $+0.094$ \\
 \midrule
-\multirow{4}{*}{PD} & Band power & 0.786 (0.01) & & & \\
+\multirow{5}{*}{PD} & Band power & 0.786 (0.01) & & & \\
  & CNN-TAG & 0.484 (0.54) & 0.702 & $+0.019$ [$-0.00$, $0.05$] & $+0.018$ \\
  & E2fNet & 0.741 (0.01) & 0.707 & $+0.003$ [$-0.02$, $0.03$] & $+0.032$ \\
  & Spec2VolCAMU-Net & 0.694 (0.04) & 0.740 & $+0.035$ [$0.01$, $0.07$] & $-0.024$ \\
+ & NT-ViT & 0.674 (0.02) & 0.708 & $+0.034$ [$0.01$, $0.07$] & $+0.022$ \\
 \midrule
-\multirow{4}{*}{Fribourg} & Band power & 0.539 (0.31) & & & \\
+\multirow{5}{*}{Fribourg} & Band power & 0.539 (0.31) & & & \\
  & CNN-TAG & 0.597 (0.15) & 0.555 & $+0.000$ [$-0.07$, $0.06$] & $+0.004$ \\
  & E2fNet & 0.532 (0.31) & 0.554 & $+0.075$ [$0.00$, $0.15$] & $+0.061$ \\
  & Spec2VolCAMU-Net & 0.608 (0.11) & 0.498 & $+0.009$ [$-0.05$, $0.06$] & $+0.044$ \\
+ & NT-ViT & 0.614 (0.12) & 0.565 & $+0.007$ [$-0.03$, $0.04$] & $+0.031$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Synthesized fMRI did not exceed band power in any cohort (Table~\ref{tab:clf}).
-In Parkinson's disease, where band power discriminates, synthesized views also discriminated (E2fNet 0.741, $p=0.01$; Spec2VolCAMU-Net 0.694, $p=0.04$; CNN-TAG 0.484, $p=0.54$).
+In Parkinson's disease, where band power discriminates, synthesized views also discriminated (E2fNet 0.741, $p=0.01$; Spec2VolCAMU-Net 0.694, $p=0.04$; NT-ViT 0.674, $p=0.02$; CNN-TAG 0.484, $p=0.54$).
 In the psychosis and schizophrenia cohorts no synthesized view was significant except Spec2VolCAMU-Net in Semmelweis (0.620, $p=0.03$).
 
 Combining synthesized fMRI with band power changed AUC by $-0.046$ to $+0.112$.
-Four of 15 confidence intervals exclude or touch zero from above (Semmelweis E2fNet $+0.065$; Semmelweis Spec2VolCAMU-Net $+0.112$; PD Spec2VolCAMU-Net $+0.035$; Fribourg E2fNet $+0.075$), none of which would survive a correction for 15 comparisons, and each is matched by its untrained control (next section).
+Five of 20 confidence intervals exclude or touch zero from above (Semmelweis E2fNet $+0.065$; Semmelweis Spec2VolCAMU-Net $+0.112$; PD Spec2VolCAMU-Net $+0.035$; PD NT-ViT $+0.034$; Fribourg E2fNet $+0.075$), none of which would survive a correction for 20 comparisons, and each is matched by its untrained control (next section).
 
 \subsection{Contrastive fine-tuning}\label{sec:res_contrastive}
 The contrastive fine-tuning method discriminated only in Parkinson's disease, at the smallest attainable permutation $p$ (Table~\ref{tab:contrastive}), and stayed below band power there (0.70 and 0.66 vs 0.79).
@@ -262,7 +267,7 @@ Fribourg & 0.559 [0.38, 0.74] ($p=0.33$) & 0.602 [0.44, 0.77] ($p=0.14$) & 0.539
 \end{table}
 
 \subsection{Untrained synthesizers match trained ones}\label{sec:res_untrained}
-Applying the same architectures with random weights gave comparable or higher AUCs where synthesized views discriminated: in PD 0.702 (CNN-TAG), 0.707 (E2fNet) and 0.740 (Spec2VolCAMU-Net) against 0.484, 0.741 and 0.694 trained; in Semmelweis, the untrained Spec2VolCAMU-Net reached 0.738 against 0.620 trained, and its fusion gain ($+0.168$) exceeded that of the trained model ($+0.112$).
+Applying the same architectures with random weights gave comparable or higher AUCs where synthesized views discriminated: in PD 0.702 (CNN-TAG), 0.707 (E2fNet), 0.740 (Spec2VolCAMU-Net) and 0.708 (NT-ViT) against 0.484, 0.741, 0.694 and 0.674 trained; in Semmelweis, the untrained Spec2VolCAMU-Net reached 0.738 against 0.620 trained, and its fusion gain ($+0.168$) exceeded that of the trained model ($+0.112$).
 The discriminative content of the synthesized views is therefore what any of these networks extracts from EEG spectra; it does not depend on having learned an EEG-to-fMRI mapping.
 
 \subsection{Supporting analyses: synthesizers reproduce anatomy, not EEG-driven activity}\label{sec:res_fidelity}
@@ -273,7 +278,7 @@ With a fair target (preprocessed BOLD in 48 parcels plus the global signal), EEG
 
 \section{Discussion}
 We asked whether EEG-to-fMRI synthesis improves EEG-based diagnosis.
-In five public cohorts and with three synthesizers, it did not.
+In five public cohorts, with four synthesizers and a contrastive fine-tuning method, it did not.
 Where synthesized fMRI discriminated patients from controls---most clearly in Parkinson's disease---untrained networks of the same architecture did as well, and combining synthesized fMRI with EEG band power did not yield gains beyond those of the untrained controls.
 The supporting analyses explain this: under the image protocol used by published synthesizers, models reproduce the static anatomy captured by an EEG-free template and ignore EEG timing; under a fair BOLD target, EEG predicts only a negligible share of the variance.
 A synthesized volume therefore cannot carry diagnostic information that is not already in the EEG spectra it is computed from.
