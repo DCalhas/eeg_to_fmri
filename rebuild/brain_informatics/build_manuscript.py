@@ -77,7 +77,10 @@ def _title(m):
 	return fig.replace("\\caption{", "\\caption{\\textbf{" + FIG_TITLES[lab] + "} ", 1)
 body = re.sub(r"\\begin\{figure\*?\}.*?\\end\{figure\*?\}", _title, body, flags=re.S)
 
-PREAMBLE = r"""\documentclass[pdflatex,referee,lineno,sn-basic]{sn-jnl}% Basic Springer Nature reference style; referee = double spacing; lineno = line numbers
+PREAMBLE = r"""\documentclass[pdflatex,referee,sn-basic]{sn-jnl}% Basic Springer Nature reference style; referee = double spacing
+% Line numbers on the text lines (lineno package). The class's own `lineno' option draws a fixed margin ruler
+% at single-spacing pitch, which with double spacing gives two numbers per line and numbers beside blank space.
+\usepackage[left,mathlines]{lineno}
 
 \usepackage{graphicx}%
 \usepackage{multirow}%
@@ -110,6 +113,7 @@ PREAMBLE = r"""\documentclass[pdflatex,referee,lineno,sn-basic]{sn-jnl}% Basic S
 \raggedbottom
 
 \begin{document}
+\linenumbers
 
 \title[Does EEG to fMRI Synthesis Aid Medical Decision?]{Does EEG to fMRI Synthesis Aid Medical Decision? An Evaluation in Psychosis, Schizophrenia and Parkinson's Disease}
 
