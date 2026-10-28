@@ -465,7 +465,7 @@ Table~\ref{tab:data_description} summarises the datasets. All are previously pub
 
 \noindent\textbf{Chronic schizophrenia (Semmelweis).} Resting EEG from Semmelweis University, Budapest \cite{racz2025}: 38 patients with schizophrenia and 39 age- and sex-matched controls; about two minutes of eyes-closed rest, 64-channel Neuroscan amplifier at 1000\,Hz. Patients are identified by the presence of PANSS ratings, which reproduces the 38/39 split of the source publication (35 of the 38 carry an ICD-10 F20/F25 code in the released table; three have a missing or non-F2 code). Medication, illness duration, education and PANSS scores are released.
 
-\noindent\textbf{Parkinson's disease (PD).} Resting EEG from the University of New Mexico (OpenNeuro ds003490) \cite{cavanagh_ds003490}: 25 patients with Parkinson's disease and 25 matched controls; 63 EEG channels, 500\,Hz (Brain Vision ActiChamp, reference CPz), instructed one-minute eyes-closed and eyes-open spans, plus EOG and a three-axis accelerometer on the most tremor-affected hand. Patients were recorded twice, a week apart, ON and OFF dopaminergic medication (13 ON first, 12 OFF first); we analysed the OFF session. Eight subjects of this cohort were used by \cite{yao2025catd}.
+\noindent\textbf{Parkinson's disease (PD).} Resting EEG from the University of New Mexico (OpenNeuro ds003490) \cite{cavanagh_ds003490}: 25 patients with Parkinson's disease and 25 matched controls; 63 EEG channels, 500\,Hz (Brain Vision ActiChamp; reference CPz), instructed one-minute eyes-closed and eyes-open spans, plus EOG and a three-axis accelerometer on the most tremor-affected hand. Patients were recorded twice, a week apart, ON and OFF dopaminergic medication (13 ON first, 12 OFF first); we analysed the OFF session. Eight subjects of this cohort were used by \cite{yao2025catd}.
 
 \noindent\textbf{Schizophrenia spectrum, task EEG (Fribourg).} The cohort of the earlier version of this work \cite{dataset2022fribourg}: 19 patients with a psychotic disorder (ICD-10) and 24 controls, recorded during the Ultimatum Game (responder role), 128-channel Biosemi ActiveTwo at 2048\,Hz with additional EXG channels. The public release distributes the group label only; group-level characteristics are reported in \cite{horat2018impaired}.
 
@@ -474,7 +474,7 @@ Table~\ref{tab:data_description} summarises the datasets. All are previously pub
     \caption{Characteristics and roles of the datasets. \textit{pt}: patients; \textit{hc}: healthy controls; age as mean $\pm$ standard deviation (years); analysed EEG is the fixed crop used for every subject of a cohort.}
     \label{tab:data_description}
     \small
-    \begin{tabular}{p{2.2cm} | p{2.5cm} | p{1.2cm} | p{2.3cm} | p{1.5cm} | p{4.2cm}}
+    \begin{tabular}{p{1.9cm} | p{2.2cm} | p{0.9cm} | p{2.4cm} | p{1.6cm} | p{3.6cm}}
         \hline
         \hline
          \hfil Dataset & \hfil Role / disease & \hfil pt/hc & \hfil Age pt | hc & \hfil Sex (M/F) pt | hc & \hfil Recording (analysed EEG) \\
@@ -588,7 +588,7 @@ Synthesized fMRI did not exceed band power in any cohort. In Parkinson's disease
     \caption{Contrastive sinusoid separation: AUC (repeated stratified 10-fold, 3 repeats), 95\% bootstrap interval and permutation $p$ (20 permutations; minimum $0.048$).}
     \label{tab:contrastive}
     \small
-    \begin{tabular}{ p{1.6cm} | p{3.3cm} | p{3.3cm} | p{1.4cm}}
+    \begin{tabular}{ p{1.6cm} | p{3.4cm} | p{3.4cm} | p{1.4cm}}
         \hline
         \hline
         \hfil Cohort & \hfil As in 2023 & \hfil Pretrained encoder & \hfil \textit{bandpower} \\
