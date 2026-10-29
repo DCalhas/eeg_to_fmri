@@ -1,0 +1,2215 @@
+{
+ "views": {
+  "bp_rel": {
+   "auc": 0.8088000000000001,
+   "auc_repeats": [
+    0.792,
+    0.7824,
+    0.8575999999999999,
+    0.7584000000000001,
+    0.7999999999999999,
+    0.8064,
+    0.8128,
+    0.8128,
+    0.7712000000000001,
+    0.8191999999999999,
+    0.808,
+    0.8079999999999999,
+    0.7984000000000001,
+    0.8288000000000001,
+    0.7776,
+    0.8271999999999999,
+    0.8624,
+    0.8111999999999999,
+    0.8144,
+    0.8271999999999999
+   ],
+   "auc_ci95": [
+    0.69436,
+    0.9376
+   ],
+   "n_features": 285
+  },
+  "stft_ms": {
+   "auc": 0.79504,
+   "auc_repeats": [
+    0.8160000000000001,
+    0.8288000000000001,
+    0.8352,
+    0.7808,
+    0.7904,
+    0.8144,
+    0.7648,
+    0.7472000000000001,
+    0.7488,
+    0.776,
+    0.8352,
+    0.8048,
+    0.7792,
+    0.784,
+    0.7744,
+    0.8048000000000001,
+    0.8048000000000001,
+    0.744,
+    0.8432,
+    0.824
+   ],
+   "auc_ci95": [
+    0.68,
+    0.9168399999999999
+   ],
+   "n_features": 11058
+  },
+  "synth_cnn_tag_ica": {
+   "auc": 0.6759999999999999,
+   "auc_repeats": [
+    0.6464000000000001,
+    0.712,
+    0.7296,
+    0.656,
+    0.7216,
+    0.6752,
+    0.672,
+    0.688,
+    0.6815999999999999,
+    0.656,
+    0.6704,
+    0.6608,
+    0.6992,
+    0.6576000000000001,
+    0.664,
+    0.6544,
+    0.7072,
+    0.6768,
+    0.6704,
+    0.6208
+   ],
+   "auc_ci95": [
+    0.54872,
+    0.8368399999999999
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.04950495049504951,
+   "perm_p_less": 0.9603960396039604,
+   "n_perm": 100,
+   "null_mean": 0.48666400000000004,
+   "null_sd": 0.10448275984103789
+  },
+  "bp_rel+synth_cnn_tag_ica": {
+   "auc": 0.8119999999999999,
+   "auc_repeats": [
+    0.7824,
+    0.8176,
+    0.8288,
+    0.7872,
+    0.8256,
+    0.7776,
+    0.8160000000000001,
+    0.7872000000000001,
+    0.7871999999999999,
+    0.7984,
+    0.8048,
+    0.8351999999999999,
+    0.8448,
+    0.8463999999999999,
+    0.7983999999999999,
+    0.8416,
+    0.8256000000000001,
+    0.8016000000000001,
+    0.816,
+    0.8175999999999999
+   ],
+   "auc_ci95": [
+    0.7056,
+    0.9424
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": 0.006399999999999961,
+    "ci95": [
+     -0.04640000000000011,
+     0.05599999999999994
+    ],
+    "ci_bonf20": [
+     -0.0816,
+     0.08639999999999981
+    ],
+    "ci_bonf40": [
+     -0.08799999999999991,
+     0.09200100000000096
+    ],
+    "p_boot": 0.8076,
+    "se_boot": 0.02541977781177483
+   }
+  },
+  "stft_ms+synth_cnn_tag_ica": {
+   "auc": 0.8087199999999999,
+   "auc_repeats": [
+    0.7936,
+    0.7359999999999999,
+    0.8336,
+    0.8416,
+    0.8048,
+    0.7904,
+    0.7776,
+    0.8224,
+    0.8224,
+    0.8079999999999999,
+    0.84,
+    0.832,
+    0.8208,
+    0.816,
+    0.7824,
+    0.8384,
+    0.8128000000000001,
+    0.7904,
+    0.8256,
+    0.7856
+   ],
+   "auc_ci95": [
+    0.6864000000000001,
+    0.9312399999999998
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": 0.012799999999999923,
+    "ci95": [
+     -0.07999999999999996,
+     0.10883999999999662
+    ],
+    "ci_bonf20": [
+     -0.14239999999999986,
+     0.16960200000000183
+    ],
+    "ci_bonf40": [
+     -0.15280100000000005,
+     0.18719999999999998
+    ],
+    "p_boot": 0.8106,
+    "se_boot": 0.04763061500868532
+   }
+  },
+  "synth_cnn_tag_untrained_ica": {
+   "auc": 0.75096,
+   "auc_repeats": [
+    0.7536,
+    0.8016,
+    0.768,
+    0.6784,
+    0.7376,
+    0.7744,
+    0.8048,
+    0.7616,
+    0.8079999999999999,
+    0.7552000000000001,
+    0.7504000000000001,
+    0.6848,
+    0.6991999999999999,
+    0.7183999999999999,
+    0.72,
+    0.6751999999999999,
+    0.8416000000000001,
+    0.7744,
+    0.776,
+    0.736
+   ],
+   "auc_ci95": [
+    0.648,
+    0.9024
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.009900990099009901,
+   "perm_p_less": 1.0,
+   "n_perm": 100,
+   "null_mean": 0.498232,
+   "null_sd": 0.10753692098995582
+  },
+  "bp_rel+synth_cnn_tag_untrained_ica": {
+   "auc": 0.8336,
+   "auc_repeats": [
+    0.8463999999999999,
+    0.8655999999999999,
+    0.8592,
+    0.8048,
+    0.8144,
+    0.8272,
+    0.8032000000000001,
+    0.8143999999999999,
+    0.8,
+    0.8352,
+    0.8352,
+    0.8400000000000001,
+    0.824,
+    0.8304,
+    0.8544,
+    0.8288,
+    0.8704,
+    0.8575999999999999,
+    0.8416,
+    0.8191999999999999
+   ],
+   "auc_ci95": [
+    0.7312,
+    0.9568
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": 0.030399999999999983,
+    "ci95": [
+     -0.0016000000000000458,
+     0.07200000000000017
+    ],
+    "ci_bonf20": [
+     -0.019200000000000106,
+     0.10559999999999992
+    ],
+    "ci_bonf40": [
+     -0.023200999999999996,
+     0.11280100000000094
+    ],
+    "p_boot": 0.0685,
+    "se_boot": 0.019007846409985533
+   }
+  },
+  "stft_ms+synth_cnn_tag_untrained_ica": {
+   "auc": 0.82576,
+   "auc_repeats": [
+    0.848,
+    0.8736,
+    0.8752,
+    0.7759999999999999,
+    0.7664,
+    0.864,
+    0.8608,
+    0.8496,
+    0.8544,
+    0.8256,
+    0.7936000000000001,
+    0.7696000000000001,
+    0.76,
+    0.7984,
+    0.8240000000000001,
+    0.8064,
+    0.864,
+    0.8176,
+    0.8400000000000001,
+    0.8479999999999999
+   ],
+   "auc_ci95": [
+    0.7392,
+    0.9488
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": 0.04479999999999995,
+    "ci95": [
+     -0.03199999999999992,
+     0.13119999999999987
+    ],
+    "ci_bonf20": [
+     -0.07519999999999993,
+     0.18399999999999994
+    ],
+    "ci_bonf40": [
+     -0.08319999999999994,
+     0.19120100000000098
+    ],
+    "p_boot": 0.2454,
+    "se_boot": 0.04026503197596644
+   }
+  },
+  "synth_e2fnet_ica": {
+   "auc": 0.7008,
+   "auc_repeats": [
+    0.728,
+    0.6976,
+    0.7616,
+    0.6928000000000001,
+    0.752,
+    0.6688000000000001,
+    0.7024,
+    0.7264,
+    0.648,
+    0.6752,
+    0.7824,
+    0.672,
+    0.6944,
+    0.6544,
+    0.7312000000000001,
+    0.6448,
+    0.7296,
+    0.6896,
+    0.6816000000000001,
+    0.6832
+   ],
+   "auc_ci95": [
+    0.5408000000000001,
+    0.8416
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.04950495049504951,
+   "perm_p_less": 0.9603960396039604,
+   "n_perm": 100,
+   "null_mean": 0.48978400000000005,
+   "null_sd": 0.10130823334754191
+  },
+  "bp_rel+synth_e2fnet_ica": {
+   "auc": 0.8016,
+   "auc_repeats": [
+    0.8144,
+    0.7968,
+    0.8015999999999999,
+    0.8191999999999999,
+    0.8271999999999999,
+    0.7872000000000001,
+    0.8176000000000001,
+    0.7999999999999999,
+    0.7712000000000001,
+    0.7792,
+    0.7839999999999999,
+    0.8032,
+    0.7888000000000001,
+    0.7856,
+    0.7776,
+    0.8111999999999999,
+    0.8544,
+    0.824,
+    0.7759999999999999,
+    0.8128
+   ],
+   "auc_ci95": [
+    0.6944,
+    0.9391999999999999
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": 0.0016000000000000458,
+    "ci95": [
+     -0.028799999999999937,
+     0.03200000000000003
+    ],
+    "ci_bonf20": [
+     -0.049602000000000084,
+     0.054400000000000004
+    ],
+    "ci_bonf40": [
+     -0.05599999999999988,
+     0.060799999999999965
+    ],
+    "p_boot": 0.9344,
+    "se_boot": 0.01509435186572779
+   }
+  },
+  "stft_ms+synth_e2fnet_ica": {
+   "auc": 0.79904,
+   "auc_repeats": [
+    0.7888000000000001,
+    0.7936000000000001,
+    0.8608,
+    0.8272,
+    0.816,
+    0.7903999999999999,
+    0.7696000000000001,
+    0.8032,
+    0.7408,
+    0.7711999999999999,
+    0.792,
+    0.8191999999999999,
+    0.7584,
+    0.752,
+    0.7984,
+    0.8192,
+    0.8064,
+    0.8512,
+    0.7968,
+    0.8256
+   ],
+   "auc_ci95": [
+    0.6911200000000001,
+    0.928
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": 0.014399999999999968,
+    "ci95": [
+     -0.05600000000000005,
+     0.0895999999999999
+    ],
+    "ci_bonf20": [
+     -0.10080200000000011,
+     0.14080000000000004
+    ],
+    "ci_bonf40": [
+     -0.11440099999999995,
+     0.1488
+    ],
+    "p_boot": 0.6953,
+    "se_boot": 0.036571312447129925
+   }
+  },
+  "synth_e2fnet_untrained_ica": {
+   "auc": 0.7060799999999999,
+   "auc_repeats": [
+    0.7472,
+    0.752,
+    0.7232,
+    0.72,
+    0.6128,
+    0.6976,
+    0.7008,
+    0.7072,
+    0.7072,
+    0.68,
+    0.7152,
+    0.712,
+    0.6960000000000001,
+    0.7344,
+    0.776,
+    0.6175999999999999,
+    0.7535999999999999,
+    0.6656,
+    0.72,
+    0.6832
+   ],
+   "auc_ci95": [
+    0.61276,
+    0.8767999999999999
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.019801980198019802,
+   "perm_p_less": 0.9900990099009901,
+   "n_perm": 100,
+   "null_mean": 0.49895999999999996,
+   "null_sd": 0.11244400562057545
+  },
+  "bp_rel+synth_e2fnet_untrained_ica": {
+   "auc": 0.8084800000000001,
+   "auc_repeats": [
+    0.7984,
+    0.8496,
+    0.8624,
+    0.7664,
+    0.8016,
+    0.7968,
+    0.8112,
+    0.8,
+    0.7679999999999999,
+    0.776,
+    0.8144,
+    0.8288,
+    0.792,
+    0.8192,
+    0.8096,
+    0.8288000000000001,
+    0.8495999999999999,
+    0.8240000000000001,
+    0.7712,
+    0.8016
+   ],
+   "auc_ci95": [
+    0.69436,
+    0.9360399999999999
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": -0.0015999999999999348,
+    "ci95": [
+     -0.03199999999999992,
+     0.024000000000000132
+    ],
+    "ci_bonf20": [
+     -0.05600000000000016,
+     0.04320000000000013
+    ],
+    "ci_bonf40": [
+     -0.06080000000000002,
+     0.04959999999999992
+    ],
+    "p_boot": 0.9521,
+    "se_boot": 0.014028335238423695
+   }
+  },
+  "stft_ms+synth_e2fnet_untrained_ica": {
+   "auc": 0.7801600000000001,
+   "auc_repeats": [
+    0.776,
+    0.8096,
+    0.8335999999999999,
+    0.7936,
+    0.768,
+    0.8032,
+    0.7968,
+    0.7056,
+    0.7552000000000001,
+    0.8064,
+    0.7776000000000001,
+    0.7648000000000001,
+    0.7487999999999999,
+    0.8016,
+    0.7936000000000001,
+    0.7584,
+    0.768,
+    0.7552000000000001,
+    0.8223999999999999,
+    0.7648
+   ],
+   "auc_ci95": [
+    0.6815599999999999,
+    0.9199999999999999
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": 0.0031999999999998696,
+    "ci95": [
+     -0.04320000000000013,
+     0.04800000000000004
+    ],
+    "ci_bonf20": [
+     -0.0816,
+     0.07840000000000003
+    ],
+    "ci_bonf40": [
+     -0.09119999999999995,
+     0.08640000000000014
+    ],
+    "p_boot": 0.8842,
+    "se_boot": 0.02291101714037157
+   }
+  },
+  "synth_spec2vol_ica": {
+   "auc": 0.6948799999999998,
+   "auc_repeats": [
+    0.7408,
+    0.704,
+    0.6832,
+    0.736,
+    0.6832,
+    0.7071999999999998,
+    0.6944,
+    0.6335999999999999,
+    0.7343999999999999,
+    0.7248,
+    0.7008,
+    0.616,
+    0.6624,
+    0.7439999999999999,
+    0.728,
+    0.712,
+    0.6976,
+    0.6976,
+    0.616,
+    0.6816000000000001
+   ],
+   "auc_ci95": [
+    0.5552,
+    0.8432
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.0297029702970297,
+   "perm_p_less": 0.9801980198019802,
+   "n_perm": 100,
+   "null_mean": 0.49355200000000005,
+   "null_sd": 0.11467250453356288
+  },
+  "bp_rel+synth_spec2vol_ica": {
+   "auc": 0.8337600000000001,
+   "auc_repeats": [
+    0.8256,
+    0.8592,
+    0.84,
+    0.8128,
+    0.8368,
+    0.8336,
+    0.8064,
+    0.8336,
+    0.8064,
+    0.8208,
+    0.8160000000000001,
+    0.8480000000000001,
+    0.8224,
+    0.8512,
+    0.8208,
+    0.8688,
+    0.8495999999999999,
+    0.8512000000000001,
+    0.8351999999999999,
+    0.8368000000000001
+   ],
+   "auc_ci95": [
+    0.72636,
+    0.9584
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": 0.02719999999999989,
+    "ci95": [
+     0.0015999999999999348,
+     0.06720000000000004
+    ],
+    "ci_bonf20": [
+     -0.011199999999999988,
+     0.09759999999999991
+    ],
+    "ci_bonf40": [
+     -0.013601,
+     0.10079999999999995
+    ],
+    "p_boot": 0.0431,
+    "se_boot": 0.016893882395897043
+   }
+  },
+  "stft_ms+synth_spec2vol_ica": {
+   "auc": 0.8224,
+   "auc_repeats": [
+    0.8224,
+    0.8128000000000001,
+    0.8832,
+    0.816,
+    0.8288,
+    0.7952,
+    0.8112,
+    0.8096,
+    0.8176,
+    0.8064,
+    0.832,
+    0.8351999999999999,
+    0.7856,
+    0.8464,
+    0.8096000000000001,
+    0.8272,
+    0.8112,
+    0.8383999999999999,
+    0.8432,
+    0.816
+   ],
+   "auc_ci95": [
+    0.7088,
+    0.9488
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": 0.028799999999999937,
+    "ci95": [
+     -0.05599999999999994,
+     0.12159999999999993
+    ],
+    "ci_bonf20": [
+     -0.10880000000000001,
+     0.1824
+    ],
+    "ci_bonf40": [
+     -0.11679999999999996,
+     0.196001000000001
+    ],
+    "p_boot": 0.5062,
+    "se_boot": 0.04429335263578949
+   }
+  },
+  "synth_spec2vol_untrained_ica": {
+   "auc": 0.6972799999999999,
+   "auc_repeats": [
+    0.7263999999999999,
+    0.7072,
+    0.688,
+    0.72,
+    0.7103999999999999,
+    0.6064,
+    0.6911999999999999,
+    0.7056,
+    0.6944,
+    0.7328,
+    0.6527999999999999,
+    0.7263999999999999,
+    0.7088,
+    0.6944,
+    0.7136,
+    0.7632000000000001,
+    0.6832,
+    0.6736000000000001,
+    0.7136,
+    0.6335999999999999
+   ],
+   "auc_ci95": [
+    0.5551599999999999,
+    0.8512
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.0297029702970297,
+   "perm_p_less": 0.9801980198019802,
+   "n_perm": 100,
+   "null_mean": 0.503096,
+   "null_sd": 0.10783262022226857
+  },
+  "bp_rel+synth_spec2vol_untrained_ica": {
+   "auc": 0.81784,
+   "auc_repeats": [
+    0.7984,
+    0.8527999999999999,
+    0.8288,
+    0.8064,
+    0.8191999999999999,
+    0.8031999999999999,
+    0.8,
+    0.8368,
+    0.7712,
+    0.8160000000000001,
+    0.8016000000000001,
+    0.8240000000000001,
+    0.8128,
+    0.8287999999999999,
+    0.816,
+    0.8512,
+    0.8592,
+    0.8176,
+    0.8064,
+    0.8064
+   ],
+   "auc_ci95": [
+    0.7056000000000001,
+    0.9488000000000001
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": 0.012799999999999923,
+    "ci95": [
+     -0.025599999999999956,
+     0.05280000000000007
+    ],
+    "ci_bonf20": [
+     -0.056002000000000045,
+     0.08320000000000005
+    ],
+    "ci_bonf40": [
+     -0.062399999999999956,
+     0.09440200000000185
+    ],
+    "p_boot": 0.5048,
+    "se_boot": 0.019428922671110713
+   }
+  },
+  "stft_ms+synth_spec2vol_untrained_ica": {
+   "auc": 0.7832800000000001,
+   "auc_repeats": [
+    0.736,
+    0.7968,
+    0.8176,
+    0.8064,
+    0.8,
+    0.7104,
+    0.7744,
+    0.8079999999999999,
+    0.7295999999999999,
+    0.7712,
+    0.7856000000000001,
+    0.8160000000000001,
+    0.8112,
+    0.7776000000000001,
+    0.7888000000000001,
+    0.8016000000000001,
+    0.7871999999999999,
+    0.792,
+    0.7872,
+    0.768
+   ],
+   "auc_ci95": [
+    0.6784,
+    0.9248
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": 0.0047999999999999154,
+    "ci95": [
+     -0.060799999999999965,
+     0.07203999999999657
+    ],
+    "ci_bonf20": [
+     -0.09760000000000002,
+     0.11840000000000006
+    ],
+    "ci_bonf40": [
+     -0.10320099999999996,
+     0.12800200000000186
+    ],
+    "p_boot": 0.9052,
+    "se_boot": 0.033794391515374264
+   }
+  },
+  "synth_ntvit_ica": {
+   "auc": 0.53488,
+   "auc_repeats": [
+    0.5376000000000001,
+    0.5584,
+    0.52,
+    0.4688,
+    0.5408,
+    0.496,
+    0.56,
+    0.5392,
+    0.5824,
+    0.5824,
+    0.5296,
+    0.5568,
+    0.47359999999999997,
+    0.5392,
+    0.5568,
+    0.5264,
+    0.52,
+    0.52,
+    0.5616000000000001,
+    0.528
+   ],
+   "auc_ci95": [
+    0.35836,
+    0.6832
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.3564356435643564,
+   "perm_p_less": 0.6534653465346535,
+   "n_perm": 100,
+   "null_mean": 0.4758079999999999,
+   "null_sd": 0.10948204572440177
+  },
+  "bp_rel+synth_ntvit_ica": {
+   "auc": 0.8064,
+   "auc_repeats": [
+    0.752,
+    0.7936000000000002,
+    0.8032,
+    0.7712,
+    0.8176,
+    0.8048,
+    0.8064,
+    0.8288000000000001,
+    0.7871999999999999,
+    0.808,
+    0.7839999999999999,
+    0.8384,
+    0.8288,
+    0.8480000000000001,
+    0.7744,
+    0.8208,
+    0.8544,
+    0.7919999999999999,
+    0.8016000000000001,
+    0.8128000000000001
+   ],
+   "auc_ci95": [
+    0.6831599999999999,
+    0.9344
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": -0.006399999999999961,
+    "ci95": [
+     -0.033600000000000074,
+     0.02079999999999993
+    ],
+    "ci_bonf20": [
+     -0.054400000000000004,
+     0.043199999999999794
+    ],
+    "ci_bonf40": [
+     -0.05760000000000015,
+     0.04800000000000004
+    ],
+    "p_boot": 0.6221,
+    "se_boot": 0.01350991543517575
+   }
+  },
+  "stft_ms+synth_ntvit_ica": {
+   "auc": 0.75576,
+   "auc_repeats": [
+    0.72,
+    0.7904,
+    0.8032,
+    0.7856000000000001,
+    0.7568,
+    0.7712,
+    0.7152000000000001,
+    0.7568,
+    0.7696000000000001,
+    0.6992,
+    0.7616,
+    0.7728,
+    0.704,
+    0.7344,
+    0.7872,
+    0.8048,
+    0.7376,
+    0.7376,
+    0.7183999999999999,
+    0.7888000000000001
+   ],
+   "auc_ci95": [
+    0.6399600000000001,
+    0.8992399999999998
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": -0.028800000000000048,
+    "ci95": [
+     -0.09120000000000017,
+     0.02080000000000015
+    ],
+    "ci_bonf20": [
+     -0.13600200000000012,
+     0.04960200000000184
+    ],
+    "ci_bonf40": [
+     -0.1472,
+     0.05680100000000089
+    ],
+    "p_boot": 0.3157,
+    "se_boot": 0.0290771877347174
+   }
+  },
+  "synth_ntvit_untrained_ica": {
+   "auc": 0.6337599999999999,
+   "auc_repeats": [
+    0.656,
+    0.64,
+    0.6224000000000001,
+    0.6496,
+    0.6816,
+    0.6304000000000001,
+    0.6192000000000001,
+    0.6672,
+    0.632,
+    0.6224,
+    0.6399999999999999,
+    0.6576,
+    0.6016,
+    0.6352,
+    0.6528,
+    0.6432,
+    0.6304,
+    0.6319999999999999,
+    0.5936,
+    0.5680000000000001
+   ],
+   "auc_ci95": [
+    0.48,
+    0.7935999999999999
+   ],
+   "n_features": 245760,
+   "perm_p_greater": 0.039603960396039604,
+   "perm_p_less": 0.9702970297029703,
+   "n_perm": 100,
+   "null_mean": 0.460304,
+   "null_sd": 0.10087597327411518
+  },
+  "bp_rel+synth_ntvit_untrained_ica": {
+   "auc": 0.8397600000000001,
+   "auc_repeats": [
+    0.7776000000000001,
+    0.8576,
+    0.8720000000000001,
+    0.8672,
+    0.8448,
+    0.8496,
+    0.8640000000000001,
+    0.8336000000000001,
+    0.8256000000000001,
+    0.8176000000000001,
+    0.8064,
+    0.856,
+    0.8288000000000001,
+    0.8752,
+    0.8240000000000001,
+    0.8672,
+    0.7744,
+    0.856,
+    0.8351999999999999,
+    0.8623999999999999
+   ],
+   "auc_ci95": [
+    0.72,
+    0.9536399999999998
+   ],
+   "n_features": 246045,
+   "delta": {
+    "delta": 0.02079999999999993,
+    "ci95": [
+     -0.016000000000000014,
+     0.06400000000000017
+    ],
+    "ci_bonf20": [
+     -0.040000000000000036,
+     0.09919999999999995
+    ],
+    "ci_bonf40": [
+     -0.044800000000000006,
+     0.10559999999999997
+    ],
+    "p_boot": 0.2828,
+    "se_boot": 0.020278859628687213
+   }
+  },
+  "stft_ms+synth_ntvit_untrained_ica": {
+   "auc": 0.78936,
+   "auc_repeats": [
+    0.7552,
+    0.7456,
+    0.8096000000000001,
+    0.8016,
+    0.7632,
+    0.8064,
+    0.808,
+    0.8064,
+    0.7535999999999999,
+    0.7744,
+    0.8240000000000001,
+    0.8160000000000001,
+    0.7808,
+    0.7904000000000001,
+    0.7968,
+    0.7456,
+    0.8208,
+    0.7968,
+    0.7807999999999999,
+    0.8111999999999999
+   ],
+   "auc_ci95": [
+    0.6639599999999999,
+    0.9119999999999999
+   ],
+   "n_features": 256818,
+   "delta": {
+    "delta": -0.008000000000000007,
+    "ci95": [
+     -0.13119999999999998,
+     0.11520000000000019
+    ],
+    "ci_bonf20": [
+     -0.201602,
+     0.18240400000000373
+    ],
+    "ci_bonf40": [
+     -0.21760200000000007,
+     0.20959999999999995
+    ],
+    "p_boot": 0.8917,
+    "se_boot": 0.062455351742299874
+   }
+  }
+ },
+ "metadata_tests": {
+  "age": {
+   "auc": 0.5328,
+   "p": 0.6975523907268765,
+   "mean_pt": 69.68,
+   "mean_hc": 69.32
+  },
+  "sex": {
+   "table": {
+    "Female": [
+     9,
+     9
+    ],
+    "Male": [
+     16,
+     16
+    ]
+   },
+   "p": 1.0
+  },
+  "duration": {
+   "auc": 0.5112,
+   "p": 0.8996357067265068,
+   "mean_pt": 594.206,
+   "mean_hc": 601.2779999999999
+  },
+  "n_annot": {
+   "auc": 0.5448,
+   "p": 0.5864158977856005,
+   "mean_pt": 317.8,
+   "mean_hc": 315.64
+  },
+  "file_mb": {
+   "auc": 0.5112,
+   "p": 0.8996357067265068,
+   "mean_pt": 79.623604,
+   "mean_hc": 80.571252
+  }
+ },
+ "artefact_tests": {
+  "frac_rejected": {
+   "auc": 0.3944,
+   "p": 0.20346483267565652,
+   "mean_pt": 0.4375757575757575,
+   "mean_hc": 0.5466666666666666
+  },
+  "median_p2p_uV": {
+   "auc": 0.368,
+   "p": 0.11160199172647282,
+   "mean_pt": 142.73615509033203,
+   "mean_hc": 248.43573699951173
+  },
+  "hf_logpow_30_45": {
+   "auc": 0.4032,
+   "p": 0.24435472003272052,
+   "mean_pt": -16.949028549194335,
+   "mean_hc": -16.609044876098633
+  },
+  "eog_log_rms": {
+   "auc": 0.2592,
+   "p": 0.0036093469359454364,
+   "mean_pt": -5.041360353532835,
+   "mean_hc": -4.4941193035444345
+  },
+  "acc_log_rms": {
+   "auc": 0.4096,
+   "p": 0.2772314876173122,
+   "mean_pt": -4.422581266222852,
+   "mean_hc": -4.2229377716200895
+  }
+ },
+ "artefact_channels": {
+  "eog": [
+   "VEOG"
+  ],
+  "acc": [
+   "X",
+   "Y",
+   "Z"
+  ]
+ },
+ "covariates": [
+  "age",
+  "male"
+ ],
+ "pd_eye_order": [
+  {
+   "sub": "sub-001",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-002",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-003",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 155,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-004",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 155,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-005",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 265,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-006",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 165,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-007",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 207,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-008",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-009",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 205,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-010",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-011",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 215,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-012",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 170,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-013",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 217,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-014",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-015",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 192,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-016",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms"
+   ],
+   "n_events": 121,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-017",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 153,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-018",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-019",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 211,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-020",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-021",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-022",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 159,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-023",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 241,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-024",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 222,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-025",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 193,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-026",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 209,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-027",
+   "label": 1,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 174,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-028",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 218,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-029",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-030",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-031",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 153,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-032",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 169,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-033",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms"
+   ],
+   "n_events": 4,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-034",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 192,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-035",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 195,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-036",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 205,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-037",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 223,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-038",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 225,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-039",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 203,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-040",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 189,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-041",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 228,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-042",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 198,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-043",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 217,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-044",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 219,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-045",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 221,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-046",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 220,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-047",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 239,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-048",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 188,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-049",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone"
+   ],
+   "n_events": 236,
+   "first_onset": 0.0
+  },
+  {
+   "sub": "sub-050",
+   "label": 0,
+   "col": "trial_type",
+   "first_codes": [
+    "STATUS",
+    "Eyes Closed: Every 1000 ms",
+    "Eyes Open: Every 1000 ms",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone",
+    "Target Tone",
+    "Standard Tone",
+    "Novel Tone",
+    "Standard Tone"
+   ],
+   "n_events": 217,
+   "first_onset": 0.0
+  }
+ ],
+ "minutes": 59.48886303504308
+}
