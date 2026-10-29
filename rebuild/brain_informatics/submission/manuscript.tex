@@ -37,7 +37,7 @@
 \title[Benchmarking EEG-to-fMRI synthesis for diagnosis]{What Does EEG-to-fMRI Synthesis Add to EEG-Based Diagnosis? A Controlled Benchmark in Psychosis, Schizophrenia and Parkinson's Disease}
 
 \author*[1]{\fnm{David} \sur{Calhas}}\email{davidcalhas@gmail.com}
-\author[2]{\fnm{Rui} \sur{Henriques}}\email{\verify{email}}
+\author[2]{\fnm{Rui} \sur{Henriques}}\email{rmch@tecnico.ulisboa.pt}
 
 \affil*[1]{\orgdiv{Faculty of Computer and Information Science}, \orgname{University of Ljubljana}, \orgaddress{\city{Ljubljana}, \country{Slovenia}}}
 \affil[2]{\orgdiv{INESC-ID, Instituto Superior T\'{e}cnico}, \orgname{Universidade de Lisboa}, \orgaddress{\city{Lisbon}, \country{Portugal}}}
@@ -439,7 +439,7 @@ To interpret the classification results we characterise what the synthesizers le
 
 \subsection{Ethics approval and use of language models}\label{section:ethics}
 
-This study is a secondary analysis of anonymised, publicly released data; no new data were collected. All original studies were approved by the responsible committees and obtained informed consent from participants, as reported by the data providers: NODDI, approval ID 4290/001 \cite{dataset_01}; first-episode psychosis datasets, University of Pittsburgh \verify{approval ID} \cite{salisbury_ds003944,salisbury_ds003947}; Semmelweis dataset, Semmelweis University \verify{approval ID} \cite{racz2025}; Parkinson's disease dataset, University of New Mexico \verify{approval ID} \cite{cavanagh_ds003490}; Fribourg dataset, approval ID 054/13-CER-FR \cite{dataset2022fribourg}. The analyses were carried out in accordance with the relevant guidelines and regulations and the Declaration of Helsinki.
+This study is a secondary analysis of anonymised, publicly released data; no new data were collected. All original studies were approved by the responsible committees and obtained informed consent from participants, as reported by the data providers: NODDI, approval ID 4290/001 \cite{dataset_01}; first-episode psychosis datasets, University of Pittsburgh Institutional Review Board \cite{salisbury_ds003944,salisbury_ds003947}; Semmelweis dataset, Semmelweis University Regional and Institutional Committee of Science and Research Ethics, registration number 197/2015 \cite{racz2025}; Parkinson's disease dataset, University of New Mexico Office of the Institutional Review Board \cite{cavanagh_ds003490} (approval numbers are not reported by the providers of the Pittsburgh and New Mexico data); Fribourg dataset, approval ID 054/13-CER-FR \cite{dataset2022fribourg}. The analyses were carried out in accordance with the relevant guidelines and regulations and the Declaration of Helsinki.
 
 A large language model (Claude, Anthropic) was used to assist with writing analysis code and drafting and editing the manuscript text. All analyses, results and text were reviewed and verified by the authors, who take full responsibility for the content. \verify{adjust to the actual use}
 
@@ -691,19 +691,19 @@ AUC: area under the receiver operating characteristic curve; BOLD: blood-oxygen-
 \section*{Declarations}
 
 \bmhead{Availability of data and materials}
-All datasets analysed in this study are publicly available: NODDI simultaneous EEG-fMRI (Open Science Framework, \url{https://osf.io/94c5t}) \cite{dataset_01}; first-episode psychosis resting EEG, OpenNeuro ds003944 and ds003947 \cite{salisbury_ds003944,salisbury_ds003947}; Semmelweis schizophrenia resting EEG, Zenodo record 14808296 \cite{racz2025}; Parkinson's disease resting EEG, OpenNeuro ds003490 \cite{cavanagh_ds003490}; Fribourg Ultimatum Game EEG, OpenNeuro ds004000 \cite{dataset2022fribourg}. The code is available at \verify{repository URL and archived version (e.g. Zenodo DOI)}. Project name: \verify{name}; operating system: Linux; programming language: Python; other requirements: PyTorch, MNE-Python, scikit-learn, FSL; licence: \verify{licence}.
+All datasets analysed in this study are publicly available: NODDI simultaneous EEG-fMRI (Open Science Framework, \url{https://osf.io/94c5t}) \cite{dataset_01}; first-episode psychosis resting EEG, OpenNeuro ds003944 and ds003947 \cite{salisbury_ds003944,salisbury_ds003947}; Semmelweis schizophrenia resting EEG, Zenodo record 14808296 \cite{racz2025}; Parkinson's disease resting EEG, OpenNeuro ds003490 \cite{cavanagh_ds003490}; Fribourg Ultimatum Game EEG, OpenNeuro ds004000 \cite{dataset2022fribourg}. The code is available at \url{https://github.com/DCalhas/eeg-to-fmri} \verify{branch or release tag with the code of this study, and an archived version (e.g.\ Zenodo DOI)}. Project name: eeg-to-fmri; operating system: Linux; programming language: Python; other requirements: PyTorch, MNE-Python, scikit-learn, FSL; licence: MIT.
 
 \bmhead{Competing interests}
-The authors declare that they have no competing interests. \verify{confirm}
+The authors declare that they have no competing interests.
 
 \bmhead{Funding}
-This work was supported by Funda\c{c}\~{a}o para a Ci\^{e}ncia e a Tecnologia (FCT) \verify{FCT grant reference(s), and whom they support}. DC is supported by the SMASH programme, which has received funding from the European Union's Horizon Europe research and innovation programme under the Marie Sk{\l}odowska-Curie COFUND grant agreement No.~101081355 (SMASH) and from the Republic of Slovenia, by the European project 22HLT05 MAIBAI, and by the Slovenian Research and Innovation Agency (ARIS) project P2-0209. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Research Executive Agency (REA). Neither the European Union nor the granting authority can be held responsible for them.
+This work was supported by national funds through Funda\c{c}\~{a}o para a Ci\^{e}ncia e Tecnologia (FCT), under the Ph.D.\ Grant SFRH/BD/5762/2020 to David Calhas. This research was supported by the Slovenian Research and Innovation Agency (ARIS) under the Artificial Intelligence and Intelligent Systems Programme (Grant No.~P2-0209) and by the European project 22HLT05 MAIBAI. This publication is co-funded by the European Union's Horizon Europe research and innovation programme under the Marie Sk{\l}odowska-Curie COFUND Postdoctoral Programme grant agreement No.~101081355-SMASH and by the Republic of Slovenia and the European Union from the European Regional Development Fund. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Research Executive Agency. Neither the European Union nor the granting authority can be held responsible for them.
 
 \bmhead{Authors' contributions}
 DC developed the code and the experiments. RH contributed to the supervision, the experimental setting and the revision of the manuscript. All authors read and approved the final manuscript.
 
 \bmhead{Acknowledgements}
-We thank the groups that collected and publicly released the datasets used in this study. \verify{add any further acknowledgements}
+We thank the groups that collected and publicly released the datasets used in this study.
 
 \bibliography{references}
 
