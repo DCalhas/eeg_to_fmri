@@ -1,7 +1,7 @@
 """Example-volume figure for the Brain Informatics revision (review point 5): held-out NODDI subject 49, final
 synthesizers (the models used for the clinical cohorts) against the real volumes and the EEG-free template.
 Input: runs/revision/examples.npz (revision_gpu.py --examples; copied locally, not versioned, 334 MB).
-Output: submission/fig5.pdf."""
+Output: submission/fig3.pdf."""
 import os, sys
 import numpy as np
 import matplotlib
@@ -46,7 +46,7 @@ ax.set_xlabel("Time (s)"); ax.set_ylabel("Brain-mean intensity\n(demeaned)")
 for s in ("top", "right"):
 	ax.spines[s].set_visible(False)
 ax.legend(ncol=5, frameon=False, fontsize=6.5, loc="upper center", bbox_to_anchor=(0.5, 1.18))
-out = os.path.join(HERE, "submission", "fig5.pdf")
+out = os.path.join(HERE, "submission", "fig3.pdf")
 fig.savefig(out, bbox_inches="tight"); fig.savefig(out.replace(".pdf", ".png"), dpi=170, bbox_inches="tight")
 r = {k: float(np.corrcoef(d["real"][:len(d[k]), mask].mean(1), d[k][:, mask].mean(1))[0, 1]) for k, _ in cols[2:]}
 print(out, "brain-mean r with real:", {k: round(v, 3) for k, v in r.items()}, "real SD p99", round(sd_max, 4),

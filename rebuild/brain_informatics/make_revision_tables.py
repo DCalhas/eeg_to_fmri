@@ -141,3 +141,13 @@ for c in C:
 summary["ica_components"] = logs
 json.dump(summary, open(os.path.join(HERE, "data", "revision_summary.json"), "w"), indent=1, default=float)
 print(json.dumps({"holm40_sig": summary["n_holm40_sig"], "holm20_sig": summary["n_holm20_sig"], "ica": logs}, indent=1, default=float))
+
+# ---------------------------------------------------------------- compact main-text table: all views, AUC (* permutation p < 0.05)
+def a(r):
+	return f"${r['auc']:.2f}" + ("^{*}" if (r.get("perm_p_greater") is not None and r["perm_p_greater"] < 0.05) else "") + "$"
+rows = []
+for c in C:
+	v = V[c]
+	cells = [a(v["bp_rel"]), a(v["stft_ms"])] + [f"{a(v['synth_' + m])} / {a(v['synth_' + m + '_untrained'])}" for m in M]
+	rows.append(f"        {CN[c]} & " + " & ".join(cells) + " \\\\")
+open(os.path.join(S, "tab_compact_rows.tex"), "w").write("\n".join(rows) + "\n")

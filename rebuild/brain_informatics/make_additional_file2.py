@@ -37,6 +37,43 @@ Baseline & Cohort & Synthesizer & Weights & $\Delta$AUC & 95\% CI & Bonferroni-4
 """ + rows + r"""\bottomrule
 \end{longtable}
 """)
+# S2 AUC of every view with interval and permutation p
+V = {c: json.load(open(os.path.join(HERE, "data", "revision", f"{c}.json")))["views"] for c in C}
+X = {c: json.load(open(os.path.join(HERE, "data", "revision", f"{c}_extraA.json")))["views"] for c in C}
+VN = [("bp_rel", "Band power (relative)"), ("bp_abs", "Band power (absolute)"), ("bp_nogamma", "Band power, 1--30\\,Hz"), ("stft_ms", "Information-matched (spectra mean, SD)"), ("stft_rp", "Information-matched (random projection)")]
+auc_lines = []
+for c in C:
+	first = True
+	def line(name, r):
+		global first
+		pv = r.get("perm_p_greater")
+		out = f"{CN[c] if first else ''} & {name} & {r['auc']:.3f} & [{r['auc_ci95'][0]:.2f}, {r['auc_ci95'][1]:.2f}] & {('%.3f' % pv) if pv is not None else '--'} \\\\"
+		first = False
+		return out
+	for k, n in VN:
+		auc_lines.append(line(n, V[c][k]))
+	for m in M:
+		for u, un in (("", "trained (NODDI)"), ("_untrained", "untrained")):
+			auc_lines.append(line(f"{MN[m]}, {un}", V[c]["synth_" + m + u]))
+		if "synth_xp1_" + m in X[c]:
+			auc_lines.append(line(f"{MN[m]}, trained (XP1)", X[c]["synth_xp1_" + m]))
+	if "synth_cnn_tag_ep50" in X[c]:
+		auc_lines.append(line("CNN-TAG, 50 epochs", X[c]["synth_cnn_tag_ep50"]))
+	auc_lines.append("\\midrule")
+tex.append(r"""\begin{longtable}{l l r c r}
+\caption{AUC of every view: mean over 20 repeats of stratified 10-fold cross-validation, 95\% bootstrap interval over subjects and one-sided label-permutation $p$ (1,000 permutations for EEG views, 500 for NODDI-trained and untrained synthesized views, 100 for XP1-trained and 50-epoch views; -- not tested).}\label{tab:s_auc}\\
+\toprule
+Cohort & View & AUC & 95\% CI & $p$ \\
+\midrule
+\endfirsthead
+\toprule
+Cohort & View & AUC & 95\% CI & $p$ \\
+\midrule
+\endhead
+""" + "\n".join(auc_lines[:-1]) + r"""
+\bottomrule
+\end{longtable}
+""")
 # S2 sensitivity per synthesizer
 lines = []
 for c in C:
@@ -48,7 +85,7 @@ for c in C:
 						 f" & {f2(t.get('xp1_' + m)) if not u else ''} \\\\")
 	lines.append(f" & \\multicolumn{{2}}{{l}}{{Band power / information-matched}} & {f2(t['bp_rel'])} / {f2(t['stft_ms'])} & & & & & {f2(t['bp_rel_cov'])} / {f2(t['stft_ms_cov'])} & {f2(t['bp_rel_ica'])} / {f2(t['stft_ms_ica'])} & \\\\")
 	lines.append(f" & \\multicolumn{{2}}{{l}}{{Band power without 30--45\\,Hz; CNN-TAG 50 epochs}} & {f2(t['bp_nogamma'])} & & & & & & & {f2(t['cnn_tag_ep50'])} \\\\ \\midrule")
-tex.append(r"""\begin{longtable}{l l l c c c c c c c c}
+sens_tab = (r"""\begin{longtable}{l l l c c c c c c c c}
 \caption{Sensitivity analyses: AUC of each synthesized view with 20 (primary), 5, 10 or 40 principal components, average pooling in $3\times4\times4$-voxel blocks, covariates regressed out within training folds, ICA-cleaned inputs (ocular components removed), and synthesizers trained on XP1 (last column; for the last row of each cohort, CNN-TAG trained for 50 epochs). Covariates: age and sex (all cohorts with these data), chlorpromazine-equivalent dose (FEP1, FEP2), recording hour (Semmelweis, Fribourg), recording year (Fribourg).}\label{tab:s_sens}\\
 \toprule
 Cohort & Synthesizer & Weights & $k=20$ & $k=5$ & $k=10$ & $k=40$ & Blocks & Covariates & ICA & XP1 \\
@@ -92,6 +129,10 @@ Cohort & Measure & Patients & Controls & AUC & $p$ \\
 \bottomrule
 \end{longtable}
 """)
+# S4 contrastive classifier (moved from the main text)
+B = json.load(open("/tmp/claude-1000/-home-david-eeg-to-fmri/663ae47e-4782-41d0-8ed4-0a79027ed4d4/scratchpad/blocks.json"))
+ct = B["tab:contrastive"].replace("\\label{tab:contrastive}", "\\label{tab:s_contrastive}").replace("\\begin{table}[!htbp]", "\\begin{table}[h]")
+tex.append(ct + "\n")
 # S4 fidelity of the final models and of XP1
 val = json.load(open(os.path.join(HERE, "data", "final_models_val_fidelity.json")))
 lines = []
@@ -111,14 +152,17 @@ for k, v in fid.items():
 	arm, m = k.split("/")
 	lines.append(f"NODDI LOSO ({arm.replace('_', ' ')}) & 16 subjects & {MN.get(m, 'EEG-free template' if m == 'template' else 'Ridge (spectra)')} & {v['ssim'][0]:.3f} & {v['rmse'][0]:.4f}$\\pm${v['rmse'][1]:.4f} & {('%+.4f' % v['r'][0]) if 'r' in v else '--'} \\\\")
 tex.append(r"""\begin{longtable}{l l l r r r}
-\caption{Fidelity of the final synthesizers used for the clinical cohorts on the held-out validation subjects (NODDI 49 and 50; XP1 sub-xp109 and sub-xp110, pooled), and RMSE of the leave-one-subject-out NODDI evaluation (fidelity table of the main text). $r$: mean voxelwise temporal correlation.}\label{tab:s_fid}\\
+\caption{Fidelity of the final synthesizers used for the clinical cohorts on the held-out validation subjects (NODDI 49 and 50; XP1 sub-xp109 and sub-xp110, pooled), and the leave-one-subject-out NODDI evaluation (16 test subjects; mean SSIM, RMSE $\pm$ SD over subjects and mean voxelwise temporal correlation $r$) with trigger-aligned EEG, EEG paired from the file start and ECG only. Shift nulls and selected epochs are in Table~S6.}\label{tab:s_fid}\\
 \toprule
 Data & Held-out subjects & Model & SSIM & RMSE & $r$ \\
 \midrule
 """ + "\n".join(lines) + r"""
 \bottomrule
 \end{longtable}
-\end{document}
 """)
+fid_full = B["tab:fidelity"].replace("\\label{tab:fidelity}", "\\label{tab:s_fidelity}").replace("\\begin{table*}[!htbp]", "\\begin{table}[h]").replace("\\end{table*}", "\\end{table}").replace("(RMSE in Additional file~2)", "(RMSE in Table~S5)")
+tex.append(fid_full + "\n")
+tex.append(sens_tab)
+tex.append("\\end{document}\n")
 open(os.path.join(S, "additional_file_2.tex"), "w").write("\n".join(tex))
 print("written")

@@ -1,6 +1,6 @@
 """Results figure for the Brain Informatics manuscript: AUC (95% bootstrap CI) per cohort for EEG band power and the
 synthesized fMRI view of each synthesizer, trained and untrained. Reads the synth_clf result files copied from Frida
-(~/eeg_to_fmri/runs/synth_clf/*_clf*.json) into data/synth_clf/. Writes submission/fig4.pdf."""
+(~/eeg_to_fmri/runs/synth_clf/*_clf*.json) into data/synth_clf/. Writes submission/fig2.pdf."""
 import os, json, glob
 import matplotlib
 matplotlib.use("Agg")
@@ -53,7 +53,7 @@ handles = [Line2D([], [], marker="s", ls="", color=BAND, ms=4, label="EEG band p
 		   Line2D([], [], marker="o", ls="", color=SYN, mfc="white", ms=4, label="Synthesized fMRI, untrained (random weights)")]
 fig.legend(handles=handles, loc="lower center", ncol=2, frameon=False, fontsize=7.5, bbox_to_anchor=(0.55, -0.06))
 fig.tight_layout(rect=(0, 0.12, 1, 1), w_pad=0.6)
-out = os.path.join(HERE, "submission", "fig4.pdf")
+out = os.path.join(HERE, "submission", "fig2.pdf")
 fig.savefig(out, bbox_inches="tight")
 
 print(out)
