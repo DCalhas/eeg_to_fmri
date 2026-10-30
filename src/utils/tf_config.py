@@ -13,7 +13,10 @@ from utils import memory_utils
 MAX_N_THREADS=0
 
 def setup_tensorflow(memory_limit, device="CPU", run_eagerly=False, set_primary_memory=False, set_tf_threads=False):
-	gpu = tf.config.experimental.list_physical_devices(device)[0]
+	devices = tf.config.experimental.list_physical_devices(device)
+	#experiments run on GPU only: fail instead of silently falling back to CPU
+	assert len(devices), "no "+device+" visible: submit through experiments/run.sbatch (A100), do not run on CPU"
+	gpu = devices[0]
 	tf.config.set_soft_device_placement(True)
 	tf.config.log_device_placement=True
 	if(device=="GPU"):

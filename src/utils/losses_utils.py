@@ -555,6 +555,37 @@ def Laplacian_Loss(y_true, y_pred):
     return laplace_loss + cosine(y_pred[1], y_pred[2])
 
 
+EVIDENTIAL_LAMBDA=0.01
+
+def Evidential_Loss(y_true, y_pred):
+    """
+    Deep evidential regression (Amini et al. 2020): NIG negative log likelihood plus lambda*|y-gamma|*(2nu+alpha).
+        * y_pred - [[gamma, nu, alpha, beta], tf.Tensor, tf.Tensor]
+    """
+    gamma, nu, alpha, beta = y_pred[0]
+    nu, beta = nu+NON_DIVISION_ZERO, beta+NON_DIVISION_ZERO
+    omega = 2*beta*(1+nu)
+    nll = 0.5*tf.math.log(np.pi/nu)-alpha*tf.math.log(omega)+(alpha+0.5)*tf.math.log(nu*(y_true-gamma)**2+omega) \
+            +tf.math.lgamma(alpha)-tf.math.lgamma(alpha+0.5)
+    reg = tf.math.abs(y_true-gamma)*(2*nu+alpha)
+    return tf.reduce_mean(nll+EVIDENTIAL_LAMBDA*reg, axis=(1,2,3)) + cosine(y_pred[1], y_pred[2])
+
+
+QUANTILES=(0.05, 0.95)
+
+def Quantile_Loss(y_true, y_pred):
+    """
+    Median (MAE) plus pinball losses of the lower/upper quantile heads, for conformalized quantile regression.
+        * y_pred - [[median, lower, upper], tf.Tensor, tf.Tensor]
+    """
+    median, lower, upper = y_pred[0]
+    def pinball(q, pred):
+        r = y_true-pred
+        return tf.maximum(q*r, (q-1)*r)
+    loss = tf.math.abs(y_true-median)+pinball(QUANTILES[0], lower)+pinball(QUANTILES[1], upper)
+    return tf.reduce_mean(loss, axis=(1,2,3)) + cosine(y_pred[1], y_pred[2])
+
+
 """
 GLOBAL VARIABLE END OF FILE ALWAYS
 """

@@ -136,3 +136,52 @@ class DenseVariational(tf.keras.layers.Layer):
 	@classmethod
 	def from_config(cls, config):
 		return cls(**config)
+
+"""
+Layers for the journal experiments. DenseVariational above is kept untouched for reproducing the original runs:
+it draws a single scalar epsilon shared by all weights and has no KL term, so it is not a Bayesian layer.
+"""
+
+class DenseFlipoutKL(tfp.layers.DenseFlipout):
+	"""
+	DenseFlipout whose KL(q||p) (kernel + bias) is registered as a callable, input-independent layer loss.
+	tfp adds the KL inside call(), which fails ("out of scope") when the functional decoder is called from the
+	tf.function-compiled EEG_to_fMRI.call; a callable loss is evaluated when model.losses is read.
+	"""
+	def __init__(self, units, kl_weight, **kwargs):
+		super(DenseFlipoutKL, self).__init__(units, kernel_divergence_fn=None, bias_divergence_fn=None,
+			bias_posterior_fn=tfp.layers.default_mean_field_normal_fn(is_singular=False),
+			bias_prior_fn=tfp.layers.default_multivariate_normal_fn, **kwargs)
+		self.kl_weight=kl_weight
+
+	def build(self, input_shape):
+		super(DenseFlipoutKL, self).build(input_shape)
+		kl = tfp.distributions.kl_divergence
+		self.add_loss(lambda: self.kl_weight*(kl(self.kernel_posterior, self.kernel_prior)+kl(self.bias_posterior, self.bias_prior)))
+
+
+def flipout_dense(units, kl_weight, seed=None):
+	"""Mean-field Gaussian dense layer with Flipout (Wen et al. 2018), N(0,1) prior, KL scaled by kl_weight."""
+	return DenseFlipoutKL(units, kl_weight, seed=seed)
+
+
+class AlwaysDropout(tf.keras.layers.Layer):
+	"""Dropout active at train and test time (MC dropout, Gal & Ghahramani 2016), independent of the training flag."""
+	def __init__(self, rate, **kwargs):
+		super(AlwaysDropout, self).__init__(**kwargs)
+		self.rate=rate
+
+	def call(self, x):
+		return tf.nn.dropout(x, rate=self.rate)
+
+	def get_config(self):
+		return {"rate": self.rate}
+
+
+class VoxelBias(tf.keras.layers.Layer):
+	"""Trainable per-voxel offset, used for the log-scale of the aleatoric head."""
+	def build(self, input_shape):
+		self.bias=self.add_weight('voxel_bias', shape=input_shape[1:], initializer=tf.initializers.Zeros(), trainable=True)
+
+	def call(self, x):
+		return x+self.bias

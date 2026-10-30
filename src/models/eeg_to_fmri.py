@@ -15,7 +15,7 @@ from layers.fourier_features import RandomFourierFeatures, FourierFeatures, Sinu
 from layers.fft import padded_iDCT3D, DCT3D, variational_iDCT3D, iDCT3D
 from layers.topographical_attention import Topographical_Attention, Topographical_Attention_Scores_Regularization, Topographical_Attention_Reduction
 from layers.resnet_block import ResBlock, pretrained_ResBlock
-from layers.bayesian import DenseVariational
+from layers.bayesian import DenseVariational, flipout_dense, AlwaysDropout, VoxelBias
 from layers.mask import MRICircleMask
 from layers.latent_attention import Latent_EEG_Spatial_Attention, Latent_fMRI_Spatial_Attention
 from layers.style import Style
@@ -102,8 +102,18 @@ class EEG_to_fMRI(tf.keras.Model):
                 variational_random_padding=False, fourier_normalization="layer",
                 resolution_decoder=None, low_resolution_decoder=False,
                 topographical_attention=False, organize_channels=False,
-                consistency=False, seed=None, fmri_args=None):
+                consistency=False, bnn_layer="legacy", kl_weight=0., aleatoric_head="voxel", mc_dropout=0.,
+                spectral_dropout=0., seed=None, fmri_args=None):
         """
+            bnn_layer - "legacy" (original DenseVariational), "flipout" (tfp DenseFlipout with KL) or "none" (deterministic Dense)
+            kl_weight - scale of the KL terms (flipout layers and stochastic spectral coefficients)
+            aleatoric_head - "voxel" (original: exp(Dense(1)) of each voxel's prediction) or
+                             "spectral" (exp of a smooth, input-dependent log-scale field: latent -> 8x8x4 DCT -> iDCT, plus per-voxel bias)
+            mc_dropout - rate of dropout kept active at test time before the decoder upsampling (0 disables)
+            spectral_dropout - rate of dropout on the DCT coefficients kept active at test time (Khan et al. 2019 used as MC sampler)
+            aleatoric_head also accepts "evidential" (Normal-Inverse-Gamma, Amini et al. 2020) and
+                             "quantile" (5% and 95% quantile heads for conformalized quantile regression, Romano et al. 2019)
+
             NA_specification - tuple - (list1, list2, bool, tuple1, tuple2)
                                         * list1 - kernel sizes
                                         * list2 - stride sizes
@@ -152,6 +162,11 @@ class EEG_to_fMRI(tf.keras.Model):
         self.consistency=consistency
         self.seed=seed
         self.fmri_args=fmri_args
+        self.bnn_layer=bnn_layer
+        self.kl_weight=kl_weight
+        self.aleatoric_head=aleatoric_head
+        self.mc_dropout=mc_dropout
+        self.spectral_dropout=spectral_dropout
         
         if(len(fmri_args)==17):#needs to be update if 
             self.fmri_ae = fmri_ae.fMRI_AE(*fmri_args, time_length=time_length)
@@ -277,6 +292,9 @@ class EEG_to_fMRI(tf.keras.Model):
 
         if(dropout):
             x = tf.keras.layers.Dropout(0.5)(x)
+        if(self.mc_dropout > 0.):
+            x = AlwaysDropout(self.mc_dropout)(x)
+        latent_flat = x
         x = tf.keras.layers.Reshape(latent_shape)(x)
 
         #placeholder
@@ -292,7 +310,7 @@ class EEG_to_fMRI(tf.keras.Model):
 
             #upsampling
             if(self.aleatoric_uncertainty and not variational_iDFT):#insert a new flag! instead of combination of flags
-                x = DenseVariational(latent_shape[0]*latent_shape[1]*latent_shape[2])(x)
+                x = self._bayesian_dense(latent_shape[0]*latent_shape[1]*latent_shape[2], seed, name="decoder_dense")(x)
                 #x = tfp.layers.DenseFlipout(latent_shape[0]*latent_shape[1]*latent_shape[2],
                 #                        kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(x)
             else:
@@ -303,6 +321,8 @@ class EEG_to_fMRI(tf.keras.Model):
             assert not time_length>1, "This layers are not set for time length > 1"
             #convert to Discrete cosine transform low resolution coefficients
             x = DCT3D(latent_shape[0], latent_shape[1], latent_shape[2])(x)
+            if(self.spectral_dropout > 0.):
+                x = AlwaysDropout(self.spectral_dropout)(x)
         if(inverse_DFT):
             assert not time_length>1, "This layers are not set for time length > 1"
             if(variational_iDFT):
@@ -310,13 +330,13 @@ class EEG_to_fMRI(tf.keras.Model):
                 x = variational_iDCT3D(*(latent_shape + self.fmri_ae.in_shape[:3] + variational_coefs), 
                                         coefs_perturb=True, dependent=variational_iDFT_dependent, 
                                         posterior_dimension=variational_iDFT_dependent_dim, distribution=variational_dist,
-                                        random_padding=variational_random_padding)(x)
+                                        random_padding=variational_random_padding, kl_weight=self.kl_weight)(x)
             else:
                 x = padded_iDCT3D(latent_shape[0], latent_shape[1], latent_shape[2],
                             out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(x)
         elif(self.aleatoric_uncertainty):
             x = tf.keras.layers.Flatten()(x)
-            x =  DenseVariational(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2])(x)
+            x =  self._bayesian_dense(self.fmri_ae.in_shape[0]*self.fmri_ae.in_shape[1]*self.fmri_ae.in_shape[2], seed)(x)
         else:
             x = tf.keras.layers.Flatten()(x)
             #upsampling
@@ -334,9 +354,37 @@ class EEG_to_fMRI(tf.keras.Model):
 
         output=x
         if(self.aleatoric_uncertainty):
-            output=[output]+[tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)]
+            if(self.aleatoric_head=="spectral"):
+                output=[output]+[tf.keras.layers.Activation(tf.keras.activations.exponential)(self._smooth_field(latent_flat, seed))]
+            elif(self.aleatoric_head=="evidential"):
+                #nu, beta > 0 and alpha > 1 of the Normal-Inverse-Gamma, output[0] is gamma
+                nu = tf.keras.layers.Activation(tf.keras.activations.softplus)(self._smooth_field(latent_flat, seed))
+                alpha = tf.keras.layers.Activation(lambda z: tf.keras.activations.softplus(z)+1.)(self._smooth_field(latent_flat, seed))
+                beta = tf.keras.layers.Activation(tf.keras.activations.softplus)(self._smooth_field(latent_flat, seed))
+                output=[output, nu, alpha, beta]
+            elif(self.aleatoric_head=="quantile"):
+                #lower and upper quantiles as positive offsets from the median prediction, so they never cross
+                lower = output-tf.keras.layers.Activation(tf.keras.activations.softplus)(self._smooth_field(latent_flat, seed))
+                upper = output+tf.keras.layers.Activation(tf.keras.activations.softplus)(self._smooth_field(latent_flat, seed))
+                output=[output, lower, upper]
+            else:
+                output=[output]+[tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)]
 
         self.decoder = tf.keras.Model(input_shape, output)
+
+    def _bayesian_dense(self, units, seed=None, name=None):
+        if(self.bnn_layer=="flipout"):
+            return flipout_dense(units, self.kl_weight, seed=seed)
+        if(self.bnn_layer=="none"):
+            return tf.keras.layers.Dense(units, kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed), name=name)
+        return DenseVariational(units)
+
+    def _smooth_field(self, latent_flat, seed=None):
+        """Input-dependent smooth map over the fMRI grid: latent -> 8x8x4 DCT coefficients -> iDCT, plus a per-voxel bias."""
+        z = tf.keras.layers.Dense(8*8*4, kernel_initializer=tf.keras.initializers.GlorotUniform(seed=seed))(latent_flat)
+        z = tf.keras.layers.Reshape((8,8,4))(z)
+        z = padded_iDCT3D(8, 8, 4, out1=self.fmri_ae.in_shape[0], out2=self.fmri_ae.in_shape[1], out3=self.fmri_ae.in_shape[2])(z)
+        return VoxelBias()(tf.keras.layers.Reshape(self.fmri_ae.in_shape)(z))
 
     def build(self, input_shape1, input_shape2):
         self.eeg_encoder.build(input_shape=input_shape1)
@@ -350,7 +398,8 @@ class EEG_to_fMRI(tf.keras.Model):
 
 
     
-    @tf.function(input_signature=[tf.TensorSpec([None,64,134,10,1], tf.float32), tf.TensorSpec([None,64,64,30,1], tf.float32)], reduce_retracing=True)
+    #the original code fixed input_signature=[None,64,134,10,1] (64 channels incl. ECG, 134 frequencies); shapes now come from the data
+    @tf.function(reduce_retracing=True)
     def call(self, x1, x2):
         """
         Random behaviour of GPU with tf functions does not reproduce the same results

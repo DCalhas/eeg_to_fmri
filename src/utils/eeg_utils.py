@@ -513,3 +513,17 @@ def plot_stft(eeg, channel=2, window_size=2, min_freq=None, max_freq=None, color
 	fig.show()
 
 	return fig, axes
+
+_NON_EEG_TYPES = {"ECG": "ecg", "EKG": "ecg", "EOG": "eog", "HEOG": "eog", "VEOG": "eog", "HEO": "eog", "VEO": "eog", "EMG": "emg"}
+
+def pick_channels(raw, types=("eeg",)):
+	"""Indices of the channels of the given MNE types; non-EEG channels are typed by name first (BrainVision exports type everything as EEG)."""
+	import mne
+	retype = {n: t for n, t in _NON_EEG_TYPES.items() if n in raw.ch_names}
+	retype.update({n: "eog" for n in raw.ch_names if n.startswith("EXG")})
+	if(retype):
+		try:
+			raw.set_channel_types(retype, on_unit_change="ignore", verbose=0)
+		except TypeError:#mne < 1.4
+			raw.set_channel_types(retype, verbose=0)
+	return list(mne.pick_types(raw.info, **{t: True for t in types}, **({"eeg": False} if "eeg" not in types else {})))

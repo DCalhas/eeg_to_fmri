@@ -32,7 +32,7 @@ class Liu_et_al(tf.keras.Model):
 	def __init__(self, eeg_shape, fmri_shape, n_channels=1, latent_dim=256, 
 				variational=False, variationalDCT=False, padded=False,
 				variational_coefs=(32,32,15), variational_dependent=True, 
-				variational_dependent_h=20, variational_dist="VonMises"):
+				variational_dependent_h=20, variational_dist="VonMises", aleatoric=None, kl_weight=None):
 		"""
 		Inputs:
 			* eeg_shape - tuple (n_channels, time)
@@ -40,6 +40,10 @@ class Liu_et_al(tf.keras.Model):
 
 		max number of channels to run on the personal computer is 4
 		standard number is 16
+
+			* aleatoric - Laplace scale head; None keeps the original behaviour (head only when variational)
+			* kl_weight - None keeps the original behaviour (tfp default: unscaled KL of the Flipout layer, no KL on
+						spectral coefficients); a float scales the KL of both
 		"""
 		super(Liu_et_al, self).__init__()
 
@@ -59,9 +63,17 @@ class Liu_et_al(tf.keras.Model):
 		self.variational_dependent=variational_dependent
 		self.variational_dependent_h=variational_dependent_h
 		self.variational_dist=variational_dist
+		self.aleatoric=variational if aleatoric is None else aleatoric
+		self.kl_weight=kl_weight
 		self.fn=tf.keras.layers.Conv1D
 		if(self.variational and not self.variationalDCT):
-			self.fn=tfp.layers.Convolution1DFlipout
+			if(kl_weight is None):
+				self.fn=tfp.layers.Convolution1DFlipout
+			else:
+				divergence=lambda q, p, _: tfp.distributions.kl_divergence(q, p)*kl_weight
+				self.fn=lambda *args, **kwargs: tfp.layers.Convolution1DFlipout(*args, kernel_divergence_fn=divergence, bias_divergence_fn=divergence,
+																				bias_posterior_fn=tfp.layers.default_mean_field_normal_fn(is_singular=False),
+																				bias_prior_fn=tfp.layers.default_multivariate_normal_fn, **kwargs)
 
 		if(variationalDCT or padded):
 			self.spatial_dimension=(fmri_shape[0]-variational_coefs[0])*(fmri_shape[1]-variational_coefs[1])*(fmri_shape[2]-variational_coefs[2])
@@ -93,14 +105,15 @@ class Liu_et_al(tf.keras.Model):
 
 		x = tf.keras.layers.Reshape(self.fmri_shape[:-1])(x)
 
-		if(variationalDCT or padded):
+		if(self.variationalDCT or self.padded):
 			x = fft.DCT3D(self.fmri_shape[0], self.fmri_shape[1], self.fmri_shape[2])(x)
-			if(variationalDCT):
+			if(self.variationalDCT):
 				x = fft.variational_iDCT3D(*(self.fmri_shape[:-1] + \
 										(self.fmri_shape[0]+self.variational_coefs[0], self.fmri_shape[1]+self.variational_coefs[1], self.fmri_shape[2]+self.variational_coefs[2]) +\
 										self.variational_coefs), 
 										coefs_perturb=True, dependent=self.variational_dependent, 
-										posterior_dimension=self.variational_dependent_h, distribution=self.variational_dist,)(x)
+										posterior_dimension=self.variational_dependent_h, distribution=self.variational_dist,
+										kl_weight=0. if self.kl_weight is None else self.kl_weight)(x)
 			else:
 				x = fft.padded_iDCT3D(*self.fmri_shape[:-1],
 							out1=self.fmri_shape[0]+self.variational_coefs[0], out2=self.fmri_shape[1]+self.variational_coefs[1], out3=self.fmri_shape[2]+self.variational_coefs[2])(x)
@@ -109,7 +122,7 @@ class Liu_et_al(tf.keras.Model):
 		else:
 			x = tf.keras.layers.Reshape(self.fmri_shape)(x)
 
-		if(self.variational):
+		if(self.aleatoric):
 			x = [x, tf.keras.layers.Dense(1, activation=tf.keras.activations.exponential)(x)]
 
 		self.nn=tf.keras.Model(input_shape, x)
@@ -178,7 +191,7 @@ class Liu_et_al(tf.keras.Model):
 		raise NotImplementedError
 
 	def get_loss(self):
-		if(self.variational):
+		if(self.aleatoric):
 			return self.variational_loss
 		return losses_utils.mae
 

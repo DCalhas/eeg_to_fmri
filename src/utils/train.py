@@ -7,7 +7,10 @@ import numpy as np
 from utils import print_utils
 
 def apply_gradient(model, optimizer, loss_fn, x, y, return_logits=False, call_fn=None):
-    with tf.GradientTape(persistent=True) as tape:
+    #non-persistent: the gradient is taken once. With persistent=True, tfp 0.17's VonMises reparameterization gives NaN
+    #gradients for the concentration on the first step (stochastic spectral decoder NaN, verified A/B 2026-10-26);
+    #for every other layer the gradients are identical.
+    with tf.GradientTape() as tape:
         if(type(x) is tuple):
             if(call_fn is None):
                 logits=model(*x, training=True)

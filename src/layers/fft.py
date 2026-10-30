@@ -328,9 +328,13 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 	>>> irdft(x)
 	"""
 	
-	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution=None, random_padding=False, normal_loc_initializer=None, normal_scale_initializer=None, w1_initializer=None, w2_initializer=None, w3_initializer=None, loc_posterior_initializer=None, scale_posterior_initializer=None, biases_initializer=None, trainable=True, **kwargs):
+	def __init__(self, in1, in2, in3, out1, out2, out3, rand1, rand2, rand3, coefs_perturb=True, dependent=False, posterior_dimension=1, distribution=None, random_padding=False, normal_loc_initializer=None, normal_scale_initializer=None, w1_initializer=None, w2_initializer=None, w3_initializer=None, loc_posterior_initializer=None, scale_posterior_initializer=None, biases_initializer=None, trainable=True, kl_weight=0., **kwargs):
 		"""
 		in1 - int - first dimension input
+
+		kl_weight - float - if > 0, adds kl_weight*KL(q||p) as a layer loss (variational spectral coefficients):
+			p = N(0,1) for Normal high frequencies, uniform on the circle for VonMises phases,
+			p = N(1,1) for the multiplicative gains of the low frequencies (coefs_perturb)
 
 		If Gamma is used please cite arXiv:1805.08498 - Figurnov et al. 2019
 
@@ -368,6 +372,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		self.scale_posterior_initializer=scale_posterior_initializer
 		self.biases_initializer=biases_initializer
 		self.trainable=trainable
+		self.kl_weight=kl_weight
 
 		super(variational_iDCT3D, self).__init__(**kwargs)
 
@@ -416,6 +421,10 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 								trainable=self.trainable)
 
 		self.padded_idct3 = padded_iDCT3D(self.in1+self.rand1, self.in2+self.rand2, self.in3+self.rand3, self.out1, self.out2, self.out3)
+
+		if(self.kl_weight > 0.):
+			#input-independent loss: registered as a callable so Keras evaluates it at every model.losses access
+			self.add_loss(lambda: self.kl_weight*self.kl_divergence())
 
 		self.shape_normal1 = (self.rand1, self.in2, self.in3)
 		self.shape_normal2 = (self.in1+self.rand1, self.rand2, self.in3)
@@ -501,6 +510,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 		if(self.coefs_perturb):
 			dist_normal = tfp.distributions.Normal(loc=self.normal.distribution.loc, scale=self.normal.distribution.scale)
 			x = x*dist_normal.sample()
+
 			
 		if(self.random_padding):
 			z = self.random_pad1(x,rand_coefs1)
@@ -513,6 +523,21 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 
 		return self.padded_idct3(z)
 		
+	def kl_divergence(self):
+		"""Sum of KL(q||p) over all stochastic spectral coefficients (closed forms)."""
+		kl = 0.
+		if(self.distribution=="Normal"):
+			scale = self.scale+1e-5
+			kl += tf.reduce_sum(-tf.math.log(scale)+(scale**2+self.loc**2)/2.-0.5)
+		elif(self.distribution=="VonMises"):
+			#KL(vM(mu,k) || U(circle)) = k I1(k)/I0(k) - log I0(k), with exponentially scaled Bessel functions
+			k = self.scale
+			kl += tf.reduce_sum(k*tf.math.bessel_i1e(k)/tf.math.bessel_i0e(k)-tf.math.log(tf.math.bessel_i0e(k))-k)
+		if(self.coefs_perturb):
+			loc, scale = self.normal.distribution.loc, self.normal.distribution.scale
+			kl += tf.reduce_sum(-tf.math.log(scale)+(scale**2+(loc-1.)**2)/2.-0.5)
+		return kl
+
 	def get_config(self):
 		return {
 			"in1": self.in1,
@@ -521,6 +546,7 @@ class variational_iDCT3D(tf.keras.layers.Layer):
 			"out1": self.out1,
 			"out2": self.out2,
 			"out3": self.out3,
+			"kl_weight": self.kl_weight,
 			"rand1": self.rand1,
 			"rand2": self.rand2,
 			"rand3": self.rand3,

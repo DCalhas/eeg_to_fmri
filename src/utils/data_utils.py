@@ -72,7 +72,7 @@ n_individuals_test_15=13
 #
 #############################################################################################################
 
-def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit_h=134, eeg_f_limit_l=0, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, roi=None, roi_ica_components=None, dataset="01"):
+def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit_h=134, eeg_f_limit_l=0, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, roi=None, roi_ica_components=None, dataset="01", channel_types=None, eeg_norm="channels"):
 
     #Load Data
     eeg, bold, scalers = get_data(instances,
@@ -87,7 +87,8 @@ def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partition
                                     iqr_outlier=iqr_outlier,
                                     TR=getattr(fmri_utils, "TR_"+dataset),
                                     eeg_limit=eeg_limit, eeg_f_limit_h=eeg_f_limit_h,
-                                    eeg_f_limit_l=eeg_f_limit_l, dataset=dataset)
+                                    eeg_f_limit_l=eeg_f_limit_l, dataset=dataset,
+                                    channel_types=channel_types, eeg_norm=eeg_norm)
 
     return eeg, bold, scalers
 
@@ -108,7 +109,17 @@ def load_data_clf(dataset, n_individuals=8, mutate_bands=False, f_resample=2, ra
 """
 """
 
-def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.160, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit_h=134, eeg_f_limit_l=0, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01"):
+def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.160, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, n_voxels=None, TR=2.160, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit_h=134, eeg_f_limit_l=0, fmri_resolution_factor=5, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, dataset="01", channel_types=None, eeg_norm="channels"):
+    """
+    individuals must be a prefix range(N): fMRI is read for the first N subjects, EEG for the given ids.
+    channel_types - None reads every channel of the recording (legacy setting, includes ECG); a tuple of MNE channel
+                    types, e.g. ("eeg",) or ("ecg",), keeps only those (ECG/EOG/EMG are typed by name first);
+                    ("ecg",) tiles the ECG into as many channels as the recording has EEG electrodes
+    eeg_norm - "channels" (legacy setting): scipy zscore with axis=0, i.e. every time-frequency bin standardized across
+               channels; "time": every channel (and frequency) standardized over the recording
+    """
+    assert list(individuals) == list(range(len(individuals))), "get_data pairs the first N fMRI subjects with the given EEG ids"
+    assert eeg_norm in ("channels", "time")
     TR = 1/TR
 
     X = []
@@ -117,6 +128,8 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
 
     #setting mask and fMRI signals
     individuals_imgs = getattr(fmri_utils, "get_individuals_paths_"+dataset)(resolution_factor=fmri_resolution_factor, number_individuals=len(individuals))
+    #the readers skip subjects whose fMRI file is missing, which would misalign EEG and fMRI rows
+    assert len(individuals_imgs) == len(individuals), "loaded "+str(len(individuals_imgs))+" fMRI subjects, expected "+str(len(individuals))
     recording_time = np.amin([getattr(fmri_utils, "n_volumes_"+dataset), individuals_imgs[0].shape[-1]])
     fmri_volumes = np.empty((len(individuals)*(recording_time),) + individuals_imgs[0].get_fdata()[:,:,:,0].shape)
     j = 0
@@ -167,10 +180,13 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
         else:
             fs_sample = eeg.info['sfreq']
             len_channels = len(eeg.ch_names)
+        picks = list(range(len_channels))
+        if(channel_types is not None):
+            picks = eeg_utils.pick_channels(eeg, channel_types)
         
         x_instance = []
         #eeg
-        for channel in range(len_channels):
+        for channel in picks:
             if(raw_eeg):
                 x = eeg_utils.raw_eeg(eeg, channel=channel)
                 if(raw_eeg_resample):
@@ -182,8 +198,11 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
                     Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
                 x_instance += [Zxx]
             
+        if(channel_types is not None and tuple(channel_types) == ("ecg",)):
+            #ECG-only control: the ECG trace tiled into every EEG slot, so the architecture (which down-samples along channels) is unchanged
+            x_instance = list(np.repeat(np.array(x_instance), len(eeg_utils.pick_channels(eeg, ("eeg",))), axis=0))
         if(standardize_eeg):
-            x_instance = zscore(np.array(x_instance))
+            x_instance = zscore(np.array(x_instance), axis=0 if eeg_norm=="channels" else -1)
         else:
             x_instance = np.array(x_instance)
 

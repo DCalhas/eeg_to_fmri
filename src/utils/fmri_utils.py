@@ -259,7 +259,7 @@ def get_individuals_paths_04(path_fmri=media_directory+dataset_04+"/", number_in
         task_file=sorted([f for f in listdir(path_fmri+dir_individuals[i]+'/func/') if isfile(path_fmri+dir_individuals[i]+'/func/'+f) and task in path_fmri+dir_individuals[i]+'/func/'+f])
         if(not len(task_file)):
             continue
-        file_path= path_fmri+dir_individuals[i]+'/func/' + task_file[1]
+        file_path= path_fmri+dir_individuals[i]+'/func/' + [f for f in task_file if f.endswith('_bold.nii.gz')][0]
         
         fmri_individuals += [image.load_img(file_path)]
 
@@ -292,7 +292,7 @@ def get_individuals_paths_05(path_fmri=media_directory+dataset_05+"/", number_in
         task_file=sorted([f for f in listdir(path_fmri+dir_individuals[i]+'/func/') if isfile(path_fmri+dir_individuals[i]+'/func/'+f) and task in path_fmri+dir_individuals[i]+'/func/'+f])
         if(not len(task_file)):
             continue
-        file_path= path_fmri+dir_individuals[i]+'/func/' + task_file[1]
+        file_path= path_fmri+dir_individuals[i]+'/func/' + [f for f in task_file if f.endswith('_bold.nii.gz')][0]
         
         fmri_individuals += [image.load_img(file_path)]
 
