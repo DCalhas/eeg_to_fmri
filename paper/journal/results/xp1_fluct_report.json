@@ -1,0 +1,119 @@
+{
+ "template_subjects": 9,
+ "xp1_point_fluct": {
+  "n_subjects": 9,
+  "vs_template": {
+   "rmse_brain": {
+    "n": 9,
+    "model": 0.9362824017228453,
+    "reference": 0.873585444639239,
+    "p": 1.0
+   },
+   "nll": {
+    "n": 0,
+    "p": null
+   },
+   "crps": {
+    "n": 0,
+    "p": null
+   }
+  },
+  "vs_oracle_own_mean": {
+   "rmse_brain": {
+    "n": 9,
+    "model": 0.9362824017228453,
+    "reference": 0.8713809311705292,
+    "p": 1.0
+   },
+   "nll": {
+    "n": 0,
+    "p": null
+   }
+  },
+  "vs_stimulus_locked": {
+   "rmse_brain": {
+    "n": 9,
+    "model": 0.9362824017228453,
+    "reference": 0.7672240001093864,
+    "p": 1.0
+   },
+   "nll": {
+    "n": 0,
+    "p": null
+   },
+   "temporal_r": {
+    "n": 9,
+    "model": -0.0007731407466861936,
+    "reference": 0.6366938220130073,
+    "p": 1.0
+   }
+  },
+  "conf90_coverage": 0.8679880505020836,
+  "temporal_r_vs_shift": {
+   "n": 9,
+   "model": -0.0007731407466861936,
+   "reference": -0.0018862331182592446,
+   "p": 0.5
+  },
+  "temporal_r_vs_swap": {
+   "n": 8,
+   "model": 0.01247734040953219,
+   "reference": -0.0025169451837427914,
+   "p": 0.47265625
+  },
+  "nll_vs_shift": {
+   "n": 0,
+   "p": null
+  },
+  "R2_global_vs_template": {
+   "n": 9,
+   "model": -0.1507339742448595,
+   "reference": -0.003529296980963813,
+   "p": 1.0
+  },
+  "R2_global_vs_shift": {
+   "n": 9,
+   "model": -0.1507339742448595,
+   "reference": -0.14624509546491835,
+   "p": 0.544921875
+  },
+  "R2_global_brain_vs_shift": {
+   "n": 9,
+   "model": -0.17065329021877712,
+   "reference": -0.16708101166619194,
+   "p": 0.544921875
+  },
+  "R2c_global_brain_vs_shift": {
+   "n": 9,
+   "model": -0.16337646378411186,
+   "reference": -0.15980426470438638,
+   "p": 0.544921875
+  },
+  "R2c_global_brain_vs_swap": {
+   "n": 8,
+   "model": -0.14286363124847412,
+   "reference": -0.15584397315979004,
+   "p": 0.37109375
+  },
+  "R2_global_vs_swap": {
+   "n": 8,
+   "model": -0.13504761457443237,
+   "reference": -0.14196228981018066,
+   "p": 0.52734375
+  },
+  "pooled_r_dt_brain_vs_shift": {
+   "n": 9,
+   "model": 0.006644219780961673,
+   "reference": 0.003438707130650679,
+   "p": 0.326171875
+  },
+  "pooled_r_dt_brain_vs_swap": {
+   "n": 8,
+   "model": 0.008697351207956672,
+   "reference": -0.01640622812556103,
+   "p": 0.01171875
+  },
+  "gate_pass": false,
+  "eeg_specific": false
+ }
+}

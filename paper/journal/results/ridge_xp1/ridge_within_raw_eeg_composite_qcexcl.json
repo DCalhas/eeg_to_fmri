@@ -1,0 +1,200 @@
+{
+ "group": {
+  "design": "within",
+  "target": "raw",
+  "features": "eeg",
+  "motion_regress": false,
+  "rois": [
+   "ctx:Precentral Gyrus",
+   "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+   "ctx:Postcentral Gyrus"
+  ],
+  "roi_mode": "composite",
+  "excluded": "sub-xp102",
+  "lags": 10,
+  "n_surrogates": 100,
+  "mean_r": 0.3322933225168122,
+  "mean_R2": -0.009295099311404757,
+  "block_mean_r": 0.22672584073411095,
+  "block_mean_R2": 0.011936631467607286,
+  "swap_mean_r": NaN,
+  "real_vs_swap_wilcoxon_p": null,
+  "ridge_vs_block_wilcoxon_p": 0.064453125,
+  "k_significant": 6,
+  "n": 9,
+  "binomial_p": 1.1510234375e-06
+ },
+ "subjects": {
+  "sub-xp101": {
+   "r": 0.2032792717218399,
+   "R2": 0.0343666672706604,
+   "swap_r": NaN,
+   "swap_R2": NaN,
+   "alpha": 100000.0,
+   "alpha_at_grid_edge": false,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "block_r": 0.34791240096092224,
+   "block_R2": 0.11162471771240234,
+   "p_r": 0.04950495049504951,
+   "p_R2": 0.019801980198019802,
+   "null_r_mean": -0.007749591800384223,
+   "null_r_q95": 0.19343018755316735
+  },
+  "sub-xp103": {
+   "r": 0.45558759570121765,
+   "R2": 0.07030528783798218,
+   "swap_r": NaN,
+   "swap_R2": NaN,
+   "alpha": 100000.0,
+   "alpha_at_grid_edge": false,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "block_r": 0.292610764503479,
+   "block_R2": 0.08111071586608887,
+   "p_r": 0.019801980198019802,
+   "p_R2": 0.019801980198019802,
+   "null_r_mean": -0.019147804472595453,
+   "null_r_q95": 0.4119551584124565
+  },
+  "sub-xp104": {
+   "r": 0.41454702615737915,
+   "R2": -0.3052504062652588,
+   "swap_r": NaN,
+   "swap_R2": NaN,
+   "alpha": 0.1,
+   "alpha_at_grid_edge": true,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "block_r": 0.049676313996315,
+   "block_R2": -0.35263192653656006,
+   "p_r": 0.019801980198019802,
+   "p_R2": 0.9504950495049505,
+   "null_r_mean": 0.013513124582823366,
+   "null_r_q95": 0.2767153784632682
+  },
+  "sub-xp105": {
+   "r": 0.21487998962402344,
+   "R2": 0.004621982574462891,
+   "swap_r": NaN,
+   "swap_R2": NaN,
+   "alpha": 1000000.0,
+   "alpha_at_grid_edge": false,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "block_r": 0.35869547724723816,
+   "block_R2": 0.09176093339920044,
+   "p_r": 0.22772277227722773,
+   "p_R2": 0.10891089108910891,
+   "null_r_mean": -0.010741741470992565,
+   "null_r_q95": 0.3218356758356094
+  },
+  "sub-xp106": {
+   "r": 0.5705118775367737,
+   "R2": 0.0795087218284607,
+   "swap_r": NaN,
+   "swap_R2": NaN,
+   "alpha": 100000.0,
+   "alpha_at_grid_edge": false,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "block_r": 0.2839870750904083,
+   "block_R2": 0.0024799704551696777,
+   "p_r": 0.019801980198019802,
+   "p_R2": 0.06930693069306931,
+   "null_r_mean": -0.011058742586174048,
+   "null_r_q95": 0.493543067574501
+  },
+  "sub-xp107": {
+   "r": 0.2759866714477539,
+   "R2": 0.032313406467437744,
+   "swap_r": NaN,
+   "swap_R2": NaN,
+   "alpha": 100000.0,
+   "alpha_at_grid_edge": false,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "block_r": 0.15002083778381348,
+   "block_R2": 0.006163537502288818,
+   "p_r": 0.0297029702970297,
+   "p_R2": 0.019801980198019802,
+   "null_r_mean": -0.03092425007431302,
+   "null_r_q95": 0.23980867639183998
+  },
+  "sub-xp108": {
+   "r": 0.08220580220222473,
+   "R2": 9.5367431640625e-07,
+   "swap_r": NaN,
+   "swap_R2": NaN,
+   "alpha": 1000000000.0,
+   "alpha_at_grid_edge": true,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "block_r": 0.024323895573616028,
+   "block_R2": -0.004183650016784668,
+   "p_r": 0.42574257425742573,
+   "p_R2": 0.38613861386138615,
+   "null_r_mean": -0.012053107181563973,
+   "null_r_q95": 0.34699730128049844
+  },
+  "sub-xp109": {
+   "r": 0.706146240234375,
+   "R2": 1.4007091522216797e-05,
+   "swap_r": NaN,
+   "swap_R2": NaN,
+   "alpha": 1000000000.0,
+   "alpha_at_grid_edge": true,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "block_r": 0.611553430557251,
+   "block_R2": 0.221785306930542,
+   "p_r": 0.019801980198019802,
+   "p_R2": 0.1485148514851485,
+   "null_r_mean": -0.03833727741613984,
+   "null_r_q95": 0.6752881854772568
+  },
+  "sub-xp110": {
+   "r": 0.0674954280257225,
+   "R2": 0.0004634857177734375,
+   "swap_r": NaN,
+   "swap_R2": NaN,
+   "alpha": 1000000.0,
+   "alpha_at_grid_edge": false,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "block_r": -0.07824762910604477,
+   "block_R2": -0.050679922103881836,
+   "p_r": 0.46534653465346537,
+   "p_R2": 0.10891089108910891,
+   "null_r_mean": 0.01987609147792682,
+   "null_r_q95": 0.37518576979637147
+  }
+ }
+}

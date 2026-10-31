@@ -1,0 +1,324 @@
+{
+ "group": {
+  "design": "cross",
+  "target": "resid",
+  "nested": [
+   "hr",
+   "motion"
+  ],
+  "null": "EEG-block circular shift >= 30 TRs, alpha re-tuned",
+  "motion_regress": false,
+  "rois": [
+   "ctx:Precentral Gyrus",
+   "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+   "ctx:Postcentral Gyrus"
+  ],
+  "roi_mode": "composite",
+  "excluded": "sub-xp102",
+  "lags": 10,
+  "n_surrogates": 100,
+  "mean_delta_R2": 0.003006504641638862,
+  "mean_delta_r": 0.02598966526178022,
+  "mean_R2_full": 0.024445732434590656,
+  "mean_R2_reduced": 0.021439227792951796,
+  "delta_R2_gt0_wilcoxon_p": 0.28515625,
+  "k_significant": 6,
+  "n": 9,
+  "binomial_p": 1.1510234375e-06,
+  "k_significant_delta_r": 6,
+  "binomial_p_delta_r": 1.1510234375e-06,
+  "swap_mean_delta_R2": -0.060616468389829,
+  "swap_mean_delta_r": -0.08512352981294195,
+  "real_vs_swap_delta_R2_wilcoxon_p": 0.01953125
+ },
+ "subjects": {
+  "sub-xp101": {
+   "r_full": 0.1779547929763794,
+   "R2_full": 0.028383255004882812,
+   "r_reduced": 0.18383513391017914,
+   "R2_reduced": 0.03082728385925293,
+   "delta_r": -0.005880340933799744,
+   "delta_R2": -0.002444028854370117,
+   "alpha_full": 10000.0,
+   "alpha_reduced": 1000.0,
+   "alpha_at_grid_edge": false,
+   "p_delta_R2": 0.009900990099009901,
+   "p_delta_r": 0.009900990099009901,
+   "null_delta_R2_mean": -0.032555114030838016,
+   "null_delta_R2_q95": -0.023879423737525947,
+   "null_delta_r_mean": -0.1807823873047164,
+   "swap_delta_r": -0.11474919551983476,
+   "swap_delta_R2": -0.07576070725917816,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "hr_qc": {
+    "mean_hr_bpm": 92.42567308459914,
+    "sd_hr_bpm": 30.666192861644742,
+    "n_beats": 544,
+    "n_rr": 520,
+    "frac_implausible_rr": 0.20192307692307693,
+    "frac_rr_short": 0.20192307692307693,
+    "ecg_flipped": false
+   }
+  },
+  "sub-xp103": {
+   "r_full": 0.3326491713523865,
+   "R2_full": 0.10511535406112671,
+   "r_reduced": 0.3980119526386261,
+   "R2_reduced": 0.08582675457000732,
+   "delta_r": -0.06536278128623962,
+   "delta_R2": 0.019288599491119385,
+   "alpha_full": 10000.0,
+   "alpha_reduced": 1000.0,
+   "alpha_at_grid_edge": false,
+   "p_delta_R2": 0.009900990099009901,
+   "p_delta_r": 0.009900990099009901,
+   "null_delta_R2_mean": -0.0848410964012146,
+   "null_delta_R2_q95": -0.06646339297294616,
+   "null_delta_r_mean": -0.41763678303628693,
+   "swap_delta_r": -0.33635516453068703,
+   "swap_delta_R2": -0.11482338607311249,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "hr_qc": {
+    "mean_hr_bpm": 63.202255152441396,
+    "sd_hr_bpm": 7.382622499126495,
+    "n_beats": 373,
+    "n_rr": 335,
+    "frac_implausible_rr": 0.005970149253731343,
+    "frac_rr_short": 0.005970149253731343,
+    "ecg_flipped": false
+   }
+  },
+  "sub-xp104": {
+   "r_full": 0.23450401425361633,
+   "R2_full": 0.04464685916900635,
+   "r_reduced": 0.177244171500206,
+   "R2_reduced": 0.029204487800598145,
+   "delta_r": 0.05725984275341034,
+   "delta_R2": 0.015442371368408203,
+   "alpha_full": 10000.0,
+   "alpha_reduced": 1000.0,
+   "alpha_at_grid_edge": false,
+   "p_delta_R2": 0.019801980198019802,
+   "p_delta_r": 0.04950495049504951,
+   "null_delta_R2_mean": -0.040454535484313964,
+   "null_delta_R2_q95": -0.01000725328922274,
+   "null_delta_r_mean": -0.18877635122800712,
+   "swap_delta_r": -0.1189008571091108,
+   "swap_delta_R2": -0.12537869811058044,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "hr_qc": {
+    "mean_hr_bpm": 64.4004173983811,
+    "sd_hr_bpm": 4.841810098185951,
+    "n_beats": 381,
+    "n_rr": 342,
+    "frac_implausible_rr": 0.0,
+    "frac_rr_short": 0.0,
+    "ecg_flipped": false
+   }
+  },
+  "sub-xp105": {
+   "r_full": 0.266218900680542,
+   "R2_full": 0.06890803575515747,
+   "r_reduced": 0.08956398069858551,
+   "R2_reduced": 0.006257772445678711,
+   "delta_r": 0.17665491998195648,
+   "delta_R2": 0.06265026330947876,
+   "alpha_full": 10000.0,
+   "alpha_reduced": 1000.0,
+   "alpha_at_grid_edge": false,
+   "p_delta_R2": 0.009900990099009901,
+   "p_delta_r": 0.009900990099009901,
+   "null_delta_R2_mean": -0.00823467195034027,
+   "null_delta_R2_q95": 0.011614421010017379,
+   "null_delta_r_mean": -0.1128742808784591,
+   "swap_delta_r": -0.019342437502928078,
+   "swap_delta_R2": -0.051551222801208496,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "hr_qc": {
+    "mean_hr_bpm": 102.92862650073853,
+    "sd_hr_bpm": 20.420455050615754,
+    "n_beats": 605,
+    "n_rr": 557,
+    "frac_implausible_rr": 0.1436265709156194,
+    "frac_rr_short": 0.1400359066427289,
+    "ecg_flipped": false
+   }
+  },
+  "sub-xp106": {
+   "r_full": 0.0869920402765274,
+   "R2_full": -0.03016972541809082,
+   "r_reduced": 0.14311955869197845,
+   "R2_reduced": 0.019238293170928955,
+   "delta_r": -0.05612751841545105,
+   "delta_R2": -0.049408018589019775,
+   "alpha_full": 10000.0,
+   "alpha_reduced": 1000.0,
+   "alpha_at_grid_edge": false,
+   "p_delta_R2": 0.9405940594059405,
+   "p_delta_r": 0.21782178217821782,
+   "null_delta_R2_mean": -0.021379337906837464,
+   "null_delta_R2_q95": -0.00527417957782746,
+   "null_delta_r_mean": -0.13735123998252674,
+   "swap_delta_r": -0.04052681871689856,
+   "swap_delta_R2": -0.030327342450618744,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "hr_qc": {
+    "mean_hr_bpm": 74.83502083353862,
+    "sd_hr_bpm": 5.4335398689159815,
+    "n_beats": 424,
+    "n_rr": 399,
+    "frac_implausible_rr": 0.002506265664160401,
+    "frac_rr_short": 0.002506265664160401,
+    "ecg_flipped": false
+   }
+  },
+  "sub-xp107": {
+   "r_full": 0.13447651267051697,
+   "R2_full": 0.01778620481491089,
+   "r_reduced": 0.028763923794031143,
+   "R2_reduced": -0.0038491487503051758,
+   "delta_r": 0.10571258887648582,
+   "delta_R2": 0.021635353565216064,
+   "alpha_full": 10000.0,
+   "alpha_reduced": 1000.0,
+   "alpha_at_grid_edge": false,
+   "p_delta_R2": 0.039603960396039604,
+   "p_delta_r": 0.07920792079207921,
+   "null_delta_R2_mean": -0.0006008404493331909,
+   "null_delta_R2_q95": 0.016095548868179318,
+   "null_delta_r_mean": -0.012137428626883775,
+   "swap_delta_r": -0.06797255505807698,
+   "swap_delta_R2": -0.047566771507263184,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "hr_qc": {
+    "mean_hr_bpm": 88.27398985454536,
+    "sd_hr_bpm": 15.692905784999668,
+    "n_beats": 533,
+    "n_rr": 496,
+    "frac_implausible_rr": 0.14717741935483872,
+    "frac_rr_short": 0.14717741935483872,
+    "ecg_flipped": false
+   }
+  },
+  "sub-xp108": {
+   "r_full": -0.0015033778036013246,
+   "R2_full": -0.07284152507781982,
+   "r_reduced": 0.20246867835521698,
+   "R2_reduced": 0.03599429130554199,
+   "delta_r": -0.2039720561588183,
+   "delta_R2": -0.10883581638336182,
+   "alpha_full": 10000.0,
+   "alpha_reduced": 1000.0,
+   "alpha_at_grid_edge": false,
+   "p_delta_R2": 0.9603960396039604,
+   "p_delta_r": 0.5742574257425742,
+   "null_delta_R2_mean": -0.041661739349365234,
+   "null_delta_R2_q95": -0.024534857273101812,
+   "null_delta_r_mean": -0.19778061644145054,
+   "swap_delta_r": -0.13895336515270174,
+   "swap_delta_R2": -0.07733190059661865,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "hr_qc": {
+    "mean_hr_bpm": 94.25263584788226,
+    "sd_hr_bpm": 13.78465480501572,
+    "n_beats": 573,
+    "n_rr": 548,
+    "frac_implausible_rr": 0.19708029197080293,
+    "frac_rr_short": 0.19708029197080293,
+    "ecg_flipped": false
+   }
+  },
+  "sub-xp109": {
+   "r_full": 0.21243798732757568,
+   "R2_full": 0.04370027780532837,
+   "r_reduced": 0.14661864936351776,
+   "R2_reduced": 0.01763617992401123,
+   "delta_r": 0.06581933796405792,
+   "delta_R2": 0.02606409788131714,
+   "alpha_full": 10000.0,
+   "alpha_reduced": 1000.0,
+   "alpha_at_grid_edge": false,
+   "p_delta_R2": 0.009900990099009901,
+   "p_delta_r": 0.009900990099009901,
+   "null_delta_R2_mean": -0.019153946042060853,
+   "null_delta_R2_q95": -0.014141941070556649,
+   "null_delta_r_mean": -0.15635976408491842,
+   "swap_delta_r": 0.01592663675546646,
+   "swap_delta_R2": 0.0074056461453437805,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "hr_qc": {
+    "mean_hr_bpm": 95.73298675345472,
+    "sd_hr_bpm": 17.431475398161368,
+    "n_beats": 573,
+    "n_rr": 520,
+    "frac_implausible_rr": 0.09230769230769231,
+    "frac_rr_short": 0.09230769230769231,
+    "ecg_flipped": false
+   }
+  },
+  "sub-xp110": {
+   "r_full": 0.16153690218925476,
+   "R2_full": 0.014482855796813965,
+   "r_reduced": 0.0017339076148346066,
+   "R2_reduced": -0.02818286418914795,
+   "delta_r": 0.15980299457442015,
+   "delta_R2": 0.042665719985961914,
+   "alpha_full": 10000.0,
+   "alpha_reduced": 1000.0,
+   "alpha_at_grid_edge": false,
+   "p_delta_R2": 0.06930693069306931,
+   "p_delta_r": 0.04950495049504951,
+   "null_delta_R2_mean": 0.022279722690582274,
+   "null_delta_R2_q95": 0.0440921664237976,
+   "null_delta_r_mean": 0.013837855210585986,
+   "swap_delta_r": 0.05476198851829395,
+   "swap_delta_R2": -0.03021383285522461,
+   "rois_present": [
+    "ctx:Precentral Gyrus",
+    "ctx:Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex)",
+    "ctx:Postcentral Gyrus"
+   ],
+   "hr_qc": {
+    "mean_hr_bpm": 104.16327415963647,
+    "sd_hr_bpm": 13.031961794378875,
+    "n_beats": 593,
+    "n_rr": 564,
+    "frac_implausible_rr": 0.0851063829787234,
+    "frac_rr_short": 0.0851063829787234,
+    "ecg_flipped": false
+   }
+  }
+ }
+}

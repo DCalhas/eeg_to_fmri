@@ -27,11 +27,16 @@ parser = argparse.ArgumentParser()
 parser.add_argument('root')
 parser.add_argument('-out', required=True)
 parser.add_argument('-n_boot', default=10000, type=int)
+parser.add_argument('-configs', default=None, help="comma separated (default: the CHUR-XP2 grid)")
+parser.add_argument('-prefix', default="", help='"mni_" for the baselines on registered volumes')
+parser.add_argument('-members', default="zerofill_hetero", help="base configuration of the deep ensemble")
 opt = parser.parse_args()
 
 CONFIGS = ["zerofill", "zerofill_hetero", "zerofill_evidential", "zerofill_cqr", "zerofill_mcdropout", "zerofill_specdropout", "spectral",
 		   "zerofill_flipout", "flipout", "zerofill_swag", "zerofill_laplace", "zerofill_hetero_ensemble", "spectral_voxelhead",
 		   "zerofill_hetero_ecg_only", "zerofill_hetero_minprep"]
+if(opt.configs):
+	CONFIGS = opt.configs.split(",")
 rng = np.random.RandomState(0)
 
 
@@ -57,9 +62,9 @@ def paired(a, b, key, better, delta):
 			"per_subject": {str(s): float(v) for s, v in zip(np.array(common)[ok], d)}}
 
 
-template = per_subject(opt.root, "eeg_free_template")
-oracle = per_subject(opt.root, "oracle_own_mean")
-locked = per_subject(opt.root, "stimulus_locked")
+template = per_subject(opt.root, opt.prefix+"eeg_free_template")
+oracle = per_subject(opt.root, opt.prefix+"oracle_own_mean")
+locked = per_subject(opt.root, opt.prefix+"stimulus_locked")
 mean = lambda d, k: float(np.nanmean([v[k] for v in d.values()]))
 DELTA = {k: 0.05*(mean(template, k)-mean(oracle, k)) for k in ["nll", "crps", "rmse_brain"]}
 DELTA["temporal_r"] = 0.05
@@ -82,14 +87,15 @@ for c in CONFIGS:
 	print("==", c, json.dumps({k: brief(v) for k, v in r.items() if k in ("vs_stimulus_locked_r", "r_vs_shift", "r_vs_swap", "nll_vs_shift", "nll_vs_swap")}),
 		  json.dumps({k: brief(v) for k, v in r["vs_template"].items()}), flush=True)
 
-members = per_subject(opt.root, "zerofill_hetero")
-ens = per_subject(opt.root, "zerofill_hetero_ensemble")
+members = per_subject(opt.root, opt.members)
+ens = per_subject(opt.root, opt.members+"_ensemble")
 report["ensemble_vs_members"] = {k: paired(ens, members, k, "lower", DELTA[k]) for k in ["nll", "crps", "rmse_brain"]}
 ecg, eeg = per_subject(opt.root, "zerofill_hetero_ecg_only"), members
-report["eeg_vs_ecg"] = {"nll": paired(eeg, ecg, "nll", "lower", DELTA["nll"]), "temporal_r": paired(eeg, ecg, "temporal_r", "higher", DELTA["temporal_r"])}
+report["eeg_vs_ecg"] = {"nll": paired(eeg, ecg, "nll", "lower", DELTA["nll"]), "temporal_r": paired(eeg, ecg, "temporal_r", "higher", DELTA["temporal_r"])} if ecg else None  #no ECG-only arm on CHUR-XP1
 report["coverage90_template_per_subject"] = {str(s): v["conf90"] for s, v in template.items()}
 report["template_per_subject"] = {str(s): {k: v.get(k) for k in ["nll", "crps", "rmse_brain"]} for s, v in template.items()}
 print("ensemble vs members", json.dumps({k: [v["hl"], v["ci95"], v["p_better"]] for k, v in report["ensemble_vs_members"].items()}))
-print("EEG vs ECG", json.dumps({k: [v["hl"], v["ci95"], v["p_better"], v["p_nonsuperiority"]] for k, v in report["eeg_vs_ecg"].items()}))
+if(report["eeg_vs_ecg"]):
+	print("EEG vs ECG", json.dumps({k: [v["hl"], v["ci95"], v["p_better"], v["p_nonsuperiority"]] for k, v in report["eeg_vs_ecg"].items()}))
 with open(opt.out, "w") as f:
 	json.dump(report, f, indent=1)

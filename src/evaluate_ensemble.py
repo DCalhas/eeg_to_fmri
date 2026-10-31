@@ -5,6 +5,8 @@ the predictive distribution is the mixture of the members' Laplace(mu_m, b_m).
 python evaluate_ensemble.py 05 -name calhas_aleatoric -fold 0 -members 2,3,5,7,11 -out_dir RUNS <same model flags as training>
 """
 import argparse
+
+import numpy as np
 import os
 
 import experiment
@@ -40,6 +42,6 @@ os.makedirs(out, exist_ok=True)
 evaluate_uq.save(res, out)
 evaluate_uq.print_summary(res)
 #evaluation-time EEG nulls, as for every single model (train_cv.py)
-for null in ["shift", "swap"]:
+for null in ["shift", "swap"] if len(np.unique(splits["test"][2])) > 1 else ["shift"]:  #swap needs two test subjects
 	res = evaluate_uq.evaluate(models, splits, T=max(len(models), 20) if stochastic else len(models), stochastic=True, seed=members[0], null=null)
 	evaluate_uq.save(res, out, tag="_null_"+null)

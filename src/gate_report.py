@@ -42,7 +42,7 @@ def per_subject(root, config, tag=""):
 
 def paired(a, b, key, alternative):
 	common = sorted(set(a) & set(b))
-	x = np.array([a[s][key] for s in common]); y = np.array([b[s][key] for s in common])
+	x = np.array([a[s].get(key, np.nan) for s in common]); y = np.array([b[s].get(key, np.nan) for s in common])  #older evaluations lack some metrics
 	ok = np.isfinite(x) & np.isfinite(y)
 	if(ok.sum() < 5):
 		return {"n": int(ok.sum()), "p": None}

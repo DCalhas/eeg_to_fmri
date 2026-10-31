@@ -160,6 +160,8 @@ if(not opt.skip_eval):
 	evaluate_uq.save(res, out)
 	evaluate_uq.print_summary(res)
 	for null in [n for n in opt.nulls.split(",") if n]:
+		if(null == "swap" and len(np.unique(splits["test"][2])) < 2):
+			print("I: null swap skipped (one test subject: no other subject's EEG to swap in)", flush=True); continue
 		res=evaluate_uq.evaluate(predictors, splits, T=opt.T_null, stochastic=stochastic, seed=opt.seed, null=null)
 		evaluate_uq.save(res, out, tag="_null_"+null)
 		print("I: null", null); evaluate_uq.print_summary(res)

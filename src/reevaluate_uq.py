@@ -386,6 +386,7 @@ def mode_runs(cli):
 	for fold in sorted({r[0] for r in runs}):
 		o = copy.copy(data_opt); o.fold = fold
 		splits, test, calib = experiment.load_split(o)
+		fold_nulls = [n for n in nulls if n != "swap" or len(np.unique(splits["test"][2])) > 1]  #swap needs two test subjects
 		m = fold_mask(splits)
 		assert np.array_equal(m, masks[fold]), "fold mask differs from the cached one: delete "+masks_path(data_opt)
 		fold_idx = np.where(m.reshape(-1))[0]
@@ -403,7 +404,7 @@ def mode_runs(cli):
 			print("I: fold", fold, "seed", seed, "->", out_dir, flush=True)
 			predictors, stochastic, T = build_predictors(cli, members, eeg_shape, fmri_shape, eeg_train.shape[0], null_seed)
 			null_eeg, null_info = {}, {}
-			for kind in nulls:
+			for kind in fold_nulls:
 				null_eeg[kind], null_info[kind] = evaluate_uq.eeg_null(eeg_test, sub_test, kind, seed=null_seed)
 			per_subject, scores, widths = {}, {}, {}
 			family, point = None, None
@@ -413,7 +414,7 @@ def mode_runs(cli):
 				family, point = real["family"], real["point"]
 				scores[int(s)] = real["scores"]; widths[int(s)] = (real["base"], real["slope"])
 				A = {"real": {} if point else dict(spread_stats(real["sig"]), **error_tracking(real["y"], real["mu"], real["sig"]))}
-				for kind in nulls:
+				for kind in fold_nulls:
 					nul = subject_pass(predictors, null_eeg[kind], fmri_test, rows, T, stochastic, idx, pos_common_tf, "test", cli.batch)
 					A[kind] = {} if point else dict(spread_stats(nul["sig"]), **error_tracking(nul["y"], nul["mu"], nul["sig"]))
 					A[kind]["vs_real"] = versus_real(real["mu"], real["sig"], nul["mu"], nul["sig"], point)

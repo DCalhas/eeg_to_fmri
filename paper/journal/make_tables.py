@@ -315,7 +315,8 @@ def positive_control_table():
 #----------------------------------------------------------------------------------------------- does the uncertainty depend on the EEG (review #5)
 def uq_dependence_table():
 	rows = [("Heteroscedastic Laplace", "zerofill_hetero"), ("MC dropout", "zerofill_mcdropout"), ("Stochastic spectral decoder", "spectral"),
-		("Deep evidential", "zerofill_evidential"), ("Deep ensemble", "zerofill_hetero_ensemble")]
+		("Deep evidential", "zerofill_evidential"), ("Deep ensemble", "zerofill_hetero_ensemble"),
+		("Heteroscedastic, lr $10^{-4}$ (sensitive)", "real_hetero_lr1e-4_b32")]
 	K = [("A.real.sigma_temporal_to_spatial_var", "%.1e"), ("A.shift.vs_real.sigma_map_corr", "%.4f"), ("A.swap.vs_real.sigma_map_corr", "%.4f"),
 		("A.swap.vs_real.w2_spread_term_rel", "%.1e"), ("A.swap.vs_real.w2_mean_term_rel", "%.3f"),
 		("A.real.spearman_sigma_abs_anatomical_error", "%.2f"), ("A.real.spearman_sigma_abs_temporal_error_mean", "%.3f")]
@@ -360,7 +361,53 @@ def registered_table():
 	write("registered.tex", "\n".join(rows)+"\n")
 
 
+#----------------------------------------------------------------------------------------------- CHUR-XP1 replication
+def xp1_tables():
+	path = os.path.join(R, "xp1_report.json")
+	if(not os.path.exists(path)):
+		return
+	rep = json.load(open(path))
+	rows = []
+	for c, label in [("xp1_point", "Point ($L_1$) + split conformal"), ("xp1_hetero", "Heteroscedastic Laplace"), ("xp1_spectral", "Stochastic spectral decoder"),
+		("xp1_hetero_ensemble", "Deep ensemble ($M{=}5$)"), ("xp1_hetero_lr1e-4_b32", "Heteroscedastic, lr $10^{-4}$")]:
+		if(c not in rep):
+			continue
+		x = rep[c]; vt = x["vs_template"]
+		nll = "--" if vt["nll"].get("p") is None else "%s vs %s (%s)" % (fmt(vt["nll"]["model"]), fmt(vt["nll"]["reference"]), pfmt(vt["nll"]["p"]))
+		rows.append(" & ".join([label, nll, "%s vs %s" % (fmt(vt["crps"]["model"]), fmt(vt["crps"]["reference"])) if vt["crps"].get("p") is not None else "--",
+			fmt(x["temporal_r_vs_shift"]["model"]), pfmt(x["temporal_r_vs_shift"]["p"]), pfmt(x["temporal_r_vs_swap"]["p"]), fmt(x["vs_stimulus_locked"]["temporal_r"]["reference"]), fmt(x["conf90_coverage"], 2)])+"\\\\")
+	write("xp1_uq.tex", "\n".join(rows)+"\n")
+	#positive control and probe
+	def summ(c, key, tag):
+		v = [json.load(open(f)).get(key) for f in glob.glob(os.path.join(R, "summaries_xp1", c, "fold*", "seed2", "summary%s.json" % tag))]
+		return np.mean(v) if v else None
+	cell = lambda a, b, c: "--" if a is None else "%s (%s, %s)" % (fmt(a), fmt(b), fmt(c))
+	pos = []
+	for c, label in [("xp1_inject1_point_fluct", "backbone, $L_1$"), ("xp1_inject1_hetero_fluct", "backbone, heteroscedastic")]:
+		pos.append(label+" & "+cell(summ(c, "temporal_r_inject", ""), summ(c, "temporal_r_inject", "_null_shift"), summ(c, "temporal_r_inject", "_null_swap"))+"\\\\")
+	def probe(name, cond, reg):
+		v = {}
+		for f in glob.glob(os.path.join(R, "probe_xp1", name, "fold*", "probe.json")):
+			v.update(json.load(open(f))[cond].get(reg, {}))
+		return np.mean(list(v.values())) if v else None
+	pos.append("linear probe & "+cell(probe("probe_inject1", "real", "box"), probe("probe_inject1", "shift", "box"), probe("probe_inject1", "swap", "box"))+"\\\\")
+	write("xp1_positive.tex", "\n".join(pos)+"\n")
+	#ROI ridge across subjects, task regressed out
+	rr = []
+	for f, label in [("cross_resid_eeg", "EEG"), ("cross_resid_hr", "Heart rate"), ("cross_resid_ecg", "ECG band power"), ("cross_resid_motion", "Head motion")]:
+		p = os.path.join(R, "ridge_xp1", "ridge_%s_composite_qcexcl.json" % f)
+		if(not os.path.exists(p)):
+			continue
+		g = json.load(open(p))["group"]
+		rr.append(" & ".join([label, "%d" % g["n"], fmt(g["mean_r"]), "%d/%d" % (g["k_significant"], g["n"]), pfmt(g["binomial_p"]), "%s (%s)" % (fmt(g["swap_mean_r"]), pfmt(g["real_vs_swap_wilcoxon_p"]))])+"\\\\")
+	p = os.path.join(R, "ridge_xp1", "ridge_cross_resid_nested-hr+motion_composite_qcexcl.json")
+	if(os.path.exists(p)):
+		g = json.load(open(p))["group"]
+		rr.append("\\midrule\n\\multicolumn{6}{l}{Nested: $R^2$ heart rate + motion %s, + EEG %s; $\\Delta R^2=%s$, $p_{\\Delta>0}=%s$}\\\\" % (fmt(g["mean_R2_reduced"]), fmt(g["mean_R2_full"]), fmt(g["mean_delta_R2"]), fmt(g["delta_R2_gt0_wilcoxon_p"], 2)))
+	write("xp1_ridge.tex", "\n".join(rr)+"\n")
+
+
 if __name__ == "__main__":
-	uq_table(); nulls_table(); controls_table(); dynamics_table(); oracle_table(); ridge_table(); mehta_table(); effects_table(); positive_control_table(); uq_dependence_table(); crossconf_table(); registered_table()
+	uq_table(); nulls_table(); controls_table(); dynamics_table(); oracle_table(); ridge_table(); mehta_table(); effects_table(); positive_control_table(); uq_dependence_table(); crossconf_table(); registered_table(); xp1_tables()
 	for f in sorted(os.listdir(T)):
 		print("==", f); print(open(os.path.join(T, f)).read())

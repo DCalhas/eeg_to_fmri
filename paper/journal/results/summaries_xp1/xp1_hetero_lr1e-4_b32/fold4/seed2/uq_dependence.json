@@ -1,0 +1,102 @@
+{
+ "config": "xp1_hetero_lr1e-4_b32",
+ "fold": 4,
+ "seed": 2,
+ "null_seed": 2,
+ "T": 50,
+ "stochastic": false,
+ "family": "laplace",
+ "point": false,
+ "null_info": {
+  "shift": {
+   "3": 103
+  }
+ },
+ "n_mask_fold": 32987,
+ "n_mask_common": 29143,
+ "fold_mask_fraction": 0.26844889322916665,
+ "common_mask_fraction": 0.23716634114583332,
+ "summary": {
+  "A.real.sigma_mean": 1.3162156343460083,
+  "A.real.sigma_temporal_var": 1.0374751724384623e-08,
+  "A.real.sigma_spatial_var": 0.0007346048369072378,
+  "A.real.sigma_temporal_to_spatial_var": 1.4122901460958792e-05,
+  "A.real.spearman_sigma_abs_anatomical_error": -0.1253293752670288,
+  "A.real.spearman_sigma_abs_temporal_error_mean": 0.009630938060581684,
+  "A.real.spearman_sigma_abs_temporal_error_median": 0.006707656662911177,
+  "A.real.spearman_sigma_abs_temporal_error_frac_pos": 0.5259041440567497,
+  "A.real.n_voxels_temporal": 32987.0,
+  "A.real.n_voxels": 32987.0,
+  "A.shift.sigma_mean": 1.3162156343460083,
+  "A.shift.sigma_temporal_var": 1.0374838765869754e-08,
+  "A.shift.sigma_spatial_var": 0.0007346047204919159,
+  "A.shift.sigma_temporal_to_spatial_var": 1.4123022186574589e-05,
+  "A.shift.spearman_sigma_abs_anatomical_error": -0.12532931566238403,
+  "A.shift.spearman_sigma_abs_temporal_error_mean": 0.005845898296684027,
+  "A.shift.spearman_sigma_abs_temporal_error_median": 0.004956606309860945,
+  "A.shift.spearman_sigma_abs_temporal_error_frac_pos": 0.5223572922666505,
+  "A.shift.n_voxels_temporal": 32987.0,
+  "A.shift.n_voxels": 32987.0,
+  "A.shift.vs_real.w2_mean_term": 0.07192914932966232,
+  "A.shift.vs_real.avg_pred_var_real": 1.7331578731536865,
+  "A.shift.vs_real.w2_mean_term_rel": 0.04150178725425555,
+  "A.shift.vs_real.w2_spread_term": 2.225291950708197e-08,
+  "A.shift.vs_real.w2": 0.07192917158258183,
+  "A.shift.vs_real.w2_spread_term_rel": 1.2839522499234383e-08,
+  "A.shift.vs_real.w2_rel": 0.041501800093778046,
+  "A.shift.vs_real.sigma_map_corr": 1.0000001192092896,
+  "A.shift.vs_real.sigma_volume_corr_mean": 0.9999874234199524,
+  "C.own_mask_fraction": 0.2718098958333333,
+  "C.frac_own_in_fold_mask": 0.817814371257485,
+  "C.frac_fold_mask_in_own": 0.8280534756116046,
+  "C.frac_own_in_common_mask": 0.8031137724550899
+ },
+ "subjects": {
+  "3": {
+   "A": {
+    "real": {
+     "sigma_mean": 1.3162156343460083,
+     "sigma_temporal_var": 1.0374751724384623e-08,
+     "sigma_spatial_var": 0.0007346048369072378,
+     "sigma_temporal_to_spatial_var": 1.4122901460958792e-05,
+     "spearman_sigma_abs_anatomical_error": -0.1253293752670288,
+     "spearman_sigma_abs_temporal_error_mean": 0.009630938060581684,
+     "spearman_sigma_abs_temporal_error_median": 0.006707656662911177,
+     "spearman_sigma_abs_temporal_error_frac_pos": 0.5259041440567497,
+     "n_voxels_temporal": 32987,
+     "n_voxels": 32987
+    },
+    "shift": {
+     "sigma_mean": 1.3162156343460083,
+     "sigma_temporal_var": 1.0374838765869754e-08,
+     "sigma_spatial_var": 0.0007346047204919159,
+     "sigma_temporal_to_spatial_var": 1.4123022186574589e-05,
+     "spearman_sigma_abs_anatomical_error": -0.12532931566238403,
+     "spearman_sigma_abs_temporal_error_mean": 0.005845898296684027,
+     "spearman_sigma_abs_temporal_error_median": 0.004956606309860945,
+     "spearman_sigma_abs_temporal_error_frac_pos": 0.5223572922666505,
+     "n_voxels_temporal": 32987,
+     "n_voxels": 32987,
+     "vs_real": {
+      "w2_mean_term": 0.07192914932966232,
+      "avg_pred_var_real": 1.7331578731536865,
+      "w2_mean_term_rel": 0.04150178725425555,
+      "w2_spread_term": 2.225291950708197e-08,
+      "w2": 0.07192917158258183,
+      "w2_spread_term_rel": 1.2839522499234383e-08,
+      "w2_rel": 0.041501800093778046,
+      "sigma_map_corr": 1.0000001192092896,
+      "sigma_volume_corr_mean": 0.9999874234199524
+     }
+    }
+   },
+   "C": {
+    "own_mask_source": "otsu_own_mean",
+    "own_mask_fraction": 0.2718098958333333,
+    "frac_own_in_fold_mask": 0.817814371257485,
+    "frac_fold_mask_in_own": 0.8280534756116046,
+    "frac_own_in_common_mask": 0.8031137724550899
+   }
+  }
+ }
+}
