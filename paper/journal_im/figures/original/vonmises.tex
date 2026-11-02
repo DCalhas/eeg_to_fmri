@@ -1,0 +1,31 @@
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[scale=0.8]
+        
+        \node (uni_circle) at (0,0) {};
+        
+        \draw[name path=circle1, black, thin] (uni_circle) circle [radius=1.5];
+        \draw[name path=xaxis, black, very thick, ->] ($(uni_circle)+(-2,0)$) -- ($(uni_circle)+(2,0)$);%xaxis
+        \draw[name path=yaxis, black, very thick, ->] ($(uni_circle)+(0,-2)$) -- ($(uni_circle)+(0,2)$);%yaxis
+        
+        \draw [name path=dist90,blue,thick,domain=0:90] plot ({1.6*cos(\x)}, {1.75*sin(\x)});
+        \draw [name path=dist270,blue,thick,domain=180:270] plot ({1.75*cos(\x)}, {1.6*sin(\x)});
+        \draw [name path=dist360,blue,thick,domain=270:360] plot ({1.6*cos(\x)}, {1.6*sin(\x)});
+        
+        \draw [name path=dist180,blue,thick,domain=90:180] ($(uni_circle)+(-1.75,0)$) .. controls +(0,2) and +(-2,0) .. ($(uni_circle)+(0,1.75)$);
+        
+        
+        \draw[black, fill=black!10, thin] (uni_circle) circle [radius=1.5];
+        \draw[black, very thick, ->] ($(uni_circle)+(-2,0)$) -- ($(uni_circle)+(2,0)$);%xaxis
+        \draw[black, very thick, ->] ($(uni_circle)+(0,-2)$) -- ($(uni_circle)+(0,2)$);%yaxis
+        \draw[very thick] ($(uni_circle)+(1.5,-0.1)$) -- ($(uni_circle)+(1.5,0.1)$);%1 point coordinate
+        %\node at ($(uni_circle)+(1.5,-0.25)$) {$1$};
+        \draw[blue, thick, ->] ($(uni_circle)$) -- ($(uni_circle)+(-1.05,1.05)$);%\mu vector
+        
+        \node[blue] at ($(uni_circle)+(-0.8,0.3)$) {$\mu$};
+        \node[blue] at ($(uni_circle)+(0,2.4)$) {$f_{c^*}(.; \mu, \tau): c^* \sim \mbox{vM}(\mu, \tau)$};
+    \end{tikzpicture}
+    %\vspace{-0.2cm}
+    \caption{The von Mises distribution, a distribution on the circle. The decoder uses $R\times H$ independent von Mises variables, one angle per stochastic coefficient and head.}
+    \label{figure:vonMisesDist}
+\end{figure}

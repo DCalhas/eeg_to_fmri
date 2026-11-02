@@ -1,0 +1,40 @@
+\begin{figure*}[!htbp]
+    \centering
+    \begin{tikzpicture}[scale=3]
+        \node (xaxis) at (3.2,0) {$r$};
+        \node (yaxis) at (-0.1,1) {$p$};
+        %axes
+        \draw ($(xaxis)+(-3.2,0)$) -- ($(xaxis)+(-0.65,0)$);
+        \node (dots) at ($(xaxis)+(-0.5,0)$)  {$\dots$};
+        \draw[->]  ($(xaxis)+(-0.35,0)$) -- ($(xaxis)+(-0.1,0)$);
+        \draw[->] ($(yaxis)+(0.1,-1.1)$) -- ($(yaxis)+(0.1,0)$);
+        
+        \node (origin) at (0,0) {};
+        
+        \draw[bottom color=blue,top color=blue!10, draw=blue] ($(origin)+(0.1,0)$) .. controls +(0,0) and +(0,0) .. ($(origin)+(0.1,0.5)$) .. controls +(0.5,0.5) and +(-0.2,0.5) .. ($(origin)+(1.5,0.5)$) .. controls +(0,0) and +(0,0) .. ($(origin)+(1.5,0)$);
+        
+        
+        \draw[bottom color=yellow,top color=yellow!10, draw=orange] ($(origin)+(1.5,0)$) .. controls +(0,0) and +(0,0) .. ($(origin)+(1.5,0.5)$) .. controls +(0.4,-0.7) and +(-0.2,0.1) .. ($(origin)+(2.5,0)$);
+        
+        \node[rectangle, draw=blue] (X) at ($(origin)+(0.8, 0.45)$) {$X$};
+        \node[rectangle, draw=orange] (C) at ($(origin)+(1.62, 0.12)$) {$C$};
+        
+        \node at ($(origin)+(0.1,-0.1)$) {$0$};
+        \node at ($(origin)+(1.5,-0.1)$) {$N$};
+        \node at ($(origin)+(2.5,-0.1)$) {$L$};
+        \node at ($(origin)+(2.9,-0.1)$) {$M$};
+        \draw ($(origin)+(0.1,0)$) -- +(0,-0.03);%referencing
+        \draw ($(origin)+(1.5,0)$) -- +(0,-0.03);%referencing
+        \draw ($(origin)+(2.5,0)$) -- +(0,-0.03);%referencing
+        \draw ($(origin)+(2.9,0)$) -- +(0,-0.03);%referencing
+        
+        \node[rectangle, draw=orange, fill=yellow!50, text width=0.45\textwidth, minimum width=2, inner sep=3, align=left, anchor=west] (explain) at ($(origin)+(1.8,0.65)$) {\begin{gather*}
+            W \in \mathbb{R}^{N \times H}: a = X \cdot W \\ 
+            c^* \sim \mbox{vM}(\mu^*, \tau^*)^{R \times H}: C=\alpha \cdot \left[ b \odot \mbox{cos}(c^{*\top}) \right] 
+        \end{gather*}};
+        
+        \node (x_tilde) at ($(origin)+(1.5, -0.3)$) {$\dot{\tilde{X}} = \begin{bmatrix} X_1 \odot c_1 & \dots & X_N \odot c_N & C_{1} & \dots & C_{R} & 0 & \dots & 0 \end{bmatrix} \in \mathbb{R}^{M}$};
+    \end{tikzpicture}
+    \caption{DCT coefficients of the stochastic spectral decoder in one dimension: the low block $X$, perturbed by the Gaussian gains $c$, the stochastic block $C$, and zeros up to $M$.}
+    \label{fig:spectralUpsampling}
+\end{figure*}

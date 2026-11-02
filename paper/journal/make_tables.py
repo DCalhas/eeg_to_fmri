@@ -285,7 +285,7 @@ def positive_control_table():
 	def probe(name, cond, reg):
 		v = {}
 		for f in glob.glob(os.path.join(R, "probe", name, "fold*", "probe.json")):
-			v.update(json.load(open(f))[cond].get(reg, {}))
+			v.update(json.load(open(f)).get(cond, {}).get(reg, {}))  #a single-subject fold has no swap null
 		return np.mean(list(v.values())) if v else None
 	def ladder(variant, snr, cond):
 		v = {}
@@ -388,7 +388,7 @@ def xp1_tables():
 	def probe(name, cond, reg):
 		v = {}
 		for f in glob.glob(os.path.join(R, "probe_xp1", name, "fold*", "probe.json")):
-			v.update(json.load(open(f))[cond].get(reg, {}))
+			v.update(json.load(open(f)).get(cond, {}).get(reg, {}))  #a single-subject fold has no swap null
 		return np.mean(list(v.values())) if v else None
 	pos.append("linear probe & "+cell(probe("probe_inject1", "real", "box"), probe("probe_inject1", "shift", "box"), probe("probe_inject1", "swap", "box"))+"\\\\")
 	write("xp1_positive.tex", "\n".join(pos)+"\n")

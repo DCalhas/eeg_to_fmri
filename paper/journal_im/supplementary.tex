@@ -1,0 +1,54 @@
+\documentclass[]{imag-ms-template}
+
+%the class loads mathtools, amssymb, booktabs, graphicx, biblatex (APA, natbib commands) and hyperref
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc,decorations.pathreplacing,calligraphy,shapes.geometric,intersections}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{placeins}
+\usepackage{lineno}
+\usepackage{xr}
+\externaldocument[M-]{main}
+\linenumbers
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black}
+\addbibresource{references.bib}
+
+%points the authors must check before submission
+\newcommand{\TBD}[1]{\textcolor{red}{[#1]}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+%\input is not expandable inside tabular (misplaced \noalign before \bottomrule); the TeX primitive is
+\makeatletter\newcommand{\tabinput}[1]{\@@input #1.tex }\makeatother
+\input{tables/ridge_macros}
+\input{tables/effects_macros}
+
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\theequation}{S\arabic{equation}}
+
+\title{Supplementary Material for\\Is the Uncertainty About the EEG?\\Positive Controls and Physiological Confounds in EEG-to-fMRI Synthesis}
+
+\author{David Calhas,$^{1\ast}$ Rui Henriques$^{2}$\\
+{\small $^{1}$Faculty of Computer and Information Science, University of Ljubljana, Ljubljana, Slovenia}\\
+{\small $^{2}$INESC-ID, Instituto Superior T\'{e}cnico, Universidade de Lisboa, Lisbon, Portugal}\\
+{\small $^\ast$Correspondence: David Calhas, david.calhas@fri.uni-lj.si}
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+This document extends the main text. Section~\ref{supp:related} reviews related work in more detail, Section~\ref{supp:methods} gives the full methods, Section~\ref{supp:decoder} the construction of the stochastic spectral decoder, Section~\ref{supp:results} the complete results with all supplementary tables and figures, and Section~\ref{supp:discussion} an extended discussion. Figures and tables numbered without ``S'' refer to the main text.
+
+\input{supp/body}
+
+\printbibliography
+
+\end{document}

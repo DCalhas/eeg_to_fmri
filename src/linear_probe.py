@@ -69,6 +69,8 @@ res = {"alpha": float(alpha), "real": {"all": per_subject(P)}}
 if(box is not None):
 	res["real"]["box"] = per_subject(P, box); res["real"]["outside"] = per_subject(P, ~box)
 for null in ["shift", "swap"]:
+	if(null == "swap" and len(np.unique(ste)) < 2):  #a single test subject has no other subject to swap with
+		continue
 	eeg_null_te, _ = eeg_null(splits["test"][0], ste, null, seed=0)
 	Pn = model.predict(Ytr, features(eeg_null_te), alpha)
 	res[null] = {"all": per_subject(Pn)}

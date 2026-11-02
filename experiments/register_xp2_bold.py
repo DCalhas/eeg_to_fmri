@@ -5,7 +5,10 @@ run mean) of the shared preprocessing (data/ds002338/derivatives_e2f, preprocess
 EPI->T1 flirt started from the FSL voxel frame, and on XP2's oblique 16-slice slab it can converge to a wrong rotation
 (sub-xp201: slab rotated ~45 deg, 2026-10-28 QC). Here EPI->T1 starts from the scanner world coordinates (same
 session, valid sforms) and is only refined (6 dof, corratio, -nosearch); T1->MNI152 is a 12-dof flirt. Matrices are
-saved in xfm/ and QC images (registered mean EPI and T1 over the MNI brain outline) in qc/.
+saved in xfm/ and QC images (registered mean EPI and T1 over the MNI brain outline) in qc/. The refinement is kept only
+if it moves the slab centre by at most -max_refine_mm (default 10 mm); otherwise the world-coordinate start is used.
+CHUR-XP1 (near whole-brain, 32 slices) was run with -max_refine_mm 12 after visual QC: its sub-xp107 refinement (10.4 mm)
+is correct and its world start is not, while the 14-17 mm refinements of sub-xp101/105/110 slide the brain out of the head.
 
 Outputs in uncertainty/cache/xp2_mni (FSL flirt -applyisoxfm 3 on the MNI152 2 mm reference, i.e. a 61x73x61 grid):
 	<sub>_<run>_raw.npy    (T, 61, 73, 61) float16: raw volumes, motion-corrected and registered in one interpolation
@@ -44,6 +47,7 @@ parser.add_argument('-dataset', default="ds002338", help="ds002336 (CHUR-XP1) wi
 parser.add_argument('-deriv', default=None, help="directory of the preprocess_bold npz files (default data/<dataset>/derivatives_e2f)")
 parser.add_argument('-out', default=None, help="output directory (default cache/xp2_mni)")
 parser.add_argument('-subjects', default=None)
+parser.add_argument('-max_refine_mm', default=10., type=float, help="keep the world-coordinate start if the 6-dof refinement moves the slab centre further (2026-10-31: corratio slid the oblique slab 20-27 mm up, out of the head, in 13/15 runs)")
 opt = parser.parse_args()
 DATA = os.path.expanduser("~/eeg_to_fmri/data/"+opt.dataset)
 DERIV = opt.deriv or os.path.join(DATA, "derivatives_e2f")
@@ -81,7 +85,12 @@ def epi_to_mni(sub, run, img, raw, work):
 		init, e2t = os.path.join(work, "init.mat"), os.path.join(work, "e2t.mat")
 		np.savetxt(init, world_init(img, nib.load(t1)))
 		_fsl("flirt", "-in", mean, "-ref", t1, "-init", init, "-omat", e2t, "-dof", "6", "-cost", "corratio", "-nosearch")
-		np.savetxt(m, subject_t1_to_mni(sub, work) @ np.loadtxt(e2t))
+		W, E = np.loadtxt(init), np.loadtxt(e2t)
+		c = np.r_[(np.array(img.shape[:3])-1)/2.*np.array(img.header.get_zooms()[:3]), 1.]  #slab centre, FSL frame
+		shift = float(np.linalg.norm((E @ c)[:3]-(W @ c)[:3]))
+		use = E if shift <= opt.max_refine_mm else W
+		print("I: %s %s refinement moved the slab %.1f mm -> %s" % (sub, run, shift, "refined" if use is E else "world-coordinate start"), flush=True)
+		np.savetxt(m, subject_t1_to_mni(sub, work) @ use)
 	return np.loadtxt(m)
 
 

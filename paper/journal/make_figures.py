@@ -18,7 +18,9 @@ os.makedirs(F, exist_ok=True)
 LEVELS = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95])
 
 plt.rcParams.update({"font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8, "legend.fontsize": 7, "xtick.labelsize": 7,
-	"ytick.labelsize": 7, "axes.spines.top": False, "axes.spines.right": False, "pdf.fonttype": 42, "font.family": "serif"})
+	"ytick.labelsize": 7, "axes.spines.top": False, "axes.spines.right": False, "pdf.fonttype": 42, "font.family": "sans-serif",
+	"font.sans-serif": ["Arial", "Helvetica", "Liberation Sans", "Nimbus Sans", "DejaVu Sans"], "mathtext.fontset": "custom",
+	"mathtext.rm": "Liberation Sans", "mathtext.it": "Liberation Sans:italic", "mathtext.bf": "Liberation Sans:bold"})
 GREY, BLUE, ORANGE, GREEN, RED, PURPLE = "#7f7f7f", "#0072B2", "#E69F00", "#009E73", "#D55E00", "#CC79A7"
 
 
@@ -207,28 +209,77 @@ def significance_maps():
 		if(not os.path.exists(path)):
 			continue
 		z = dict(np.load(path))
-		#brain voxels of the acquired slab only: the analysis mask (Otsu of the EPI) also contains the scalp above the brain,
-		#and the oblique 16-slice slab misses the ventral brain; background = MNI brain mask on the model grid AND tested voxels
-		brain = np.load(os.path.join(R, "region_maps", "mni_brain_grid.npy")) > 0.5
-		shown = brain & (z["n"][..., 0] >= 6)
-		zs = np.where(shown.any((0, 1)))[0]; sl = slice(zs[0], zs[-1]+1)
+		#background = the mean registered EPI (run z-score) through the function's own threshold, as in the thesis figures:
+		#the anatomy is min-max normalized inside the function and voxels below THRESHOLD are drawn white. 0.50 keeps the
+		#whole brain from the lowest acquired slice to the vertex and drops the dim scalp ring. Every second slice is shown.
+		THRESHOLD = 0.50
+		anat = z["anatomy"][..., 0]; anat = (anat-anat.min())/(anat.max()-anat.min())
+		tested = z["n"][..., 0] >= 6
+		shown = (anat >= THRESHOLD) & tested
+		area = (anat >= THRESHOLD).sum((0, 1))
+		#seven slices from the lowest slice whose brain reaches the front of the field of view (the oblique slab cuts the
+		#front of the slices below) up to the last slice with at least a fifth of the largest brain area
+		front = np.array([np.where((anat[..., k] >= THRESHOLD).any(0))[0].max() if area[k] else -1 for k in range(anat.shape[2])])
+		z0, z1 = np.where(front >= front.max()-1)[0][0], np.where(area >= 0.2*area.max())[0][-1]
+		sl = np.unique(np.round(np.linspace(z0, z1, 7)).astype(int))  #seven slices, lowest to vertex
 		crop = lambda a: a[:, :, sl].copy()
 		#display scaling only: the function colours a winning voxel with intensity 1 - residue; with residue = 1 - r that is
 		#r itself (~0.05, near black), so both conditions' r are rescaled jointly to [0, 1] before drawing (p-values unchanged)
 		r1, r2 = 1-z["res1"], 1-z["res2"]
 		lo, hi = np.percentile(np.r_[r1[shown[..., None]], r2[shown[..., None]]], [1, 99])
 		disp = lambda r: 1-0.95*np.clip((r-lo)/(hi-lo+1e-9), 0, 1)
-		background = shown[..., None].astype(np.float32)
-		p = np.where(shown[..., None], z["pvalues"], 1.)
+		background = anat[..., None].astype(np.float32)
+		p = np.where(tested[..., None], z["pvalues"], 1.)  #untested voxels inside the brain are drawn as not significant
 		sig = (p[..., 0] < 0.05) & shown
-		print("I:", name, "brain voxels tested", int(shown.sum()), "p<0.05", int(sig.sum()), "first better", int((sig & (z["res1"][..., 0] < z["res2"][..., 0])).sum()), "slices", zs[0], zs[-1])
+		print("I:", name, "brain voxels tested", int(shown.sum()), "inside brain untested", int(((anat >= THRESHOLD) & ~tested).sum()),
+			  "p<0.05", int(sig.sum()), "first better", int((sig & (z["res1"][..., 0] < z["res2"][..., 0])).sum()), "slices", list(sl))
 		#in the function, a voxel is cyan when res1 < res2 (the first condition has the lower 1 - r) and magenta otherwise,
 		#while the legend prints model1 at the magenta end: labels are passed so each colour names the condition that wins
-		fig = plot(crop(disp(r1)), crop(disp(r2)), crop(p), crop(background), model1=m2, model2=m1, threshold=0.5, factor=1,
-				   save=True, save_path=os.path.join(F, "sig_"+name+".pdf"), save_format="pdf")
+		#the function sets font.family to serif after drawing its text; rc_context keeps that from leaking into later figures
+		with plt.rc_context():
+			fig = plot(crop(disp(r1)), crop(disp(r2)), crop(p), crop(background), model1=m2, model2=m1, threshold=THRESHOLD, factor=1,
+					   one_row=True)
+			fig.savefig(os.path.join(F, "sig_"+name+".pdf"), format="pdf", bbox_inches="tight", dpi=300)
 		plt.close(fig)
 
 
+def dct_upsampling():
+	"""Upsampling through the DCT (Section 2.3): a random 7x7 image, its zero-filled 64x64 upsampling, and stochastic
+	upsamplings with R random Gaussian coefficients above the cutoff along each axis (same layout as the thesis figure)."""
+	from scipy.fft import dctn, idctn
+	rng = np.random.default_rng(0)
+	low = rng.random((7, 7)); X = dctn(low, norm="ortho")*(64/7)  #orthonormal DCT, rescaled to the 64x64 amplitude
+	panels = [("$7\\times7$\nlow resolution", low, 0)]
+	for R in [0, 5, 10, 15, 20]:
+		C = np.zeros((64, 64)); C[:7, :7] = X
+		if(R):
+			noise = rng.normal(0, 0.5, (7+R, 7+R)); noise[:7, :7] = 0; C[:7+R, :7+R] += noise
+		panels.append(("$64\\times64$\n" + ("zero-filled iDCT" if R == 0 else "stochastic iDCT"), idctn(C, norm="ortho"), R))
+	fig, axes = plt.subplots(1, len(panels), figsize=(7.2, 1.55))
+	for ax, (title, img, R) in zip(axes, panels):
+		ax.imshow(img, cmap="gray", interpolation="nearest"); ax.set_xticks([]); ax.set_yticks([])
+		for sp in ax.spines.values():
+			sp.set_visible(True)
+		ax.set_title(title, fontsize=6.5); ax.set_xlabel("$R=%d$" % R, fontsize=7)
+	fig.savefig(os.path.join(F, "dct_upsampling.pdf"), format="pdf", bbox_inches="tight"); plt.close(fig)
+
+
+def intro_icons():
+	"""fMRI icons of the introduction illustration, from saved test-subject volumes (fold 0, slice 20): the stochastic
+	spectral decoder's prediction, which spans the full resolution (left), and the zero-filled heteroscedastic network's
+	prediction (right), in the nipy_spectral style of the volume figure, each with its absolute residue in grey."""
+	V = os.path.join(R, "volmaps"); z = 20
+	load = lambda p, i: np.load(os.path.join(V, p))["map_0"][i].astype(np.float32)[:, :, z]
+	obs = load("eeg_free_template/fold0/seed0/eval.npz", 0)
+	vmin, vmax = np.percentile(obs, [1, 99.5])
+	D = os.path.join(F, "intro"); os.makedirs(D, exist_ok=True)
+	for name, pred in (("full", load("spectral/fold0/seed2/eval.npz", 1)), ("relaxed", load("zerofill_hetero/fold0/seed2/eval.npz", 1))):
+		for kind, img, cmap, lim in (("pred", pred, plt.cm.nipy_spectral, (vmin, vmax)), ("res", np.abs(pred-obs), plt.cm.gray, (0, np.percentile(np.abs(pred-obs), 99)))):
+			fig, ax = plt.subplots(figsize=(1.2, 1.2))
+			ax.imshow(np.rot90(img), cmap=cmap, vmin=lim[0], vmax=lim[1], interpolation="nearest"); ax.axis("off")
+			fig.savefig(os.path.join(D, "%s_%s.pdf" % (name, kind)), format="pdf", bbox_inches="tight", pad_inches=0); plt.close(fig)
+
+
 if __name__ == "__main__":
-	oracle(); reliability(); nulls(); ridge(); curves(); coverage_strip(); volume_panel(); significance_maps()
+	oracle(); reliability(); nulls(); ridge(); curves(); coverage_strip(); volume_panel(); significance_maps(); dct_upsampling(); intro_icons()
 	print(sorted(os.listdir(F)))

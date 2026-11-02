@@ -712,7 +712,7 @@ def plot_3D_representation_projected_slices_alpha(instance, factor=3, h_resoluti
 
 
 
-def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_img, model1="Model1", model2="Model2", factor=3, h_resolution=1, v_resolution=1, threshold=0.37, slice_label=True, save=False, save_path=None, red_blue=False, save_format="pdf"):
+def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_img, model1="Model1", model2="Model2", factor=3, h_resolution=1, v_resolution=1, threshold=0.37, slice_label=True, save=False, save_path=None, red_blue=False, save_format="pdf", one_row=False):
     """
         
     Inputs:
@@ -725,6 +725,8 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
         v_resolution: int - resolution in the vertical dimension
         save: bool - whether to save the figure
         save_path: str - path to save the figure, save has to be True
+        one_row: bool - all 2-D slices in a single row (descending from the top slice, left to right) with the colour
+            legend below them, in a wide figure drawn near its printed size; voxels are shown without interpolation
     Returns:
         matplotlib.Figure - The figure to plot, no saving option implemented
     """
@@ -789,10 +791,17 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
                                                                 pvalue=pvalues[voxel1,voxel2,voxel3,0],
                                                                 red_blue=red_blue)))
 
-    fig = plt.figure(figsize=(25,17))
-    gs = GridSpec(41, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
-
-    axes = fig.add_subplot(gs[:41,0:2], projection='3d', proj_type='ortho')
+    n_slices = (instance[:,:,:].shape[2])//factor
+    if(one_row):
+        fig = plt.figure(figsize=(1.45*(n_slices+2), 3.2))
+        gs = GridSpec(12, n_slices+2, figure=fig, wspace=0.02, hspace=0.05)
+        axes = fig.add_subplot(gs[:,0:2], projection='3d', proj_type='ortho')
+        label_size, legend_size = 9, 11
+    else:
+        fig = plt.figure(figsize=(25,17))
+        gs = GridSpec(41, 7, figure=fig, wspace=0.01, hspace=0.05)#, wspace=-0.4)
+        axes = fig.add_subplot(gs[:41,0:2], projection='3d', proj_type='ortho')
+        label_size, legend_size = 13, 20
     x, y = np.mgrid[0:res_img[:,:,0].shape[0], 0:res_img[:,:,0].shape[1]]
 
     for axis in range((instance[:,:,:].shape[2])//factor):
@@ -803,21 +812,28 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
                                 shade=False, antialiased=True, zorder=0,
                                 cstride=v_resolution, rstride=h_resolution)
         if(slice_label):
-            axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=13, zorder=100)
+            axes.text(60, 60, 3+5*(axis), label+str(axis*factor)+"}$", size=label_size, zorder=100)
     axes.axis("off")
     axes.view_init(elev=5.5, azim=7)#(100,150)
     axes.dist = 5
+    if(one_row):
+        axes.set_box_aspect(None, zoom=1.7)#axes.dist is ignored by recent matplotlib
 
     #colorbar
-    cax = fig.add_subplot(gs[30:33,3:5])
+    if(one_row):
+        mid = 2+n_slices//2
+        cax = fig.add_subplot(gs[8:10,mid-1:mid+1])
+    else:
+        cax = fig.add_subplot(gs[30:33,3:5])
     cax.imshow(Legend, extent=[0,100,0,100], aspect="auto")
     cax.set_xticks([])
     cax.set_yticks([5,95])
     cax.annotate('', xy=(0, -0.5), xycoords='axes fraction', xytext=(1, -0.5), 
                 arrowprops=dict(arrowstyle="<->, head_width=0.4", color='black'))
-    cax.annotate(model1, xy=(0, -0.56), xycoords='axes fraction', xytext=(-0.1, -0.56), size=20, color="red")
-    cax.annotate(model2, xy=(0, -0.56), xycoords='axes fraction', xytext=(1.03, -0.56), size=20, color="blue")
-    cax.set_yticklabels([r"$p=0.0$",r"$p=1.0$"], size=20)
+    #labels anchored at the arrow ends: right-aligned on the left end, left-aligned on the right end, centred on the arrow
+    cax.annotate(model1, xy=(0, -0.5), xycoords='axes fraction', xytext=(-0.03, -0.5), size=legend_size, color="red", ha="right", va="center")
+    cax.annotate(model2, xy=(1, -0.5), xycoords='axes fraction', xytext=(1.03, -0.5), size=legend_size, color="blue", ha="left", va="center")
+    cax.set_yticklabels([r"$p=0.0$",r"$p=1.0$"], size=legend_size)
     
 
     #plot each slice in 2 Dimensional plot
@@ -828,11 +844,14 @@ def comparison_plot_3D_representation_projected_slices(res1, res2, pvalues, res_
             _row=20
         else:
             _row=10
-        axes = fig.add_subplot(gs[_row:_row+10,col])
+        if(one_row):
+            axes = fig.add_subplot(gs[0:8, 2+n_slices-1-axis])
+        else:
+            axes = fig.add_subplot(gs[_row:_row+10,col])
         img = rotate(instance[:,:,axis*factor,:], 90)
-        axes.imshow(img)
+        axes.imshow(img, interpolation="nearest" if one_row else None)
         if(slice_label):
-            axes.text(28, 1, label+str(axis*factor)+"}$", size=13,
+            axes.text(28, 1, label+str(axis*factor)+"}$", size=label_size,
                  va="baseline", ha="left", multialignment="left",)
         axes.axis("off")
         col -= 1
@@ -937,8 +956,9 @@ def comparison_plot_uncertainty(res1, res2, pvalues, res_img, model1="Model1", m
     cax.set_yticks([5,95])
     cax.annotate('', xy=(0, -0.5), xycoords='axes fraction', xytext=(1, -0.5), 
                 arrowprops=dict(arrowstyle="<->, head_width=0.4", color='black'))
-    cax.annotate(model1, xy=(0, -0.56), xycoords='axes fraction', xytext=(-0.4, -0.56), size=20, color="red")
-    cax.annotate(model2, xy=(0, -0.56), xycoords='axes fraction', xytext=(1.03, -0.56), size=20, color="blue")
+    #labels anchored at the arrow ends: right-aligned on the left end, left-aligned on the right end, centred on the arrow
+    cax.annotate(model1, xy=(0, -0.5), xycoords='axes fraction', xytext=(-0.03, -0.5), size=20, color="red", ha="right", va="center")
+    cax.annotate(model2, xy=(1, -0.5), xycoords='axes fraction', xytext=(1.03, -0.5), size=20, color="blue", ha="left", va="center")
     cax.set_yticklabels([r"$p=0.0$",r"$p=1.0$"], size=20)
     
 

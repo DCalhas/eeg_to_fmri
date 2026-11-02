@@ -1,0 +1,48 @@
+\begin{figure*}[!htbp]
+    \centering
+    \begin{tikzpicture}[scale=0.7]
+        
+        \node (uni_circle1) at (0,0) {};
+        
+        \draw[black, fill=black!10, thin] (uni_circle1) circle [radius=1.5];
+        \draw[black, very thick, ->] ($(uni_circle1)+(-2,0)$) -- ($(uni_circle1)+(2,0)$);%xaxis
+        \draw[black, very thick, ->] ($(uni_circle1)+(0,-2)$) -- ($(uni_circle1)+(0,2)$);%yaxis
+        \draw[very thick] ($(uni_circle1)+(1.5,-0.1)$) -- ($(uni_circle1)+(1.5,0.1)$);%1 point coordinate
+        \draw[black, thick, ->] ($(uni_circle1)$) -- ($(uni_circle1)+(-1.05,1.05)$);%\mu
+        \node[black] at ($(uni_circle1)+(-0.8,0.3)$) {$c^*_{i,1}$};
+        
+        \node at ($(uni_circle1)+ (3,0)$) {$+$};
+        
+        \node (uni_circle2) at (6,0) {};
+        \draw[black, fill=black!10, thin] (uni_circle2) circle [radius=1.5];
+        \draw[black, very thick, ->] ($(uni_circle2)+(-2,0)$) -- ($(uni_circle2)+(2,0)$);%xaxis
+        \draw[black, very thick, ->] ($(uni_circle2)+(0,-2)$) -- ($(uni_circle2)+(0,2)$);%yaxis
+        \draw[very thick] ($(uni_circle2)+(1.5,-0.1)$) -- ($(uni_circle2)+(1.5,0.1)$);%1 point coordinate
+        \draw[black, thick, ->] ($(uni_circle2)$) -- ($(uni_circle2)+(1.05,1.05)$);%\mu
+        \node[black] at ($(uni_circle2)+(0.8,0.3)$) {$c^*_{i,2}$};
+        
+        \node at ($(uni_circle2)+ (3.5,0)$) {$+\dots+$};
+        
+        
+        \node (uni_circle3) at (13,0) {};
+        \draw[black, fill=black!10, thin] (uni_circle3) circle [radius=1.5];
+        \draw[black, very thick, ->] ($(uni_circle3)+(-2,0)$) -- ($(uni_circle3)+(2,0)$);%xaxis
+        \draw[black, very thick, ->] ($(uni_circle3)+(0,-2)$) -- ($(uni_circle3)+(0,2)$);%yaxis
+        \draw[very thick] ($(uni_circle3)+(1.5,-0.1)$) -- ($(uni_circle3)+(1.5,0.1)$);%1 point coordinate
+        \draw[black, thick, ->] ($(uni_circle3)$) -- ($(uni_circle3)+(-1.05,-1.05)$);%\mu
+        \node[black] at ($(uni_circle3)+(-0.4,-1)$) {$c^*_{i,H}$};
+        
+        
+        %cosines sinusoidals
+        \node[black] at ($(uni_circle1)+(0,-2.4)$) {$\alpha_1 \times b_1 \times \mbox{cos}(c^*_{i,1})$};
+        \node[black] at ($(uni_circle1)+(3.,-2.4)$) {$+$};
+        \node[black] at ($(uni_circle2)+(0,-2.4)$) {$\alpha_2 \times b_2 \times \mbox{cos}(c^*_{i,2})$};
+        %\node[blue] at ($(uni_circle2)+(3,-2.4)$) {$+ \dots + $};
+        \node[black] at ($(uni_circle3)+(-0.2,-2.4)$) {$+ \dots +  \alpha_H \times b_H \times \mbox{cos}(c^*_{i,H}) = C_i$};
+        
+        
+        
+    \end{tikzpicture}
+    \caption{How the higher DCT coefficients are computed from $H$ sinusoidals.}
+    \label{figure:vonMisesCoefficients}
+\end{figure*}
